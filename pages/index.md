@@ -5,9 +5,9 @@ image: https://bbo.do/og.png
 plum: true
 ---
 
-Hi, I am Bodo Braegger, and I make software. Right now, I work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zürich](https://ethz.ch/) - at the research university where I studied Computer Science.<br>
+Hi, I am Bodo Braegger, and I make software. Right now, I work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zürich](https://ethz.ch/) - the research university where I studied Computer Science.<br>
 
-I am passionate about creating, and software engineering has proven to be a very flexible medium that allows me to explore and realize numerous ideas. You can find my [projects list here](/projects). I also do some generative art, interactivity experiments, and live-coding performances. Resources for these can be found [here](/projects#generative-art-and-live-coding-resources).
+I am passionate about creating, and software engineering has proven to be a very flexible medium that allows me to explore and realize numerous ideas. You can find my [project list here](/projects). I also do some generative art, interactivity experiments, and live-coding performances. Resources for these can be found [here](/projects#generative-art-and-live-coding-resources).
 
 <!-- You can find excerpts on [generative .bbo.do](https://generative.bbo.do/). -->
 
