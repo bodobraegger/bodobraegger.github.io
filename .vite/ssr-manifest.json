@@ -79,22 +79,25 @@
   ],
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
+  "pages/404.md": [
+    "/assets/404-CfaooiDF.js"
+  ],
   "pages/[...404].md": [
-    "/assets/_...404_-SjyuMGo8.js"
+    "/assets/_...404_-unFLRAkt.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes.md": [
-    "/assets/notes-wcpfrEOy.js"
+    "/assets/notes-ykOUxPz-.js"
   ],
   "pages/posts/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-M0cdIWH_.js"
+    "/assets/2023-12-16_web-rxduxTjr.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-xYGChZdq.js"
+    "/assets/index-1YQbTpnp.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-Fl2Optt7.js",
+    "/assets/projects-PAgwgHjK.js",
     "/assets/projects-cFhWj4ou.css"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
@@ -102,18 +105,18 @@
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-Hy-vWk2Z.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-ZJhbMizT.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-Fl2Optt7.js",
+    "/assets/projects-PAgwgHjK.js",
     "/assets/projects-cFhWj4ou.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-Fl2Optt7.js",
+    "/assets/projects-PAgwgHjK.js",
     "/assets/projects-cFhWj4ou.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=12be87eb&lang.css": [
-    "/assets/projects-Fl2Optt7.js",
+    "/assets/projects-PAgwgHjK.js",
     "/assets/projects-cFhWj4ou.css"
   ],
   "src/components/Logo.vue": [
@@ -129,14 +132,14 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-xYGChZdq.js"
+    "/assets/index-1YQbTpnp.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/WrapperPost.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/icons/AnthonyFu.vue": [
-    "/assets/projects-Fl2Optt7.js",
+    "/assets/projects-PAgwgHjK.js",
     "/assets/projects-cFhWj4ou.css"
   ],
   "src/logics/index.ts": [
