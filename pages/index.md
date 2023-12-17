@@ -22,7 +22,7 @@ Find me on
   <a href="https://github.com/bodobraegger" target="_blank"><span op75 i-simple-icons-github /> GitHub</a>
 </p>
 
-For inquiries, please contact me at
+and for inquiries, please contact me via
 
 <p flex="~ gap-3 wrap" class="mt--2!">
   <a href="mailto:hi@bbo.do"><span op75 i-carbon-email /> hi@bbo.do</a>
