@@ -3,14 +3,13 @@
 my personal website. built with:
 
 - [vue.js](https://vuejs.org/)
+- [vite](https://vitejs.dev/)
 - [uno.css](https://unocss.dev/)
-- [vitepress](https://vitepress.vuejs.org/)
 
 ## credits
 
-- [antfu.me](https://antfu.me/)
-- [zxh.io](https://zxh.io/)
-- [Vitepress](https://vitepress.vuejs.org/)
+- [Anthony Fu](https://github.com/antfu/)
+- [Xiaohan Zou](https://github.com/renovamen/)\
 
 <br>
 
