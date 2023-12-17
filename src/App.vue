@@ -36,6 +36,9 @@ onKeyStroke('Escape', (e) => {
 </script>
 
 <template>
+  <ClientOnly>
+    <Plum />
+  </ClientOnly>
   <div class="flex flex-col justify-start min-h-screen xl-mx-auto xl:max-w-500">
     <NavBar />
     <main class="px-7 py-10 of-x-hidden">
