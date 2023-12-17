@@ -80,46 +80,46 @@
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
   "pages/404.md": [
-    "/assets/404-7Ag-zO5q.js"
+    "/assets/404-OJ3xKRLR.js"
   ],
-  "pages/[..404].md": [
-    "/assets/_..404_-vBvLPH4B.js"
+  "pages/[...404].md": [
+    "/assets/_...404_-d35Qw0pl.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-rgFOBgTn.js"
+    "/assets/2023-12-16_web-VFqY_FS5.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-O1_znWWy.js"
+    "/assets/index-3yWsY9tW.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-XOcvHA2n.js"
+    "/assets/index-JXS2XerQ.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-KYkamKfs.js",
+    "/assets/projects-IMlh-HVG.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "pages/template.md": [
-    "/assets/template-0fu5FB4R.js"
+    "/assets/template-XIL-XoiU.js"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-Rg2u6Jeb.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-3AppPnML.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-KYkamKfs.js",
+    "/assets/projects-IMlh-HVG.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-KYkamKfs.js",
+    "/assets/projects-IMlh-HVG.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-KYkamKfs.js",
+    "/assets/projects-IMlh-HVG.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/Logo.vue": [
@@ -135,7 +135,7 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-XOcvHA2n.js"
+    "/assets/index-JXS2XerQ.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
