@@ -1,5 +1,6 @@
 <template>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330" scale="100" fill="none" baseProfile="full">
+  <title>Bodo Braegger (Monogram)</title>
   <path stroke="#0a0a0a" stroke-linecap="square" stroke-linejoin="round" stroke-width="16" d="M165 45h0v240m0-240a120 120 0 0 1 120 120 120 120 0 0 1-120 120A120 120 0 0 1 45 165 120 120 0 0 1 165 45h0a60 45 0 0 1 60 45 60 45 0 0 1-60 45h0a90 75 0 0 1 90 75 90 75 0 0 1-90 75"/>
   <path stroke="#0a0a0a" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" d="M165 135v150M45 165h120m0-120A120 120 0 0 0 45 165h0a120 120 0 0 0 120 120m0-75h0v30"/>
   <path stroke="#0a0a0a" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="16" d="M255 210h0-90 0v75m0-150a90 75 0 0 1 90 75m-90-75h0v75m90 0h0v30"/></svg>
@@ -48,5 +49,12 @@
 }
 .dark path {
   stroke: #fdfdfd;
+}
+path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+  fill: none;
+  stroke: #0a0a0a;
 }
 </style>
