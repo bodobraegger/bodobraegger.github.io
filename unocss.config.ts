@@ -12,6 +12,9 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
+    ['font-sans', {'font-family': 'Arial, Helvetica Neue, Helvetica, sans-serif'}],
+    ['font-mono', {'font-family': 'Courier New, monospace'}],
+    
   ],
   presets: [
     presetIcons({
@@ -24,12 +27,12 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetUno(),
-    presetWebFonts({
-      fonts: {
-        sans: 'Inter:400,600,800',
-        mono: 'DM Mono:400,600',
-      },
-    }),
+    // presetWebFonts({
+    //   fonts: {
+    //     sans: 'Inter:400,600,800',
+    //     mono: 'DM Mono:400,600',
+    //   },
+    // }),
   ],
   transformers: [
     transformerDirectives(),
