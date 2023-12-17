@@ -79,44 +79,44 @@
   ],
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
-  "pages/404.md": [
-    "/assets/404-LRKPeaq4.js"
+  "pages/[..404].md": [
+    "/assets/_..404_-4SEi0rVn.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-0ArdQI_r.js"
+    "/assets/2023-12-16_web-HnJ4ni07.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-p3LqL2kp.js"
+    "/assets/index-m0blm2GX.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-DUPcaQrz.js"
+    "/assets/index-4Xa76EFB.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-sMc9lIlF.js",
+    "/assets/projects-y_rwKmBK.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "pages/template.md": [
-    "/assets/template-KN5NyuXd.js"
+    "/assets/template-HDE7xtoK.js"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang--kWu1mbb.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-byePTgKs.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-sMc9lIlF.js",
+    "/assets/projects-y_rwKmBK.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-sMc9lIlF.js",
+    "/assets/projects-y_rwKmBK.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-sMc9lIlF.js",
+    "/assets/projects-y_rwKmBK.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/Logo.vue": [
@@ -132,7 +132,7 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-DUPcaQrz.js"
+    "/assets/index-4Xa76EFB.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
