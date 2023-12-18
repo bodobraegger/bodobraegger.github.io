@@ -80,46 +80,46 @@
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
   "pages/404.md": [
-    "/assets/404-SMukGQiT.js"
+    "/assets/404-o6jszMEc.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-5jtLi4D3.js"
+    "/assets/_...404_-wpNiw89k.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-I1UA0Zei.js"
+    "/assets/2023-12-16_web-tU7KWnGM.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-Uc8g90rS.js"
+    "/assets/index-dC_ggbiM.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-3CgJFX8b.js"
+    "/assets/index-Op696RO6.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-IHq_WX6-.js",
+    "/assets/projects-6zLc7p_D.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "pages/template.md": [
-    "/assets/template-NSH3kKQP.js"
+    "/assets/template-xtpJVFpa.js"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-0sHrxdFC.js"
+    "/assets/SubNav.vue_vue_type_script_setup_true_lang-Aooh10S7.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-IHq_WX6-.js",
+    "/assets/projects-6zLc7p_D.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-IHq_WX6-.js",
+    "/assets/projects-6zLc7p_D.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-IHq_WX6-.js",
+    "/assets/projects-6zLc7p_D.js",
     "/assets/projects-V6UfF9W5.css"
   ],
   "src/components/Logo.vue": [
@@ -135,7 +135,7 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-3CgJFX8b.js"
+    "/assets/SubNav.vue_vue_type_script_setup_true_lang-Aooh10S7.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
@@ -144,6 +144,8 @@
   "src/logics/index.ts": [
   ],
   "src/main.ts": [
+  ],
+  "src/styles/fonts.css": [
   ],
   "src/styles/main.css": [
   ],
