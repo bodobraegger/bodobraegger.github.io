@@ -4,8 +4,7 @@
       <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color:inherit">
         CC BY-NC-SA 4.0
       </a> 
-      2023-PRESENT <br class="sm:hidden"> 
-      © Bodo Braegger 
+      2023-PRESENT ©&nbsp;Bodo&nbsp;Braegger 
     </span>
     <div class="flex-auto" />
   </footer>
