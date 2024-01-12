@@ -9,7 +9,7 @@ my personal website. built with:
 ## credits
 
 - [Anthony Fu](https://github.com/antfu/)
-- [Xiaohan Zou](https://github.com/renovamen/)\
+- [Xiaohan Zou](https://github.com/renovamen/)
 
 <br>
 
