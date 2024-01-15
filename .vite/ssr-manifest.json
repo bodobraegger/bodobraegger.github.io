@@ -80,62 +80,66 @@
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
   "pages/404.md": [
-    "/assets/404-0Wn2FFvb.js"
+    "/assets/404-BfJ_9zSW.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-koUTc0AF.js"
+    "/assets/_...404_-wnCsjlqe.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-VETn3HAj.js"
+    "/assets/2023-12-16_web-D1L2rao8.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-brjlO8rP.js"
+    "/assets/index-Rc6p7CKz.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-2rUcjNqH.js"
+    "/assets/index-U-JIE5h1.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-f-jJEJrx.js",
-    "/assets/projects-V6UfF9W5.css"
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "pages/template.md": [
-    "/assets/template-wmHVFPNF.js"
+    "/assets/template-eTbSsWMs.js"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-autMUIbv.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-1XFmcBmE.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-f-jJEJrx.js",
-    "/assets/projects-V6UfF9W5.css"
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-f-jJEJrx.js",
-    "/assets/projects-V6UfF9W5.css"
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-f-jJEJrx.js",
-    "/assets/projects-V6UfF9W5.css"
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue": [
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
+    "/assets/projects-NXAG5YOf.js",
+    "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/NavBar.vue": [
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
   ],
-  "src/components/NavBar.vue?vue&type=style&index=0&scoped=2545a1a0&lang.css": [
+  "src/components/NavBar.vue?vue&type=style&index=0&scoped=c84b39d5&lang.css": [
   ],
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-2rUcjNqH.js"
+    "/assets/index-U-JIE5h1.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
