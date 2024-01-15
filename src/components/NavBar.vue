@@ -23,7 +23,7 @@ console.log(word);
 <template>
   <header class="header z-40">
     <RouterLink
-      class="logo-wrap w-12 h-12 absolute xl:fixed m-5 mt-9.2 select-none outline-none font-mono line-height-0.9em font-size-1em"
+      class="logo-wrap w-12 h-12 absolute xl:fixed m-7 mt-9.2 select-none outline-none font-mono line-height-0.9em font-size-1em"
       to="/"
       focusable="false"
     >
