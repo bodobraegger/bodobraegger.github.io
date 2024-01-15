@@ -58,9 +58,9 @@ html:not(.dark) .shiki span {
 }
 
 .prose {
-  --fg: #222;
-  --fg-deep: #111;
-  --fg-deeper: #000;
+  --fg: #444;
+  --fg-deep: #222;
+  --fg-deeper: #111;
 
   color: var(--fg);
 }
@@ -88,7 +88,7 @@ html:not(.dark) .shiki span {
 html.dark .prose {
   --fg: #bbb;
   --fg-deep: #ddd;
-  --fg-deeper: #fff;
+  --fg-deeper: #eee;
 }
 
 a.item {
@@ -173,7 +173,7 @@ h6:focus .header-anchor {
 }
 
 .table-of-contents-anchor {
-  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base rounded
+  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base bg-op-20 rounded
     text-hex-8887 border border-base shadow md: border-transparent md:
     shadow-none transition duration-400;
 }
