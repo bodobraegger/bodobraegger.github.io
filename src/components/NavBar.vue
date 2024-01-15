@@ -7,16 +7,36 @@ function toTop() {
 }
 
 const { y: scroll } = useWindowScroll()
+
+var word = "bodobraegger";
+var length = word.length;
+for (let i = 0; i < length-1; i++) {
+  // alert(word.charAt(i));
+  word += '<br>'
+  word += word.slice(i + 1, length) + word.slice(0, i + 1);
+}
+
+console.log(word);
+
 </script>
 
 <template>
   <header class="header z-40">
     <RouterLink
-      class="w-12 h-12 absolute xl:fixed m-5 select-none outline-none"
+      class="logo-wrap w-12 h-12 absolute xl:fixed m-5 mt-9.2 select-none outline-none font-mono line-height-0.9em font-size-1em"
       to="/"
       focusable="false"
     >
-      <Logo />
+      <!-- <Logo /> -->
+      bodobraegger
+      <!--
+      <pre>
+    bodo
+ <span class="op-30">gge</span>r
+    a<span class="op-30">egger</span>
+<span class="op-30">aegg</span>e<span class="op-10">r</span>
+    gger
+      </pre> -->
     </RouterLink>
     <button
       title="Scroll to top"
@@ -53,6 +73,10 @@ const { y: scroll } = useWindowScroll()
   margin-bottom: 0;
 }
 
+.logo-wrap.router-link-active {
+  display: none;
+}
+
 .logo {
   position: absolute;
   top: 1.5rem;
@@ -82,6 +106,7 @@ const { y: scroll } = useWindowScroll()
   transition: opacity 0.2s ease;
   opacity: 0.6;
   outline: none;
+  font-family: Courier New, monospace;
   /* border-bottom: 1px solid rgba(125, 125, 125, 0.3); */
 }
 
