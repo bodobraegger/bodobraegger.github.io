@@ -8,36 +8,10 @@ function toTop() {
 
 const { y: scroll } = useWindowScroll()
 
-var word = "bodobraegger";
-var length = word.length;
-for (let i = 0; i < length-1; i++) {
-  // alert(word.charAt(i));
-  word += '<br>'
-  word += word.slice(i + 1, length) + word.slice(0, i + 1);
-}
-
-console.log(word);
-
 </script>
 
 <template>
   <header class="header z-40">
-    <RouterLink
-      class="logo-wrap w-12 h-12 absolute xl:fixed m-7 mt-9.2 select-none outline-none font-mono line-height-0.9em font-size-1em"
-      to="/"
-      focusable="false"
-    >
-      <!-- <Logo /> -->
-      bodobraegger
-      <!--
-      <pre>
-    bodo
- <span class="op-30">gge</span>r
-    a<span class="op-30">egger</span>
-<span class="op-30">aegg</span>e<span class="op-10">r</span>
-    gger
-      </pre> -->
-    </RouterLink>
     <button
       title="Scroll to top"
       fixed right-3 bottom-3 w-10 h-10 hover:op100 rounded-full
@@ -48,7 +22,18 @@ console.log(word);
       <div i-ri-arrow-up-line />
     </button>
     <nav class="nav">
-      <div class="spacer" />
+      <div class="left">
+        <RouterLink
+          class="logo-wrap select-none outline-none font-mono"
+          to="/"
+          focusable="false"
+        >
+          <!-- <Logo /> -->
+          <span class="hidden sm:block">bodobraegger</span>
+            <!-- <span class="sm:hidden">b</span> -->
+        </RouterLink>
+      </div>
+      <!-- <div class="spacer" /> -->
       <div class="right" print:op0>
         <RouterLink to="/" title="Home">
           <span>Home</span>
@@ -91,7 +76,7 @@ console.log(word);
   box-sizing: border-box;
 }
 
-.nav > * {
+.nav > *:not(:first-child) {
   margin: auto;
 }
 
