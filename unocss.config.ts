@@ -12,8 +12,8 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', {'font-family': 'MagicUiPro, Helvetica Neue, Helvetica, sans-serif'}],
-    ['font-mono', {'font-family': 'Courier New, monospace'}],
+    ['font-sans', {'font-family': 'MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif'}],
+    ['font-mono', {'font-family': 'Cascadia,"SF Mono","Fira Code",monospace'}],
     
   ],
   presets: [
@@ -27,12 +27,12 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetUno(),
-    // presetWebFonts({
-    //   fonts: {
-    //     sans: 'Inter:400,600,800',
-    //     mono: 'DM Mono:400,600',
-    //   },
-    // }),
+    presetWebFonts({
+      fonts: {
+        // sans: 'Inter:400,600,800',
+        mono: 'Fira Code:400,600',
+      },
+    }),
   ],
   transformers: [
     transformerDirectives(),

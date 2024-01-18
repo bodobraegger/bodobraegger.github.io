@@ -35,13 +35,13 @@ const { y: scroll } = useWindowScroll()
       </div>
       <!-- <div class="spacer" /> -->
       <div class="right" print:op0>
-        <RouterLink to="/" title="Home">
+        <RouterLink class="font-mono" to="/" title="Home">
           <span>Home</span>
         </RouterLink>
-        <RouterLink to="/projects" title="Projects">
+        <RouterLink class="font-mono" to="/projects" title="Projects">
           <span>Projects</span>
         </RouterLink>
-        <RouterLink to="/notes" title="Blog">
+        <RouterLink class="font-mono" to="/notes" title="Blog">
           <span>Notes</span>
         </RouterLink>
         <a href="https://github.com/bodobraegger" target="_blank" title="GitHub">
@@ -91,7 +91,6 @@ const { y: scroll } = useWindowScroll()
   transition: opacity 0.2s ease;
   opacity: 0.6;
   outline: none;
-  font-family: Courier New, monospace;
   /* border-bottom: 1px solid rgba(125, 125, 125, 0.3); */
 }
 
