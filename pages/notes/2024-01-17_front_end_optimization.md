@@ -26,12 +26,11 @@ Preload reduces page load time by preloading critical resources like CSS, JavaSc
 // Preloading a resource
 <link rel="preload" href="your-resource-here" as="resource-type">
 ```
-The `href` attribute specifies the resource URL, and the `as` attribute specifies the resource type. For example, to preload a CSS file or an image:
+The `href` attribute specifies the resource URL and the `as` attribute specifies the resource type. For example, to preload a CSS file or an image:
 
 ```js
-// Preloading a CSS file
+// Preloading a CSS file and an image
 <link rel="preload" href="styles.css" as="style">
-// Preloading an image
 <link rel="preload" href="image.jpg" as="image">
 ```
 
