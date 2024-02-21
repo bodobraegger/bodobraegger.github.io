@@ -65,16 +65,13 @@ export const createApp = ViteSSG(
       router.beforeEach(() => {
         NProgress.start()
       })
-      router.afterEach((to) => {
+      router.afterEach((to, from) => {
         // reload the page once when navigating to /der-wahre-walter
         // to fix the issue with vue 404 showing
-        if (to.path.includes('/der-wahre-walter')) {
-          if (!sessionStorage.getItem("is_reloaded")) {
-            console.log("der-wahre-walter! reloading once")
+        if (to.redirectedFrom?.path.includes('/walter')){
+            console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
             document.location.reload();
-            sessionStorage.setItem("is_reloaded", "true")
           }
-        }
         NProgress.done()
       })
     }
