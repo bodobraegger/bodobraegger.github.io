@@ -31,7 +31,9 @@ const routes = autoRoutes.map((i) => {
 })
 
 //@ts-ignore
-routes.push({path: '/walter', redirect: '/der-wahre-walter/' })
+routes.push({path: '/walter', 
+  redirect: '/der-wahre-walter/'
+})
 
 
 export const createApp = ViteSSG(
@@ -63,7 +65,16 @@ export const createApp = ViteSSG(
       router.beforeEach(() => {
         NProgress.start()
       })
-      router.afterEach(() => {
+      router.afterEach((to) => {
+        // reload the page once when navigating to /der-wahre-walter
+        // to fix the issue with vue 404 showing
+        if (to.path.includes('/der-wahre-walter')) {
+          if (!sessionStorage.getItem("is_reloaded")) {
+            console.log("der-wahre-walter! reloading once")
+            document.location.reload();
+            sessionStorage.setItem("is_reloaded", "true")
+          }
+        }
         NProgress.done()
       })
     }
