@@ -20,6 +20,7 @@ import { setupRouterScroller } from 'vue-router-better-scroller'
 import FloatingVue from 'floating-vue'
 import App from './App.vue'
 
+
 const routes = autoRoutes.map((i) => {
   return {
     ...i,
@@ -28,6 +29,10 @@ const routes = autoRoutes.map((i) => {
       : `${i.path}.html`,
   }
 })
+
+//@ts-ignore
+routes.push({path: '/walter', redirect: '/der-wahre-walter/' })
+
 
 export const createApp = ViteSSG(
   App,
