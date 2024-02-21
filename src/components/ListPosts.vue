@@ -11,8 +11,8 @@ const props = defineProps<{
 
 const router = useRouter()
 const routes: Post[] = router.getRoutes()
-  .filter(i =>( i.path.startsWith('/posts') || i.path.startsWith('/notes')) && i.meta.frontmatter.date && !i.meta.frontmatter.draft)
-  .filter(i => !i.path.endsWith('.html') && (i.meta.frontmatter.type || 'blog').split('+').includes(props.type))
+  .filter(i =>( i.name?.toString().startsWith('posts-') || i.name?.toString().startsWith('notes-')) && i.meta.frontmatter.date && !i.meta.frontmatter.draft)
+  .filter(i => !i.path.includes('.html') && (i.meta.frontmatter.type || 'blog').split('+').includes(props.type))
   .map(i => ({
     path: i.meta.frontmatter.redirect || i.path,
     title: i.meta.frontmatter.title,
