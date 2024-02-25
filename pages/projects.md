@@ -8,7 +8,7 @@ projects:
   Current Focus:
     - name: Software Engineer @ ETH Zürich
       link: 'https://ethz.ch'
-      desc: 'I work at the <a href="https://descil.ethz.ch/">Decision Science Laboratory</a>, where I maintain the existing lab infrastructure and develop new tools for behavioral research, mainly using Python and .NET. I also containerize the tech stack and migrate it to an in-house Kubernetes cluster.'
+      desc: 'I work at the <a href="https://descil.ethz.ch/">Decision Science Laboratory</a>, where I maintain the existing lab infrastructure and develop new tools for behavioral research, mainly using Python and C#. I also containerize the tech stack and migrate it to an in-house Kubernetes cluster.'
       icon: 'i-carbon-cloud-logging'
 
   Web and TypeScript:
