@@ -36,8 +36,8 @@ projects:
       icon: 'i-carbon-ibm-watsonx-assistant'
 
   Games:
-    - name: 'beings'
-      link: 'https://github.com/bodobraegger/beings'
+    - name: 'slugs'
+      link: 'https://github.com/bodobraegger/slugs'
       desc: 'A game to teach fundamental programmatic thinking to children, used in studies at <a href="https://ethz.ch">ETH Zürich</a>.
       Implemented using <a href="https://phaser.io/">Phaser</a>, set in a semi-procedurally generated world, with mouse and text controls, emulating terminal usage.'
       icon: 'i-carbon-fish-multiple'
