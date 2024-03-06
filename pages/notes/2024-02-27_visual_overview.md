@@ -93,8 +93,8 @@ duration: 15 min
     )
 </script>
 
+The contents of this page will be uploaded shortly. Please check again tomorrow!
+
 ```javascript
 gradient(1).pixelate().out(o0)
 ```
-test
-
