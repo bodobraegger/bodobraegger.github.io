@@ -58,7 +58,7 @@ duration: 15 min
                 const parentEl = preEl.parentElement
                 const codeEl = preEl.firstChild
                 const linkEl = document.createElement('p')
-                linkEl.innerHTML = `<a href="https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}" target="_blank" class="openin"><img src="symbols/external.png" class="external">open in editor</a>`;
+                linkEl.innerHTML = `<a href="https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}" target="_blank" class="openin">open in editor</a>`;
                 preEl.insertAdjacentElement('afterend', linkEl)
                 const placeholder = document.createElement('div');
                 placeholder.style.width = "512px";
@@ -94,7 +94,7 @@ duration: 15 min
 </script>
 
 ```javascript
-gradient(0).out(o0)
+gradient(1).pixelate().out(o0)
 ```
 test
 
