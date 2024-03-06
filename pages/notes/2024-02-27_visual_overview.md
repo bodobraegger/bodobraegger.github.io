@@ -40,8 +40,8 @@ duration: 15 min
             console.log('loaded hydra');
             let hydra, hydraCanvas;
             hydraCanvas = document.createElement("canvas");
-            hydraCanvas.width = 512;
-            hydraCanvas.height = 512;
+            hydraCanvas.width = 650;
+            hydraCanvas.height = 650;
             hydraCanvas.id = "hydraCanvas";
             const placeholders = [];
 
@@ -49,8 +49,8 @@ duration: 15 min
                 canvas: hydraCanvas,
                 detectAudio: false,
                 enableStreamCapture: false,
-                width: 512,
-                height: 512,
+                width: 650,
+                height: 650,
             });
 
             const codeBlocks = document.querySelectorAll('pre')
@@ -59,10 +59,8 @@ duration: 15 min
                 const codeEl = preEl.firstChild
                 const linkEl = document.createElement('p')
                 linkEl.innerHTML = `<a href="https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}" target="_blank" class="openin">open in editor</a>`;
-                preEl.insertAdjacentElement('afterend', linkEl)
+                // preEl.insertAdjacentElement('afterend', linkEl)
                 const placeholder = document.createElement('div');
-                placeholder.style.width = "512px";
-                placeholder.style.height = "512px";
                 placeholder.classList.add("hydracontainer");
                 placeholders.push(placeholder);
                 preEl.insertAdjacentElement('afterend', placeholder)
@@ -93,7 +91,7 @@ duration: 15 min
     )
 </script>
 
-The contents of this page will be uploaded shortly. Please check again tomorrow!
+The contents of this page are currently uploading. Please check again later!
 
 ```javascript
 gradient(1).pixelate().out(o0)
