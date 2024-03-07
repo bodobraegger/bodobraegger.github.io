@@ -147,7 +147,6 @@
   color: #111827;
 }
 .prose pre {
-  color: #e5e7eb;
   overflow-x: auto;
   font-size: 0.875em;
   line-height: 1.7142857;
@@ -159,6 +158,10 @@
   padding-bottom: 0.8571429em;
   padding-left: 1.1428571em;
 }
+.prose pre .dark {
+  color: #e5e7eb;
+}
+
 .prose pre code {
   background-color: transparent;
   border-width: 0;
