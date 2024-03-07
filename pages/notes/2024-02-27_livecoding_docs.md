@@ -64,9 +64,10 @@ duration: 15 min
             const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
             codeBlocks.forEach((preEl) => {
                 // const parentEl = preEl.parentElement
-                preEl.classList.add('grid');
+                preEl.classList += ' grid overflow-x-auto';
                 const codeEl = preEl.firstChild
-                preEl.children[0].classList += " row-start-1 col-start-1 z-1 min-h-618px min-w-618px overflow-x-auto hover:cursor-pointer"
+                codeEl.classList += " row-start-1 col-start-1 z-1 min-h-618px min-w-618px hover:cursor-pointer"
+
                 const placeholder = document.createElement('div');
                 placeholder.classList += "hydracontainer row-start-1 col-start-1 z-0";
                 placeholders.push(placeholder);
@@ -80,7 +81,7 @@ duration: 15 min
                 preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
                 preEl.onfocus = () => {
-                    console.log('focusing')
+                    // console.log('focusing')
                     hush();
                     solid(0,0,0,0).out(o0)
                     solid(0,0,0,0).out(o1)
@@ -89,26 +90,30 @@ duration: 15 min
                     render(o0);
                     setTimeout(()=>{
                         eval(codeEl.textContent);
-                        console.log('evaluated, rendering, and waiting for 60ms');
+                        // console.log('evaluated, rendering, and waiting for 60ms');
                     }, 60);
                     placeholder.appendChild(hydraCanvas);
                     // make text semi transparent
-                    preEl.classList.add('op-50');
+                    codeEl.classList.add('op-50');
                     // add black background
-                    preEl.children[1].classList.add('bg-black');
+                    placeholder.classList.add('bg-black!');
                 }
-                preEl.onFocusOut = () => {
+                preEl.onfocusout = () => {
                     // remove black background
-                    preEl.children[1].classList.remove('bg-black');
-                    preEl.classList.remove('op-50');
+                    codeEl.classList.remove('op-50');
+                    placeholder.classList.remove('bg-black!');
                 }
 
                 var observer = new IntersectionObserver(function (entries) {
                 if (entries[0].isIntersecting === true) {
+                    // console.log('intersecting');
                     preEl.onfocus();
+                } else {
+                    // console.log('not intersecting');
+                    preEl.onfocusout();
                 }
-                }, { threshold: [0.8] });
-                    observer.observe(placeholder);
+                }, { threshold: [1], rootMargin: "0% 100% 0% 100%"});
+                observer.observe(preEl);
             })
             window.onmessage = e => {
                 console.log(e)
@@ -222,13 +227,13 @@ The rest of this page will be filled with patterns I created for performances, i
 ```javascript
 speed=1
 var A=()=>height/width
-shape(4,[.1,.1,.2,.01,0,0,0,0,0,0,0,0].fast(8),0)
+shape(4,[.1,.1,.2,.01,0,0,0,0,0,0].fast(8),0)
 .scale(1,A)
-.scrollX(0,()=>Math.sin(time/16)*.01)
+.scroll(0,()=> { let t=Math.tan(time/16); return t < 0.5 ? t*0.01 : (1-t)*-.01} )
 .diff(o0)
-.modulate(gradient().brightness(-.5).pixelate([width,width,width,2,2],[2,height,height/160,2]),[-.0125,-.075].ease('easeInQuint').fast(2.25))
+.modulate(gradient().brightness(-.5).pixelate([width,width,width,2,2],[2,height,height/160,2]),[-.0125,-.075].ease('easeInQuint').fast(1.25))
 .scale(.98)
-.mask(shape([4,4,4,99].fast(.25).smooth(0.2), 0.9))
+.mask(shape([4,4,4,99].fast(.125).smooth(0.2), 0.9))
 .out(o0)
 
 solid().layer(o0).out(o1)
