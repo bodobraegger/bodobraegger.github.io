@@ -177,7 +177,7 @@ For an installation at Rote Fabrik, in April 2022, I collected a number of video
 
 As a quick demonstration, here is an extracted video feed of one of these insecure cameras, which was then processed an manipulated in real time. Whenever you reload this page, the newest image of the video feed will appear below. There is a small timestamp on the top left of the image to confirm this. And in general, if you are looking at this from a region with a time similar to the Central European Standard Time (UTC+1), the lighting should match your time of day.
 
-![Video feed: Airport Stuttgart](http://94.124.210.59:8083/jpg/1/image.jpg)
+![Video feed: Airport Stuttgart](https://wsrv.nl/?url=http://94.124.210.59:8083/jpg/1/image.jpg)
 
 Below is a simplified approximation of what such a visualization might look. In practice, this heavily depends on the quality of the video feed, and the power of the computer running the visualization.
 
