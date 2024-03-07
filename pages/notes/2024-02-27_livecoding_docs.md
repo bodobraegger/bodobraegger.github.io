@@ -274,7 +274,7 @@ shape(99, 0.1,[0.4,0.3,0.5,0.7])
 speed = 0.5
 osc().modulate(noise(1.5)).color(.5,.5,1).mult(osc().modulate(noise(2.5)).rotate(Math.PI*.5))
   .modulate(src(o0),[0,.5].smooth()).blend(o0).modulate(src(o0,-.1))
-  .mask(shape([4,4.5].smooth(),.8)).rotate(0,-.01)
+  .mask(shape([4,4.1].smooth(),.8)).rotate(0,-.001)
   .add(osc(10,.1,2.5).mask(shape(99,.1,.3).scale(1,1,width/height)).modulate(noise(3.5)),[0,.5,.8].smooth())
   .out()
 ```
