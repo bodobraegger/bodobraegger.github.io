@@ -66,7 +66,7 @@ duration: 15 min
                 // const parentEl = preEl.parentElement
                 preEl.classList.add('grid');
                 const codeEl = preEl.firstChild
-                preEl.children[0].classList += " row-start-1 col-start-1 z-1 min-h-xl"
+                preEl.children[0].classList += " row-start-1 col-start-1 z-1 min-h-618px min-w-618px overflow-x-auto hover:cursor-pointer"
                 const placeholder = document.createElement('div');
                 placeholder.classList += "hydracontainer row-start-1 col-start-1 z-0";
                 placeholders.push(placeholder);
