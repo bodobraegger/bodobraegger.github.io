@@ -1,5 +1,5 @@
 ---
-title: Visual Overview
+title: Livecoding Documentation
 place: Zürich, Switzerland
 date: 2024-02-27T16:00:00.000+01:00
 lang: en
