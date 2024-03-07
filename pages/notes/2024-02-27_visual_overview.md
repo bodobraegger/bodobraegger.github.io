@@ -168,8 +168,6 @@ let img_url = 'http://94.124.210.59:8083/jpg/1/image.jpg'
 // run through a reverse proxy to bypass cors errors
 img.src = `https://wsrv.nl/?url=${img_url}`;
 
-loadScript("https://hyper-hydra.glitch.me/hydra-arrays.js")
-
 img.onload = function() {
   // for array mods
   loadScript("https://hyper-hydra.glitch.me/hydra-arrays.js")
