@@ -76,6 +76,15 @@ html:not(.dark) .shiki span {
   border-bottom: 1px solid var(--fg);
 }
 
+.prose a.artwork-link {
+  /* dashed border all around */
+  border: 1px dashed var(--fg);
+}
+.prose a.artwork-link:hover {
+  border: 1px dashed var(--fg-deep);
+}
+
+
 .prose a code {
   color: inherit;
 }

@@ -44,7 +44,7 @@ const { y: scroll } = useWindowScroll()
         <RouterLink class="font-mono" to="/notes" title="Blog">
           <span>Notes</span>
         </RouterLink>
-        <a href="https://github.com/bodobraegger" target="_blank" title="GitHub">
+        <a class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
           <div i-uil-github-alt />
         </a>
         <ToggleTheme />
@@ -74,6 +74,9 @@ const { y: scroll } = useWindowScroll()
   display: grid;
   grid-template-columns: auto max-content;
   box-sizing: border-box;
+  --fg: rgba(125, 125, 125, 0.4);
+  --fg-deep: rgba(125, 125, 125, 0.7);
+  --fg-deeper: rgba(125, 125, 125, 1);
 }
 
 .nav > *:not(:first-child) {
@@ -91,7 +94,10 @@ const { y: scroll } = useWindowScroll()
   transition: opacity 0.2s ease;
   opacity: 0.6;
   outline: none;
-  /* border-bottom: 1px solid rgba(125, 125, 125, 0.3); */
+}
+
+.nav a:not(.select-none) {
+  border: 1px dashed var(--fg);
 }
 
 .nav a:hover {
@@ -101,8 +107,9 @@ const { y: scroll } = useWindowScroll()
 
 .nav a.router-link-active {
   opacity: 1;
-  text-decoration: wavy underline;
-  text-decoration-skip-ink: none;
+  /* text-decoration: wavy underline; */
+  /* text-decoration-skip-ink: none; */
+  border: 1px solid var(--fg-deep);
 }
 
 .nav .right {
