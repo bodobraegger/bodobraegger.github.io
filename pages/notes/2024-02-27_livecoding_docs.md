@@ -43,7 +43,7 @@ duration: 15 min
     
     useScriptTag('https://unpkg.com/hydra-synth',
         () => {
-            console.log('loaded hydra');
+            console.log('hydra-synth loaded');
             let hydra, hydraCanvas;
             hydraCanvas = document.createElement("canvas");
             let width = 650-16*2;
@@ -66,9 +66,9 @@ duration: 15 min
                 // const parentEl = preEl.parentElement
                 preEl.classList.add('grid');
                 const codeEl = preEl.firstChild
-                preEl.children[0].classList += " row-start-1 col-start-1 z-1 op-50"
+                preEl.children[0].classList += " row-start-1 col-start-1 z-1 min-h-xl"
                 const placeholder = document.createElement('div');
-                placeholder.classList += "hydracontainer row-start-1 col-start-1 bg-black z-0";
+                placeholder.classList += "hydracontainer row-start-1 col-start-1 z-0";
                 placeholders.push(placeholder);
                 preEl.insertAdjacentElement('beforeend', placeholder)
                 
@@ -76,6 +76,7 @@ duration: 15 min
                 linkEl.href = `https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}`
                 linkEl.target = "_blank"
                 linkEl.textContent = "open in hydra"
+                linkEl.classList += "artwork-link"
                 preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
                 var observer = new IntersectionObserver(function (entries) {
@@ -87,11 +88,21 @@ duration: 15 min
                     solid(0,0,0,0).out(o3)
                     render(o0);
                     setTimeout(()=>{
-                    eval(codeEl.textContent)
+                        eval(codeEl.textContent);
+                        console.log('evaluated, rendering, and waiting for 60ms');
                     }, 60);
                     placeholder.appendChild(hydraCanvas);
+                    // make text semi transparent
+                    preEl.classList.add('op-50');
+                    // add black background
+                    preEl.children[1].classList.add('bg-black');
                 }
-                }, { threshold: [0.5] });
+                else {
+                    // remove black background
+                    preEl.children[1].classList.remove('bg-black');
+                    preEl.classList.remove('op-50');
+                }
+                }, { threshold: [1] });
                     observer.observe(placeholder);
             })
             window.onmessage = e => {
@@ -105,7 +116,7 @@ duration: 15 min
     // )
 </script>
 
-Here are a few code examples of visual programs that were created in different live contexts. The code is written in a framework called hydra, which is a live coding environment for visuals. It mimics analogue video synthesis modules, which can be freely patched together.
+Here are code examples of visual programs that were created in different contexts. They are written in JavaScript, with a framework called hydra. It mimics analogue video synthesis modules, which can be freely patched together.
 
 The example code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the hydra environment. For each snippet, there is an outgoing link with the containing snippet in the the official hydra editor. You can follow these links to change the code and the parameters, and see how the generated images change.
 
@@ -201,4 +212,59 @@ When writing this documentation, the word-play "my play is my work" came to mind
 
 It is not trivial to document this in a static, written form. Even with the help of these visualization examples, the actual experience of live coding and reactivity is not captured. This is a limitation of the medium, and it is a challenge to find ways to communicate the experience of live coding to a wider audience. I will try to periodically update this page with new examples and ideas, and references to other resources. 
 
-For now, I will leave you with a link to the [hydra editor](https://hydra.ojack.xyz/), where you can explore a gallery of examples.
+The rest of this page will be filled with patterns I created for performances, installations and experiments. Replicating the live video feed manipulation is not feasible, but a lot of patterns work in a standalone context. 
+
+```javascript
+speed=1
+var A=()=>height/width
+shape(4,[.1,.1,.2,.01,0,0,0,0,0,0,0,0].fast(8),0)
+.scale(1,A)
+.scrollX(0,()=>Math.sin(time/16)*.01)
+.diff(o0)
+.modulate(gradient().brightness(-.5).pixelate([width,width,width,2,2],[2,height,height/160,2]),[-.0125,-.075].ease('easeInQuint').fast(2.25))
+.scale(.98)
+.mask(shape([4,4,4,99].fast(.25).smooth(0.2), 0.9))
+.out(o0)
+
+solid().layer(o0).out(o1)
+render(o1)
+
+```
+
+```javascript
+osc(10,0,3)
+  .layer(osc(20,0,4)
+    .mask(shape(4))
+    .modulateScale(voronoi(3)))
+  .mult(osc(40,0,4)
+    .mask(shape(5))
+    .modulateScale(voronoi(1.5)))
+  .blend(osc(8,0,4)
+    .mask(shape(6))
+    .modulateScale(voronoi(0.75)))
+  .modulatePixelate(gradient())
+  .out()
+```
+
+```javascript
+speed = 3
+shape(99, 0.1,[0.4,0.3,0.5,0.7])
+.scale([1,1.3,1.5])
+.modulateRepeat(shape(99, 0.1,[0.4,0.3,0.5,0.7]), [3,6,9,12,15,18,21,24,27], [25, 3, 5, 10], [0.7, 3, 1, 12, 0.01, 5, 7, 0.06, 0.4],[0,5, 2, 3,2,3,1,2,3,1,2,6,7,8])
+.mask(shape(2, 0.1,[0.4,0.3,0.5,0.7]))
+.colorama(-0.004)
+.invert([0,1,0,0,0,0,0,0,0,0,0,0,0,0,0])
+//.invert()
+.modulate(src(o0),[0.1, 0.05,0.04,0.2,0,0,0,1,2,0.5])
+.pixelate([100,30,60,90,200],[200,90,60,30,100])
+.out()
+```
+
+```javascript
+speed = 0.5
+osc().modulate(noise(1.5)).color(.5,.5,1).mult(osc().modulate(noise(2.5)).rotate(Math.PI*.5))
+  .modulate(src(o0),[0,.5].smooth()).blend(o0).modulate(src(o0,-.1))
+  .mask(shape([4,4.5].smooth(),.8)).rotate(0,-.01)
+  .add(osc(10,.1,2.5).mask(shape(99,.1,.3).scale(1,1,width/height)).modulate(noise(3.5)),[0,.5,.8].smooth())
+  .out()
+```
