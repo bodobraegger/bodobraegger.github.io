@@ -66,14 +66,18 @@ duration: 15 min
                 // const parentEl = preEl.parentElement
                 preEl.classList.add('grid');
                 const codeEl = preEl.firstChild
-                const linkEl = document.createElement('p')
-                linkEl.outerHTML = `<a href="https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}" target="_blank" class="openin">open in editor</a>`;
-                preEl.insertAdjacentElement('afterend', linkEl)
                 preEl.children[0].classList += " row-start-1 col-start-1 z-1 op-50"
                 const placeholder = document.createElement('div');
                 placeholder.classList += "hydracontainer row-start-1 col-start-1 bg-black z-0";
                 placeholders.push(placeholder);
                 preEl.insertAdjacentElement('beforeend', placeholder)
+                
+                const linkEl = document.createElement('a')
+                linkEl.href = `https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}`
+                linkEl.target = "_blank"
+                linkEl.textContent = "open in hydra"
+                preEl.children[1].insertAdjacentElement('afterend', linkEl)
+
                 var observer = new IntersectionObserver(function (entries) {
                 if (entries[0].isIntersecting === true) {
                     hush();
@@ -165,9 +169,10 @@ As a quick demonstration, here is an extracted video feed of one of these insecu
 
 ![Video feed: Airport Stuttgart](http://94.124.210.59:8083/jpg/1/image.jpg)
 
-Below is a simplified approximation of what such a visualization might look. In practise, this heavily depends on the quality of the video feed, and the power of the computer running the visualization.
+Below is a simplified approximation of what such a visualization might look. In practice, this heavily depends on the quality of the video feed, and the power of the computer running the visualization.
 
 ```javascript
+loadScript("https://hyper-hydra.glitch.me/hydra-arrays.js")
 var img = document.createElement('img');
 img.crossOrigin = "anonymous";
 let img_url = 'http://94.124.210.59:8083/jpg/1/image.jpg'
@@ -193,3 +198,8 @@ img.onload = function() {
     .out();
 };
 ```
+When writing this documentation, the word-play "my play is my work" came to mind. This is a phrase that I have heard in the context of live coding, and it is a good summary of the practice. 
+
+It is not trivial to document this in a static, written form. Even with the help of these visualization examples, the actual experience of live coding and reactivity is not captured. This is a limitation of the medium, and it is a challenge to find ways to communicate the experience of live coding to a wider audience. I will try to periodically update this page with new examples and ideas, and references to other resources. 
+
+For now, I will leave you with a link to the [hydra editor](https://hydra.ojack.xyz/), where you can explore a gallery of examples.
