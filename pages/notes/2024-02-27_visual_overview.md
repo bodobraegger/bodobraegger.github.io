@@ -34,6 +34,12 @@ duration: 15 min
     //             });
     //         }
     // });
+
+    useScriptTag("https://hyper-hydra.glitch.me/hydra-arrays.js", () => {
+        console.log('hydra-arrays loaded');
+    }, {
+        async: true,
+    });
     
     useScriptTag('https://unpkg.com/hydra-synth',
         () => {
@@ -63,7 +69,7 @@ duration: 15 min
                 const linkEl = document.createElement('p')
                 linkEl.outerHTML = `<a href="https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}" target="_blank" class="openin">open in editor</a>`;
                 preEl.insertAdjacentElement('afterend', linkEl)
-                preEl.children[0].classList += " row-start-1 col-start-1 z-1"
+                preEl.children[0].classList += " row-start-1 col-start-1 z-1 op-50"
                 const placeholder = document.createElement('div');
                 placeholder.classList += "hydracontainer row-start-1 col-start-1 bg-black z-0";
                 placeholders.push(placeholder);
@@ -100,7 +106,7 @@ Here are a few code examples of visual programs that were created in different c
 The code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the Hydra environment. To verify this, and play around with these examples yourself, there is a link for to a live editor for each example.
 
 ```javascript
-gradient(1).pixelate([width, width, width, 20], [height, height, height, 20]).out(o0)
+gradient(1).pixelate([width, 20], [height, 20]).out(o0)
 ```
 
 The code below was created on the 10. February 2022, a snippet of an improvisation sesion accompanying a live music performance in the düker space in Zürich.
@@ -159,7 +165,7 @@ As a quick demonstration, here is an extracted video feed of one of these insecu
 
 ![Video feed: Airport Stuttgart](http://94.124.210.59:8083/jpg/1/image.jpg)
 
-Below is a simplified approximation of what the final visualization might look 
+Below is a simplified approximation of what such a visualization might look. In practise, this heavily depends on the quality of the video feed, and the power of the computer running the visualization.
 
 ```javascript
 var img = document.createElement('img');
@@ -169,21 +175,21 @@ let img_url = 'http://94.124.210.59:8083/jpg/1/image.jpg'
 img.src = `https://wsrv.nl/?url=${img_url}`;
 
 img.onload = function() {
-  // for array mods
-  loadScript("https://hyper-hydra.glitch.me/hydra-arrays.js")
   // use dynamic: true for videos
   s0.init({ src: img, dynamic: true });
 
+  speed = 0.5
+
   src(s0)
-    .scrollX(0, 0.01)
     .color(0.5,0.53,Array.random(3, 1, 1.2).smooth(0.5))
-    .modulate(o1,[0, 0, 0, 0.2, 0, -0.1].zfill(64, 0).smooth(0.3).fast(0.25))
+    .modulate(o1,[0, 0, 0, 0.2, 0, -0.1].zfill(64, 0)
+        .smooth(0.3).fast(0.25))
     .pixelate(
-    [20, 100].zfill(32, width).fast(0.25).smooth(0.8),
-    [20, 200, 400].zfill(32, height).smooth(0.1)
+    [20, 100].zfill(8, width).fast(0.25).smooth(0.8),
+    [20, 200, 400].zfill(8, height).smooth(0.1)
     )
     .modulate(noise(2), .01)
+    // .kaleid(Array.random(2, 1, 1).zfill(8, 0).smooth(0.2).fast(0.25))
     .out();
-
 };
 ```
