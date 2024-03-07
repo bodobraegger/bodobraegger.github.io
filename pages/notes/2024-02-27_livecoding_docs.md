@@ -79,8 +79,8 @@ duration: 15 min
                 linkEl.classList += "artwork-link"
                 preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
-                var observer = new IntersectionObserver(function (entries) {
-                if (entries[0].isIntersecting === true) {
+                preEl.onfocus = () => {
+                    console.log('focusing')
                     hush();
                     solid(0,0,0,0).out(o0)
                     solid(0,0,0,0).out(o1)
@@ -97,10 +97,15 @@ duration: 15 min
                     // add black background
                     preEl.children[1].classList.add('bg-black');
                 }
-                else {
+                preEl.onFocusOut = () => {
                     // remove black background
                     preEl.children[1].classList.remove('bg-black');
                     preEl.classList.remove('op-50');
+                }
+
+                var observer = new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting === true) {
+                    preEl.onfocus();
                 }
                 }, { threshold: [0.8] });
                     observer.observe(placeholder);
@@ -116,7 +121,7 @@ duration: 15 min
     // )
 </script>
 
-Here are code examples of visual programs that were created in different contexts. They are written in JavaScript, with a framework called hydra. It mimics analogue video synthesis modules, which can be freely patched together.
+Here are code examples of visual programs that were created in different contexts. They are written in JavaScript, with a framework called hydra. It mimics analogue video synthesis modules, which can be freely patched together. They should automatically run when you scroll past them, but if they don't, you can click on it to (re-)start it.
 
 The example code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the hydra environment. For each snippet, there is an outgoing link with the containing snippet in the the official hydra editor. You can follow these links to change the code and the parameters, and see how the generated images change.
 
