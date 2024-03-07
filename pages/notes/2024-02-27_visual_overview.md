@@ -105,9 +105,9 @@ duration: 15 min
     // )
 </script>
 
-Here are a few code examples of visual programs that were created in different contexts. The code is written in a language called Hydra, which is a live coding environment for visuals. 
+Here are a few code examples of visual programs that were created in different contexts. The code is written in a framework called hydra, which is a live coding environment for visuals. It mimics analogue video synthesis modules, which can be freely patched together.
 
-The code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the Hydra environment. To verify this, and play around with these examples yourself, there is a link for to a live editor for each example.
+The code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the hydra environment. For each snippet, there is an outgoing link with the containing snippet in the the official hydra editor. You can follow these links to change the code and the parameters, and see how the generated images change.
 
 ```javascript
 gradient(1).pixelate([width, 20], [height, 20]).out(o0)
