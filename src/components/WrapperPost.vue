@@ -26,6 +26,10 @@ onMounted(() => {
         return true
       }
     }
+    if (location.pathname.length > 1) {
+      document.querySelectorAll('.nav a').forEach((el) => el.classList.remove('router-link-active'))
+      document.getElementById(location.pathname.split('/')[1])?.classList.add('router-link-active')
+    }
   }
 
   const handleAnchors = (
