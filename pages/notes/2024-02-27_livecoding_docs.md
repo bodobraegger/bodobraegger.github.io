@@ -102,7 +102,7 @@ duration: 15 min
                     preEl.children[1].classList.remove('bg-black');
                     preEl.classList.remove('op-50');
                 }
-                }, { threshold: [1] });
+                }, { threshold: [0.8] });
                     observer.observe(placeholder);
             })
             window.onmessage = e => {
