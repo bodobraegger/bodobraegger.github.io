@@ -105,15 +105,15 @@ duration: 15 min
     // )
 </script>
 
-Here are a few code examples of visual programs that were created in different contexts. The code is written in a framework called hydra, which is a live coding environment for visuals. It mimics analogue video synthesis modules, which can be freely patched together.
+Here are a few code examples of visual programs that were created in different live contexts. The code is written in a framework called hydra, which is a live coding environment for visuals. It mimics analogue video synthesis modules, which can be freely patched together.
 
-The code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the hydra environment. For each snippet, there is an outgoing link with the containing snippet in the the official hydra editor. You can follow these links to change the code and the parameters, and see how the generated images change.
+The example code below creates a gradient and periodically pixelates it. If it does not display, your browser might not support the hydra environment. For each snippet, there is an outgoing link with the containing snippet in the the official hydra editor. You can follow these links to change the code and the parameters, and see how the generated images change.
 
 ```javascript
 gradient(1).pixelate([width, 20], [height, 20]).out(o0)
 ```
 
-The code below was created on the 10. February 2022, a snippet of an improvisation sesion accompanying a live music performance in the düker space in Zürich.
+The snippet below was created on the 10. February 2022, a snippet of an improvisation sesion accompanying a live music performance in the düker space in Zürich.
 
 ```javascript
 osc()
@@ -164,8 +164,7 @@ For an installation at Rote Fabrik, in April 2022, I collected a number of video
     // http://145.40.219.164/ - himmel
 
 
-
-As a quick demonstration, here is an extracted video feed of one of these insecure cameras, which was then processed an manipulated in real time. Whenever you reload this page, the newest image of the video feed will appear below.
+As a quick demonstration, here is an extracted video feed of one of these insecure cameras, which was then processed an manipulated in real time. Whenever you reload this page, the newest image of the video feed will appear below. There is a small timestamp on the top left of the image to confirm this. And in general, if you are looking at this from a region with a time similar to the Central European Standard Time (UTC+1), the lighting should match your time of day.
 
 ![Video feed: Airport Stuttgart](http://94.124.210.59:8083/jpg/1/image.jpg)
 
