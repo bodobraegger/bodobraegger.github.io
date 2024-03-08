@@ -101,16 +101,16 @@ const { y: scroll } = useWindowScroll()
 }
 
 .nav a:hover {
-  opacity: 1;
+  opacity: 0.8;
   border-style: solid !important;
-  text-decoration-color: inherit;
+  color: inherit;
 }
 
 .nav a.router-link-active, .nav a.router-link-exact-active {
   opacity: 1;
   /* text-decoration: wavy underline; */
   /* text-decoration-skip-ink: none; */
-  border: 1px dashed var(--fg-deeper);
+  border: 1px solid var(--fg-deeper);
 }
 
 .nav .right {
