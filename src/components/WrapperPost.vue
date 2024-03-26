@@ -223,7 +223,7 @@ if(frontmatter.hydra) {
         {{ frontmatter.place }}
       </a>
       <span v-else font-bold>
-        {{ frontmatter.place }}
+        <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
     </p>
     <p
