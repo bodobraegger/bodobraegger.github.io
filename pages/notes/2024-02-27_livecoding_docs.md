@@ -4,7 +4,6 @@ place: Zürich, Switzerland
 date: 2024-02-27T16:00:00.000+01:00
 lang: en
 type: note+blog
-duration: 15 min
 plum: true
 ---
 
