@@ -17,21 +17,23 @@
   ],
   "../../../../../__uno.css": [
   ],
-  "2023-12-16_web-GngZdGli.js": [
+  "2023-12-16_web-wINBoV7k.js": [
   ],
-  "2024-01-17_front_end_optimization-NjxZPpzT.js": [
+  "2024-01-17_front_end_optimization-6nrAITCD.js": [
   ],
-  "2024-02-27_livecoding_docs-DKfx7sKi.js": [
+  "2024-02-27_livecoding_docs-hsp1xpq7.js": [
   ],
-  "404-AWjAHrdi.js": [
+  "2024-03-28_transdisciplinarity_arts-sp-xtZXu.js": [
   ],
-  "_...404_-FAU0CTGX.js": [
+  "404-MZxGFlhk.js": [
+  ],
+  "_...404_-AagdiENR.js": [
   ],
   "assets/app-!~{001}~.js-unocss-hash.css": [
   ],
-  "index-0ksbVflB.js": [
+  "index-4KY9VgPF.js": [
   ],
-  "index-qJOa6JiT.js": [
+  "index-_yUT14ie.js": [
   ],
   "index.html": [
   ],
@@ -94,36 +96,39 @@
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
   "pages/404.md": [
-    "/assets/404-AWjAHrdi.js"
+    "/assets/404-MZxGFlhk.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-FAU0CTGX.js"
+    "/assets/_...404_-AagdiENR.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-GngZdGli.js"
+    "/assets/2023-12-16_web-wINBoV7k.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-NjxZPpzT.js"
+    "/assets/2024-01-17_front_end_optimization-6nrAITCD.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-DKfx7sKi.js"
+    "/assets/2024-02-27_livecoding_docs-hsp1xpq7.js"
+  ],
+  "pages/notes/2024-03-28_transdisciplinarity_arts.md": [
+    "/assets/2024-03-28_transdisciplinarity_arts-sp-xtZXu.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-qJOa6JiT.js"
+    "/assets/index-_yUT14ie.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-0ksbVflB.js"
+    "/assets/index-4KY9VgPF.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "pages/template.md": [
-    "/assets/template-SWgN3RqF.js"
+    "/assets/template-ywLmbUAb.js"
   ],
-  "projects-2atIcKIf.js": [
+  "projects-6WKaRI5Y.js": [
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
@@ -131,26 +136,26 @@
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-sKEWl4we.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-ISKEtfBx.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
-    "/assets/projects-2atIcKIf.js",
+    "/assets/projects-6WKaRI5Y.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/NavBar.vue": [
@@ -162,7 +167,7 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-0ksbVflB.js"
+    "/assets/index-4KY9VgPF.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
@@ -180,6 +185,6 @@
   ],
   "src/styles/prose.css": [
   ],
-  "template-SWgN3RqF.js": [
+  "template-ywLmbUAb.js": [
   ]
 }
