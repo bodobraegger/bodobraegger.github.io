@@ -12,7 +12,7 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', {'font-family': 'MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif'}],
+    ['font-sans', {'font-family': 'Helvetica,"Helvetica Neue",Arial,MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif'}],
     ['font-mono', {'font-family': '"Fira Code","Cascadia","SF Mono",monospace'}],
     
   ],
