@@ -13,7 +13,7 @@ export default defineConfig({
       '--enter-stage': n,
     })],
     ['font-sans', {'font-family': 'MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif'}],
-    ['font-mono', {'font-family': 'Cascadia,"SF Mono","Fira Code",monospace'}],
+    ['font-mono', {'font-family': '"Fira Code","Cascadia","SF Mono",monospace'}],
     
   ],
   presets: [
