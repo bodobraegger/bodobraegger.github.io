@@ -17,23 +17,23 @@
   ],
   "../../../../../__uno.css": [
   ],
-  "2023-12-16_web-wINBoV7k.js": [
+  "2023-12-16_web-3bsgQpDU.js": [
   ],
-  "2024-01-17_front_end_optimization-6nrAITCD.js": [
+  "2024-01-17_front_end_optimization-CPZrQ5ls.js": [
   ],
-  "2024-02-27_livecoding_docs-hsp1xpq7.js": [
+  "2024-02-27_livecoding_docs--Krkt0cK.js": [
   ],
-  "2024-03-28_transdisciplinarity_arts-sp-xtZXu.js": [
+  "2024-03-28_transdisciplinarity_arts-gJ_r2b4U.js": [
   ],
-  "404-MZxGFlhk.js": [
+  "404-mXHVJDNh.js": [
   ],
-  "_...404_-AagdiENR.js": [
+  "_...404_-kXkNraj4.js": [
   ],
   "assets/app-!~{001}~.js-unocss-hash.css": [
   ],
-  "index-4KY9VgPF.js": [
+  "index-RrZJjDlf.js": [
   ],
-  "index-_yUT14ie.js": [
+  "index-YLR8z9hW.js": [
   ],
   "index.html": [
   ],
@@ -96,39 +96,39 @@
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.3.11/node_modules/vue-router/dist/vue-router.mjs": [
   ],
   "pages/404.md": [
-    "/assets/404-MZxGFlhk.js"
+    "/assets/404-mXHVJDNh.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-AagdiENR.js"
+    "/assets/_...404_-kXkNraj4.js"
   ],
   "pages/index.md": [
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-wINBoV7k.js"
+    "/assets/2023-12-16_web-3bsgQpDU.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-6nrAITCD.js"
+    "/assets/2024-01-17_front_end_optimization-CPZrQ5ls.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-hsp1xpq7.js"
+    "/assets/2024-02-27_livecoding_docs--Krkt0cK.js"
   ],
   "pages/notes/2024-03-28_transdisciplinarity_arts.md": [
-    "/assets/2024-03-28_transdisciplinarity_arts-sp-xtZXu.js"
+    "/assets/2024-03-28_transdisciplinarity_arts-gJ_r2b4U.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-_yUT14ie.js"
+    "/assets/index-RrZJjDlf.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-4KY9VgPF.js"
+    "/assets/index-YLR8z9hW.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "pages/template.md": [
-    "/assets/template-ywLmbUAb.js"
+    "/assets/template-dlxVrOEL.js"
   ],
-  "projects-6WKaRI5Y.js": [
+  "projects-nunSlu4w.js": [
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
@@ -136,26 +136,26 @@
   "src/components/Footer.vue": [
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-ISKEtfBx.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-uD1viMHK.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
-    "/assets/projects-6WKaRI5Y.js",
+    "/assets/projects-nunSlu4w.js",
     "/assets/projects-UyV6tuA7.css"
   ],
   "src/components/NavBar.vue": [
@@ -167,7 +167,7 @@
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-4KY9VgPF.js"
+    "/assets/index-YLR8z9hW.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
   ],
@@ -177,14 +177,12 @@
   ],
   "src/main.ts": [
   ],
-  "src/styles/fonts.css": [
-  ],
   "src/styles/main.css": [
   ],
   "src/styles/markdown.css": [
   ],
   "src/styles/prose.css": [
   ],
-  "template-ywLmbUAb.js": [
+  "template-dlxVrOEL.js": [
   ]
 }
