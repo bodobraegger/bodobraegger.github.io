@@ -12,8 +12,8 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', {'font-family': 'Helvetica,"Helvetica Neue",Arial,MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif'}],
-    ['font-mono', {'font-family': '"Fira Code","Cascadia","SF Mono",monospace'}],
+    ['font-sans', {'font-family': '"Fragment Mono",Helvetica,"Helvetica Neue",Arial,MagicUIPro,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif'}],
+    ['font-mono', {'font-family': '"Fragment Mono","Fira Code","Cascadia","SF Mono",monospace'}],
     
   ],
   presets: [
@@ -31,6 +31,7 @@ export default defineConfig({
       fonts: {
         // sans: 'Inter:400,600,800',
         mono: 'Fira Code:400,600',
+        sans: 'Fragment Mono:400',
       },
     }),
   ],
