@@ -1,12 +1,13 @@
 ---
-title: Talking Points
+title: Assessment Dialogue, Interdisciplinary Studies
 place: Toni-Areal, Zürich, Switzerland
-date: 2024-03-28T11:20:00.000+01:00
+date: 2024-03-27T11:20:00.000+01:00
 lang: en
 type: note+blog
 hydra: false
 ---
 
+This file holds talking points for the dialogue at ZHDK assessing a potential fit for the Master degree program [*interdisciplinary studies in the arts*](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies). Please consider it a rough sketch, as it was planned for a later date.
 
 ## Current Inspirations
 
