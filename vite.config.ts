@@ -154,7 +154,7 @@ export default defineConfig({
 
     SVG({
       svgo: false,
-      defaultImport: 'url',
+      defaultImport: 'component',
     }),
 
     {
