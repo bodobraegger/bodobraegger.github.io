@@ -59,10 +59,6 @@ html:not(.dark) .shiki span {
 }
 
 .prose {
-  --fg: #444;
-  --fg-deep: #222;
-  --fg-deeper: #111;
-
   color: var(--fg);
 }
 
