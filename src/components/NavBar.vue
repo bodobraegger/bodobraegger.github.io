@@ -7,6 +7,7 @@ function toTop() {
 }
 
 const { y: scroll } = useWindowScroll()
+import WebringLogo from '/src/assets/webring.icon.white.svg';
 
 </script>
 
@@ -44,6 +45,10 @@ const { y: scroll } = useWindowScroll()
         <RouterLink id="notes" class="font-mono" to="/notes" title="Blog">
           <span>Notes</span>
         </RouterLink>
+        <a href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener" 
+        class="select-none b-none! hover:b-none! w-19px h-24px">
+          <WebringLogo stroke="var(--fg)" transform="translate(-140, -138) scale(0.08)"/>
+        </a>
         <a id="github" class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
           <div i-uil-github-alt />
         </a>
@@ -74,9 +79,6 @@ const { y: scroll } = useWindowScroll()
   display: grid;
   grid-template-columns: auto max-content;
   box-sizing: border-box;
-  --fg: rgba(201, 201, 201, 0.4);
-  --fg-deep: rgba(201, 201, 201, 0.7);
-  --fg-deeper: rgba(201, 201, 201, 1);
 }
 
 .nav > *:not(:first-child) {
@@ -94,6 +96,7 @@ const { y: scroll } = useWindowScroll()
   transition: opacity 0.2s ease;
   opacity: 0.6;
   outline: none;
+  border: none;
 }
 
 .nav a:not(.select-none) {
@@ -102,8 +105,10 @@ const { y: scroll } = useWindowScroll()
 
 .nav a:hover {
   opacity: 0.8;
-  border-style: solid !important;
   color: inherit;
+}
+.nav a:not(.select-none):hover {
+  border: 1px solid var(--fg-deeper);
 }
 
 .nav a.router-link-active, .nav a.router-link-exact-active {
@@ -122,4 +127,6 @@ const { y: scroll } = useWindowScroll()
 .nav .right > * {
   margin: auto;
 }
+
+
 </style>
