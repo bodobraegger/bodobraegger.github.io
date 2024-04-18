@@ -1,48 +1,86 @@
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
     font-style: normal;
     font-weight: 700;
-    src: url('/fonts/MagicUiPro-Bold.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-Bold.woff2') format('woff2');
 }
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
     font-style: italic;
     font-weight: 700;
-    src: url('/fonts/MagicUiPro-BoldItalic.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-BoldItalic.woff2') format('woff2');
 }
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
     font-style: italic;
     font-weight: 400;
-    src: url('/fonts/MagicUiPro-Italic.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-Italic.woff2') format('woff2');
 }
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/src/assets/fonts/ModernGothic-Light.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothic';
+    font-style: italic;
+    font-weight: 300;
+    src: url('/src/assets/fonts/ModernGothic-LightItalic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothic';
     font-style: normal;
     font-weight: 500;
-    src: url('/fonts/MagicUiPro-Medium.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-Medium.woff2') format('woff2');
 }
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
     font-style: italic;
     font-weight: 500;
-    src: url('/fonts/MagicUiPro-MediumItalic.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-MediumItalic.woff2') format('woff2');
 }
 @font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothic';
     font-style: normal;
     font-weight: 400;
-    src: url('/fonts/MagicUiPro-Regular.woff2') format('woff2');
+    src: url('/src/assets/fonts/ModernGothic-Regular.woff2') format('woff2');
 }
+
+
 @font-face {
-    font-family: 'MagicUiPro';
-    font-style: normal;
-    font-weight: 600;
-    src: url('/fonts/MagicUiPro-SemiBold.woff2') format('woff2');
-}
-@font-face {
-    font-family: 'MagicUiPro';
+    font-family: 'ModernGothicMono';
     font-style: italic;
-    font-weight: 600;
-    src: url('/fonts/MagicUiPro-SemiBoldItalic.woff2') format('woff2');
+    font-weight: 400;
+    src: url('/src/assets/fonts/ModernGothicMono-Italic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothicMono';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/src/assets/fonts/ModernGothicMono-Light.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothicMono';
+    font-style: italic;
+    font-weight: 300;
+    src: url('/src/assets/fonts/ModernGothicMono-LightItalic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothicMono';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/src/assets/fonts/ModernGothicMono-Medium.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothicMono';
+    font-style: italic;
+    font-weight: 500;
+    src: url('/src/assets/fonts/ModernGothicMono-MediumItalic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'ModernGothicMono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/src/assets/fonts/ModernGothicMono-Regular.woff2') format('woff2');
 }

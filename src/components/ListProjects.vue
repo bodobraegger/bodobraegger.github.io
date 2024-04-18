@@ -14,7 +14,7 @@ function slug(name: string) {
       v-for="key, cidx in Object.keys(projects)" :key="key" slide-enter
       :style="{ '--enter-stage': cidx + 1 }"
     >
-      <h4 :id="slug(key)" class="mt-15 mb-2 font-bold text-center op90">
+      <h4 :id="slug(key)" class="mt-15 mb-2 font-medium text-center op90">
         {{ key }}
       </h4>
       <div
@@ -37,7 +37,7 @@ function slug(name: string) {
           </div>
           <div class="flex-auto">
             <div class="text-normal">{{ item.name }}</div>
-            <div class="desc text-sm opacity-75 font-normal prose" v-html="item.desc" />
+            <div class="desc text-sm font-light opacity-75 font-normal prose" v-html="item.desc" />
           </div>
         </a>
       </div>
