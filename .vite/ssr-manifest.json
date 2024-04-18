@@ -7,16 +7,16 @@
   "\u0000vite/modulepreload-polyfill.js": [],
   "\u0000vite/preload-helper.js": [],
   "../../../../../__uno.css": [],
-  "2023-12-16_web-CveAm1Fa.js": [],
-  "2024-01-17_front_end_optimization-BPNVx04C.js": [],
-  "2024-02-27_livecoding_docs-Du5bGlbi.js": [],
-  "2024-03-28_transdisciplinarity_arts-C2rtKTP5.js": [],
-  "2024-04-14_photography-0-9gbVAB.js": [],
-  "404-Zaycq5gi.js": [],
-  "_...404_-BfBFbsqZ.js": [],
+  "2023-12-16_web-seWhXMus.js": [],
+  "2024-01-17_front_end_optimization-CRo-Kf0N.js": [],
+  "2024-02-27_livecoding_docs-k3JANiAN.js": [],
+  "2024-03-28_transdisciplinarity_arts-D-pLOsPn.js": [],
+  "2024-04-14_photography-plgTTMdk.js": [],
+  "404-iHTma6m8.js": [],
+  "_...404_-8Tfm29sr.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [],
-  "index-C3sL3euX.js": [],
-  "index-D4xmdSTv.js": [],
+  "index-BmbhM1ba.js": [],
+  "index-CTOlMHyu.js": [],
   "index.html": [],
   "node_modules/.pnpm/@floating-ui+core@1.6.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs": [],
   "node_modules/.pnpm/@floating-ui+dom@1.1.1/node_modules/@floating-ui/dom/dist/floating-ui.dom.browser.min.mjs": [],
@@ -49,41 +49,41 @@
   "node_modules/.pnpm/vue-router-better-scroller@0.0.0_vue-router@4.2.5_vue@3.4.23_typescript@5.4.5___vue@3.4.23_typescript@5.4.5_/node_modules/vue-router-better-scroller/dist/index.mjs": [],
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.4.23_typescript@5.4.5_/node_modules/vue-router/dist/vue-router.mjs": [],
   "pages/404.md": [
-    "/assets/404-Zaycq5gi.js"
+    "/assets/404-iHTma6m8.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-BfBFbsqZ.js"
+    "/assets/_...404_-8Tfm29sr.js"
   ],
   "pages/index.md": [],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-CveAm1Fa.js"
+    "/assets/2023-12-16_web-seWhXMus.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-BPNVx04C.js"
+    "/assets/2024-01-17_front_end_optimization-CRo-Kf0N.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-Du5bGlbi.js"
+    "/assets/2024-02-27_livecoding_docs-k3JANiAN.js"
   ],
   "pages/notes/2024-03-28_transdisciplinarity_arts.md": [
-    "/assets/2024-03-28_transdisciplinarity_arts-C2rtKTP5.js"
+    "/assets/2024-03-28_transdisciplinarity_arts-D-pLOsPn.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-0-9gbVAB.js"
+    "/assets/2024-04-14_photography-plgTTMdk.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-D4xmdSTv.js"
+    "/assets/index-BmbhM1ba.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-C3sL3euX.js"
+    "/assets/index-CTOlMHyu.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "pages/template.md": [
-    "/assets/template-H0NbMpJN.js"
+    "/assets/template-yycO0K5H.js"
   ],
-  "projects-Dzm6wnJT.js": [
+  "projects-CZ6sWQTI.js": [
     "/assets/projects-BX60w6J3.css"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [],
@@ -91,26 +91,26 @@
   "src/components/Footer.vue": [],
   "src/components/Lightbox.vue?vue&type=script&setup=true&lang.ts": [],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-Cf6J4fQN.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-4LH4YGuM.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=48a27b71&lang.css": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "src/components/Logo.vue": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
-    "/assets/projects-Dzm6wnJT.js",
+    "/assets/projects-CZ6sWQTI.js",
     "/assets/projects-BX60w6J3.css"
   ],
   "src/components/NavBar.vue": [],
@@ -118,7 +118,7 @@
   "src/components/NavBar.vue?vue&type=style&index=0&scoped=4bdd483e&lang.css": [],
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-C3sL3euX.js"
+    "/assets/index-CTOlMHyu.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [],
   "src/components/WrapperPost.vue?vue&type=script&setup=true&lang.ts": [],
@@ -127,6 +127,6 @@
   "src/styles/main.css": [],
   "src/styles/markdown.css": [],
   "src/styles/prose.css": [],
-  "template-H0NbMpJN.js": [],
+  "template-yycO0K5H.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": []
 }
