@@ -12,6 +12,9 @@ html {
   --fg-deep: #222;
   --fg-deeper: #111;
 }
+html:has(.lightbox) {
+  overflow: hidden;
+}
 
 html.dark {
   --c-bg: #050505;

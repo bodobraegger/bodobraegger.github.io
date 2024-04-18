@@ -70,13 +70,13 @@ onKeyStroke('ArrowRight', (e) => {
     
 <template>
     <Transition name="fade">
-        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7  class="lightbox">
+        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 class="lightbox">
             <div absolute top-0 left-0 right-0 bottom-0 bg-black:30 z--1/>
-            <img :src="imageModel.src" :alt="imageModel.alt" w-full lg:w-80vw h-full object-contain m-auto class="no-preview cursor-zoom-out" id="lightbox" :data-img-id="imageModel.id">
-            <button v-if="images.length>1" absolute top-0 left-0 pr-2 w-6vw lg:w-10vw h-full class="lightbox cursor-w-resize text-right prev">
+            <img :src="imageModel.src" :alt="imageModel.alt" w-full lg:w-84vw h-full object-contain m-auto class="no-preview cursor-zoom-out" id="lightbox" :data-img-id="imageModel.id">
+            <button v-if="images.length>1" absolute top-0 left-0 w-6vw lg:pr-2 lg:w-8vw h-full class="lightbox cursor-w-resize text-right prev">
                 <button w-5 h-5 bg-transparent backdrop-invert i-bi:arrow-left class="prev"> </button>
             </button>
-            <button v-if="images.length>1" absolute top-0 right-0 pl-2 w-6vw lg:w-10vw h-full class="lightbox cursor-e-resize text-left">
+            <button v-if="images.length>1" absolute top-0 right-0 w-6vw lg:pl-2 lg:w-8vw h-full class="lightbox cursor-e-resize text-left">
                 <button w-5 h-5 bg-transparent backdrop-invert i-bi:arrow-right align-left />
             </button>
         </div>
