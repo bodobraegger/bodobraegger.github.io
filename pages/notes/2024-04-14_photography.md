@@ -1,6 +1,6 @@
 ---
-title: Photos
-place: Zürich, Switzerland
+title: photos
+place: world wide web
 date: 2024-04-17
 lang: en
 type: note+blog
