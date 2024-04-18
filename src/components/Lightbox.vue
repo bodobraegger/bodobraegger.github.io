@@ -73,11 +73,11 @@ onKeyStroke('ArrowRight', (e) => {
         <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7  class="lightbox">
             <div absolute top-0 left-0 right-0 bottom-0 bg-black:30 z--1/>
             <img :src="imageModel.src" :alt="imageModel.alt" w-80vw h-full object-contain m-auto class="no-preview" id="lightbox" :data-img-id="imageModel.id">
-            <button absolute top-0 left-0 w-10vw h-full object-contain class="lightbox cursor-w-resize prev">
-                <button v-if="images.length>1" w-10 h-10  class="i-bi:arrow-left prev"> </button>
+            <button v-if="images.length>1" absolute top-0 left-0 w-10vw h-full object-contain class="lightbox cursor-w-resize prev">
+                <button w-10 h-10  class="i-bi:arrow-left prev"> </button>
             </button>
-            <button absolute top-0 right-0 w-10vw h-full object-contain class="lightbox cursor-e-resize">
-                <button v-if="images.length>1" w-10 h-10 class="i-bi:arrow-right">"></button>
+            <button v-if="images.length>1" absolute top-0 right-0 w-10vw h-full object-contain class="lightbox cursor-e-resize">
+                <button w-10 h-10 class="i-bi:arrow-right">"></button>
             </button>
         </div>
     </Transition>
