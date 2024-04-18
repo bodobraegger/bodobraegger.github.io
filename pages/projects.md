@@ -21,7 +21,7 @@ projects:
       desc: 'A web app for the <a href="https://scout.ch">Scout Movement</a> in Switzerland. Built with <a href="https://reactjs.org/">React</a> and <a href="https://primer.style/">Primer</a>. Implemented as a Progressive Web App, installable on mobile devices and available offline.'
       icon: 'i-carbon-campsite'
     - name: 'artist network theory'
-      link: 'https://github.com/bodobraeger/artist-network-theory'
+      link: 'https://github.com/bodobraegger/artist-network-theory'
       desc: 'The continuation of the artist network theory zine, coming soon.'
       icon: 'i-mdi:local-area-network-pending'
 
