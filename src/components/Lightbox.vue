@@ -1,21 +1,20 @@
 <script setup lang="ts">
 const imageModel = ref<HTMLImageElement>()
 let images: HTMLImageElement[] = [];
+function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
+}
 
 useEventListener('click', async (e) => {
   const path = Array.from(e.composedPath())
   const first = path[0] as HTMLElement
   // console.log('click', first)
-  function mod(n: number, m: number): number {
-    return ((n % m) + m) % m;
-  }
 
   switch(first.tagName) {
     case 'BUTTON':
       if (!first?.parentElement?.classList.contains('lightbox')) return
       const lightboxImg = document.getElementById(`lightbox`)
       const index = images.findIndex(img => img.id === lightboxImg!.dataset.imgId)
-      if (index === -1) return
       let nextIndex = index
       if (first.classList.contains('prev')) nextIndex = mod((index - 1), images.length)
       else nextIndex = (index + 1) % images.length
@@ -46,6 +45,24 @@ useEventListener('click', async (e) => {
 onKeyStroke('Escape', (e) => {
   if (imageModel.value) {
     imageModel.value = undefined
+    e.preventDefault()
+  }
+})
+onKeyStroke('ArrowLeft', (e) => {
+  if (imageModel.value) {
+    const lightboxImg = document.getElementById(`lightbox`)
+    const index = images.findIndex(img => img.id === lightboxImg!.dataset.imgId)
+    const nextIndex = mod((index - 1), images.length)
+    imageModel.value = images[nextIndex]
+    e.preventDefault()
+  }
+})
+onKeyStroke('ArrowRight', (e) => {
+  if (imageModel.value) {
+    const lightboxImg = document.getElementById(`lightbox`)
+    const index = images.findIndex(img => img.id === lightboxImg!.dataset.imgId)
+    const nextIndex = (index + 1) % images.length
+    imageModel.value = images[nextIndex]
     e.preventDefault()
   }
 })
