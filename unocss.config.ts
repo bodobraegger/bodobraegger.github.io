@@ -27,13 +27,13 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetUno(),
-    presetWebFonts({
-      fonts: {
-        sans: 'Inter:400,600,800',
-        mono: 'Fira Code:400,600',
-        // sans: 'Fragment Mono:400',
-      },
-    }),
+    // presetWebFonts({
+    //   fonts: {
+    //     sans: 'Inter:400,600,800',
+    //     mono: 'Fira Code:400,600',
+    //     // sans: 'Fragment Mono:400',
+    //   },
+    // }),
   ],
   transformers: [
     transformerDirectives(),
