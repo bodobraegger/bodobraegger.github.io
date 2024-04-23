@@ -15,7 +15,7 @@ useEventListener('click', async (e) => {
       if (!first?.parentElement?.classList.contains('lightbox')) return
       const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
       // TODO: Refactor this to use a computed property, make sure property is unique
-      const index = images.findIndex(img => img.alt === lightboxImg!.alt)
+      const index = images.findIndex(img => img.src === lightboxImg!.src)
       let nextIndex = index
       if (first.classList.contains('prev')) nextIndex = mod((index - 1), images.length)
       else nextIndex = (index + 1) % images.length
@@ -53,7 +53,7 @@ onKeyStroke('ArrowLeft', (e) => {
   if (imageModel.value) {
     // TODO: refactor, don't justy duplicate this 3 times...
     const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
-    const index = images.findIndex(img => img.alt === lightboxImg!.alt)
+    const index = images.findIndex(img => img.src === lightboxImg!.src)
     const nextIndex = mod((index - 1), images.length)
     imageModel.value = images[nextIndex]
     e.preventDefault()
@@ -62,7 +62,7 @@ onKeyStroke('ArrowLeft', (e) => {
 onKeyStroke('ArrowRight', (e) => {
   if (imageModel.value) {
     const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
-    const index = images.findIndex(img => img.alt === lightboxImg!.alt)
+    const index = images.findIndex(img => img.src === lightboxImg!.src)
     const nextIndex = (index + 1) % images.length
     imageModel.value = images[nextIndex]
     e.preventDefault()
@@ -74,7 +74,7 @@ onKeyStroke('ArrowRight', (e) => {
     <Transition name="fade">
         <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 class="lightbox">
             <div absolute top-0 left-0 right-0 bottom-0 bg-black:30 z--1/>
-            <img :src="imageModel.src" :alt="imageModel.alt"max-w-full lg:max-w-84vw h-full object-contain m-auto class="no-preview cursor-zoom-out" id="lightbox" :data-img-id="imageModel.id">
+            <img :src="imageModel.src" :alt="imageModel.src"max-w-full lg:max-w-84vw h-full object-contain m-auto class="no-preview cursor-zoom-out" id="lightbox" :data-img-id="imageModel.id">
             <button v-if="images.length>1" absolute top-0 left-0 w-6vw lg:pr-2 lg:w-8vw h-full class="lightbox cursor-w-resize text-right prev">
                 <button w-5 h-5 bg-transparent backdrop-invert i-bi:arrow-left class="prev"> </button>
             </button>
