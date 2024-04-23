@@ -7,7 +7,7 @@ function toTop() {
 }
 
 const { y: scroll } = useWindowScroll()
-import WebringLogo from '/src/assets/webring.icon.white.svg';
+import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
 
 </script>
 
