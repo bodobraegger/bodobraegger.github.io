@@ -8,7 +8,6 @@ function mod(n: number, m: number): number {
 useEventListener('click', async (e) => {
   const path = Array.from(e.composedPath())
   const first = path[0] as HTMLElement
-  // console.log('click', first)
 
   switch(first.tagName) {
     case 'BUTTON':
@@ -19,7 +18,6 @@ useEventListener('click', async (e) => {
       let nextIndex = index
       if (first.classList.contains('prev')) nextIndex = mod((index - 1), images.length)
       else nextIndex = (index + 1) % images.length
-      // console.log('nextIndex', nextIndex)
       imageModel.value = images[nextIndex]
       break
     case 'IMG':
@@ -34,9 +32,10 @@ useEventListener('click', async (e) => {
       if (pos.left !== newPos.left || pos.top !== newPos.top)
         return
       imageModel.value = first as HTMLImageElement
-      imageModel.value
-      images = Array.from(document.querySelectorAll(`main img:not(.no-preview)`))
-      // console.log(images)
+      if (!first.dataset.folder || first.dataset.folder === 'root') 
+        images = Array.from(document.querySelectorAll(`main img:not(.no-preview)`))
+      else
+        images = Array.from(document.querySelectorAll(`main img[data-folder=${first.dataset.folder}]:not(.no-preview)`))
       break
     default:
       imageModel.value = undefined
@@ -49,22 +48,26 @@ onKeyStroke('Escape', (e) => {
     e.preventDefault()
   }
 })
+
+enum Direction {
+  PREV = -1,
+  NEXT = 1
+}
+
+function findNextImageIndex(direction: Direction): number {
+  const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
+  const index = images.findIndex(img => img.src === lightboxImg!.src)
+  return mod((index + direction), images.length)
+}
 onKeyStroke('ArrowLeft', (e) => {
   if (imageModel.value) {
-    // TODO: refactor, don't justy duplicate this 3 times...
-    const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
-    const index = images.findIndex(img => img.src === lightboxImg!.src)
-    const nextIndex = mod((index - 1), images.length)
-    imageModel.value = images[nextIndex]
+    imageModel.value = images[findNextImageIndex(-1)]
     e.preventDefault()
   }
 })
 onKeyStroke('ArrowRight', (e) => {
   if (imageModel.value) {
-    const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
-    const index = images.findIndex(img => img.src === lightboxImg!.src)
-    const nextIndex = (index + 1) % images.length
-    imageModel.value = images[nextIndex]
+    imageModel.value = images[findNextImageIndex( 1)]
     e.preventDefault()
   }
 })
@@ -72,9 +75,14 @@ onKeyStroke('ArrowRight', (e) => {
     
 <template>
     <Transition name="fade">
-        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 class="lightbox">
-            <div absolute top-0 left-0 right-0 bottom-0 bg-black:30 z--1/>
-            <img :src="imageModel.src" :alt="imageModel.src"max-w-full lg:max-w-84vw h-full object-contain m-auto class="no-preview cursor-zoom-out" id="lightbox" :data-img-id="imageModel.id">
+        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 flex class="lightbox">
+            <div absolute top-0 left-0 right-0 bottom-0 bg-white:50 dark:bg-dark:50 z--1/>
+            <figure m-auto max-w-100vw lg:max-w-84vw>
+              <img :src="imageModel.src" :alt="imageModel.alt" max-h-90vh m-auto class="no-preview cursor-zoom-out" id="lightbox">
+              <figcaption v-if="imageModel.dataset.caption" m-2>
+                  {{ imageModel.dataset.caption }}
+              </figcaption>
+            </figure>
             <button v-if="images.length>1" absolute top-0 left-0 w-6vw lg:pr-2 lg:w-8vw h-full class="lightbox cursor-w-resize text-right prev">
                 <button w-5 h-5 bg-transparent backdrop-invert i-bi:arrow-left class="prev"> </button>
             </button>
@@ -84,3 +92,10 @@ onKeyStroke('ArrowRight', (e) => {
         </div>
     </Transition>
 </template>
+
+<style scoped>
+figcaption {
+  color: var(--fg-deeper);
+  text-align: center;
+}
+</style>
