@@ -42,10 +42,9 @@ for (let path in imageModules) {
 <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5">
     <figure v-for="image in imageSrcs" :key="image.src" class="w-full prose break-inside-avoid py-2" :class="image.show ? '' : 'hidden'">
         <img class="mb-0!"
-            :src="image.src" :id="image.src" 
-            :class="image.src.split('/').slice(0, -1)"
+            :src="image.src"
             :data-folder="image.folder" 
-            :data-caption="image.alt"
+            :data-caption="true"
             :alt="image.alt"
         />
         <figcaption>{{ image.alt.split(',').shift()! }}</figcaption>
