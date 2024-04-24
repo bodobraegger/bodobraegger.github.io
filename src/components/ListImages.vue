@@ -18,9 +18,8 @@ const imageModules = import.meta.glob('/public/**/**.{png,jpg,jpeg,gif,svg}');
 for (let path in imageModules) {
     imageModules[path]().then((mod) => {
         path = path.replace('/public', '')
-        console.log(path)
         if(!path.includes('logos')){
-            let parentFolder = path.split('/').slice(5, -1)[0]
+            let parentFolder = path.split('/').slice(3, -1)[0]
             if (!parentFolder)
                 imageSrcs.push( {src: path, alt: path.split('/').pop()!.slice(0, -4), folder: 'root', show: true })
             else if (path.includes(parentFolder)) {
