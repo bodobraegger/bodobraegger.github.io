@@ -80,7 +80,6 @@ onMounted(() => {
 
 
 if(frontmatter.hydra) {
-    console.log('hydra is true')
     const codeMirrorAddOns = [
         "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/mode/javascript/javascript.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/javascript-hint.min.js",

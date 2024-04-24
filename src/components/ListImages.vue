@@ -16,34 +16,26 @@ const imageSrcs = reactive<image[]>([]);
 const folders = [] as folder[];
 const imageModules = import.meta.glob('/public/**/**.{png,jpg,jpeg,gif,svg}');
 for (let path in imageModules) {
-    imageModules[path]().then((mod) => {
-        path = path.replace('/public', '')
-        if(!path.includes('logos')){
-            let parentFolder = path.split('/').slice(3, -1)[0]
-            if (!parentFolder)
-                imageSrcs.push( {src: path, alt: path.split('/').pop()!.slice(0, -4), folder: 'root', show: true })
-            else if (path.includes(parentFolder)) {
-                let folder = folders.find(folder => folder.name === parentFolder)
-                let parentFolderSanitized = parentFolder.replaceAll(' ', '_').replaceAll(',', '-')
-                if (folder) {
-                    folder.images.push(path)
-                    let position = folder.images.length - 1
-                    imageSrcs.push({ src: path, alt: `${parentFolder}, p. ${position}`, folder: parentFolderSanitized, show: false })
-                }
-                else {
-                    folders.push({ name: parentFolder, images: [path] })
-                    imageSrcs.push({ src: path, alt: `${parentFolder}, cover`, folder: parentFolderSanitized, show: true })
-                }
+    path = path.replace('/public', '')
+    if(!path.includes('logos')){
+        let parentFolder = path.split('/').slice(3, -1)[0]
+        if (!parentFolder)
+            imageSrcs.push( {src: path, alt: path.split('/').pop()!.slice(0, -4), folder: 'root', show: true })
+        else if (path.includes(parentFolder)) {
+            let folder = folders.find(folder => folder.name === parentFolder)
+            let parentFolderSanitized = parentFolder.replaceAll(' ', '_').replaceAll(',', '-')
+            if (folder) {
+                folder.images.push(path)
+                let position = folder.images.length - 1
+                imageSrcs.push({ src: path, alt: `${parentFolder}, p. ${position}`, folder: parentFolderSanitized, show: false })
+            }
+            else {
+                folders.push({ name: parentFolder, images: [path] })
+                imageSrcs.push({ src: path, alt: `${parentFolder}, cover`, folder: parentFolderSanitized, show: true })
             }
         }
-    });
+    }
 }
-
-console.log(imageSrcs, folders)
-
-
-
-
 </script>
 
 <template>
