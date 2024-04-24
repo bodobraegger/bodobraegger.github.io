@@ -20,7 +20,7 @@ export async function compressImages(files: string[]) {
       image = image.resize(maxSize)
 
     image = image[format]({
-      quality: format === 'png' ? 100 : 80,
+      quality: 100, //format === 'png' ? 100 : 80,
       compressionLevel: 9,
     })
 
