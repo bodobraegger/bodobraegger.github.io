@@ -14,9 +14,11 @@ type image = {
 
 const imageSrcs = reactive<image[]>([]);
 const folders = [] as folder[];
-const imageModules = import.meta.glob('/src/assets/**/**.{png,jpg,jpeg,gif,svg}');
-for (const path in imageModules) {
+const imageModules = import.meta.glob('/public/**/**.{png,jpg,jpeg,gif,svg}');
+for (let path in imageModules) {
     imageModules[path]().then((mod) => {
+        path = path.replace('/public', '')
+        console.log(path)
         if(!path.includes('logos')){
             let parentFolder = path.split('/').slice(5, -1)[0]
             if (!parentFolder)
@@ -39,6 +41,8 @@ for (const path in imageModules) {
 }
 
 console.log(imageSrcs, folders)
+
+
 
 
 </script>
