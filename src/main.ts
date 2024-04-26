@@ -12,7 +12,7 @@ import './styles/markdown.css'
 import 'uno.css'
 
 import autoRoutes from 'pages-generated'
-import NProgress from 'nprogress'
+// import NProgress from 'nprogress'
 import { ViteSSG } from 'vite-ssg'
 import dayjs from 'dayjs'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat.js'
@@ -62,9 +62,9 @@ export const createApp = ViteSSG(
         behavior: 'auto',
       })
 
-      router.beforeEach(() => {
-        NProgress.start()
-      })
+      // router.beforeEach(() => {
+        // NProgress.start()
+      // })
       router.afterEach((to, from) => {
         // reload the page once when navigating to /der-wahre-walter
         // to fix the issue with vue 404 showing
@@ -72,7 +72,7 @@ export const createApp = ViteSSG(
             console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
             document.location.reload();
           }
-        NProgress.done()
+        // NProgress.done()
       })
     }
   },
