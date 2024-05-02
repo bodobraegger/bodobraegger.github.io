@@ -4,7 +4,7 @@ import c from 'picocolors'
 
 const maxSize = 1440
 
-export async function compressImages(files: string[]) {
+export async function compressImages(files: string[], convert2avif: boolean) {
   await Promise.all(files.map(async (file) => {
     const buffer = await fs.readFile(file)
     let image = sharp(buffer)
@@ -13,17 +13,25 @@ export async function compressImages(files: string[]) {
       throw new Error(`Could not determine format of ${file}`)
     if (!width || !height)
       throw new Error(`Could not determine size of ${file}`)
-    if (format !== 'jpeg' && format !== 'png' && format !== 'webp')
+    if (format !== 'jpeg' && format !== 'png' && format !== 'webp' && format !== 'avif')
       throw new Error(`Unsupported format ${format} of ${file}`)
 
     if (width > maxSize || height > maxSize)
       image = image.resize(maxSize)
 
-    image = image[format]({
-      quality: 100, //format === 'png' ? 100 : 80,
-      compressionLevel: 9,
-    })
-
+    
+    
+    if(convert2avif) {
+      image.toFormat('avif', {quality: 85, compression: 'av1'});
+      file = file.replace(/\.(jpe?g|png|webp)$/, '.avif');
+    }
+    else {
+      image = image[format]({
+          quality: 100, //format === 'png' ? 100 : 80,
+          compressionLevel: 9,
+      })
+    }
+    
     const outBuffer = await image.withMetadata().toBuffer()
     const size = buffer.byteLength
     const outSize = outBuffer.byteLength

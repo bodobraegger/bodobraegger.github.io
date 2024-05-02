@@ -14,7 +14,7 @@ type image = {
 
 const imageSrcs = reactive<image[]>([]);
 const folders = [] as folder[];
-const imageModules = import.meta.glob('/public/**/**.{png,jpg,jpeg,gif,svg}');
+const imageModules = import.meta.glob('/public/**/**.{avif,gif,jpg,jpeg,png,svg,webp}');
 for (let path in imageModules) {
     path = path.replace('/public', '')
     if(!path.includes('logos')){
