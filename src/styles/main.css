@@ -11,6 +11,7 @@ html {
   --fg: #444;
   --fg-deep: #222;
   --fg-deeper: #111;
+  scrollbar-gutter: stable;
 }
 html:has(.lightbox) {
   overflow: hidden;
