@@ -1,5 +1,5 @@
 {
-  "\u0000/home/runner/work/bodobraegger.github.io/bodobraegger.github.io/node_modules/.pnpm/dayjs@1.11.10/node_modules/dayjs/dayjs.min.js?commonjs-module": [
+  "\u0000/home/runner/work/bodobraegger.github.io/bodobraegger.github.io/node_modules/.pnpm/dayjs@1.11.11/node_modules/dayjs/dayjs.min.js?commonjs-module": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -15,7 +15,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "\u0000/home/runner/work/bodobraegger.github.io/bodobraegger.github.io/node_modules/.pnpm/dayjs@1.11.10/node_modules/dayjs/plugin/localizedFormat.js?commonjs-module": [
+  "\u0000/home/runner/work/bodobraegger.github.io/bodobraegger.github.io/node_modules/.pnpm/dayjs@1.11.11/node_modules/dayjs/plugin/localizedFormat.js?commonjs-module": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -111,16 +111,16 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "2023-12-16_web-DVXh7BMm.js": [],
-  "2024-01-17_front_end_optimization-CmEFScEA.js": [],
-  "2024-02-27_livecoding_docs-CI5fa95W.js": [],
-  "2024-03-28_transdisciplinarity_arts-CFYrTq52.js": [],
-  "2024-04-14_photography-Dbqpfz6X.js": [],
-  "2024-04-24_images-D2e0KSaD.js": [
+  "2023-12-16_web-DVjMkp_a.js": [],
+  "2024-01-17_front_end_optimization-DYlBIEKb.js": [],
+  "2024-02-27_livecoding_docs-BBbwERtz.js": [],
+  "2024-03-28_transdisciplinarity_arts-B9Owh3cS.js": [],
+  "2024-04-14_photography-kicNcQVg.js": [],
+  "2024-04-24_images-DTQFRd6B.js": [
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
-  "404-CYmhe-XN.js": [],
-  "_...404_-jInIpa-q.js": [],
+  "404-BqwhEZIQ.js": [],
+  "_...404_-G1gt5zzn.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -137,8 +137,8 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "index-CNAb1QUX.js": [],
-  "index-D7zLkCSg.js": [],
+  "index-DvmPwgkb.js": [],
+  "index-vzQZZcvL.js": [],
   "index.html": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -155,7 +155,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@floating-ui+core@1.6.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs": [
+  "node_modules/.pnpm/@floating-ui+core@1.6.1/node_modules/@floating-ui/core/dist/floating-ui.core.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -187,7 +187,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@floating-ui+utils@0.2.1/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs": [
+  "node_modules/.pnpm/@floating-ui+utils@0.2.2/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -203,7 +203,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@unhead+dom@1.9.7/node_modules/@unhead/dom/dist/index.mjs": [
+  "node_modules/.pnpm/@unhead+dom@1.9.9/node_modules/@unhead/dom/dist/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -219,7 +219,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@unhead+shared@1.9.7/node_modules/@unhead/shared/dist/index.mjs": [
+  "node_modules/.pnpm/@unhead+shared@1.9.9/node_modules/@unhead/shared/dist/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -235,7 +235,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@unhead+vue@1.9.7_vue@3.4.25_typescript@5.4.5_/node_modules/@unhead/vue/dist/shared/vue.cf295fb1.mjs": [
+  "node_modules/.pnpm/@unhead+vue@1.9.9_vue@3.4.26_typescript@5.4.5_/node_modules/@unhead/vue/dist/shared/vue.cf295fb1.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -251,7 +251,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@unhead+vue@1.9.7_vue@3.4.25_typescript@5.4.5_/node_modules/@unhead/vue/dist/shared/vue.f36acd1f.mjs": [
+  "node_modules/.pnpm/@unhead+vue@1.9.9_vue@3.4.26_typescript@5.4.5_/node_modules/@unhead/vue/dist/shared/vue.f36acd1f.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -283,7 +283,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vue+reactivity@3.4.25/node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js": [
+  "node_modules/.pnpm/@vue+reactivity@3.4.26/node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -299,7 +299,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vue+runtime-core@3.4.25/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js": [
+  "node_modules/.pnpm/@vue+runtime-core@3.4.26/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -315,7 +315,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vue+runtime-dom@3.4.25/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js": [
+  "node_modules/.pnpm/@vue+runtime-dom@3.4.26/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -331,7 +331,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vue+shared@3.4.25/node_modules/@vue/shared/dist/shared.esm-bundler.js": [
+  "node_modules/.pnpm/@vue+shared@3.4.26/node_modules/@vue/shared/dist/shared.esm-bundler.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -347,7 +347,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vueuse+core@10.9.0_vue@3.4.25_typescript@5.4.5_/node_modules/@vueuse/core/index.mjs": [
+  "node_modules/.pnpm/@vueuse+core@10.9.0_vue@3.4.26_typescript@5.4.5_/node_modules/@vueuse/core/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -363,7 +363,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/@vueuse+shared@10.9.0_vue@3.4.25_typescript@5.4.5_/node_modules/@vueuse/shared/index.mjs": [
+  "node_modules/.pnpm/@vueuse+shared@10.9.0_vue@3.4.26_typescript@5.4.5_/node_modules/@vueuse/shared/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -379,7 +379,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/dayjs@1.11.10/node_modules/dayjs/dayjs.min.js": [
+  "node_modules/.pnpm/dayjs@1.11.11/node_modules/dayjs/dayjs.min.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -395,7 +395,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/dayjs@1.11.10/node_modules/dayjs/plugin/localizedFormat.js": [
+  "node_modules/.pnpm/dayjs@1.11.11/node_modules/dayjs/plugin/localizedFormat.js": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -411,7 +411,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/floating-vue@2.0.0-beta.24_vue@3.4.25_typescript@5.4.5_/node_modules/floating-vue/dist/floating-vue.mjs": [
+  "node_modules/.pnpm/floating-vue@2.0.0-beta.24_vue@3.4.26_typescript@5.4.5_/node_modules/floating-vue/dist/floating-vue.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -427,7 +427,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/floating-vue@2.0.0-beta.24_vue@3.4.25_typescript@5.4.5_/node_modules/floating-vue/dist/style.css": [
+  "node_modules/.pnpm/floating-vue@2.0.0-beta.24_vue@3.4.26_typescript@5.4.5_/node_modules/floating-vue/dist/style.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -523,7 +523,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/unhead@1.9.7/node_modules/unhead/dist/index.mjs": [
+  "node_modules/.pnpm/unhead@1.9.9/node_modules/unhead/dist/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -539,7 +539,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.10_@types+node@20.12.7__vue-router@4.2.5_vue@3.4.25_typescript@5.4.5_iebf64qaqmp7ryfm6f6eprm5by/node_modules/vite-ssg/dist/index.mjs": [
+  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.11_@types+node@20.12.8__vue-router@4.2.5_vue@3.4.26_typescript@5.4.5_b775z75kcgg3dran6gosgp2pre/node_modules/vite-ssg/dist/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -555,7 +555,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.10_@types+node@20.12.7__vue-router@4.2.5_vue@3.4.25_typescript@5.4.5_iebf64qaqmp7ryfm6f6eprm5by/node_modules/vite-ssg/dist/shared/vite-ssg.5912142e.mjs": [
+  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.11_@types+node@20.12.8__vue-router@4.2.5_vue@3.4.26_typescript@5.4.5_b775z75kcgg3dran6gosgp2pre/node_modules/vite-ssg/dist/shared/vite-ssg.5912142e.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -571,7 +571,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.10_@types+node@20.12.7__vue-router@4.2.5_vue@3.4.25_typescript@5.4.5_iebf64qaqmp7ryfm6f6eprm5by/node_modules/vite-ssg/dist/shared/vite-ssg.a009fbf1.mjs": [
+  "node_modules/.pnpm/vite-ssg@0.23.7_vite@5.2.11_@types+node@20.12.8__vue-router@4.2.5_vue@3.4.26_typescript@5.4.5_b775z75kcgg3dran6gosgp2pre/node_modules/vite-ssg/dist/shared/vite-ssg.a009fbf1.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -587,7 +587,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/vue-router-better-scroller@0.0.0_vue-router@4.2.5_vue@3.4.25_typescript@5.4.5___vue@3.4.25_typescript@5.4.5_/node_modules/vue-router-better-scroller/dist/index.mjs": [
+  "node_modules/.pnpm/vue-router-better-scroller@0.0.0_vue-router@4.2.5_vue@3.4.26_typescript@5.4.5___vue@3.4.26_typescript@5.4.5_/node_modules/vue-router-better-scroller/dist/index.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -603,7 +603,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "node_modules/.pnpm/vue-router@4.2.5_vue@3.4.25_typescript@5.4.5_/node_modules/vue-router/dist/vue-router.mjs": [
+  "node_modules/.pnpm/vue-router@4.2.5_vue@3.4.26_typescript@5.4.5_/node_modules/vue-router/dist/vue-router.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -620,10 +620,10 @@
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
   "pages/404.md": [
-    "/assets/404-CYmhe-XN.js"
+    "/assets/404-BqwhEZIQ.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-jInIpa-q.js"
+    "/assets/_...404_-G1gt5zzn.js"
   ],
   "pages/index.md": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -642,38 +642,38 @@
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-DVXh7BMm.js"
+    "/assets/2023-12-16_web-DVjMkp_a.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-CmEFScEA.js"
+    "/assets/2024-01-17_front_end_optimization-DYlBIEKb.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-CI5fa95W.js"
+    "/assets/2024-02-27_livecoding_docs-BBbwERtz.js"
   ],
   "pages/notes/2024-03-28_transdisciplinarity_arts.md": [
-    "/assets/2024-03-28_transdisciplinarity_arts-CFYrTq52.js"
+    "/assets/2024-03-28_transdisciplinarity_arts-B9Owh3cS.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-Dbqpfz6X.js"
+    "/assets/2024-04-14_photography-kicNcQVg.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-D2e0KSaD.js",
+    "/assets/2024-04-24_images-DTQFRd6B.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "pages/notes/index.md": [
-    "/assets/index-D7zLkCSg.js"
+    "/assets/index-DvmPwgkb.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-CNAb1QUX.js"
+    "/assets/index-vzQZZcvL.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "pages/template.md": [
-    "/assets/template-CbkyTrh-.js"
+    "/assets/template-CH1W8Lf3.js"
   ],
-  "projects-CMPQR-Wr.js": [
+  "projects-BDtwEzuy.js": [
     "/assets/projects-f_q3uhhB.css"
   ],
   "public/images/maxi/6 pigeons on my carpet, oil on canvas, 130cm  x 160 cm, 2022.jpg": [
@@ -717,7 +717,7 @@
     "/assets/pigeons and glory_ oil on cnavas_ 130cm x 160cm_ 2023-BKfL7Ap6.jpg"
   ],
   "public/logos/monogram-sw16.svg": [
-    "/assets/monogram-sw16-BeMOYFQn.js"
+    "/assets/monogram-sw16-BsVSHQLI.js"
   ],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -767,22 +767,6 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "src/components/Lightbox.vue": [
-    "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
-    "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
-    "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
-    "/assets/ModernGothic-Light-B8sAG6LL.woff2",
-    "/assets/ModernGothic-LightItalic--Wueqead.woff2",
-    "/assets/ModernGothic-Medium-k9BDgJ2U.woff2",
-    "/assets/ModernGothic-MediumItalic-DoqtrHqi.woff2",
-    "/assets/ModernGothic-Regular-CcWRsV09.woff2",
-    "/assets/ModernGothicMono-Italic-BffHAE9S.woff2",
-    "/assets/ModernGothicMono-Light-Bx11rdbQ.woff2",
-    "/assets/ModernGothicMono-LightItalic-Dmcmn18h.woff2",
-    "/assets/ModernGothicMono-Medium-BfAR1qFY.woff2",
-    "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
-    "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
-  ],
   "src/components/Lightbox.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -799,55 +783,39 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "src/components/Lightbox.vue?vue&type=style&index=0&scoped=ead7f265&lang.css": [
-    "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
-    "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
-    "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
-    "/assets/ModernGothic-Light-B8sAG6LL.woff2",
-    "/assets/ModernGothic-LightItalic--Wueqead.woff2",
-    "/assets/ModernGothic-Medium-k9BDgJ2U.woff2",
-    "/assets/ModernGothic-MediumItalic-DoqtrHqi.woff2",
-    "/assets/ModernGothic-Regular-CcWRsV09.woff2",
-    "/assets/ModernGothicMono-Italic-BffHAE9S.woff2",
-    "/assets/ModernGothicMono-Light-Bx11rdbQ.woff2",
-    "/assets/ModernGothicMono-LightItalic-Dmcmn18h.woff2",
-    "/assets/ModernGothicMono-Medium-BfAR1qFY.woff2",
-    "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
-    "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
-  ],
   "src/components/ListImages.vue": [
-    "/assets/2024-04-24_images-D2e0KSaD.js",
+    "/assets/2024-04-24_images-DTQFRd6B.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListImages.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/2024-04-24_images-D2e0KSaD.js",
+    "/assets/2024-04-24_images-DTQFRd6B.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListImages.vue?vue&type=style&index=0&scoped=4494e07a&lang.css": [
-    "/assets/2024-04-24_images-D2e0KSaD.js",
+    "/assets/2024-04-24_images-DTQFRd6B.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-B96x1H5C.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-C9-jhx71.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=9da7aa60&lang.css": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "src/components/Logo.vue": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
-    "/assets/projects-CMPQR-Wr.js",
+    "/assets/projects-BDtwEzuy.js",
     "/assets/projects-f_q3uhhB.css"
   ],
   "src/components/NavBar.vue": [
@@ -915,7 +883,7 @@
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-CNAb1QUX.js"
+    "/assets/index-vzQZZcvL.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1045,7 +1013,7 @@
     "/assets/ModernGothicMono-MediumItalic-D_cPZQyh.woff2",
     "/assets/ModernGothicMono-Regular-CC6ntdzJ.woff2"
   ],
-  "template-CbkyTrh-.js": [],
+  "template-CH1W8Lf3.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
