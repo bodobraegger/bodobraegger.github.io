@@ -75,39 +75,20 @@ onKeyStroke('ArrowRight', (e) => {
     
 <template>
     <Transition name="fade">
-        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 flex class="lightbox">
+        <div v-if="imageModel" fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 flex cursor-zoom-out class="lightbox">
             <div absolute top-0 left-0 right-0 bottom-0 bg-white:50 dark:bg-dark:50 z--1/>
-            <button v-if="images.length>1" h-full absolute top-0 left-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pr-2 class="lightbox text-right prev">
+            <button v-if="images.length>1" h-full absolute top-0 left-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pr-2 class="lightbox text-right prev cursor-w-resize">
                 <button w-7 h-7 bg-transparent backdrop-invert i-bi:arrow-left  class="prev"> </button>
             </button>
             <figure m-auto max-w-100vw lg:max-w-84vw>
               <img :src="imageModel.src" :alt="imageModel.alt" max-w-fit-content max-h-90vh m-auto class="no-preview" id="lightbox">
-              <figcaption v-if="imageModel.dataset.caption" m-2>
+              <figcaption v-if="imageModel.dataset.caption" m-2 text-center>
                   {{ imageModel.alt }}
               </figcaption>
             </figure>
-            <button v-if="images.length>1" h-full absolute top-0 right-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pl-2 class="lightbox text-left next">
+            <button v-if="images.length>1" h-full absolute top-0 right-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pl-2 class="lightbox text-left next cursor-e-resize">
                 <button w-7 h-7 bg-transparent backdrop-invert i-bi:arrow-right class="next" />
             </button>
         </div>
     </Transition>
 </template>
-
-<style scoped>
-figcaption {
-  color: var(--fg-deeper);
-  text-align: center;
-}
-.lightbox {
-  cursor: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 16 16' height='2em' width='2em' xmlns='http://www.w3.org/2000/svg' %3E%3Cpath fill='red' d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8L4.646 5.354a.5.5 0 0 1 0-.708'/%3E%3C/svg%3E"), zoom-out;
-}
-button.prev {
-  cursor: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 16 16' height='2em' width='2em' xmlns='http://www.w3.org/2000/svg' %3E%3Cpath fill='green' d='M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8'/%3E%3C/svg%3E"), e-resize;
-  color: var(--fg-deeper);
-  
-}
-button.next {
-  cursor: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 16 16' height='2em' width='2em' xmlns='http://www.w3.org/2000/svg' %3E%3Cpath fill='green' d='M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8'/%3E%3C/svg%3E"), w-resize;
-  color: var(--fg-deeper);
-}
-</style>
