@@ -6,19 +6,23 @@ defineProps<{ projects: Record<string, any[]> }>()
 function slug(name: string) {
   return name.toLowerCase().replace(/[\s\\\/]+/g, '-')
 }
+
+function prependLocalLink(link: string) {
+  return (link.startsWith('http') || link.startsWith('/')) ? link : `/projects/${link}`
+}
+
 </script>
 
 <template>
-  <div class="max-w-300 mx-auto">
+  <div class="prose m-auto max-w-300">
     <div
-      v-for="key, cidx in Object.keys(projects)" :key="key" slide-enter
-      :style="{ '--enter-stage': cidx + 1 }"
+      v-for="key, cidx in Object.keys(projects)" :key="key"
     >
-      <h4 :id="slug(key)" class="mt-15 mb-2 font-medium text-center op90">
+      <h4 :id="slug(key)" class="mt-15 mb-2 font-medium op90">
         {{ key }}
       </h4>
       <div
-        class="project-grid py-2 max-w-500 w-max mx-auto"
+        class="project-grid py-2 max-w-500 w-max"
         grid="~ cols-1 md:cols-2 gap-4"
         :class="projects[key].length === 1 ? 'flex' : projects[key].length > 2 ? 'lg:grid-cols-3' : ''"
       >
@@ -26,7 +30,7 @@ function slug(name: string) {
           v-for="item, idx in projects[key]"
           :key="idx"
           class="item relative flex"
-          :href="item.link"
+          :href="prependLocalLink(item.link)"
           target="_blank"
           :class="!item.link ? 'opacity-0 pointer-events-none h-0 -mt-8 -mb-4' : ''"
           :title="item.name"

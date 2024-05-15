@@ -207,12 +207,12 @@ if(frontmatter.hydra) {
     class="prose m-auto mb-8"
     :class="[frontmatter.wrapperClass]"
   >
-    <h1 class="mb-0 slide-enter-50">
+    <h1 class="mb-0">
       {{ frontmatter.display ?? frontmatter.title }}
     </h1>
     <p
       v-if="frontmatter.date"
-      class="opacity-50 !-mt-6 slide-enter-50"
+      class="opacity-50 !-mt-6"
     >
       {{ formatDate(frontmatter.date, false) }} <span v-if="frontmatter.duration">· {{ frontmatter.duration }}</span>
     </p>
@@ -227,13 +227,13 @@ if(frontmatter.hydra) {
     </p>
     <p
       v-if="frontmatter.subtitle"
-      class="opacity-50 !-mt-6 italic slide-enter"
+      class="opacity-50 !-mt-6 italic"
     >
       {{ frontmatter.subtitle }}
     </p>
     <p
       v-if="frontmatter.draft"
-      class="slide-enter" bg-orange-4:10 text-orange-4 border="l-3 orange-4" px4 py2
+      bg-orange-4:10 text-orange-4 border="l-3 orange-4" px4 py2
     >
       This is a draft post, the content may be incomplete. Please check back later.
     </p>
@@ -241,7 +241,7 @@ if(frontmatter.hydra) {
   <article ref="content" :class="[frontmatter.tocAlwaysOn ? 'toc-always-on' : '', frontmatter.class]">
     <slot />
   </article>
-  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 slide-enter animate-delay-500 print:hidden">
+  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden">
     <br>
     <span font-mono op50>> </span>
     <RouterLink
