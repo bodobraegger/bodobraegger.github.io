@@ -45,7 +45,7 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
         <RouterLink id="notes" class="font-mono" to="/notes" title="Blog">
           <span>Notes</span>
         </RouterLink>
-        <a href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener" 
+        <a title="Webring" href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener" 
         class="select-none b-none! hover:b-none! w-19px h-24px">
           <WebringLogo stroke="var(--fg)" transform="translate(-140, -138) scale(0.08)"/>
         </a>
