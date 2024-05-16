@@ -8,6 +8,9 @@ export const englishOnly = useStorage('bodobraegger-english-only', false)
  * @see https://github.com/vuejs/vitepress/pull/2347
  */
 export function toggleDark(event: MouseEvent) {
+  isDark.value = !isDark.value;
+  return;
+
   // @ts-expect-error experimental API
   const isAppearanceTransition = document.startViewTransition
     && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
