@@ -94,7 +94,6 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
   text-decoration: none;
   color: inherit;
   transition: opacity 0.2s ease;
-  opacity: 0.6;
   outline: none;
   border: none;
 }
@@ -103,10 +102,6 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
   border: 1px dashed var(--fg-deep);
 }
 
-.nav a:hover {
-  opacity: 0.8;
-  color: inherit;
-}
 .nav a:not(.select-none):hover {
   border: 1px solid var(--fg-deeper);
 }
@@ -128,5 +123,8 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
   margin: auto;
 }
 
+.nav:has(a:hover) .right a:not(:hover) {
+  opacity: 0.6;
+}
 
 </style>
