@@ -5,6 +5,7 @@ date: 2024-01-17T16:00:00.000+01:00
 lang: en
 type: note+blog
 duration: 15 min
+draft: true
 ---
 
 The look of the internet has changed immensely over the last few years. They are often packed with interactivity, animations, and other features. Hardware has been steadily improving, which fueled the development of more complex websites, user interfaces, and software in general.
