@@ -13,7 +13,7 @@ This file holds talking points for the dialogue at ZHDK assessing a potential fi
 
 ### Contemporary Art
 - Hito Steyerl's work (such as [SocialSim Exhibition](https://www.locarnofestival.ch/locarno75/locarno-extra/exhibition-hito-steyerl.html)), in relation to my experience working in research in social sciences.
-- Xu Bing's [Dragonfly Eyes](https://www.moma.org/calendar/film/5009), here the [Trailer](https://www.youtube.com/watch?v=A0fedg-Skns), and here a [full stream](https://www.youtube.com/watch?v=f8Iz-t_zsQM).
+- Xu Bing's [Dragonfly Eyes](https://www.moma.org/calendar/film/5009), here the [Trailer](https://www.youtube.com/watch?v=A0fedg-Skns), and here a [full stream](https://archive.org/details/dragonfly.-eyes.-aka.-qing.-ting.-zhi.-yan.-2017.-hd-720-p.-x-264.-aac.-mandarin.-eng).
 - Cickindunt (Vitalii Cherepanov & Anna Cherepanova)'s [CCTV movies](https://www.youtube.com/watch?v=oyLoMbDl8fM), and their use and manipulation of public space.
 
 ### Tools, Hard- and Software, Interactivity Experiments
