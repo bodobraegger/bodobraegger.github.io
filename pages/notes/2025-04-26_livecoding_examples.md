@@ -208,7 +208,7 @@ render(o0)
 
 ## small audio reactive example
 
-[The below example also only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=Ti1f0Sf50k8xIQh6)
+[The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=Ti1f0Sf50k8xIQh6)
 
 ```js
 // https://hydra.ojack.xyz/?sketch_id=Ti1f0Sf50k8xIQh6
@@ -228,7 +228,7 @@ render(o0)
 
 ## small mouse reactive example
 
-[The below example also only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF)
+[The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF)
 ```js
 // https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF
 // licensed with CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
