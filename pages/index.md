@@ -4,7 +4,7 @@ description: Bodo Braegger's Portfolio
 plum: true
 ---
 
-Hi, I am Bodo Braegger, and I make hard- and software. I currently work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zürich](https://ethz.ch/) - the research university where I studied Computer Science.<br>
+Hi, I am Bodo Braegger, and I make hard- and software for art and research. I am currently studying [Transdisciplinary Arts](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies) at [ZHdK](https://www.zhdk.ch/en/zurich-university-of-the-arts-1), and work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zürich](https://ethz.ch/) - the research university where I studied Computer Science.<br>
 
 This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on.
 <!-- 
@@ -22,6 +22,8 @@ Find me on
 
 <p flex="~ gap-3 wrap" class="mt--2!">
   <a href="https://github.com/bodobraegger" target="_blank"><span op75 i-simple-icons-github /> GitHub</a>
+  <a href="https://instagram.com/bodo.braegger" target="_blank"><span op75 i-simple-icons-instagram /> Instagram</a>
+  
 </p>
 
 and for inquiries, please contact me via
