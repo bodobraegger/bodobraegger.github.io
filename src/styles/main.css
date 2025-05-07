@@ -6,6 +6,9 @@
 
 html {
   background-color: var(--c-bg);
+  /* background:
+    linear-gradient(to bottom, var(--c-bg), transparent),
+    url(../assets/images/noise.svg); */
   overflow-x: hidden;
   overflow-y: scroll;
   --fg: #444;
