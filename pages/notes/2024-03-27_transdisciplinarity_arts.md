@@ -1,5 +1,5 @@
 ---
-title: Assessment Dialogue, Interdisciplinary Studies
+title: Interdisciplinary Studies Dialogue
 place: Toni-Areal, Zürich, Switzerland
 date: 2024-03-27T11:20:00.000+01:00
 lang: en
