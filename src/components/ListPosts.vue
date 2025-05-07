@@ -76,7 +76,7 @@ function getGroupName(p: Post) {
               to: route.path,
             }
           "
-          class="item block font-normal mb-6 mt-2 no-underline"
+          class="item block mb-6 mt-2 no-underline"
         >
           <li class="no-underline" flex="~ col md:row gap-2 md:items-center">
             <div class="title text-lg leading-1.2em" flex="~ gap-2 wrap">
@@ -85,7 +85,7 @@ function getGroupName(p: Post) {
                 align-middle flex-none
                 class="text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
               >中文</span>
-              <span align-middle>{{ route.title }}</span>
+              <span align-middle class="font-serif font-bold">{{ route.title }}</span>
             </div>
 
             <div flex="~ gap-2 items-center">
@@ -114,7 +114,7 @@ function getGroupName(p: Post) {
                 title="Provided in radio"
               />
 
-              <span text-sm font-serif font-800 color-blue-700  op50 ws-nowrap>
+              <span text-sm font-serif color-blue-700  op80 ws-nowrap>
                 {{ formatDate(route.date, true) }}
               </span>
               <span v-if="route.duration" text-sm font-light op40 ws-nowrap>· {{ route.duration }}</span>
@@ -127,7 +127,7 @@ function getGroupName(p: Post) {
               >中文</span>
             </div>
           </li>
-          <div v-if="route.place" op50 text-sm font-light hidden mt--2 md:block>
+          <div v-if="route.place" op50 text-sm font-light font-serif font-italic  hidden mt--2 md:block>
             {{ route.place }}
           </div>
         </component>
