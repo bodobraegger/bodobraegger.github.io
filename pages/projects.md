@@ -6,6 +6,10 @@ plum: true
 wrapperClass: 'text-center'
 projects:
   Current Focus:
+    - name: Transdisciplinary Studies @ ZHdK
+      link: 'https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies'
+      desc: 'I am currently enrolled in the <a href="https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies">Transdisciplinary Studies</a> program at <a href="https://www.zhdk.ch/en">ZHdK</a>, where I am exploring the intersection of music, visual art, technology, and science.'
+      icon: 'i-carbon-chart-multitype'
     - name: Software Engineer @ ETH Zürich
       link: 'https://ethz.ch'
       desc: 'I work at the <a href="https://descil.ethz.ch/">Decision Science Laboratory</a>, where I maintain the existing lab infrastructure and develop new tools for behavioral research, mainly using Python and C#. I also containerize the tech stack and migrate it to an in-house Kubernetes cluster.'
