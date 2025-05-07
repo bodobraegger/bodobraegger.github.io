@@ -62,7 +62,7 @@ function getGroupName(p: Post) {
           '--enter-step': '60ms',
         }"
       >
-        <span text-8em color-transparent absolute left--3rem top--2rem font-medium text-stroke-2 text-stroke-hex-aaa op20>{{ getGroupName(route) }}</span>
+        <span text-8em absolute left--3rem top--2rem op-20 color-blue-700 font-serif font-200 font-italic>{{ getGroupName(route) }}</span>
       </div>
       <div>
         <component
@@ -114,7 +114,7 @@ function getGroupName(p: Post) {
                 title="Provided in radio"
               />
 
-              <span text-sm font-light op50 ws-nowrap>
+              <span text-sm font-serif font-800 color-blue-700  op50 ws-nowrap>
                 {{ formatDate(route.date, true) }}
               </span>
               <span v-if="route.duration" text-sm font-light op40 ws-nowrap>· {{ route.duration }}</span>
