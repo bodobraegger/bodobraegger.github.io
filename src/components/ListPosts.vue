@@ -88,7 +88,7 @@ function getGroupName(p: Post) {
                 align-middle flex-none
                 class="text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
               >中文</span>
-              <span align-middle class="font-serif font-bold">{{ route.title }}</span>
+              <span align-middle class="font-serif tracking-wider">{{ route.title }}</span>
             </div>
 
             <div flex="~ gap-2 items-center">
