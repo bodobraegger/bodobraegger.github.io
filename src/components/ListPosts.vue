@@ -62,7 +62,10 @@ function getGroupName(p: Post) {
           '--enter-step': '60ms',
         }"
       >
-        <span text-8em absolute left--3rem top--2rem op-20 color-blue-700 font-serif font-200 font-italic>{{ getGroupName(route) }}</span>
+        <span class="absolute left--3rem top--2rem op-20 color-blue-700 font-serif font-200 font-italic text-8em"
+          :class="{'max-sm:text-5.4em': getGroupName(route) === 'Upcoming'}"
+        > {{ getGroupName(route) }}
+        </span>
       </div>
       <div>
         <component
