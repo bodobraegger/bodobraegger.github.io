@@ -181,22 +181,22 @@
     "/assets/Ogg-Thin-B2g9laZx.otf",
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
-  "2023-12-16_web-bl_fIiSP.js": [],
-  "2024-01-17_front_end_optimization-LKHFa5KF.js": [],
-  "2024-02-27_livecoding_docs-Dsk-HiCs.js": [],
-  "2024-03-27_transdisciplinarity_arts-BfcQ2Q6T.js": [],
-  "2024-04-14_photography-B2KlPfc3.js": [],
-  "2024-04-24_images-CFTQ_ril.js": [
+  "2023-12-16_web-q1lnrQ2r.js": [],
+  "2024-01-17_front_end_optimization-D2GApkv9.js": [],
+  "2024-02-27_livecoding_docs-BPuxeGO5.js": [],
+  "2024-03-27_transdisciplinarity_arts-HBSC7I_3.js": [],
+  "2024-04-14_photography-BNwQXiHf.js": [],
+  "2024-04-24_images-C7CEj9a3.js": [
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
-  "2024-04-25_chess-BZgbEo4e.js": [
+  "2024-04-25_chess-CoTHiFE_.js": [
     "/assets/2024-04-25_chess-DTUnXwub.css"
   ],
-  "2025-04-26_livecoding_examples-B3fZ72AZ.js": [],
-  "2025-05-08_producing_composing_advanced-BclLPkMF.js": [],
-  "2025-05-08_transcultural_collaboration-BlMVUGlk.js": [],
-  "404-R-t3MHVn.js": [],
-  "_...404_-DrW9OdzE.js": [],
+  "2025-04-26_livecoding_examples-DTGrOFee.js": [],
+  "2025-05-08_producing_composing_advanced-D3Pngz3Q.js": [],
+  "2025-05-08_transcultural_collaboration-DPwgGOEe.js": [],
+  "404-Bga7T2EH.js": [],
+  "_...404_-D4dpn6GC.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -223,8 +223,8 @@
     "/assets/Ogg-Thin-B2g9laZx.otf",
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
-  "index-Ua6jv5CK.js": [],
-  "index-WhgVHKGR.js": [],
+  "index-CikFpn2O.js": [],
+  "index-DGy3r_eS.js": [],
   "index.html": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -1006,10 +1006,10 @@
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
   "pages/404.md": [
-    "/assets/404-R-t3MHVn.js"
+    "/assets/404-Bga7T2EH.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-DrW9OdzE.js"
+    "/assets/_...404_-D4dpn6GC.js"
   ],
   "pages/index.md": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1038,55 +1038,55 @@
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-bl_fIiSP.js"
+    "/assets/2023-12-16_web-q1lnrQ2r.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-LKHFa5KF.js"
+    "/assets/2024-01-17_front_end_optimization-D2GApkv9.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-Dsk-HiCs.js"
+    "/assets/2024-02-27_livecoding_docs-BPuxeGO5.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-BfcQ2Q6T.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-HBSC7I_3.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-B2KlPfc3.js"
+    "/assets/2024-04-14_photography-BNwQXiHf.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-CFTQ_ril.js",
+    "/assets/2024-04-24_images-C7CEj9a3.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-BZgbEo4e.js",
+    "/assets/2024-04-25_chess-CoTHiFE_.js",
     "/assets/2024-04-25_chess-DTUnXwub.css"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=4b42c27c&lang.css": [
-    "/assets/2024-04-25_chess-BZgbEo4e.js",
+    "/assets/2024-04-25_chess-CoTHiFE_.js",
     "/assets/2024-04-25_chess-DTUnXwub.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-B3fZ72AZ.js"
+    "/assets/2025-04-26_livecoding_examples-DTGrOFee.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-BclLPkMF.js"
+    "/assets/2025-05-08_producing_composing_advanced-D3Pngz3Q.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-BlMVUGlk.js"
+    "/assets/2025-05-08_transcultural_collaboration-DPwgGOEe.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-Ua6jv5CK.js"
+    "/assets/index-DGy3r_eS.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-WhgVHKGR.js"
+    "/assets/index-CikFpn2O.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "pages/template.md": [
-    "/assets/template-CAmc_Y-z.js"
+    "/assets/template-nUJCZ4nG.js"
   ],
-  "projects-BiqcAQw5.js": [
+  "projects-BQioLI6D.js": [
     "/assets/projects-DQvNIVJd.css"
   ],
   "public/images/maxi/6 pigeons on my carpet, oil on canvas, 130cm  x 160 cm, 2022.jpg": [
@@ -1130,7 +1130,7 @@
     "/assets/pigeons and glory_ oil on cnavas_ 130cm x 160cm_ 2023-BKfL7Ap6.jpg"
   ],
   "public/logos/monogram-sw16.svg": [
-    "/assets/monogram-sw16-CdD_r4aM.js"
+    "/assets/monogram-sw16-C5Sjpf4V.js"
   ],
   "public/uploads/in-de-24.png": [
     "/assets/in-de-24-BWZE-5Kc.js",
@@ -1215,38 +1215,38 @@
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
   "src/components/ListImages.vue": [
-    "/assets/2024-04-24_images-CFTQ_ril.js",
+    "/assets/2024-04-24_images-C7CEj9a3.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListImages.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/2024-04-24_images-CFTQ_ril.js",
+    "/assets/2024-04-24_images-C7CEj9a3.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListImages.vue?vue&type=style&index=0&scoped=4494e07a&lang.css": [
-    "/assets/2024-04-24_images-CFTQ_ril.js",
+    "/assets/2024-04-24_images-C7CEj9a3.js",
     "/assets/2024-04-24_images-CrJOK0_x.css"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CqSElS7z.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-BQV9WCgT.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=af3e147e&lang.css": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "src/components/Logo.vue": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "src/components/Logo.vue?vue&type=style&index=0&scoped=b03bb9ac&lang.css": [
-    "/assets/projects-BiqcAQw5.js",
+    "/assets/projects-BQioLI6D.js",
     "/assets/projects-DQvNIVJd.css"
   ],
   "src/components/NavBar.vue": [
@@ -1354,7 +1354,7 @@
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-WhgVHKGR.js"
+    "/assets/index-CikFpn2O.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1564,7 +1564,7 @@
     "/assets/Ogg-Thin-B2g9laZx.otf",
     "/assets/Ogg-ThinItalic-Mr9LC09e.otf"
   ],
-  "template-CAmc_Y-z.js": [],
+  "template-nUJCZ4nG.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
