@@ -22,10 +22,10 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
     >
       <div i-ri-arrow-up-line />
     </button>
-    <nav class="nav">
+    <nav class="nav font-mono">
       <div class="left">
         <RouterLink
-          class="select-none outline-none font-mono w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
+          class="select-none outline-none w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
           to="/"
           focusable="false"
         >
@@ -36,13 +36,13 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
       </div>
       <!-- <div class="spacer" /> -->
       <div class="right" print:op0>
-        <RouterLink class="font-mono" to="/" title="Home">
+        <RouterLink to="/" title="Home">
           <span>Home</span>
         </RouterLink>
-        <RouterLink id="projects" class="font-mono" to="/projects" title="Projects">
+        <RouterLink id="projects" to="/projects" title="Projects">
           <span>Projects</span>
         </RouterLink>
-        <RouterLink id="notes" class="font-mono" to="/notes" title="Blog">
+        <RouterLink id="notes" to="/notes" title="Blog">
           <span>Notes</span>
         </RouterLink>
         <!-- <a title="Webring" href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener" 
