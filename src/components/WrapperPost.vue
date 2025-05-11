@@ -117,7 +117,7 @@ if(frontmatter.hydra) {
             console.log('hydra-synth loaded');
             let hydra, hydraCanvas;
             hydraCanvas = document.createElement("canvas");
-            let width = 650-16*2;
+            let width = 650-18*2;
             let height = width;
             hydraCanvas.width = width;
             hydraCanvas.height = height;
@@ -135,9 +135,9 @@ if(frontmatter.hydra) {
             const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
             codeBlocks.forEach((preEl) => {
                 // const parentEl = preEl.parentElement
-                preEl.classList += ' grid overflow-x-auto';
-                const codeEl = preEl.firstChild
-                codeEl.classList += " row-start-1 col-start-1 z-1 min-h-618px min-w-618px hover:cursor-pointer"
+                preEl.classList += ' grid overflow-x-hidden grid-cols-1 grid-rows-1 relative';
+                const codeEl = preEl.firstChild as HTMLElement
+                codeEl.classList += " row-start-1 col-start-1 z-1 min-h-614px min-w-614px hover:cursor-pointer"
 
                 const placeholder = document.createElement('div');
                 placeholder.classList += "hydracontainer row-start-1 col-start-1 z-0";
@@ -145,43 +145,39 @@ if(frontmatter.hydra) {
                 preEl.insertAdjacentElement('beforeend', placeholder)
                 
                 const linkEl = document.createElement('a')
-                linkEl.href = `https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent))}`
+                linkEl.href = `https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent!))}`
                 linkEl.target = "_blank"
                 linkEl.textContent = "open in hydra"
-                linkEl.classList += "artwork-link"
-                preEl.children[1].insertAdjacentElement('afterend', linkEl)
+                linkEl.classList += "artwork-link";
+                preEl.children[1].insertAdjacentElement('afterend', linkEl);
 
-                preEl.onfocus = () => {
+                preEl.addEventListener('focus', () => {
                     // console.log('focusing')
+                    // @ts-ignore - hydra global
                     hush();
-                    solid(0,0,0,0).out(o0)
-                    solid(0,0,0,0).out(o1)
-                    solid(0,0,0,0).out(o2)
-                    solid(0,0,0,0).out(o3)
-                    render(o0);
                     setTimeout(()=>{
-                        eval(codeEl.textContent);
+                        eval(codeEl.textContent!);
                         // console.log('evaluated, rendering, and waiting for 60ms');
-                    }, 60);
+                    }, 20);
                     placeholder.appendChild(hydraCanvas);
                     // make text semi transparent
                     codeEl.classList.add('op-50');
                     // add black background
                     placeholder.classList.add('bg-black!');
-                }
-                preEl.onfocusout = () => {
+                });
+                preEl.addEventListener("focusout", (e) => {
                     // remove black background
                     codeEl.classList.remove('op-50');
                     placeholder.classList.remove('bg-black!');
-                }
+                });
 
                 var observer = new IntersectionObserver(function (entries) {
                 if (entries[0].isIntersecting === true) {
                     // console.log('intersecting');
-                    preEl.onfocus();
+                    preEl.dispatchEvent(new Event('focus'));
                 } else {
                     // console.log('not intersecting');
-                    preEl.onfocusout();
+                    preEl.dispatchEvent(new Event('focusout'));
                 }
                 }, { threshold: [1], rootMargin: "0% 100% 0% 100%"});
                 observer.observe(preEl);
