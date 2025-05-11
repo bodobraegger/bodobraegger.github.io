@@ -144,6 +144,7 @@
 }
 .prose pre {
   overflow-x: auto;
+  scrollbar-width: none;
   font-size: 0.875em;
   line-height: 1.7142857;
   margin-top: 1.7142857em;
