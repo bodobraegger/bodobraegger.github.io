@@ -1,5 +1,5 @@
 ---
-title: Producing and Composing Advanced
+title: Dossier - Producing and Composing Advanced
 place: Zürich, Switzerland
 date: 2025-05-12T14:29:00.000+01:00
 lang: en
