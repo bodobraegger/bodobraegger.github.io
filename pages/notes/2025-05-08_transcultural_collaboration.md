@@ -6,7 +6,7 @@ lang: en
 type: note+blog
 hydra: true
 plum: true
-draft: false
+draft: true
 ---
 
 WIP: Please check back later.
