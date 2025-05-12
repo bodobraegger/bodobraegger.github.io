@@ -62,7 +62,7 @@ function getGroupName(p: Post) {
           '--enter-step': '60ms',
         }"
       >
-        <span class="absolute left--3rem top--2rem op-20 color-blue-700 font-serif font-200 font-italic text-8em"
+        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
           :class="{'max-sm:text-5.4em': getGroupName(route) === 'Upcoming'}"
         > {{ getGroupName(route) }}
         </span>
@@ -117,7 +117,7 @@ function getGroupName(p: Post) {
                 title="Provided in radio"
               />
 
-              <span text-sm font-serif color-blue-700  op80 ws-nowrap>
+              <span text-sm font-serif op50 ws-nowrap>
                 {{ formatDate(route.date, true) }}
               </span>
               <span v-if="route.duration" text-sm font-light op40 ws-nowrap>· {{ route.duration }}</span>
