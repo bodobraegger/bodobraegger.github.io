@@ -13,7 +13,7 @@ export default defineConfig({
       '--enter-stage': n,
     })],
     ['font-sans', {'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif'}],
-    ['font-serif', {'font-family': '"Ogg-Complete", Ogg, "Times New Roman",Georgia,serif'}],
+    ['font-serif', {'font-family': '"Ogg", Ogg, "Times New Roman",Georgia,serif'}],
     ['font-mono', {'font-family': 'ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace'}],
     
   ],
