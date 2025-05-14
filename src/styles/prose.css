@@ -132,6 +132,7 @@
   color: var(--fg-deep);
   font-weight: 600;
   font-size: 0.875em;
+  font-family: BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace;
 }
 .prose code::before {
   content: '`';
