@@ -1,4 +1,4 @@
-// import '@unocss/reset/tailwind.css'
+import '@unocss/reset/tailwind.css'
 import 'floating-vue/dist/style.css'
 import 'markdown-it-github-alerts/styles/github-colors-light.css'
 import 'markdown-it-github-alerts/styles/github-colors-dark-class.css'
