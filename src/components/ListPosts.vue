@@ -62,7 +62,7 @@ function getGroupName(p: Post) {
           '--enter-step': '60ms',
         }"
       >
-        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
+        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
           :class="{'max-sm:text-5.4em': getGroupName(route) === 'Upcoming'}"
         > {{ getGroupName(route) }}
         </span>
@@ -88,7 +88,7 @@ function getGroupName(p: Post) {
                 align-middle flex-none
                 class="text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
               >中文</span>
-              <span align-middle class="font-serif tracking-wider">{{ route.title }}</span>
+              <span align-middle class="font- tracking-wider">{{ route.title }}</span>
             </div>
 
             <div flex="~ gap-2 items-center">
@@ -117,12 +117,12 @@ function getGroupName(p: Post) {
                 title="Provided in radio"
               />
 
-              <span text-sm font-serif op50 ws-nowrap>
+              <span text-sm font-serif-extra op50 ws-nowrap>
                 {{ formatDate(route.date, true) }}
               </span>
               <span v-if="route.duration" text-sm font-light op40 ws-nowrap>· {{ route.duration }}</span>
               <span v-if="route.platform" text-sm font-light op40 ws-nowrap>· {{ route.platform }}</span>
-              <span v-if="route.place" text-sm font-light font-serif font-italic op40 ws-nowrap md:hidden>· {{ route.place }}</span>
+              <span v-if="route.place" text-sm font-light font-serif-extra font-italic op40 ws-nowrap md:hidden>· {{ route.place }}</span>
               <span
                 v-if="route.lang === 'zh'"
                 align-middle flex-none
@@ -130,7 +130,7 @@ function getGroupName(p: Post) {
               >中文</span>
             </div>
           </li>
-          <div v-if="route.place" op50 text-sm font-light font-serif font-italic hidden mt--2 md:block>
+          <div v-if="route.place" op50 text-sm font-light font-serif-extra font-italic hidden mt--2 md:block>
             {{ route.place }}
           </div>
         </component>

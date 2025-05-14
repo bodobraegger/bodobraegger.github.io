@@ -145,3 +145,59 @@
     font-weight: 300;
     src: url('/src/assets/fonts/Ogg-ThinItalic.otf') format('otf');
 }
+
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/src/assets/fonts/BradfordLL-Bold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: italic;
+    font-weight: 700;
+    src: url('/src/assets/fonts/BradfordLL-BoldItalic.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/src/assets/fonts/BradfordLL-Light.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: italic;
+    font-weight: 300;
+    src: url('/src/assets/fonts/BradfordLL-LightItalic.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/src/assets/fonts/BradfordLL-Medium.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: italic;
+    font-weight: 500;
+    src: url('/src/assets/fonts/BradfordLL-MediumItalic.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/src/assets/fonts/BradfordLL-Regular.otf') format('opentype');
+}
+@font-face {
+    font-family: 'BradfordLL';
+    font-style: italic;
+    font-weight: 400;
+    src: url('/src/assets/fonts/BradfordLL-RegularItalic.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'BradfordMonoLL';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/src/assets/fonts/BradfordMonoLL-Regular.otf') format('opentype');
+}
