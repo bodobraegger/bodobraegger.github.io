@@ -16,6 +16,10 @@ html {
   --fg-deep: #222;
   --fg-deeper: #111;
   scrollbar-gutter: stable;
+  --fonts-sans: ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --fonts-serif: BradfordLL, Ogg, "Times New Roman",Georgia,serif;
+  --fonts-serif-extra: Ogg, "Times New Roman",Georgia,serif;
+  --fonts-mono: BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace
 }
 html:has(.lightbox) {
   overflow: hidden;
