@@ -21,15 +21,24 @@ I <3 creating, and software engineering has proven to be a very flexible medium.
 Find me on
 
 <p flex="~ gap-3 wrap" class="mt--2!">
-  <a href="https://github.com/bodobraegger" target="_blank"><span op75 i-simple-icons-github /> GitHub</a>
-  <a href="https://instagram.com/bodo.braegger" target="_blank"><span op75 i-simple-icons-instagram /> Instagram</a>
+  <a href="https://github.com/bodobraegger" target="_blank">
+    <!-- <span op75 i-simple-icons-github />  -->
+    GitHub
+  </a>
+  <a href="https://instagram.com/bodo.braegger" target="_blank">
+    <!-- <span op75 i-simple-icons-instagram /> -->
+    Instagram
+  </a>
   
 </p>
 
 and for inquiries, please contact me via
 
 <p flex="~ gap-3 wrap" class="mt--2!">
-  <a href="mailto:hi@bbo.do"><span op75 i-carbon-email /> hi@bbo.do</a>
+  <a href="mailto:hi@bbo.do">
+    <!-- <span op75 i-carbon-email /> -->
+    hi@bbo.do
+  </a>
 </p>
 
 <!-- If you enjoy my work, consider sponsoring me on [<span i-carbon-favorite /> GitHub Sponsor](https://github.com/sponsors/bodobraegger) to keep them sustainable. -->
