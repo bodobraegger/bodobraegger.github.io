@@ -203,7 +203,7 @@ if(frontmatter.hydra) {
     class="prose m-auto mb-8"
     :class="[frontmatter.wrapperClass]"
   >
-    <h1 class="mb-0">
+    <h1 class="font-mono mb-0">
       {{ frontmatter.display ?? frontmatter.title }}
     </h1>
     <p
