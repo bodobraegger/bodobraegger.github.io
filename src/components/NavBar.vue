@@ -12,7 +12,7 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
 </script>
 
 <template>
-  <header class="header z-40 position-sticky top-0 backdrop-blur backdrop-blur-custom">
+  <header class="header z-40 position-sticky top-0 backdrop-blur-sm md-backdrop-blur-custom">
     <!-- <button
       title="Scroll to top"
       fixed right-3 bottom-3 w-10 h-10 hover:op100 rounded-full
@@ -59,10 +59,12 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
 </template>
 
 <style scoped>
-.backdrop-blur-custom {
-  backdrop-filter: 
-    blur(2px) 
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='b' x='0' y='0'%3E%3CfeFlood x='4' y='4' height='2' width='2'/%3E%3CfeComposite width='5' height='5'/%3E%3CfeTile result='a'/%3E%3CfeComposite in='SourceGraphic' in2='a' operator='in'/%3E%3CfeMorphology operator='dilate' radius='2'/%3E%3C/filter%3E%3C/svg%3E#b");
+.md-backdrop-blur-custom {
+  @media (min-width: 640px) {
+    backdrop-filter: 
+      blur(2px) 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='b' x='0' y='0'%3E%3CfeFlood x='4' y='4' height='2' width='2'/%3E%3CfeComposite width='5' height='5'/%3E%3CfeTile result='a'/%3E%3CfeComposite in='SourceGraphic' in2='a' operator='in'/%3E%3CfeMorphology operator='dilate' radius='2'/%3E%3C/filter%3E%3C/svg%3E#b");
+  }
 }
 
 .header h1 {
@@ -102,6 +104,11 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
   transition: opacity 0.2s ease;
   outline: none;
   border: none;
+  opacity: 0.7;
+}
+
+.nav a:hover {
+  opacity: 1;
 }
 
 .nav a:not(.select-none) {
@@ -129,8 +136,5 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
   margin: auto;
 }
 
-.nav:has(a:hover) .right a:not(:hover) {
-  opacity: 0.6;
-}
 
 </style>
