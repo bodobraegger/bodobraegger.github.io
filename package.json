@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.16.1",
-    "@iconify/json": "^2.2.206",
     "@octokit/rest": "^20.1.0",
     "@types/degit": "^2.8.6",
     "@types/diacritics": "^1.3.3",
