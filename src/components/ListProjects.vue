@@ -35,10 +35,10 @@ function prependLocalLink(link: string) {
           :class="!item.link ? 'opacity-0 pointer-events-none h-0 -mt-8 -mb-4' : ''"
           :title="item.name"
         >
-          <div v-if="item.icon" class="pt-2 pr-5">
+          <!-- <div v-if="item.icon" class="pt-2 pr-5">
             <Logo v-if="item.icon === 'monogram'" class="text-4xl opacity-50" />
             <div v-else class="text-3xl opacity-50" :class="item.icon || 'i-carbon-unknown'" />
-          </div>
+          </div> -->
           <div class="flex-auto">
             <div class="text-normal">{{ item.name }}</div>
             <div class="desc text-sm font-light opacity-75 font-normal prose" v-html="item.desc" />
