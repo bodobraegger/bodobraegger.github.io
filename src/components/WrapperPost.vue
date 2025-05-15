@@ -231,7 +231,7 @@ if(frontmatter.hydra) {
       v-if="frontmatter.draft"
       bg-orange-4:10 text-orange-4 border="l-3 orange-4" px4 py2
     >
-      This is a draft post, the content may be incomplete. Please check back later.
+      This is a draft, the content may be incomplete. Please check back later.
     </p>
   </div>
   <article ref="content" :class="[frontmatter.tocAlwaysOn ? 'toc-always-on' : '', frontmatter.class]">
