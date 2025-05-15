@@ -12,7 +12,7 @@ import WebringLogo from '/src/assets/logos/webring.icon.white.svg';
 </script>
 
 <template>
-  <header class="header z-40 position-sticky top-0 backdrop-blur-custom">
+  <header class="header z-40 position-sticky top-0 backdrop-blur backdrop-blur-custom">
     <!-- <button
       title="Scroll to top"
       fixed right-3 bottom-3 w-10 h-10 hover:op100 rounded-full
