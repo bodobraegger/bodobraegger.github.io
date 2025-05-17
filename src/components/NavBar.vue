@@ -22,10 +22,10 @@
     >
       <div i-ri-arrow-up-line />
     </button> -->
-    <nav class="nav font-mono">
+    <nav class="nav font-mono select-none">
       <div class="left hidden sm:block">
         <RouterLink
-          class="select-none outline-none w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
+          class="w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
           to="/"
           focusable="false"
         >
@@ -104,20 +104,13 @@
   text-decoration: none;
   color: inherit;
   transition: opacity 0.2s ease;
-  outline: none;
-  border: none;
   opacity: 0.7;
+  border: 1px dashed var(--fg-deep);
+  padding: 0 2px;
 }
 
 .nav a:hover {
   opacity: 1;
-}
-
-.nav a:not(.select-none) {
-  border: 1px dashed var(--fg-deep);
-}
-
-.nav a:not(.select-none):hover {
   border: 1px solid var(--fg-deeper);
 }
 
