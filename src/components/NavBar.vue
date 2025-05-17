@@ -23,7 +23,7 @@
       <div i-ri-arrow-up-line />
     </button> -->
     <nav class="nav font-mono">
-      <div class="left">
+      <div class="left hidden sm:block">
         <RouterLink
           class="select-none outline-none w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
           to="/"
@@ -35,14 +35,14 @@
         </RouterLink>
       </div>
       <!-- <div class="spacer" /> -->
-      <div class="right" print:op0>
-        <RouterLink to="/" title="Home">
+      <div class="right print:op0">
+        <RouterLink to="/" title="Home" class="justify-self-start">
           <span>Home</span>
         </RouterLink>
-        <RouterLink id="projects" to="/projects" title="Projects">
+        <RouterLink id="projects" to="/projects" title="Projects" class="justify-self-center">
           <span>Projects</span>
         </RouterLink>
-        <RouterLink id="notes" to="/notes" title="Blog">
+        <RouterLink id="notes" to="/notes" title="Blog" class="justify-self-center">
           <span>Notes</span>
         </RouterLink>
         <!-- <a title="Webring" href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener"
@@ -52,7 +52,7 @@
         <a id="github" class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
           <div i-uil-github-alt />
         </a> -->
-        <ToggleTheme />
+        <ToggleTheme class="justify-self-end" />
       </div>
     </nav>
   </header>
@@ -95,10 +95,6 @@
   box-sizing: border-box;
 }
 
-.nav > *:not(:first-child) {
-  margin: auto;
-}
-
 .nav img {
   margin-bottom: 0;
 }
@@ -137,9 +133,5 @@
   display: grid;
   grid-gap: 1.2rem;
   grid-auto-flow: column;
-}
-
-.nav .right > * {
-  margin: auto;
 }
 </style>
