@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import Logo from './Logo.vue';
-
 defineProps<{ projects: Record<string, any[]> }>()
 
 function slug(name: string) {
-  return name.toLowerCase().replace(/[\s\\\/]+/g, '-')
+  return name.toLowerCase().replace(/[\s\\/]+/g, '-')
 }
 
 function prependLocalLink(link: string) {
   return (link.startsWith('http') || link.startsWith('/')) ? link : `/projects/${link}`
 }
-
 </script>
 
 <template>
   <div class="prose m-auto max-w-300">
     <div
-      v-for="key, cidx in Object.keys(projects)" :key="key"
+      v-for="key, in Object.keys(projects)" :key="key"
     >
       <h4 :id="slug(key)" class="mt-15 mb-2 font-medium op90">
         {{ key }}
@@ -39,7 +36,7 @@ function prependLocalLink(link: string) {
             <Logo v-if="item.icon === 'monogram'" class="text-4xl opacity-50" />
             <div v-else class="text-3xl opacity-50" :class="item.icon || 'i-carbon-unknown'" />
           </div> -->
-          <div class="flex-auto">
+          <div class="flex-auto b-1 p-2 b-dashed hover:b-solid">
             <div class="text-normal">{{ item.name }}</div>
             <div class="desc text-sm font-light opacity-75 font-normal prose" v-html="item.desc" />
           </div>
