@@ -70,7 +70,7 @@ html:not(.dark) .shiki span {
 }
 
 .prose a:hover {
-  border: 1px dashed var(--fg);
+  border: 1px solid var(--fg-deep);
 }
 
 .prose a.artwork-link {
@@ -80,7 +80,6 @@ html:not(.dark) .shiki span {
 .prose a.artwork-link:hover {
   border: 1px dashed var(--fg-deep);
 }
-
 
 .prose a code {
   color: inherit;
@@ -180,9 +179,8 @@ h6:focus .header-anchor {
 }
 
 .table-of-contents-anchor {
-  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base bg-op-20 rounded
-    text-hex-8887 border border-base shadow md: border-transparent md:
-    shadow-none transition duration-400;
+  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base bg-op-20 rounded text-hex-8887 border border-base
+    shadow md: border-transparent md: shadow-none transition duration-400;
 }
 
 .table-of-contents > ul {
