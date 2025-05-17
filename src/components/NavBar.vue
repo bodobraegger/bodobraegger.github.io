@@ -25,12 +25,12 @@
     <nav class="nav font-mono select-none">
       <div class="left hidden sm:block">
         <RouterLink
-          class="w-fit hidden sm:block b-dashed b-1 router-link-exact-active"
+          class="w-fit block b-dashed b-1 router-link-exact-active bg-[var(--c-bg)]"
           to="/"
           focusable="false"
         >
           <!-- <Logo /> -->
-          <span class="hidden sm:block">bodobraegger</span>
+          <span>bodobraegger</span>
           <!-- <span class="sm:hidden">b</span> -->
         </RouterLink>
       </div>
@@ -52,7 +52,7 @@
         <a id="github" class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
           <div i-uil-github-alt />
         </a> -->
-        <ToggleTheme class="justify-self-end" />
+        <ToggleTheme class="justify-self-end bg-[var(--c-bg)]" />
       </div>
     </nav>
   </header>
