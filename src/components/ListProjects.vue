@@ -36,7 +36,7 @@ function prependLocalLink(link: string) {
             <Logo v-if="item.icon === 'monogram'" class="text-4xl opacity-50" />
             <div v-else class="text-3xl opacity-50" :class="item.icon || 'i-carbon-unknown'" />
           </div> -->
-          <div class="flex-auto b-1 p-2 b-dashed hover:b-solid">
+          <div class="flex-auto">
             <div class="text-normal">{{ item.name }}</div>
             <div class="desc text-sm font-light opacity-75 font-normal prose" v-html="item.desc" />
           </div>

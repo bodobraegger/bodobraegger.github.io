@@ -25,7 +25,7 @@
     <nav class="nav font-mono select-none">
       <div class="left hidden sm:block">
         <RouterLink
-          class="w-fit block b-dashed b-1 router-link-exact-active bg-[var(--c-bg)]"
+          class="w-fit block b-dashed b-1 router-link-exact-active"
           to="/"
           focusable="false"
         >
@@ -52,7 +52,7 @@
         <a id="github" class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
           <div i-uil-github-alt />
         </a> -->
-        <ToggleTheme class="justify-self-end bg-[var(--c-bg)]" />
+        <ToggleTheme class="justify-self-end" />
       </div>
     </nav>
   </header>

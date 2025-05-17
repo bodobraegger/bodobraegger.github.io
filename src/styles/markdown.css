@@ -65,7 +65,7 @@ html:not(.dark) .shiki span {
 .prose a {
   font-weight: inherit;
   text-decoration: none;
-  border: 1px dashed rgba(125, 125, 125, 0.3);
+  border: 1px dashed var(--fg);
   transition: border 0.3s ease-in-out;
 }
 
