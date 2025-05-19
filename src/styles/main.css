@@ -260,3 +260,8 @@ h4 {
 h5 {
   font-weight: 300;
 }
+
+iframe {
+  backdrop-filter: blur(2px);
+  border: 1px dashed var(--fg);
+}
