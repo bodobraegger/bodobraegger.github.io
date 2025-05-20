@@ -88,7 +88,7 @@
 }
 
 .nav {
-  padding: 2rem;
+  padding: 1.75rem;
   width: 100%;
   display: grid;
   grid-template-columns: auto max-content;
