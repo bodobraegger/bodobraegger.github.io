@@ -244,22 +244,22 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "2023-12-16_web-DcYwBEzs.js": [],
-  "2024-01-17_front_end_optimization-CLqtCAXr.js": [],
-  "2024-02-27_livecoding_docs-Da2PaQWZ.js": [],
-  "2024-03-27_transdisciplinarity_arts-D9O0rUht.js": [],
-  "2024-04-14_photography-_ojGOJ1-.js": [],
-  "2024-04-24_images-BUwUNizI.js": [
+  "2023-12-16_web-BswMGE6o.js": [],
+  "2024-01-17_front_end_optimization-DJctH1lj.js": [],
+  "2024-02-27_livecoding_docs-VxU2Uol2.js": [],
+  "2024-03-27_transdisciplinarity_arts-Ce6oC0yt.js": [],
+  "2024-04-14_photography-7onGaCMt.js": [],
+  "2024-04-24_images-DzN1Uojz.js": [
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
-  "2024-04-25_chess-DsG3ACpU.js": [
+  "2024-04-25_chess-D8vY6i_d.js": [
     "/assets/2024-04-25_chess-Bheu7FOI.css"
   ],
-  "2025-04-26_livecoding_examples-jOwgZIU1.js": [],
-  "2025-05-08_producing_composing_advanced-BsR8U6pM.js": [],
-  "2025-05-08_transcultural_collaboration-tIWTNcv3.js": [],
-  "404-CJv4JnS-.js": [],
-  "_...404_-DKhx2HW6.js": [],
+  "2025-04-26_livecoding_examples-CPGjOOmk.js": [],
+  "2025-05-08_producing_composing_advanced-BmmL7IDE.js": [],
+  "2025-05-08_transcultural_collaboration-C3H3mRQV.js": [],
+  "404-BpQg0TRe.js": [],
+  "_...404_-Cb8iuEKe.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -295,8 +295,8 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "index-CzMT46Fc.js": [],
-  "index-_PiqHPmQ.js": [],
+  "index-CT1KTy0b.js": [],
+  "index-p_-jcGKC.js": [],
   "index.html": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -1348,10 +1348,10 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "pages/404.md": [
-    "/assets/404-CJv4JnS-.js"
+    "/assets/404-BpQg0TRe.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-DKhx2HW6.js"
+    "/assets/_...404_-Cb8iuEKe.js"
   ],
   "pages/index.md": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1389,55 +1389,55 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-DcYwBEzs.js"
+    "/assets/2023-12-16_web-BswMGE6o.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-CLqtCAXr.js"
+    "/assets/2024-01-17_front_end_optimization-DJctH1lj.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-Da2PaQWZ.js"
+    "/assets/2024-02-27_livecoding_docs-VxU2Uol2.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-D9O0rUht.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-Ce6oC0yt.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-_ojGOJ1-.js"
+    "/assets/2024-04-14_photography-7onGaCMt.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-BUwUNizI.js",
+    "/assets/2024-04-24_images-DzN1Uojz.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-DsG3ACpU.js",
+    "/assets/2024-04-25_chess-D8vY6i_d.js",
     "/assets/2024-04-25_chess-Bheu7FOI.css"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=4b42c27c&lang.css": [
-    "/assets/2024-04-25_chess-DsG3ACpU.js",
+    "/assets/2024-04-25_chess-D8vY6i_d.js",
     "/assets/2024-04-25_chess-Bheu7FOI.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-jOwgZIU1.js"
+    "/assets/2025-04-26_livecoding_examples-CPGjOOmk.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-BsR8U6pM.js"
+    "/assets/2025-05-08_producing_composing_advanced-BmmL7IDE.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-tIWTNcv3.js"
+    "/assets/2025-05-08_transcultural_collaboration-C3H3mRQV.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-CzMT46Fc.js"
+    "/assets/index-p_-jcGKC.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-_PiqHPmQ.js"
+    "/assets/index-CT1KTy0b.js"
   ],
   "pages/projects.md": [
-    "/assets/projects-mtHuGQAO.js",
+    "/assets/projects-Bqll-tw-.js",
     "/assets/projects-g_nEndKj.css"
   ],
   "pages/template.md": [
-    "/assets/template-D4Qxj8zm.js"
+    "/assets/template-DzPko3DM.js"
   ],
-  "projects-mtHuGQAO.js": [
+  "projects-Bqll-tw-.js": [
     "/assets/projects-g_nEndKj.css"
   ],
   "public/images/maxi/6 pigeons on my carpet, oil on canvas, 130cm  x 160 cm, 2022.jpg": [
@@ -1481,7 +1481,7 @@
     "/assets/pigeons and glory_ oil on cnavas_ 130cm x 160cm_ 2023-BKfL7Ap6.jpg"
   ],
   "public/logos/monogram-sw16.svg": [
-    "/assets/monogram-sw16-BK99yZfK.js"
+    "/assets/monogram-sw16-C11I5gVV.js"
   ],
   "public/uploads/in-de-24.png": [
     "/assets/in-de-24-BWZE-5Kc.js",
@@ -1557,7 +1557,7 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "src/components/Footer.vue?vue&type=style&index=0&scoped=eebd5f70&lang.css": [
+  "src/components/Footer.vue?vue&type=style&index=0&scoped=9c149bec&lang.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -1628,30 +1628,30 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "src/components/ListImages.vue": [
-    "/assets/2024-04-24_images-BUwUNizI.js",
+    "/assets/2024-04-24_images-DzN1Uojz.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListImages.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/2024-04-24_images-BUwUNizI.js",
+    "/assets/2024-04-24_images-DzN1Uojz.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListImages.vue?vue&type=style&index=0&scoped=4494e07a&lang.css": [
-    "/assets/2024-04-24_images-BUwUNizI.js",
+    "/assets/2024-04-24_images-DzN1Uojz.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CgqcGJ0E.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CJ0qeoBI.js"
   ],
   "src/components/ListProjects.vue": [
-    "/assets/projects-mtHuGQAO.js",
+    "/assets/projects-Bqll-tw-.js",
     "/assets/projects-g_nEndKj.css"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/projects-mtHuGQAO.js",
+    "/assets/projects-Bqll-tw-.js",
     "/assets/projects-g_nEndKj.css"
   ],
   "src/components/ListProjects.vue?vue&type=style&index=0&scoped=4a38230b&lang.css": [
-    "/assets/projects-mtHuGQAO.js",
+    "/assets/projects-Bqll-tw-.js",
     "/assets/projects-g_nEndKj.css"
   ],
   "src/components/NavBar.vue": [
@@ -1724,7 +1724,7 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "src/components/NavBar.vue?vue&type=style&index=0&scoped=db6483d1&lang.css": [
+  "src/components/NavBar.vue?vue&type=style&index=0&scoped=4541cb76&lang.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
     "/assets/ModernGothic-Italic-CXF4aOLx.woff2",
@@ -1795,7 +1795,7 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-_PiqHPmQ.js"
+    "/assets/index-CT1KTy0b.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -2077,7 +2077,7 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "template-D4Qxj8zm.js": [],
+  "template-DzPko3DM.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
