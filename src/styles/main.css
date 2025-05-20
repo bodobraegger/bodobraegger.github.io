@@ -264,4 +264,10 @@ h5 {
 iframe {
   backdrop-filter: blur(2px);
   border: 1px dashed var(--fg);
+  margin: calc(1.75rem - 2px) 1.75rem;
+  user-select: none;
+}
+
+iframe:hover {
+  border: 1px solid var(--fg);
 }
