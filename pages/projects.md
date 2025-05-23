@@ -42,7 +42,16 @@ projects:
       link: 'https://github.com/broggoli/chat-room'
       desc: 'I developed a prototype for an automated social media environment for researching chat moderation for the <a href="https://www.ipz.uzh.ch/en.html">UZH Department of Political Science</a>.'
       icon: 'i-carbon-ibm-watsonx-assistant'
-
+  Events and Collectives:
+    - name: Elektrosmog I-VI
+      desc: 'A series of electronic experimental events, raves coupled with lan-parties hosted in squats and off spaces in Zurich. Notably the <a href="https://www.kochareal.ch/">Koch Areal</a>.'
+      link: 'https://www.kochareal.ch/'
+    - name: Regula
+      desc: 'Come back later for more information.'
+      link: 'https://bbo.do/projects'
+    - name: Braui
+      desc: 'Come back later for more information.'
+      link: 'https://bbo.do/projects'
   Games:
     - name: 'slugs'
       link: 'https://github.com/bodobraegger/slugs'
@@ -51,7 +60,7 @@ projects:
       icon: 'i-carbon-fish-multiple'
 
     - name: 'the true walter'
-      link: 'https://bodobraegger.github.io/der-wahre-walter'
+      link: 'walter'
       desc: 'A simple online port of the popular Swiss party game <a href="https://urs.fatamorgana.ch/wahre.html">Der wahre Walter</a>.
         Implemented as a PWA.'
       icon: 'i-ri-book-3-line'
