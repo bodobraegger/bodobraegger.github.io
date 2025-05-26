@@ -9,7 +9,7 @@ import './styles/main.css'
 import './styles/prose.css'
 import './styles/markdown.css'
 
-import 'uno.css'
+// import 'uno.css'
 
 import autoRoutes from 'pages-generated'
 // import NProgress from 'nprogress'
@@ -20,7 +20,6 @@ import { setupRouterScroller } from 'vue-router-better-scroller'
 import FloatingVue from 'floating-vue'
 import App from './App.vue'
 
-
 const routes = autoRoutes.map((i) => {
   return {
     ...i,
@@ -30,11 +29,9 @@ const routes = autoRoutes.map((i) => {
   }
 })
 
-//@ts-ignore
-routes.push({path: '/walter', 
-  redirect: '/der-wahre-walter/'
+// @ts-ignore
+routes.push({ path: '/walter', redirect: '/der-wahre-walter/',
 })
-
 
 export const createApp = ViteSSG(
   App,
@@ -63,15 +60,15 @@ export const createApp = ViteSSG(
       })
 
       // router.beforeEach(() => {
-        // NProgress.start()
+      // NProgress.start()
       // })
       router.afterEach((to, from) => {
         // reload the page once when navigating to /der-wahre-walter
         // to fix the issue with vue 404 showing
-        if (to.redirectedFrom?.path.includes('/walter')){
-            console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
-            document.location.reload();
-          }
+        if (to.redirectedFrom?.path.includes('/walter')) {
+          console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
+          document.location.reload()
+        }
         // NProgress.done()
       })
     }

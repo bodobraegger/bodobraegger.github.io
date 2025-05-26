@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 :root {
   --c-bg: #eee;
   --c-scrollbar: #ddd;
@@ -19,11 +21,25 @@ html {
   --fonts-sans:
     ModernGothic, Inter, Helvetica, 'Helvetica Neue', Arial, ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, 'Noto Sans', sans-serif;
-  --fonts-serif: BradfordLL, Ogg, 'Times New Roman', Georgia, serif;
-  --fonts-serif-extra: Ogg, 'Times New Roman', Georgia, serif;
+  --fonts-sans:
+    'ModernGothic', 'Inter', 'Helvetica', 'Helvetica Neue', 'Arial', 'ui-sans-serif', 'system-ui', '-apple-system',
+    'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+  --fonts-serif: 'BradfordLL', 'Ogg', 'Times New Roman', 'Georgia', serif;
+  --fonts-serif-extra: 'Ogg', 'Times New Roman', 'Georgia', serif;
   --fonts-mono:
-    BradfordMonoLL, ModernGothicMono, ui-monospace, 'Fragment Mono', 'Fira Code', 'SF Mono', 'Cascadia', monospace;
+    'BradfordMonoLL', 'ModernGothicMono', 'ui-monospace', 'Fragment Mono', 'Fira Code', 'SF Mono', 'Cascadia', monospace;
 }
+
+.font-mono {
+  font-family: var(--fonts-mono);
+}
+.font-sans {
+  font-family: var(--fonts-sans);
+}
+.font-serif {
+  font-family: var(--fonts-serif);
+}
+
 html:has(.lightbox) {
   overflow: hidden;
 }

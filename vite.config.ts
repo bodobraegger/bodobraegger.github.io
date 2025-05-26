@@ -13,10 +13,10 @@ import AutoImport from 'unplugin-auto-import/vite'
 import anchor from 'markdown-it-anchor'
 import LinkAttributes from 'markdown-it-link-attributes'
 import GitHubAlerts from 'markdown-it-github-alerts'
-import UnoCSS from 'unocss/vite'
 import SVG from 'vite-svg-loader'
 import MarkdownItShikiji from 'markdown-it-shikiji'
 import { rendererRich, transformerTwoSlash } from 'shikiji-twoslash'
+import tailwindcss from '@tailwindcss/vite'
 
 // @ts-expect-error missing types
 import TOC from 'markdown-it-table-of-contents'
@@ -40,8 +40,7 @@ export default defineConfig({
     ],
   },
   plugins: [
-    UnoCSS(),
-
+    tailwindcss(),
     Vue({
       include: [/\.vue$/, /\.md$/],
       reactivityTransform: true,
