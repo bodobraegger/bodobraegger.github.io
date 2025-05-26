@@ -82,8 +82,8 @@ function getGroupName(p: Post) {
           "
           class="item block mb-6 mt-2 no-underline"
         >
-          <li class="no-underline" flex="~ col md:row gap-2 md:items-center">
-            <div class="title text-lg leading-1.2em" flex="~ gap-2 wrap">
+          <li class="no-underline flex col md:row gap-2 md:items-centerflex col md:row gap-2 md:items-center">
+            <div class="title text-lg leading-1.2em flex gap-2 wrap">
               <span
                 v-if="route.lang === 'zh'"
                 class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
@@ -91,7 +91,7 @@ function getGroupName(p: Post) {
               <span class="align-middle tracking-wider">{{ route.title }}</span>
             </div>
 
-            <div flex="~ gap-2 items-center">
+            <div class="flex gap-2 items-center">
               <span
                 v-if="route.redirect"
                 class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right"
