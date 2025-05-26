@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { englishOnly, formatDate } from '~/logics'
-import { Post } from '~/types'
+import type { Post } from '~/types'
 
 const props = defineProps<{
   type?: string
@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const router = useRouter()
 const routes: Post[] = router.getRoutes()
-  .filter(i =>( i.name?.toString().startsWith('posts-') || i.name?.toString().startsWith('notes-')) && i.meta.frontmatter.date && !i.meta.frontmatter.draft)
+  .filter(i => (i.name?.toString().startsWith('posts-') || i.name?.toString().startsWith('notes-')) && i.meta.frontmatter.date && !i.meta.frontmatter.draft)
   .filter(i => !i.path.includes('.html') && (i.meta.frontmatter.type || 'blog').split('+').includes(props.type))
   .map(i => ({
     path: i.meta.frontmatter.redirect || i.path,
@@ -48,7 +48,7 @@ function getGroupName(p: Post) {
 <template>
   <ul>
     <template v-if="!posts.length">
-      <div py2 op50>
+      <div class="py2 op50">
         { nothing here yet }
       </div>
     </template>
@@ -56,14 +56,15 @@ function getGroupName(p: Post) {
     <template v-for="route, idx in posts" :key="route.path">
       <div
         v-if="!isSameGroup(route, posts[idx - 1])"
-        select-none relative h20 pointer-events-none
+        class="select-none relative h20 pointer-events-none"
         :style="{
           '--enter-stage': idx - 2,
           '--enter-step': '60ms',
         }"
       >
-        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
-          :class="{'max-sm:text-5.4em': getGroupName(route) === 'Upcoming'}"
+        <span
+          class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
+          :class="{ 'max-sm:text-5.4em': getGroupName(route) === 'Upcoming' }"
         > {{ getGroupName(route) }}
         </span>
       </div>
@@ -85,52 +86,45 @@ function getGroupName(p: Post) {
             <div class="title text-lg leading-1.2em" flex="~ gap-2 wrap">
               <span
                 v-if="route.lang === 'zh'"
-                align-middle flex-none
-                class="text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
+                class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
               >中文</span>
-              <span align-middle class="font- tracking-wider">{{ route.title }}</span>
+              <span class="align-middle tracking-wider">{{ route.title }}</span>
             </div>
 
             <div flex="~ gap-2 items-center">
               <span
                 v-if="route.redirect"
-                align-middle op50 flex-none text-xs ml--1 mt--1
-                i-carbon-arrow-up-right
+                class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right"
                 title="External"
               />
               <span
                 v-if="route.inperson"
-                align-middle op50 flex-none
-                i-ri:group-2-line
+                class="i-ri:group-2-line align-middle op50 flex-none"
                 title="In person"
               />
               <span
                 v-if="route.recording || route.video"
-                align-middle op50 flex-none
-                i-ri:film-line
+                class="i-ri:film-line align-middle op50 flex-none"
                 title="Provided in video"
               />
               <span
                 v-if="route.radio"
-                align-middle op50 flex-none
-                i-ri:radio-line
+                class="i-ri:radio-line align-middle op50 flex-none"
                 title="Provided in radio"
               />
 
-              <span text-sm font-serif-extra op50 ws-nowrap>
+              <span class="text-sm font-serif-extra op50 ws-nowrap">
                 {{ formatDate(route.date, true) }}
               </span>
-              <span v-if="route.duration" text-sm font-light op40 ws-nowrap>· {{ route.duration }}</span>
-              <span v-if="route.platform" text-sm font-light op40 ws-nowrap>· {{ route.platform }}</span>
-              <span v-if="route.place" text-sm font-light font-serif-extra font-italic op40 ws-nowrap md:hidden>· {{ route.place }}</span>
-              <span
-                v-if="route.lang === 'zh'"
-                align-middle flex-none
-                class="text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden"
-              >中文</span>
+              <span v-if="route.duration" class="text-sm font-light op40 ws-nowrap">· {{ route.duration }}</span>
+              <span v-if="route.platform" class="text-sm font-light op40 ws-nowrap">· {{ route.platform }}</span>
+              <span v-if="route.place" class="text-sm font-light font-serif-extra font-italic op40 ws-nowrap md:hidden">{{ route.place }}</span>
+              <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
+                中文
+              </span>
             </div>
           </li>
-          <div v-if="route.place" op50 text-sm font-light font-serif-extra font-italic hidden mt--2 md:block>
+          <div v-if="route.place" class="op50 text-sm font-light font-serif-extra font-italic hidden mt--2 md:block">
             {{ route.place }}
           </div>
         </component>

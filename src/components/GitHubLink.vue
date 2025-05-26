@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <span ws-nowrap>
+  <span class="ws-nowrap">
     <CarbonLogoGithub class="inline-block" />
     <a
       class="opacity-70 ml-1 font-mono"
