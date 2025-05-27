@@ -59,7 +59,7 @@ projects:
       Implemented using <a href="https://phaser.io/">Phaser</a>, set in a semi-procedurally generated world, with mouse and text controls, emulating terminal usage.'
       icon: 'i-carbon-fish-multiple'
 
-    - name: 'the true walter'
+    - name: 'the real walter'
       link: 'walter'
       desc: 'A simple online port of the popular Swiss party game <a href="https://urs.fatamorgana.ch/wahre.html">Der wahre Walter</a>.
         Implemented as a PWA.'
