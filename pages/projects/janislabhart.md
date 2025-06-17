@@ -1,6 +1,6 @@
 ---
 title: B - janislabhart
-display: Janis Labhart Portfolio website
+display: Janis Labhart's Portfolio
 description: Documentation for the portfolio website of Janis Labhart, built with Astro.js
 plum: true
 ---
