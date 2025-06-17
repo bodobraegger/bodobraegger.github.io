@@ -16,9 +16,13 @@ projects:
       icon: 'i-carbon-cloud-logging'
 
   Web and TypeScript:
+    - name: 'janislabhart.ch'
+      link: 'janislabhart'
+      desc: 'The portfolio website for fellow artist and musician Janis labhart. Built with <a href="https://astro.build/">Vue.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
+      icon: 'i-ri-pages-line'
     - name: 'bbo.do'
       link: 'https://github.com/bodobraegger/bbo.do'
-      desc: 'The page you are looking at right now. Built with <a href="https://vuejs.org/">Vue.js</a> and <a href="https://unocss.dev/">Uno.css</a>.'
+      desc: 'The pages you are looking at right now. Built with <a href="https://vuejs.org/">Vue.js</a> and <a href="https://unocss.dev/">Uno.css</a>.'
       icon: 'i-ri-pages-line'
     - name: 'Thilo'
       link: 'https://github.com/scout-ch/thilo'
