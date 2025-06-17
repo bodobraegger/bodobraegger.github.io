@@ -18,7 +18,7 @@ projects:
   Web and TypeScript:
     - name: 'janislabhart.ch'
       link: 'janislabhart'
-      desc: 'The portfolio website for fellow artist and musician Janis labhart. Built with <a href="https://astro.build/">Vue.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
+      desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
       icon: 'i-ri-pages-line'
     - name: 'bbo.do'
       link: 'https://github.com/bodobraegger/bbo.do'
