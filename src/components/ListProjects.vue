@@ -11,7 +11,7 @@ function prependLocalLink(link: string) {
 </script>
 
 <template>
-  <div class="prose m-auto max-w-300">
+  <div class="prose m-auto max-w-300 projects">
     <div
       v-for="key, in Object.keys(projects)" :key="key"
     >
@@ -70,18 +70,3 @@ function prependLocalLink(link: string) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.project-grid a.item {
-  background: transparent;
-  font-size: 1.1rem;
-  width: 350px;
-  max-width: 100%;
-  padding: 0.5rem 0.875rem 0.875rem;
-  border-radius: 6px;
-}
-
-.project-grid a.item:hover {
-  background: #88888811;
-}
-</style>

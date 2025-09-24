@@ -46,7 +46,7 @@ function getGroupName(p: Post) {
 </script>
 
 <template>
-  <ul>
+  <ul class="posts">
     <template v-if="!posts.length">
       <div class="py2 op50">
         { nothing here yet }

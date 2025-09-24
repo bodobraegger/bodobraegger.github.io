@@ -58,7 +58,7 @@
   </header>
 </template>
 
-<style scoped>
+<style>
 /*
 .md-backdrop-blur-custom {
   @media (min-width: 640px) {

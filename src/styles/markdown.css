@@ -96,12 +96,33 @@ html.dark .prose {
   --fg-deeper: #eee;
 }
 
-a.item {
-  /* note and post listings */
-  transition: 0.2s all ease-out;
-  text-decoration: none;
-  border: none !important;
-  opacity: 0.6;
+.project-grid {
+  a.item {
+    background: transparent;
+    font-size: 1.1rem;
+    width: 350px;
+    max-width: 100%;
+    padding: 0.5rem 0.875rem 0.875rem;
+    &:hover {
+      background: #88888811;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: -0.51rem;
+      inset-inline: -0.51rem;
+    }
+  }
+}
+
+.posts {
+  a.item {
+    /* note and post listings */
+    transition: 0.2s all ease-out;
+    text-decoration: none;
+    border: none !important;
+    opacity: 0.6;
+  }
 }
 
 a.item:hover {
