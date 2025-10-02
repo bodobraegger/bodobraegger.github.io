@@ -19,7 +19,7 @@ function prependLocalLink(link: string) {
         {{ key }}
       </h4>
       <div
-        class="project-grid py-2 max-w-500 w-max grid cols-1 md:cols-2 gap-4"
+        class="project-grid py-2 max-w-500 grid cols-1 md:cols-2 gap-4"
         :class="projects[key].length === 1 ? 'flex' : projects[key].length > 2 ? 'lg:grid-cols-3' : ''"
       >
         <a

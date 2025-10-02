@@ -100,7 +100,6 @@ html.dark .prose {
   a.item {
     background: transparent;
     font-size: 1.1rem;
-    width: 350px;
     max-width: 100%;
     padding: 0.5rem 0.875rem 0.875rem;
     &:hover {
