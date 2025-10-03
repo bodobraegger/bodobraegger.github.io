@@ -20,7 +20,6 @@ import { setupRouterScroller } from 'vue-router-better-scroller'
 import FloatingVue from 'floating-vue'
 import App from './App.vue'
 
-
 const routes = autoRoutes.map((i) => {
   return {
     ...i,
@@ -30,11 +29,11 @@ const routes = autoRoutes.map((i) => {
   }
 })
 
-//@ts-ignore
-routes.push({path: '/walter', 
-  redirect: '/der-wahre-walter/'
+// @ts-ignore
+routes.push({
+  path: '/walter',
+  redirect: '/der-wahre-walter/',
 })
-
 
 export const createApp = ViteSSG(
   App,
@@ -51,8 +50,13 @@ export const createApp = ViteSSG(
       setupRouterScroller(router, {
         selectors: {
           html(ctx) {
+            // Check if user has visited before
+            const hasVisited = sessionStorage.getItem('visited')
+            if (!hasVisited)
+              sessionStorage.setItem('visited', new Date().toDateString())
+
             // only do the sliding transition when the scroll position is not 0
-            if (ctx.savedPosition?.top)
+            if (ctx.savedPosition?.top || hasVisited)
               html.classList.add('no-sliding')
             else
               html.classList.remove('no-sliding')
@@ -63,15 +67,15 @@ export const createApp = ViteSSG(
       })
 
       // router.beforeEach(() => {
-        // NProgress.start()
+      // NProgress.start()
       // })
       router.afterEach((to, from) => {
         // reload the page once when navigating to /der-wahre-walter
         // to fix the issue with vue 404 showing
-        if (to.redirectedFrom?.path.includes('/walter')){
-            console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
-            document.location.reload();
-          }
+        if (to.redirectedFrom?.path.includes('/walter')) {
+          console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
+          document.location.reload()
+        }
         // NProgress.done()
       })
     }

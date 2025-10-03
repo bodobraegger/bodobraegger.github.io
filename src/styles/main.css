@@ -110,12 +110,9 @@ html:not(.dark) [img-dark] {
 
 @keyframes slide-enter {
   0% {
-    transform: translateY(10px);
     opacity: 0;
   }
-
   to {
-    transform: translateY(0);
     opacity: 100;
   }
 }
@@ -125,10 +122,10 @@ html:not(.dark) [img-dark] {
   html:not(.no-sliding) .slide-enter,
   html:not(.no-sliding) .slide-enter-content > *:not(:has(.table-of-contents)) {
     --enter-stage: 0;
-    --enter-step: 30ms;
+    --enter-step: 100ms;
     --enter-initial: 0ms;
-    animation: slide-enter 0.3s both 1;
-    animation-delay: calc(var(--enter-initial) + var(--enter-stage) * var(--enter-step));
+    animation: slide-enter 1s both 1;
+    animation-delay: calc(var(--enter-initial) - var(--enter-stage) * var(--enter-step));
   }
 
   .slide-enter-content > *:nth-child(1) {
