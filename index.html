@@ -61,6 +61,20 @@
         "fwtickm":0,
         "useonm": 1}}
     </script>
+
+    <!-- DNS Prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://unpkg.com" />
+    <link rel="dns-prefetch" href="https://hyper-hydra.glitch.me" />
+
+    <!-- Preconnect to critical domains -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://hyper-hydra.glitch.me" crossorigin />
+
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="/fonts/ModernGothic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/BradfordLL.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body class="font-serif text-gray-800 dark:text-gray-100 relative">
     <div id="app"></div>

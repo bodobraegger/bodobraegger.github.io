@@ -1,6 +1,15 @@
-import { defineConfig, presetAttributify, presetIcons, presetUno, presetWebFonts, transformerDirectives } from 'unocss'
+import { defineConfig, presetAttributify, presetIcons, presetUno, transformerDirectives } from 'unocss'
 
 export default defineConfig({
+  preflights: [
+    {
+      getCSS: () => `
+        html {
+          font-family: BradfordLL, Ogg, "Times New Roman", Georgia, serif;
+        }
+      `,
+    },
+  ],
   shortcuts: [
     {
       'bg-base': 'bg-white dark:bg-black',
@@ -12,11 +21,11 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', {'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif'}],
-    ['font-serif', {'font-family': 'BradfordLL, Ogg, "Times New Roman",Georgia,serif'}],
-    ['font-serif-extra', {'font-family': 'Ogg, "Times New Roman",Georgia,serif'}],
-    ['font-mono', {'font-family': 'BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace'}],
-    
+    ['font-sans', { 'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif' }],
+    ['font-serif', { 'font-family': 'BradfordLL, Ogg, "Times New Roman",Georgia,serif' }],
+    ['font-serif-extra', { 'font-family': 'Ogg, "Times New Roman",Georgia,serif' }],
+    ['font-mono', { 'font-family': 'BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace' }],
+
   ],
   presets: [
     presetIcons({
@@ -28,7 +37,9 @@ export default defineConfig({
       },
     }),
     presetAttributify(),
-    presetUno(),
+    presetUno({
+      preflight: false,
+    }),
     // presetWebFonts({
     //   fonts: {
     //     sans: 'Inter:400,600,800',
