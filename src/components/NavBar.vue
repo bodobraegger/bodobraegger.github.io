@@ -69,6 +69,10 @@
 }
 */
 
+/* TODO:
+  - introduce faded noise textures?
+*/
+
 .header {
   mask-image: linear-gradient(to bottom, var(--c-bg) 0%, var(--c-bg) 60%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
   transition:
