@@ -37,9 +37,7 @@ export default defineConfig({
       },
     }),
     presetAttributify(),
-    presetUno({
-      preflight: false,
-    }),
+    presetUno(),
     // presetWebFonts({
     //   fonts: {
     //     sans: 'Inter:400,600,800',
