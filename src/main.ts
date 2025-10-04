@@ -50,14 +50,9 @@ export const createApp = ViteSSG(
       setupRouterScroller(router, {
         selectors: {
           html(ctx) {
-            // Check if user has visited before
-            const hasVisited = sessionStorage.getItem('visited-notes')
-
             // only do the sliding transition when the scroll position is not 0
-            if (ctx.savedPosition?.top || hasVisited)
+            if (ctx.savedPosition?.top)
               html.classList.add('no-sliding')
-            else
-              html.classList.remove('no-sliding')
             return true
           },
         },
@@ -81,7 +76,6 @@ export const createApp = ViteSSG(
           }
         }
         if (to.path === '/notes') {
-          sessionStorage.setItem('visited-notes', new Date().toISOString())
           // preload all notes
           const notePaths = routes
             .filter(i => i.path.startsWith('/notes/') && !i.path.includes('://') && !i.path.includes('.html'))
@@ -100,7 +94,7 @@ export const createApp = ViteSSG(
             await component()
           }
 
-          console.log(`Preloaded route: ${routePath}`)
+          // console.log(`Preloaded route: ${routePath}`)
         })
       }
 

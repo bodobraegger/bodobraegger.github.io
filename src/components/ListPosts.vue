@@ -43,6 +43,14 @@ function getGroupName(p: Post) {
     return 'Upcoming'
   return getYear(p.date)
 }
+
+onBeforeMount(() => {
+  const hasVisited = sessionStorage.getItem('visited-notes')
+  console.log('hasVisited', hasVisited)
+  if (hasVisited)
+    document.documentElement.classList.add('no-sliding')
+  else sessionStorage.setItem('visited-notes', new Date().toISOString())
+})
 </script>
 
 <template>
