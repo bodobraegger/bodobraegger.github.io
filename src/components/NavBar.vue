@@ -70,7 +70,22 @@
 */
 
 .header {
-  mask-image: linear-gradient(to bottom, var(--c-bg) 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, var(--c-bg) 0%, var(--c-bg) 60%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
+  transition:
+    backdrop-filter 0.3s ease,
+    -webkit-backdrop-filter 0.9s ease,
+    mask-image 1s ease;
+  /* content will touch the right side of the header nav at 1817px,
+     and we have a gap of 1.2em=19.2px, so at 1855.4px, the nav
+     spaces around the main content beautifully, no backdrop-filter needed
+     */
+  @media (min-width: 1817px) {
+    & {
+      mask-image: unset;
+      backdrop-filter: unset;
+      -webkit-backdrop-filter: unset;
+    }
+  }
 }
 
 .header h1 {
