@@ -51,9 +51,7 @@ export const createApp = ViteSSG(
         selectors: {
           html(ctx) {
             // Check if user has visited before
-            const hasVisited = sessionStorage.getItem('visited')
-            if (!hasVisited)
-              sessionStorage.setItem('visited', new Date().toDateString())
+            const hasVisited = sessionStorage.getItem('visited-notes')
 
             // only do the sliding transition when the scroll position is not 0
             if (ctx.savedPosition?.top || hasVisited)
@@ -65,6 +63,46 @@ export const createApp = ViteSSG(
         },
         behavior: 'auto',
       })
+
+      // Preload routes when navigating to home
+      router.afterEach((to) => {
+        if (to.path === '/') {
+          // Wait until the browser is idle before preloading
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              preloadRoutes(['/projects', '/notes'])
+            })
+          }
+          else {
+            // Fallback for browsers that don't support requestIdleCallback
+            setTimeout(() => {
+              preloadRoutes(['/projects', '/notes'])
+            }, 1000)
+          }
+        }
+        if (to.path === '/notes') {
+          sessionStorage.setItem('visited-notes', new Date().toISOString())
+          // preload all notes
+          const notePaths = routes
+            .filter(i => i.path.startsWith('/notes/') && !i.path.includes('://') && !i.path.includes('.html'))
+            .map(i => i.path)
+          preloadRoutes(notePaths)
+        }
+      })
+
+      // Helper function to preload routes
+      function preloadRoutes(paths: string[]) {
+        paths.forEach(async (routePath) => {
+          const resolved = router.resolve(routePath)
+          const component = resolved.matched[0]?.components?.default
+
+          if (component && typeof component === 'function') {
+            await component()
+          }
+
+          console.log(`Preloaded route: ${routePath}`)
+        })
+      }
 
       // router.beforeEach(() => {
       // NProgress.start()
