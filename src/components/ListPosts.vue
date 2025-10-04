@@ -90,7 +90,7 @@ onBeforeMount(() => {
           "
           class="item block mb-6 mt-2 no-underline"
         >
-          <li class="no-underline flex col md:row gap-2 md:items-centerflex col md:row gap-2 md:items-center">
+          <li class="no-underline flex col md:row gap-2 md:items-center">
             <div class="title text-lg leading-1.2em flex gap-2 wrap">
               <span
                 v-if="route.lang === 'zh'"
