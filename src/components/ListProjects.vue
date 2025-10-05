@@ -27,7 +27,7 @@ function prependLocalLink(link: string) {
           :key="idx"
           class="item relative flex"
           :href="prependLocalLink(item.link)"
-          target="_blank"
+          :target="(item.link && (item.link.startsWith('http') || item.link.startsWith('//'))) ? '_blank' : undefined"
           :class="!item.link ? 'opacity-0 pointer-events-none h-0 -mt-8 -mb-4' : ''"
           :title="item.name"
         >

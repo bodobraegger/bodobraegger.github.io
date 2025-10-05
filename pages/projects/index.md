@@ -56,10 +56,10 @@ projects:
       link: 'https://www.kochareal.ch/'
     - name: Regula
       desc: 'Come back later for more information.'
-      link: 'https://bbo.do/projects'
+      link: '../projects'
     - name: Braui
       desc: 'Come back later for more information.'
-      link: 'https://bbo.do/projects'
+      link: '../projects'
   Games:
     - name: 'slugs'
       link: 'https://github.com/bodobraegger/slugs'
