@@ -1,5 +1,5 @@
 ---
-title: Notes - Bodo Braegger
+title: B - Notes
 plum: true
 display: ''
 ---

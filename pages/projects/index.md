@@ -1,5 +1,5 @@
 ---
-title: Projects - Bodo Braegger
+title: B - Projects
 display: Projects & Resources
 description: List of projects and interesting resources
 plum: true

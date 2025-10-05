@@ -1,5 +1,5 @@
 ---
-title: Blog - Bodo Braegger
+title: B - Blog
 display: ''
 plum: true
 ---
