@@ -244,7 +244,8 @@
       display: inline-block;
       padding-left: 4ch;
       text-indent: -4ch;
-      span {
+      /* strings / text in quotes have this style */
+      span:not([style*='--s-dark: #C98A7D; --s-light: #B56959;']) {
         white-space: nowrap;
       }
     }
