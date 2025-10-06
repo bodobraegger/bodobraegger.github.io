@@ -238,10 +238,14 @@
       &::after {
         content: unset;
       }
-      line {
-        display: inline-block;
-        padding-left: 4ch;
-        text-indent: -4ch;
+    }
+    .line {
+      overflow-wrap: anywhere;
+      display: inline-block;
+      padding-left: 4ch;
+      text-indent: -4ch;
+      span {
+        white-space: nowrap;
       }
     }
   }

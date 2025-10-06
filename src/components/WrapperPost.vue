@@ -132,7 +132,7 @@ if (frontmatter.hydra) {
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
     codeBlocks.forEach((preEl) => {
       // const parentEl = preEl.parentElement
-      preEl.classList += ' grid overflow-x-hidden grid-cols-1 grid-rows-1 relative'
+      preEl.classList += ' grid grid-cols-1 grid-rows-1 relative'
       const codeEl = preEl.firstChild as HTMLElement
       codeEl.classList += ' row-start-1 col-start-1 z-1 min-h-614px min-w-614px hover:cursor-pointer'
 
