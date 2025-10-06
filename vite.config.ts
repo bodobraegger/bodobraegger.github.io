@@ -165,18 +165,18 @@ export default defineConfig({
         if (warning.code !== 'UNUSED_EXTERNAL_IMPORT')
           next(warning)
       },
-      // Enable minification
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: true, // Remove console.logs in production
-          drop_debugger: true,
-        },
-      },
-      // Increase chunk size warning limit
-      chunkSizeWarningLimit: 1000,
 
     },
+    // Enable minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
   },
 
   ssgOptions: {
