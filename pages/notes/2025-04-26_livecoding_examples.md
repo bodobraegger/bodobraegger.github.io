@@ -137,7 +137,7 @@ src(o3)
 
 [The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=9hlYEVlyIKcVNMu9)
 
-```js
+```javascript
 // https://hydra.ojack.xyz/?sketch_id=9hlYEVlyIKcVNMu9
 osc(13,0.2,5)
 .mask(shape(90,0.4))
@@ -210,7 +210,7 @@ render(o0)
 
 [The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=Ti1f0Sf50k8xIQh6)
 
-```js
+```javascript
 // https://hydra.ojack.xyz/?sketch_id=Ti1f0Sf50k8xIQh6
 shape(()=>Math.sin(time)+1*3, .5,.01)
 .repeat(5,3, ()=>a.fft[0]*2, ()=>a.fft[1]*2).scrollY(.5,0.1)
@@ -229,7 +229,7 @@ render(o0)
 ## small mouse reactive example
 
 [The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF)
-```js
+```javascript
 // https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF
 // licensed with CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
 speed = 1

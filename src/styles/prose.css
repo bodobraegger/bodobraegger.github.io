@@ -231,6 +231,9 @@
       font-size: inherit;
       line-height: inherit;
 
+      aspect-ratio: 1;
+      width: 100%;
+
       &::before {
         content: unset;
       }
@@ -245,8 +248,10 @@
       padding-left: 4ch;
       text-indent: -4ch;
       /* strings / text in quotes have this style */
-      span:not([style*='--s-dark: #C98A7D; --s-light: #B56959;']) {
-        white-space: nowrap;
+      @media (min-width: 768px) {
+        span:not([style*='--s-dark: #C98A7D; --s-light: #B56959;']) {
+          white-space: nowrap;
+        }
       }
     }
   }

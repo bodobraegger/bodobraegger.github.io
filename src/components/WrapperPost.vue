@@ -114,14 +114,15 @@ if (frontmatter.hydra) {
   useScriptTag('https://unpkg.com/hydra-synth', () => {
     console.log('hydra-synth loaded')
     const hydraCanvas = document.createElement('canvas')
-    const width = 650 - 18 * 2
+    const width = 512
     const height = width
     hydraCanvas.width = width
     hydraCanvas.height = height
     hydraCanvas.id = 'hydraCanvas'
     const placeholders = []
 
-    const hydra = new Hydra({
+    //@ts-ignore - hydra global
+    let hydra = new Hydra({
       canvas: hydraCanvas,
       detectAudio: false,
       enableStreamCapture: false,
@@ -131,13 +132,14 @@ if (frontmatter.hydra) {
 
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
     codeBlocks.forEach((preEl) => {
+
       // const parentEl = preEl.parentElement
       preEl.classList += ' grid grid-cols-1 grid-rows-1 relative'
       const codeEl = preEl.firstChild as HTMLElement
-      codeEl.classList += ' row-start-1 col-start-1 z-1 min-h-614px min-w-614px hover:cursor-pointer'
+      codeEl.classList += ' row-start-1 col-start-1 z-1 hover:cursor-pointer overflow-x-hidden overflow-y-auto'
 
       const placeholder = document.createElement('div')
-      placeholder.classList += 'hydracontainer row-start-1 col-start-1 z-0'
+      placeholder.classList += 'hydracontainer row-start-1 col-start-1 z-0 sticky top-0'
       placeholders.push(placeholder)
       preEl.insertAdjacentElement('beforeend', placeholder)
 
@@ -150,6 +152,25 @@ if (frontmatter.hydra) {
 
       preEl.addEventListener('focus', () => {
         // console.log('focusing')
+
+        // Calculate square size based on container
+        const containerRect = placeholder.getBoundingClientRect()
+        const size = containerRect.width;
+        (preEl.children[0] as HTMLElement).style.height = `${size}px`
+        
+        // Update canvas dimensions
+        hydraCanvas.width = size
+        hydraCanvas.height = size
+        
+        // @ts-ignore - hydra global, Reinitialize hydra with new size
+        hydra = new Hydra({
+          canvas: hydraCanvas,
+          detectAudio: false,
+          enableStreamCapture: false,
+          width: size,
+          height: size,
+        })
+
         // @ts-ignore - hydra global
         hush()
         setTimeout(() => {
@@ -158,13 +179,13 @@ if (frontmatter.hydra) {
         }, 20)
         placeholder.appendChild(hydraCanvas)
         // make text semi transparent
-        codeEl.classList.add('op-50')
+        codeEl.classList.add('op-80')
         // add black background
         placeholder.classList.add('bg-black!')
       })
       preEl.addEventListener('focusout', (e) => {
         // remove black background
-        codeEl.classList.remove('op-50')
+        codeEl.classList.remove('op-80')
         placeholder.classList.remove('bg-black!')
       })
 
