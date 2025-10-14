@@ -106,6 +106,17 @@ export const createApp = ViteSSG(
         }
         // NProgress.done()
       })
+
+      // Add double-click to select code blocks
+      document.addEventListener('dblclick', (e) => {
+        const target = e.target as HTMLElement
+        if (target.tagName === 'CODE' || target.tagName === 'PRE') {
+          const selection = window.getSelection()
+          if (selection) {
+            selection.selectAllChildren(target)
+          }
+        }
+      })
     }
   },
 )
