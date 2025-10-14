@@ -86,8 +86,12 @@ export const createApp = ViteSSG(
           const resolved = router.resolve(routePath)
           const component = resolved.matched[0]?.components?.default
 
+          // Preload the component if it's a function (lazy-loaded)
+          // we require the type assertion here to avoid TS errors,
+          // typeof component === 'function' is not enough, because
+          // some components are objects with a .then function (Vue components)
           if (component && typeof component === 'function') {
-            await component()
+            await (component as () => Promise<any>)()
           }
 
           // console.log(`Preloaded route: ${routePath}`)
