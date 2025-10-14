@@ -21,7 +21,7 @@ projects:
       desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
       icon: 'i-ri-pages-line'
     - name: 'gleis161.ch'
-      link: 'https://gleis161.ch'
+      link: './gleis161'
       desc: 'Built with <a href="https://astro.build/">Astro.js</a>, featuring an encrypted content system for anonymous administration. It was built to raise money for organizations in Gaza. Find the source <a href="https://github.com/gleis161/home">here</a>.'
       icon: 'i-ri-pages-line'
     - name: 'bbo.do'
