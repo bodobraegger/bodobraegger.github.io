@@ -4,4 +4,6 @@ A web app for the <a href="https://scouts.ch">Scout Movement</a> in Switzerland.
 
 You can find the source code in the public repository on GitHub: https://github.com/scout-ch/thilo.
 
-We recently reimplemented the entire app using <a href="https://astro.build">Astro.js</a> and <a href="https://tailwindcss.com/">Tailwind.css</a> it is published under the according `astro-rewrite` branch in the same <a href="https://github.com/scout-ch/thilo/tree/astro-rewrite">repository</a>.
+We recently reimplemented the entire app using <a href="https://astro.build">Astro.js</a> and <a href="https://tailwindcss.com/">Tailwind.css</a> it is published under the <a href="https://github.com/bodobraegger/thilo">fork</a> in my personal github.
+
+You can try the app online here: https://thilo.scouts.ch, or on https://bbo.do/thilo for the Astro version.
