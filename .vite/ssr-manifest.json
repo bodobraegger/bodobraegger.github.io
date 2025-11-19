@@ -244,23 +244,23 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "2023-12-16_web-BHIwGE70.js": [],
-  "2024-01-17_front_end_optimization-yhOe5yJP.js": [],
-  "2024-02-27_livecoding_docs-DtKIcEdn.js": [],
-  "2024-03-27_transdisciplinarity_arts-DhItAnSk.js": [],
-  "2024-04-14_photography-C3W2sinl.js": [],
-  "2024-04-24_images-lBXEEA2o.js": [
+  "2023-12-16_web-B068h8Zy.js": [],
+  "2024-01-17_front_end_optimization-Cq-W3dTo.js": [],
+  "2024-02-27_livecoding_docs-CJNti1sI.js": [],
+  "2024-03-27_transdisciplinarity_arts-d3fC1NYk.js": [],
+  "2024-04-14_photography-BBzbl4BV.js": [],
+  "2024-04-24_images-CufMqlwv.js": [
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
-  "2024-04-25_chess-DvDWlCDX.js": [
+  "2024-04-25_chess-Clkh5vh5.js": [
     "/assets/2024-04-25_chess-Cv1yW_Ds.css"
   ],
-  "2025-04-26_livecoding_examples-Ezxd7K-D.js": [],
-  "2025-05-08_producing_composing_advanced-B-WlBKCQ.js": [],
-  "2025-05-08_transcultural_collaboration-DESQLWsr.js": [],
-  "404-B8n7tuHu.js": [],
-  "AGENTS--62t9ClV.js": [],
-  "_...404_-BK3Vxtz5.js": [],
+  "2025-04-26_livecoding_examples-CCjtgwjE.js": [],
+  "2025-05-08_producing_composing_advanced-l6yMjHqg.js": [],
+  "2025-05-08_transcultural_collaboration-CSMW6GKV.js": [],
+  "404-B3pURmPp.js": [],
+  "AGENTS-BQ8KMCuz.js": [],
+  "_...404_-Be_ZpPa5.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -296,11 +296,11 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "gleis161-khsZD6Ek.js": [],
-  "index-6aTvws9S.js": [],
-  "index-BAfahjuF.js": [],
-  "index-BhOctUDE.js": [],
-  "index-CmX3_CU8.js": [],
+  "gleis161-Cd3FPymY.js": [],
+  "index-C4bJMXN_.js": [],
+  "index-C8WFI_yy.js": [],
+  "index-C_Mn1wKm.js": [],
+  "index-DWc1A66t.js": [],
   "index.html": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -336,7 +336,7 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "janislabhart-CB6GLCbk.js": [],
+  "janislabhart-ufAjbgCu.js": [],
   "node_modules/.pnpm/@floating-ui+core@1.7.3/node_modules/@floating-ui/core/dist/floating-ui.core.mjs": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -1213,10 +1213,10 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "pages/404.md": [
-    "/assets/404-B8n7tuHu.js"
+    "/assets/404-B3pURmPp.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-BK3Vxtz5.js"
+    "/assets/_...404_-Be_ZpPa5.js"
   ],
   "pages/index.md": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1254,109 +1254,109 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-BHIwGE70.js"
+    "/assets/2023-12-16_web-B068h8Zy.js"
   ],
   "pages/notes/2023-12-16_web.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-yhOe5yJP.js"
+    "/assets/2024-01-17_front_end_optimization-Cq-W3dTo.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-DtKIcEdn.js"
+    "/assets/2024-02-27_livecoding_docs-CJNti1sI.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-DhItAnSk.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-d3fC1NYk.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-C3W2sinl.js"
+    "/assets/2024-04-14_photography-BBzbl4BV.js"
   ],
   "pages/notes/2024-04-14_photography.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-lBXEEA2o.js",
+    "/assets/2024-04-24_images-CufMqlwv.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "pages/notes/2024-04-24_images.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-DvDWlCDX.js",
+    "/assets/2024-04-25_chess-Clkh5vh5.js",
     "/assets/2024-04-25_chess-Cv1yW_Ds.css"
   ],
   "pages/notes/2024-04-25_chess.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=415a6513&lang.css": [
-    "/assets/2024-04-25_chess-DvDWlCDX.js",
+    "/assets/2024-04-25_chess-Clkh5vh5.js",
     "/assets/2024-04-25_chess-Cv1yW_Ds.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-Ezxd7K-D.js"
+    "/assets/2025-04-26_livecoding_examples-CCjtgwjE.js"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-B-WlBKCQ.js"
+    "/assets/2025-05-08_producing_composing_advanced-l6yMjHqg.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-DESQLWsr.js"
+    "/assets/2025-05-08_transcultural_collaboration-CSMW6GKV.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-BhOctUDE.js"
+    "/assets/index-C8WFI_yy.js"
   ],
   "pages/notes/index.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/misc/AGENTS.md": [
-    "/assets/AGENTS--62t9ClV.js"
+    "/assets/AGENTS-BQ8KMCuz.js"
   ],
   "pages/notes/misc/AGENTS.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/misc/index.md": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/notes/misc/index.md?raw": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-BAfahjuF.js"
+    "/assets/index-DWc1A66t.js"
   ],
   "pages/projects/gleis161.md": [
-    "/assets/gleis161-khsZD6Ek.js"
+    "/assets/gleis161-Cd3FPymY.js"
   ],
   "pages/projects/index.md": [
-    "/assets/index-CmX3_CU8.js"
+    "/assets/index-C_Mn1wKm.js"
   ],
   "pages/projects/janislabhart.md": [
-    "/assets/janislabhart-CB6GLCbk.js"
+    "/assets/janislabhart-ufAjbgCu.js"
   ],
   "pages/projects/thilo.md": [
-    "/assets/thilo-BYIU0frB.js"
+    "/assets/thilo-DmZA1CYw.js"
   ],
   "pages/projects/walter.md": [
-    "/assets/walter-xnEJEr2o.js"
+    "/assets/walter-Czt724WV.js"
   ],
   "pages/template.md": [
-    "/assets/template-3enyU114.js"
+    "/assets/template-rqIscxrf.js"
   ],
   "public/images/maxi/6 pigeons on my carpet, oil on canvas, 130cm  x 160 cm, 2022.jpg": [
     "/assets/6 pigeons on my carpet_ oil on canvas_ 130cm  x 160 cm_ 2022-DJsGzAxq.js",
@@ -1399,7 +1399,7 @@
     "/assets/pigeons and glory_ oil on cnavas_ 130cm x 160cm_ 2023-BKfL7Ap6.jpg"
   ],
   "public/logos/monogram-sw16.svg": [
-    "/assets/monogram-sw16-BjfV8FIW.js"
+    "/assets/monogram-sw16-BcnLld8X.js"
   ],
   "public/uploads/in-de-24.png": [
     "/assets/in-de-24-iMiAzlGK.js",
@@ -1546,25 +1546,25 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "src/components/ListFiles.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-6aTvws9S.js"
+    "/assets/index-C4bJMXN_.js"
   ],
   "src/components/ListImages.vue": [
-    "/assets/2024-04-24_images-lBXEEA2o.js",
+    "/assets/2024-04-24_images-CufMqlwv.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListImages.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/2024-04-24_images-lBXEEA2o.js",
+    "/assets/2024-04-24_images-CufMqlwv.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListImages.vue?vue&type=style&index=0&scoped=4494e07a&lang.css": [
-    "/assets/2024-04-24_images-lBXEEA2o.js",
+    "/assets/2024-04-24_images-CufMqlwv.js",
     "/assets/2024-04-24_images-CHkA8kev.css"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-b173_9rU.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-B-E_vzDf.js"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-CmX3_CU8.js"
+    "/assets/index-C_Mn1wKm.js"
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1672,7 +1672,7 @@
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BAfahjuF.js"
+    "/assets/index-DWc1A66t.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
@@ -1954,8 +1954,8 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "template-3enyU114.js": [],
-  "thilo-BYIU0frB.js": [],
+  "template-rqIscxrf.js": [],
+  "thilo-DmZA1CYw.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/ModernGothic-Bold-DEw8sEwt.woff2",
     "/assets/ModernGothic-BoldItalic--o2Nn-9S.woff2",
@@ -1991,5 +1991,5 @@
     "/assets/BradfordLL-RegularItalic-BgnfMTvI.otf",
     "/assets/BradfordMonoLL-Regular-DjOfjPiX.otf"
   ],
-  "walter-xnEJEr2o.js": []
+  "walter-Czt724WV.js": []
 }
