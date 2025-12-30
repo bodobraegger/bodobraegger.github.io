@@ -20,10 +20,6 @@ projects:
       link: 'janislabhart'
       desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
       icon: 'i-ri-pages-line'
-    - name: 'gleis161.ch'
-      link: './gleis161'
-      desc: 'Built with <a href="https://astro.build/">Astro.js</a>, featuring an encrypted content system for anonymous administration. It was built to raise money for organizations in Gaza. Find the source <a href="https://github.com/gleis161/home">here</a>.'
-      icon: 'i-ri-pages-line'
     - name: 'bbo.do'
       link: 'https://github.com/bodobraegger/bbo.do'
       desc: 'The pages you are looking at right now. Built with <a href="https://vuejs.org/">Vue.js</a> and <a href="https://unocss.dev/">Uno.css</a>.'
@@ -36,6 +32,10 @@ projects:
       link: 'https://networktheory.art'
       desc: 'The continuation of the artist network theory zine, coming soon. Code is available on <a href="https://github.com/bodobraegger/artist-network-theory">GitHub</a>.'
       icon: 'i-mdi:local-area-network-pending'
+   # - name: 'gleis161.ch'
+   #   link: './gleis161'
+   #   desc: 'Built with <a href="https://astro.build/">Astro.js</a>, featuring an encrypted content system for anonymous administration. It was built to raise money for organizations in Gaza. Find the source <a href="https://github.com/gleis161/home">here</a>.'
+   #   icon: 'i-ri-pages-line'
 
   Previous Work and Research:
     - name: Research Assistant @ ETH Zürich
