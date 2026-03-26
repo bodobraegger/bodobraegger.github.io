@@ -159,7 +159,7 @@ watch(langRight, () => {
           <textarea
             v-model="textLeft"
             class="text-input"
-            placeholder="digite o texto para traduzir... ou ver a tradução aparecer aqui..."
+            placeholder="texto ou tradução..."
             @input="handleLeftInput"
             @click.stop
           />
@@ -180,7 +180,7 @@ watch(langRight, () => {
           <textarea
             v-model="textRight"
             class="text-input"
-            placeholder="translation appears here... or add text here to translate back..."
+            placeholder="text or translation..."
             @input="handleRightInput"
             @click.stop
           />
@@ -267,6 +267,23 @@ watch(langRight, () => {
   cursor: pointer;
 }
 
+.text-panel::after {
+  content: attr(data-copy-hint);
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.text-panel:hover::after {
+  opacity: 0.5;
+}
+
 .text-panel:hover {
   opacity: 1;
 }
@@ -280,9 +297,12 @@ watch(langRight, () => {
   border: 1px dashed var(--fg-deep);
   border-radius: 0;
   padding: 0.75rem;
-  resize: vertical;
+  resize: none;
   opacity: 0.7;
   line-height: 1.4;
+  overflow-y: auto;
+  box-sizing: border-box;
+  field-sizing: content;
 }
 
 .text-input:hover,
@@ -325,6 +345,10 @@ watch(langRight, () => {
 @media (max-width: 768px) {
   .text-panels {
     grid-template-columns: 1fr;
+  }
+
+  .text-input {
+    min-height: 20vh;
   }
 }
 </style>
