@@ -113,6 +113,16 @@ function handleTranslation(source: string, target: string, sourceField: 'left' |
     return
   }
 
+  // Don't translate if source and target are the same language (except auto)
+  if (source !== 'auto' && target !== 'auto' && source === target) {
+    // Just copy the text to the other side
+    if (sourceField === 'left')
+      textRight.value = text
+    else
+      textLeft.value = text
+    return
+  }
+
   debounceTimer = setTimeout(async () => {
     if (isTranslating.value)
       return
@@ -135,7 +145,8 @@ function handleLeftInput() {
 }
 
 function handleRightInput() {
-  handleTranslation(langRight.value, langLeft.value, 'right')
+  const targetLang = langLeft.value === 'auto' ? 'en' : langLeft.value
+  handleTranslation(langRight.value, targetLang, 'right')
 }
 
 function preventAutoDetectRight() {
@@ -145,13 +156,17 @@ function preventAutoDetectRight() {
 
 // Watch for language changes
 watch(langLeft, () => {
-  if (textLeft.value.trim())
-    handleLeftInput()
+  // When left language changes, translate FROM right TO left (left is the target)
+  if (textRight.value.trim()) {
+    handleRightInput()
+  }
 })
 
 watch(langRight, () => {
-  if (textRight.value.trim())
-    handleRightInput()
+  // When right language changes, translate FROM left TO right (right is the target)
+  if (textLeft.value.trim()) {
+    handleLeftInput()
+  }
 })
 </script>
 

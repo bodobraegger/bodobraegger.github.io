@@ -1,6 +1,7 @@
 ---
 title: B - bidi
 display: bidi
+phonetic: true
 description: translate text to and fro
 plum: true
 ---
