@@ -159,7 +159,7 @@ watch(langRight, () => {
           <textarea
             v-model="textLeft"
             class="text-input"
-            placeholder="Digite o texto para traduzir..."
+            placeholder="digite o texto para traduzir... ou ver a tradução aparecer aqui..."
             @input="handleLeftInput"
             @click.stop
           />
@@ -180,7 +180,7 @@ watch(langRight, () => {
           <textarea
             v-model="textRight"
             class="text-input"
-            placeholder="Translation appears here..."
+            placeholder="translation appears here... or add text here to translate back..."
             @input="handleRightInput"
             @click.stop
           />
