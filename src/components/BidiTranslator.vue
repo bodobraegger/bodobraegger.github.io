@@ -5,7 +5,7 @@ const MAX_CHARS = 500
 const DEBOUNCE_DELAY = 500
 
 const languages = [
-  { code: 'auto', name: 'Detect Language' },
+  // { code: 'auto', name: 'Detect Language' },
   { code: 'en', name: 'English' },
   { code: 'pt-BR', name: 'Portuguese (Brazilian)' },
   { code: 'de', name: 'German' },
