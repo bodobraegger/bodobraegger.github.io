@@ -1,4 +1,4 @@
-import { defineConfig, presetAttributify, presetIcons, presetUno, transformerDirectives } from 'unocss'
+import { defineConfig, presetAttributify, presetIcons, presetUno, presetWebFonts, transformerDirectives } from 'unocss'
 
 export default defineConfig({
   preflights: [
@@ -6,6 +6,9 @@ export default defineConfig({
       getCSS: () => `
         html {
           font-family: BradfordLL, Ogg, "Times New Roman", Georgia, serif;
+        }
+        .font-phonetics {
+          font-size: smaller;
         }
       `,
     },
@@ -38,13 +41,14 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetUno(),
-    // presetWebFonts({
-    //   fonts: {
-    //     sans: 'Inter:400,600,800',
-    //     mono: 'Fira Code:400,600',
-    //     // sans: 'Fragment Mono:400',
-    //   },
-    // }),
+    presetWebFonts({
+      fonts: {
+        phonetics: {
+          name: 'Noto Serif',
+          weights: [300],
+        },
+      },
+    }),
   ],
   transformers: [
     transformerDirectives(),

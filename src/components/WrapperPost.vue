@@ -12,8 +12,20 @@ const { frontmatter } = defineProps({
 const router = useRouter()
 const route = useRoute()
 const content = ref<HTMLDivElement>()
+const fontsLoaded = ref(false)
 
 onMounted(() => {
+  // Check if font is already loaded or wait for it
+  if (document.fonts) {
+    document.fonts.ready.then(() => {
+      fontsLoaded.value = true
+    })
+  }
+  else {
+    // Fallback for browsers without Font Loading API
+    fontsLoaded.value = true
+  }
+
   const navigate = () => {
     if (location.hash) {
       const el = document.querySelector(decodeURIComponent(location.hash))
@@ -121,7 +133,7 @@ if (frontmatter.hydra) {
     hydraCanvas.id = 'hydraCanvas'
     const placeholders = []
 
-    //@ts-ignore - hydra global
+    // @ts-ignore - hydra global
     let hydra = new Hydra({
       canvas: hydraCanvas,
       detectAudio: false,
@@ -132,7 +144,6 @@ if (frontmatter.hydra) {
 
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
     codeBlocks.forEach((preEl) => {
-
       // const parentEl = preEl.parentElement
       preEl.classList += ' grid grid-cols-1 grid-rows-1 relative'
       const codeEl = preEl.firstChild as HTMLElement
@@ -157,11 +168,11 @@ if (frontmatter.hydra) {
         const containerRect = placeholder.getBoundingClientRect()
         const size = containerRect.width;
         (preEl.children[0] as HTMLElement).style.height = `${size}px`
-        
+
         // Update canvas dimensions
         hydraCanvas.width = size
         hydraCanvas.height = size
-        
+
         // @ts-ignore - hydra global, Reinitialize hydra with new size
         hydra = new Hydra({
           canvas: hydraCanvas,
@@ -222,6 +233,12 @@ if (frontmatter.hydra) {
   >
     <h1 class="font-mono mb-0">
       {{ frontmatter.display ?? frontmatter.title }}
+      <span
+        v-if="frontmatter.phonetic"
+        class="opacity-30 font-phonetics"
+        :style="{ visibility: fontsLoaded ? 'visible' : 'hidden' }"
+      >({{ frontmatter.phonetic }})
+      </span>
     </h1>
     <p
       v-if="frontmatter.date"

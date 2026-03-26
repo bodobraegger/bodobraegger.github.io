@@ -1,7 +1,7 @@
 ---
 title: B - bidi
 display: bidi
-phonetic: true
+phonetic: ˌbaɪˈdaɪ
 description: translate text to and fro
 plum: true
 ---
