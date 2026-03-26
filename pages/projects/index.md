@@ -16,6 +16,10 @@ projects:
       icon: 'i-carbon-cloud-logging'
 
   Web and TypeScript:
+    - name: 'bidi - bidirectional translator'
+      link: './bidi'
+      desc: 'A simple bidirectional translator that lets you type in either text box. Crowd-sourced translations via MyMemory API.'
+      icon: 'i-carbon-translate'
     - name: 'janislabhart.ch'
       link: 'janislabhart'
       desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
