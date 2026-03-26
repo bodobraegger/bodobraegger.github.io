@@ -25,7 +25,7 @@ projects:
       desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
       icon: 'i-ri-pages-line'
     - name: 'bbo.do'
-      link: 'https://github.com/bodobraegger/bbo.do'
+      link: './self'
       desc: 'The pages you are looking at right now. Built with <a href="https://vuejs.org/">Vue.js</a> and <a href="https://unocss.dev/">Uno.css</a>.'
       icon: 'i-ri-pages-line'
     - name: 'rj-bd - rio de janeiro beach quality'
