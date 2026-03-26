@@ -226,21 +226,14 @@ watch(langRight, () => {
 </template>
 
 <style scoped>
-.bidi-translator,
 .bidi-translator * {
   color: var(--fg);
-  background: transparent;
-}
-
-*:active {
-  outline: none;
 }
 
 .language-selector {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  line-height: 1.2;
 }
 
 .lang-select {
@@ -249,22 +242,17 @@ watch(langRight, () => {
   border: 1px dashed var(--fg-deep);
   opacity: 0.7;
   cursor: pointer;
+  background: transparent;
 }
 
-.lang-select:hover {
+.lang-select:hover,
+.lang-select:focus {
   opacity: 1;
-  border: 1px solid var(--fg-deeper);
-}
-
-.lang-select:focus,
-.lang-select:active {
-  opacity: 1;
-  border: 1px solid var(--fg-deeper);
+  border-color: var(--fg-deeper);
   outline: none;
 }
 
 .lang-select option {
-  /* needs to be explicitly set, not overwritten by parent * selector. */
   background: var(--c-bg);
   color: var(--fg);
 }
@@ -334,31 +322,23 @@ watch(langRight, () => {
   }
 }
 
-.text-panel:hover {
-  opacity: 1;
-}
-
 .text-input {
-  cursor: text;
   width: 100%;
   min-height: 350px;
-  padding-bottom: 1rem;
+  padding: 0.75rem 0.75rem 1rem;
   background: transparent;
   border: 1px dashed var(--fg-deep);
-  border-radius: 0;
-  padding: 0.75rem;
-  resize: none;
   opacity: 0.7;
   line-height: 1.4;
+  resize: none;
   overflow-y: auto;
-  box-sizing: border-box;
   field-sizing: content;
 }
 
 .text-input:hover,
 .text-input:focus {
   opacity: 1;
-  border: 1px solid var(--fg-deeper);
+  border-color: var(--fg-deeper);
   outline: none;
 }
 
@@ -385,7 +365,6 @@ watch(langRight, () => {
 .copy-btn {
   opacity: 0.7;
   cursor: pointer;
-  text-align: right;
 }
 
 .copy-btn:hover {
