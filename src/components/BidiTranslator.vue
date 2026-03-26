@@ -80,21 +80,21 @@ async function translate(text: string, sourceLang: string, targetLang: string): 
   const limitedText = text.length > MAX_CHARS ? text.substring(0, MAX_CHARS) : text
 
   try {
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(limitedText)}&langpair=${sourceLang}|${targetLang}`
+    // Adding email parameter increases rate limit from 1000 to 10000 words/day
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(limitedText)}&langpair=${sourceLang}|${targetLang}&de=contact@bbo.do`
     const response = await fetch(url)
     const data = await response.json()
 
     if (data.responseStatus === 200 && data.responseData)
       return data.responseData.translatedText
 
-    else
-      console.error('Translation error:', data)
-
-    return text
+    if (data.responseData?.translatedText)
+      return data.responseData.translatedText
+    throw new Error(`Translation API error: ${data.responseStatus} - ${data.responseDetails || 'No details'}`)
   }
   catch (error) {
     console.error('Translation failed:', error)
-    return text
+    return String(error)
   }
 }
 
