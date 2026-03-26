@@ -23,6 +23,7 @@ const textLeft = ref('')
 const textRight = ref('')
 const isTranslating = ref(false)
 const lastActiveField = ref<'left' | 'right'>('left')
+const lastTypedField = ref<'left' | 'right' | null>(null)
 const copiedLeft = ref(false)
 const copiedRight = ref(false)
 const panelLeft = ref<HTMLElement | null>(null)
@@ -141,12 +142,22 @@ function handleTranslation(source: string, target: string, sourceField: 'left' |
 }
 
 function handleLeftInput() {
+  lastTypedField.value = 'left'
   handleTranslation(langLeft.value, langRight.value, 'left')
 }
 
 function handleRightInput() {
+  lastTypedField.value = 'right'
   const targetLang = langLeft.value === 'auto' ? 'en' : langLeft.value
   handleTranslation(langRight.value, targetLang, 'right')
+}
+
+function clearLeft() {
+  textLeft.value = ''
+}
+
+function clearRight() {
+  textRight.value = ''
 }
 
 function preventAutoDetectRight() {
@@ -191,6 +202,14 @@ watch(langRight, () => {
 
       <div class="text-panels">
         <div ref="panelLeft" class="text-panel" :class="{ copied: copiedLeft }" @dblclick="copyToClipboard(textLeft, 'left', $event)">
+          <button
+            v-if="textLeft"
+            class="clear-btn"
+            title="Clear all"
+            @click.stop="clearLeft"
+          >
+            ×
+          </button>
           <textarea
             v-model="textLeft"
             class="text-input"
@@ -203,6 +222,7 @@ watch(langRight, () => {
               {{ textLeft.length }} / {{ MAX_CHARS }}
             </div>
             <button
+              v-if="textLeft"
               class="copy-btn"
               :aria-label="copiedLeft ? 'Copied!' : 'Copy to clipboard'"
               title="copy to clipboard"
@@ -213,6 +233,14 @@ watch(langRight, () => {
           </div>
         </div>
         <div ref="panelRight" class="text-panel" :class="{ copied: copiedRight }" @dblclick="copyToClipboard(textRight, 'right', $event)">
+          <button
+            v-if="textRight"
+            class="clear-btn"
+            title="Clear all"
+            @click.stop="clearRight"
+          >
+            ×
+          </button>
           <textarea
             v-model="textRight"
             class="text-input"
@@ -225,6 +253,7 @@ watch(langRight, () => {
               {{ textRight.length }} / {{ MAX_CHARS }}
             </div>
             <button
+              v-if="textRight"
               class="copy-btn"
               :aria-label="copiedRight ? 'Copied!' : 'Copy to clipboard'"
               title="Copy to clipboard"
@@ -309,6 +338,7 @@ watch(langRight, () => {
   position: relative;
   cursor: pointer;
   overflow: hidden;
+  border-radius: none;
 }
 
 .text-panel.copied::before {
@@ -359,7 +389,7 @@ watch(langRight, () => {
 
 .panel-footer {
   position: absolute;
-  bottom: 0.5rem;
+  bottom: 0.75rem;
   left: 0.75rem;
   right: 0.75rem;
   display: flex;
@@ -377,9 +407,28 @@ watch(langRight, () => {
   opacity: 1;
 }
 
+.clear-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0.5;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  transition: opacity 0.2s;
+  z-index: 1;
+  mix-blend-mode: difference;
+}
+
+.clear-btn:hover {
+  opacity: 1;
+}
+
 .copy-btn {
   opacity: 0.7;
   cursor: pointer;
+  padding: 0.25rem 0.5rem;
 }
 
 .copy-btn:hover {
