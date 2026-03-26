@@ -1,7 +1,7 @@
 ---
 title: B - The Real Walter
 display: The Real Walter
-description: Small documentation of the true walter.
+description: docs for this (one and only?) implementation of der wahre walter.
 plum: true
 ---
 
