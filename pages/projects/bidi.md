@@ -1,7 +1,7 @@
 ---
 title: B - bidi
 display: bidi
-description: translate text to and fro!
+description: translate text to and fro
 plum: true
 ---
 
