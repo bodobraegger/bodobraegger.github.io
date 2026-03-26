@@ -262,17 +262,13 @@ watch(langRight, () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-}
-
-.text-panel {
   position: relative;
-  cursor: pointer;
 }
 
-.text-panel::after {
+.text-panels::after {
   content: 'write or paste to translate, click border to copy to clipboard';
   position: absolute;
-  bottom: -1rem;
+  bottom: -1.5rem;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.7rem;
@@ -282,8 +278,13 @@ watch(langRight, () => {
   white-space: nowrap;
 }
 
-.text-panel:hover::after {
+.text-panels:has(.text-panel:hover)::after {
   opacity: 0.5;
+}
+
+.text-panel {
+  position: relative;
+  cursor: pointer;
 }
 
 .text-panel:hover {
