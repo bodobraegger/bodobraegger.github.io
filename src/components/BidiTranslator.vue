@@ -269,7 +269,7 @@ watch(langRight, () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .bidi-translator * {
   color: var(--fg);
 }
@@ -338,7 +338,6 @@ watch(langRight, () => {
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  border-radius: none;
 }
 
 .text-panel.copied::before {
@@ -373,6 +372,7 @@ watch(langRight, () => {
   padding: 0.75rem 0.75rem 1rem;
   background: transparent;
   border: 1px dashed var(--fg-deep);
+  border-radius: 0;
   opacity: 0.7;
   line-height: 1.4;
   resize: none;
