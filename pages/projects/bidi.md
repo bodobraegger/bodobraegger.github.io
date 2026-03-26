@@ -1,7 +1,7 @@
 ---
 title: B - bidi
 display: bidi
-description: Translate text in both directions seamlessly
+description: translate text to and from without switching anything but the textbox
 plum: true
 ---
 
