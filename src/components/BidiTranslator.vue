@@ -170,6 +170,7 @@ watch(langRight, () => {
             <button
               class="copy-btn"
               :aria-label="copiedLeft ? 'Copied!' : 'Copy to clipboard'"
+              title="copy to clipboard"
               @click.stop="copyToClipboard(textLeft, 'left')"
             >
               {{ copiedLeft ? 'copied' : '⎘' }}
@@ -191,6 +192,7 @@ watch(langRight, () => {
             <button
               class="copy-btn"
               :aria-label="copiedRight ? 'Copied!' : 'Copy to clipboard'"
+              title="Copy to clipboard"
               @click.stop="copyToClipboard(textRight, 'right')"
             >
               {{ copiedRight ? 'copied' : '⎘' }}
@@ -268,9 +270,9 @@ watch(langRight, () => {
 }
 
 .text-panel::after {
-  content: attr(data-copy-hint);
+  content: 'write or paste to translate, click border to copy to clipboard';
   position: absolute;
-  top: -1.5rem;
+  bottom: -1rem;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.7rem;
