@@ -25,12 +25,32 @@ const isTranslating = ref(false)
 const lastActiveField = ref<'left' | 'right'>('left')
 const copiedLeft = ref(false)
 const copiedRight = ref(false)
+const panelLeft = ref<HTMLElement | null>(null)
+const panelRight = ref<HTMLElement | null>(null)
 
 let debounceTimer: NodeJS.Timeout | null = null
 
-async function copyToClipboard(text: string, side: 'left' | 'right') {
+function setClickPosition(event: MouseEvent, panel: HTMLElement | null) {
+  if (!panel)
+    return
+
+  const rect = panel.getBoundingClientRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+
+  panel.style.setProperty('--click-x', `${x}px`)
+  panel.style.setProperty('--click-y', `${y}px`)
+}
+
+async function copyToClipboard(text: string, side: 'left' | 'right', event?: MouseEvent) {
   if (!text.trim())
     return
+
+  // Set click position for ripple effect
+  if (event) {
+    const panel = side === 'left' ? panelLeft.value : panelRight.value
+    setClickPosition(event, panel)
+  }
 
   try {
     await navigator.clipboard.writeText(text)
@@ -155,7 +175,7 @@ watch(langRight, () => {
       </div>
 
       <div class="text-panels">
-        <div class="text-panel" @click="copyToClipboard(textLeft, 'left')">
+        <div ref="panelLeft" class="text-panel" :class="{ copied: copiedLeft }" @dblclick="copyToClipboard(textLeft, 'left', $event)">
           <textarea
             v-model="textLeft"
             class="text-input"
@@ -171,13 +191,13 @@ watch(langRight, () => {
               class="copy-btn"
               :aria-label="copiedLeft ? 'Copied!' : 'Copy to clipboard'"
               title="copy to clipboard"
-              @click.stop="copyToClipboard(textLeft, 'left')"
+              @click.stop="copyToClipboard(textLeft, 'left', $event)"
             >
               {{ copiedLeft ? 'copied' : '⎘' }}
             </button>
           </div>
         </div>
-        <div class="text-panel" @click="copyToClipboard(textRight, 'right')">
+        <div ref="panelRight" class="text-panel" :class="{ copied: copiedRight }" @dblclick="copyToClipboard(textRight, 'right', $event)">
           <textarea
             v-model="textRight"
             class="text-input"
@@ -193,7 +213,7 @@ watch(langRight, () => {
               class="copy-btn"
               :aria-label="copiedRight ? 'Copied!' : 'Copy to clipboard'"
               title="Copy to clipboard"
-              @click.stop="copyToClipboard(textRight, 'right')"
+              @click.stop="copyToClipboard(textRight, 'right', $event)"
             >
               {{ copiedRight ? 'copied' : '⎘' }}
             </button>
@@ -266,7 +286,7 @@ watch(langRight, () => {
 }
 
 .text-panels::after {
-  content: 'write or paste to translate, click border to copy to clipboard';
+  content: 'write or paste to translate, double-click border to copy';
   position: absolute;
   bottom: -1.5rem;
   left: 50%;
@@ -285,6 +305,33 @@ watch(langRight, () => {
 .text-panel {
   position: relative;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.text-panel.copied::before {
+  content: '';
+  position: absolute;
+  top: var(--click-y, 50%);
+  left: var(--click-x, 50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--fg-deep) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 0.5s ease-out;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }
 
 .text-panel:hover {
