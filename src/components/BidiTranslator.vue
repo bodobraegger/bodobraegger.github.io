@@ -23,8 +23,33 @@ const textLeft = ref('')
 const textRight = ref('')
 const isTranslating = ref(false)
 const lastActiveField = ref<'left' | 'right'>('left')
+const copiedLeft = ref(false)
+const copiedRight = ref(false)
 
 let debounceTimer: NodeJS.Timeout | null = null
+
+async function copyToClipboard(text: string, side: 'left' | 'right') {
+  if (!text.trim())
+    return
+
+  try {
+    await navigator.clipboard.writeText(text)
+    if (side === 'left')
+      copiedLeft.value = true
+    else
+      copiedRight.value = true
+
+    setTimeout(() => {
+      if (side === 'left')
+        copiedLeft.value = false
+      else
+        copiedRight.value = false
+    }, 1500)
+  }
+  catch (error) {
+    console.error('Failed to copy:', error)
+  }
+}
 
 async function translate(text: string, sourceLang: string, targetLang: string): Promise<string> {
   if (!text.trim())
@@ -93,22 +118,6 @@ function handleRightInput() {
   handleTranslation(langRight.value, langLeft.value, 'right')
 }
 
-function swapLanguages() {
-  // Swap language selections
-  const tempLang = langLeft.value
-  langLeft.value = langRight.value === 'auto' ? 'en' : langRight.value
-  langRight.value = tempLang === 'auto' ? 'en' : tempLang
-
-  // Swap text contents
-  const tempText = textLeft.value
-  textLeft.value = textRight.value
-  textRight.value = tempText
-
-  // If there was text, trigger translation
-  if (textLeft.value.trim())
-    handleLeftInput()
-}
-
 function preventAutoDetectRight() {
   if (langRight.value === 'auto')
     langRight.value = 'en'
@@ -135,9 +144,9 @@ watch(langRight, () => {
             {{ lang.name }}
           </option>
         </select>
-        <button class="swap-btn" aria-label="Swap languages" @click="swapLanguages">
-          ⇄
-        </button>
+        <span class="bidi-indicator" aria-label="Bidirectional translation">
+          ↔
+        </span>
         <select id="selectl2" v-model="langRight" class="lang-select" @change="preventAutoDetectRight">
           <option v-for="lang in languages.filter(l => l.code !== 'auto')" :key="lang.code" :value="lang.code">
             {{ lang.name }}
@@ -146,26 +155,46 @@ watch(langRight, () => {
       </div>
 
       <div class="text-panels">
-        <div class="text-panel">
+        <div class="text-panel" @click="copyToClipboard(textLeft, 'left')">
           <textarea
             v-model="textLeft"
             class="text-input"
-            placeholder="Enter text to translate..."
+            placeholder="Digite o texto para traduzir..."
             @input="handleLeftInput"
+            @click.stop
           />
-          <div class="char-count" :class="{ 'at-limit': textLeft.length >= MAX_CHARS }">
-            {{ textLeft.length }} / {{ MAX_CHARS }}
+          <div class="panel-footer">
+            <div class="char-count" :class="{ 'at-limit': textLeft.length >= MAX_CHARS }">
+              {{ textLeft.length }} / {{ MAX_CHARS }}
+            </div>
+            <button
+              class="copy-btn"
+              :aria-label="copiedLeft ? 'Copied!' : 'Copy to clipboard'"
+              @click.stop="copyToClipboard(textLeft, 'left')"
+            >
+              {{ copiedLeft ? 'copied' : '⎘' }}
+            </button>
           </div>
         </div>
-        <div class="text-panel">
+        <div class="text-panel" @click="copyToClipboard(textRight, 'right')">
           <textarea
             v-model="textRight"
             class="text-input"
             placeholder="Translation appears here..."
             @input="handleRightInput"
+            @click.stop
           />
-          <div class="char-count" :class="{ 'at-limit': textRight.length >= MAX_CHARS }">
-            {{ textRight.length }} / {{ MAX_CHARS }}
+          <div class="panel-footer">
+            <div class="char-count" :class="{ 'at-limit': textRight.length >= MAX_CHARS }">
+              {{ textRight.length }} / {{ MAX_CHARS }}
+            </div>
+            <button
+              class="copy-btn"
+              :aria-label="copiedRight ? 'Copied!' : 'Copy to clipboard'"
+              @click.stop="copyToClipboard(textRight, 'right')"
+            >
+              {{ copiedRight ? 'copied' : '⎘' }}
+            </button>
           </div>
         </div>
       </div>
@@ -189,14 +218,13 @@ watch(langRight, () => {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  line-height: 1.2;
 }
 
 .lang-select {
   flex: 1;
   min-width: 0;
   border: 1px dashed var(--fg-deep);
-  border-radius: 0;
-  padding: 0 2px;
   opacity: 0.7;
   cursor: pointer;
 }
@@ -219,15 +247,13 @@ watch(langRight, () => {
   color: var(--fg);
 }
 
-.swap-btn {
-  border: none;
-  background: none;
-  opacity: 0.7;
-  cursor: pointer;
-}
-
-.swap-btn:hover {
-  opacity: 1;
+.bidi-indicator {
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+  font-size: 1.5rem;
+  user-select: none;
+  pointer-events: none;
 }
 
 .text-panels {
@@ -238,19 +264,25 @@ watch(langRight, () => {
 
 .text-panel {
   position: relative;
+  cursor: pointer;
+}
+
+.text-panel:hover {
+  opacity: 1;
 }
 
 .text-input {
+  cursor: text;
   width: 100%;
-  min-height: 250px;
-  padding-bottom: 2rem;
+  min-height: 350px;
+  padding-bottom: 1rem;
   background: transparent;
   border: 1px dashed var(--fg-deep);
   border-radius: 0;
   padding: 0.75rem;
-  padding-bottom: 2rem;
   resize: vertical;
   opacity: 0.7;
+  line-height: 1.4;
 }
 
 .text-input:hover,
@@ -260,17 +292,33 @@ watch(langRight, () => {
   outline: none;
 }
 
-.char-count {
+.panel-footer {
   position: absolute;
   bottom: 0.5rem;
+  left: 0.75rem;
   right: 0.75rem;
-  font-size: 0.7rem;
-  opacity: 0.4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  opacity: 0.3;
   pointer-events: none;
 }
 
 .char-count.at-limit {
   color: red;
+  opacity: 1;
+}
+
+.copy-btn {
+  opacity: 0.7;
+  cursor: pointer;
+  text-align: right;
+}
+
+.copy-btn:hover {
   opacity: 1;
 }
 

@@ -1,7 +1,7 @@
 ---
 title: B - bidi
 display: bidi
-description: translate text to and from without switching anything but the textbox
+description: translate text to and fro!
 plum: true
 ---
 
