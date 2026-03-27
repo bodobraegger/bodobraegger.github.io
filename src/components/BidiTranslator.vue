@@ -443,5 +443,13 @@ watch(langRight, () => {
   .text-input {
     min-height: 20vh;
   }
+
+  /* Hide Chatango on mobile */
+  @media (max-width: 768px) {
+    iframe,
+    footer {
+      display: none !important;
+    }
+  }
 }
 </style>
