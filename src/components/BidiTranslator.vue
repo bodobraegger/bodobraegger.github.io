@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const MAX_CHARS = 500
 const DEBOUNCE_DELAY = 500
@@ -31,27 +31,9 @@ const panelRight = ref<HTMLElement | null>(null)
 
 let debounceTimer: NodeJS.Timeout | null = null
 
-function setClickPosition(event: MouseEvent, panel: HTMLElement | null) {
-  if (!panel)
-    return
-
-  const rect = panel.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
-
-  panel.style.setProperty('--click-x', `${x}px`)
-  panel.style.setProperty('--click-y', `${y}px`)
-}
-
 async function copyToClipboard(text: string, side: 'left' | 'right', event?: MouseEvent) {
   if (!text.trim())
     return
-
-  // Set click position for ripple effect
-  if (event) {
-    const panel = side === 'left' ? panelLeft.value : panelRight.value
-    setClickPosition(event, panel)
-  }
 
   try {
     await navigator.clipboard.writeText(text)
@@ -178,6 +160,50 @@ watch(langRight, () => {
   if (textLeft.value.trim()) {
     handleLeftInput()
   }
+})
+
+// Handle Ctrl+C when nothing is selected - auto-copy the last translated text
+function handleKeyDown(event: KeyboardEvent) {
+  // Check if Ctrl+C (or Cmd+C on Mac)
+  if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+    // Check if there's any text selected
+    const selection = window.getSelection()
+    if (!selection || selection.toString().length === 0) {
+      // Nothing is selected, determine which side was last translated to
+      let textToCopy = ''
+      let sideToCopy: 'left' | 'right' = 'right'
+
+      // The target side is opposite to the last typed field
+      if (lastTypedField.value === 'left') {
+        // User typed on left, so right is the translation
+        textToCopy = textRight.value
+        sideToCopy = 'right'
+      }
+      else if (lastTypedField.value === 'right') {
+        // User typed on right, so left is the translation
+        textToCopy = textLeft.value
+        sideToCopy = 'left'
+      }
+      else {
+        // No typing yet, default to right side
+        textToCopy = textRight.value
+        sideToCopy = 'right'
+      }
+
+      if (textToCopy.trim()) {
+        event.preventDefault()
+        copyToClipboard(textToCopy, sideToCopy)
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
 })
 </script>
 
@@ -340,30 +366,9 @@ watch(langRight, () => {
   overflow: hidden;
 }
 
-.text-panel.copied::before {
-  content: '';
-  position: absolute;
-  top: var(--click-y, 50%);
-  left: var(--click-x, 50%);
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--fg-deep) 0%, transparent 70%);
-  transform: translate(-50%, -50%) scale(0);
-  animation: ripple 0.5s ease-out;
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-@keyframes ripple {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
-  }
+.text-panel.copied .text-input {
+  border-style: solid;
+  transition: border-style 0s;
 }
 
 .text-input {
@@ -378,6 +383,7 @@ watch(langRight, () => {
   resize: none;
   overflow-y: auto;
   field-sizing: content;
+  transition: border-style 0.2s;
 }
 
 .text-input:hover,
