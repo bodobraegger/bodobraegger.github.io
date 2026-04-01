@@ -227,7 +227,7 @@ onUnmounted(() => {
       </div>
 
       <div class="text-panels">
-        <div ref="panelLeft" class="text-panel" :class="{ copied: copiedLeft }" @dblclick="copyToClipboard(textLeft, 'left', $event)">
+        <div ref="panelLeft" class="text-panel" :class="{ copied: copiedLeft }">
           <button
             v-if="textLeft"
             class="clear-btn"
@@ -258,7 +258,7 @@ onUnmounted(() => {
             </button>
           </div>
         </div>
-        <div ref="panelRight" class="text-panel" :class="{ copied: copiedRight }" @dblclick="copyToClipboard(textRight, 'right', $event)">
+        <div ref="panelRight" class="text-panel" :class="{ copied: copiedRight }">
           <button
             v-if="textRight"
             class="clear-btn"
@@ -344,7 +344,7 @@ onUnmounted(() => {
 }
 
 .text-panels::after {
-  content: 'write or paste to translate, double-click border to copy';
+  content: 'write or paste to translate, ctrl+c to copy translation';
   position: absolute;
   bottom: -1.5rem;
   left: 50%;
@@ -362,7 +362,6 @@ onUnmounted(() => {
 
 .text-panel {
   position: relative;
-  cursor: pointer;
   overflow: hidden;
 }
 
