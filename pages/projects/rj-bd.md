@@ -16,7 +16,7 @@ Beach classifications:
 - **Atenção** (Warning) - Yellow
 - **Desconhecido** (Unknown) - Gray
 
-Try it at [bbo.do/rj-bd](https://bbo.do/rj-bd).s
+Try it at [bbo.do/rj-bd](https://bbo.do/rj-bd).
 
 ## How It Works
 
