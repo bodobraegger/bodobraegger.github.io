@@ -4,17 +4,10 @@ description: Bodo Braegger's Portfolio
 plum: true
 ---
 
-Hi, I am Bodo Braegger, and I make hard- and software for art and research. I am currently studying [Transdisciplinary Arts](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies) at [ZHdK](https://www.zhdk.ch/en), and work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zürich](https://ethz.ch/) - the research university where I studied Computer Science.<br>
+Hi, I am Bodo Braegger, and I make hard- and software for research, industry and the arts. I am currently enrolled in [MA Transdisciplinary Studies](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies) at [ZHdK](https://www.zhdk.ch/en), and work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zurich](https://ethz.ch/) - the research university where I hold an [MSc Computer Science](https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences/computer-science.html).<br>
 
 This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on.
 
-<!--
-I <3 creating, and software engineering has proven to be a very flexible medium. I was able to explore and realize numerous ideas. You can find a [selection of my projects here](/projects). I also do generative art, interactivity experiments, and live-coding performances. Resources for these can be found [here](/projects#generative-art-and-live-coding-resources).
--->
-
-<!-- You can find excerpts on [generative .bbo.do](https://generative.bbo.do/). -->
-
-<!-- Outside of programming, I enjoy making music, painting, and playing with my cat. -->
 <div flex-auto />
 
 ---
