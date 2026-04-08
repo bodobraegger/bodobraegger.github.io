@@ -7,30 +7,33 @@ interface Props {
   strokeColor?: string
   strokeWidth?: number
   hoverText?: string
+  initialX?: number
+  initialY?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   penEmoji: '✏️',
   strokeColor: '#111',
   strokeWidth: 3,
-  hoverText: 'Drag me to draw!',
 })
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
+const inlineContainerRef = ref<HTMLSpanElement>()
 const isDragging = ref(false)
 const isDrawing = ref(false)
 const isHovered = ref(false)
-const penPosition = ref({ x: 100, y: 100 })
+const penPosition = ref({ x: 0, y: 0 }) // Relative to viewport when dragging
 const mousePosition = ref({ x: 0, y: 0 })
+const isDetached = ref(false) // Track if pen has been dragged away from inline position
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
 
 // Pen tip offset - adjust these to position the drawing at the visual tip
-const TIP_OFFSET_X = -6
-const TIP_OFFSET_Y = 50
+const TIP_OFFSET_X = -5
+const TIP_OFFSET_Y = 35
 
 onMounted(() => {
   if (canvasRef.value) {
@@ -66,6 +69,16 @@ function startDrag(e: MouseEvent) {
   if (!rect)
     return
 
+  // Detach from inline position on first drag
+  if (!isDetached.value) {
+    isDetached.value = true
+    // Set initial viewport position based on current position
+    penPosition.value = {
+      x: rect.left,
+      y: rect.top,
+    }
+  }
+
   // Calculate offset from where user clicked within the pen emoji
   const offsetX = e.clientX - rect.left
   const offsetY = e.clientY - rect.top
@@ -75,8 +88,8 @@ function startDrag(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY }
 
   // Calculate pen tip position - will be used when drawing starts
-  lastX = penPosition.value.x + TIP_OFFSET_X
-  lastY = penPosition.value.y + TIP_OFFSET_Y
+  lastX = rect.left + TIP_OFFSET_X
+  lastY = rect.top + TIP_OFFSET_Y
 
   e.preventDefault()
 
@@ -102,9 +115,9 @@ function drag(e: MouseEvent) {
   }
   mousePosition.value = { x: e.clientX, y: e.clientY }
 
-  // Calculate current pen tip position using same offset
-  const currentX = penPosition.value.x + TIP_OFFSET_X
-  const currentY = penPosition.value.y + TIP_OFFSET_Y
+  // Calculate current pen tip position - use actual viewport position
+  const currentX = e.clientX + TIP_OFFSET_X - (drag as any).offsetX
+  const currentY = e.clientY + TIP_OFFSET_Y - (drag as any).offsetY
 
   if (ctx) {
     if (!isDrawing.value) {
@@ -162,71 +175,78 @@ defineExpose({
 </script>
 
 <template>
-  <div class="drawable-pen-container">
-    <canvas
-      ref="canvasRef"
-      class="drawing-canvas"
-    />
+  <!-- Canvas layer for drawing - fixed position covering viewport -->
+  <canvas
+    ref="canvasRef"
+    class="drawing-canvas"
+  />
 
-    <div
+  <!-- Inline container that flows with document content -->
+  <span ref="inlineContainerRef" class="pen-inline-container">
+    <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ dragging: isDragging }"
-      :style="{
+      :class="{ dragging: isDragging, detached: isDetached }"
+      :style="isDetached ? {
+        position: 'fixed',
         left: `${penPosition.x}px`,
         top: `${penPosition.y}px`,
-      }"
+      } : {}"
       @mousedown="startDrag"
       @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
       {{ penEmoji }}
-    </div>
+    </span>
+  </span>
 
-    <HoverTooltip
-      :text="hoverText || ''"
-      :x="mousePosition.x"
-      :y="mousePosition.y"
-      :show="isHovered && !isDragging"
-    />
-  </div>
+  <HoverTooltip
+    :text="hoverText || ''"
+    :x="mousePosition.x"
+    :y="mousePosition.y"
+    :show="isHovered && !isDragging"
+  />
 </template>
 
 <style scoped>
-.drawable-pen-container {
+.drawing-canvas {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9999;
-}
-
-.drawing-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  z-index: 9998;
 }
 
 html.dark .drawing-canvas {
   filter: invert(1);
 }
 
+.pen-inline-container {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  line-height: 0;
+  /* Fixed size to prevent reflow when pen detaches */
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .pen-emoji {
-  position: absolute;
+  display: inline-block;
   font-size: 2.5rem;
   cursor: grab;
   user-select: none;
-  pointer-events: auto;
   transition: transform 0.1s ease;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  z-index: 10000;
   transform: scaleX(-1);
+  line-height: 1;
+}
+
+.pen-emoji.detached {
+  z-index: 10000;
 }
 
 .pen-emoji.dragging {
