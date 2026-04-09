@@ -13,6 +13,7 @@ interface Props {
   canvasId?: string
   save?: boolean
   eraserMode?: boolean
+  penId?: string // Unique ID for this pen instance to save its position
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
   canvasId: 'default',
   save: false,
   eraserMode: false,
+  penId: '', // Auto-generated if not provided
 })
 
 const penRef = ref<HTMLElement>()
@@ -36,6 +38,10 @@ const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
 const flip = props.penEmoji === '✏️' || props.flip
+
+// Auto-generate unique pen ID based on props if not provided
+const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
+const effectivePenId = props.penId || autoPenId
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
@@ -51,6 +57,39 @@ const canvasData = (globalCanvases[props.canvasId] ||= {
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${props.canvasId}`
+const penStorageKey = `drawable-pen-position-${props.canvasId}-${effectivePenId}`
+
+function loadPenPosition() {
+  if (!props.save)
+    return
+  try {
+    const saved = localStorage.getItem(penStorageKey)
+    if (saved) {
+      const position = JSON.parse(saved)
+      isDetached.value = position.isDetached
+      if (position.isDetached) {
+        penPosition.value = position.position
+      }
+    }
+  }
+  catch (e) {
+    console.warn('Failed to load pen position:', e)
+  }
+}
+
+function savePenPosition() {
+  if (!props.save)
+    return
+  try {
+    localStorage.setItem(penStorageKey, JSON.stringify({
+      isDetached: isDetached.value,
+      position: penPosition.value,
+    }))
+  }
+  catch (e) {
+    console.warn('Failed to save pen position:', e)
+  }
+}
 
 function loadStrokes() {
   if (!props.save)
@@ -132,12 +171,19 @@ onMounted(() => {
     if (canvasRef.value)
       canvasRef.value.style.display = 'none'
   }
+
+  // Load this pen's saved position
+  loadPenPosition()
+
+  // Listen for global "clear" command
+  window.addEventListener('keydown', handleClearCommand)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
+  window.removeEventListener('keydown', handleClearCommand)
 })
 
 function handleStorageChange(e: StorageEvent) {
@@ -159,6 +205,61 @@ function handleResize() {
   sharedCanvas.width = window.innerWidth
   sharedCanvas.height = window.innerHeight
   sharedCtx.putImageData(imageData, 0, 0)
+}
+
+// Track typed characters for "clear" command
+let typedChars = ''
+let typedTimeout: number | null = null
+
+function handleClearCommand(e: KeyboardEvent) {
+  // Ignore if user is typing in an input/textarea
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+    return
+
+  // Add character to buffer
+  typedChars += e.key.toLowerCase()
+
+  // Clear timeout
+  if (typedTimeout)
+    clearTimeout(typedTimeout)
+
+  // Reset after 2 seconds of no typing
+  typedTimeout = window.setTimeout(() => {
+    typedChars = ''
+  }, 2000)
+
+  // Check if "clear" was typed
+  if (typedChars.includes('clear')) {
+    typedChars = ''
+    clearAllData()
+  }
+}
+
+function clearAllData() {
+  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (sharedCtx && sharedCanvas) {
+    sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+    allStrokes.length = 0
+    currentPath = []
+
+    // Clear from localStorage
+    if (props.save) {
+      localStorage.removeItem(storageKey)
+      // Clear all pen positions for this canvasId
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(`drawable-pen-position-${props.canvasId}-`)) {
+          localStorage.removeItem(key)
+        }
+      })
+    }
+
+    // Reset all pens to inline position
+    isDetached.value = false
+    penPosition.value = { x: 0, y: 0 }
+
+    // Notify other pens
+    notifyUpdate()
+  }
 }
 
 function startDrag(e: MouseEvent) {
@@ -252,6 +353,9 @@ function endDrag() {
   isDrawing.value = false
   moveOnly.value = false
   currentPath = []
+
+  // Save pen position when drag ends
+  savePenPosition()
 
   window.removeEventListener('mousemove', drag)
   window.removeEventListener('mouseup', endDrag)
