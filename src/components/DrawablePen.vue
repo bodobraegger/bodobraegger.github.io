@@ -7,61 +7,158 @@ interface Props {
   strokeColor?: string
   strokeWidth?: number
   hoverText?: string
-  initialX?: number
-  initialY?: number
+  tipOffsetX?: number
+  tipOffsetY?: number
+  flip?: boolean
+  canvasId?: string
+  save?: boolean
+  eraserMode?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   penEmoji: '✏️',
   strokeColor: '#111',
   strokeWidth: 3,
+  tipOffsetX: 5,
+  tipOffsetY: 45,
+  canvasId: 'default',
+  save: false,
+  eraserMode: false,
 })
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
-const inlineContainerRef = ref<HTMLSpanElement>()
 const isDragging = ref(false)
 const isDrawing = ref(false)
 const isHovered = ref(false)
-const penPosition = ref({ x: 0, y: 0 }) // Relative to viewport when dragging
+const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
-const isDetached = ref(false) // Track if pen has been dragged away from inline position
+const isDetached = ref(false)
+const moveOnly = ref(false)
+const flip = props.penEmoji === '✏️' || props.flip
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
+let currentPath: { x: number, y: number }[] = []
 
-// Pen tip offset - adjust these to position the drawing at the visual tip
-const TIP_OFFSET_X = -5
-const TIP_OFFSET_Y = 35
+// Global shared canvas state per canvasId
+const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
+const canvasData = (globalCanvases[props.canvasId] ||= {
+  strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
+  canvas: null as HTMLCanvasElement | null,
+  ctx: null as CanvasRenderingContext2D | null,
+})
+const allStrokes = canvasData.strokes
+const storageKey = `drawable-pen-${props.canvasId}`
+
+function loadStrokes() {
+  if (!props.save)
+    return
+  try {
+    const saved = localStorage.getItem(storageKey)
+    if (saved) {
+      allStrokes.length = 0
+      allStrokes.push(...JSON.parse(saved))
+      redrawAll()
+    }
+  }
+  catch (e) {
+    console.warn('Failed to load strokes:', e)
+  }
+}
+
+function saveStrokes() {
+  if (!props.save)
+    return
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(allStrokes))
+  }
+  catch (e) {
+    console.warn('Failed to save strokes:', e)
+  }
+}
+
+function redrawAll() {
+  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (!sharedCtx || !sharedCanvas)
+    return
+
+  sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+
+  for (const stroke of allStrokes) {
+    sharedCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
+    sharedCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
+    sharedCtx.lineWidth = stroke.width
+
+    sharedCtx.beginPath()
+    sharedCtx.moveTo(stroke.points[0].x, stroke.points[0].y)
+    for (let i = 1; i < stroke.points.length; i++) {
+      sharedCtx.lineTo(stroke.points[i].x, stroke.points[i].y)
+    }
+    sharedCtx.stroke()
+  }
+
+  sharedCtx.globalCompositeOperation = 'source-over'
+}
+
+function notifyUpdate() {
+  window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: props.canvasId } }))
+}
 
 onMounted(() => {
-  if (canvasRef.value) {
-    const canvas = canvasRef.value
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    ctx = canvas.getContext('2d')
+  if (!canvasData.canvas && canvasRef.value) {
+    // First instance - initialize shared canvas
+    canvasData.canvas = canvasRef.value
+    canvasData.canvas.width = window.innerWidth
+    canvasData.canvas.height = window.innerHeight
+    canvasData.ctx = canvasData.canvas.getContext('2d')
+    ctx = canvasData.ctx
 
     if (ctx) {
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
     }
 
+    loadStrokes()
+
     window.addEventListener('resize', handleResize)
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('drawingUpdated', handleDrawingUpdate)
+  }
+  else {
+    // Subsequent instances - use shared canvas
+    ctx = canvasData.ctx
+    if (canvasRef.value)
+      canvasRef.value.style.display = 'none'
   }
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
+  window.removeEventListener('storage', handleStorageChange)
+  window.removeEventListener('drawingUpdated', handleDrawingUpdate)
 })
 
+function handleStorageChange(e: StorageEvent) {
+  if (e.key === storageKey && e.newValue && props.save)
+    loadStrokes()
+}
+
+function handleDrawingUpdate(e: Event) {
+  if ((e as CustomEvent).detail?.canvasId === props.canvasId)
+    redrawAll()
+}
+
 function handleResize() {
-  if (canvasRef.value && ctx) {
-    const imageData = ctx.getImageData(0, 0, canvasRef.value.width, canvasRef.value.height)
-    canvasRef.value.width = window.innerWidth
-    canvasRef.value.height = window.innerHeight
-    ctx.putImageData(imageData, 0, 0)
-  }
+  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (!sharedCtx || !sharedCanvas)
+    return
+
+  const imageData = sharedCtx.getImageData(0, 0, sharedCanvas.width, sharedCanvas.height)
+  sharedCanvas.width = window.innerWidth
+  sharedCanvas.height = window.innerHeight
+  sharedCtx.putImageData(imageData, 0, 0)
 }
 
 function startDrag(e: MouseEvent) {
@@ -69,35 +166,27 @@ function startDrag(e: MouseEvent) {
   if (!rect)
     return
 
-  // Detach from inline position on first drag
   if (!isDetached.value) {
     isDetached.value = true
-    // Set initial viewport position based on current position
-    penPosition.value = {
-      x: rect.left,
-      y: rect.top,
-    }
+    penPosition.value = { x: rect.left, y: rect.top }
   }
 
-  // Calculate offset from where user clicked within the pen emoji
   const offsetX = e.clientX - rect.left
   const offsetY = e.clientY - rect.top
 
   isDragging.value = true
-  isDrawing.value = false // Don't start drawing until first movement
+  moveOnly.value = e.shiftKey
+  isDrawing.value = false
   mousePosition.value = { x: e.clientX, y: e.clientY }
-
-  // Calculate pen tip position - will be used when drawing starts
-  lastX = rect.left + TIP_OFFSET_X
-  lastY = rect.top + TIP_OFFSET_Y
+  currentPath = []
+  lastX = rect.left + props.tipOffsetX
+  lastY = rect.top + props.tipOffsetY
 
   e.preventDefault()
 
-  // Store the click offset for dragging
   ;(drag as any).offsetX = offsetX
   ;(drag as any).offsetY = offsetY
 
-  // Add global mouse move and mouse up listeners
   window.addEventListener('mousemove', drag)
   window.addEventListener('mouseup', endDrag)
 }
@@ -106,38 +195,66 @@ function drag(e: MouseEvent) {
   if (!isDragging.value)
     return
 
-  // Move pen based on where user grabbed it
   const offsetX = (drag as any).offsetX || 20
   const offsetY = (drag as any).offsetY || 20
-  penPosition.value = {
-    x: e.clientX - offsetX,
-    y: e.clientY - offsetY,
-  }
+  penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
   mousePosition.value = { x: e.clientX, y: e.clientY }
 
-  // Calculate current pen tip position - use actual viewport position
-  const currentX = e.clientX + TIP_OFFSET_X - (drag as any).offsetX
-  const currentY = e.clientY + TIP_OFFSET_Y - (drag as any).offsetY
+  const currentX = e.clientX + props.tipOffsetX - offsetX
+  const currentY = e.clientY + props.tipOffsetY - offsetY
 
-  if (ctx) {
+  if (ctx && !moveOnly.value) {
     if (!isDrawing.value) {
-      // First movement - just update position without drawing
       isDrawing.value = true
+      currentPath = [{ x: currentX, y: currentY }]
       lastX = currentX
       lastY = currentY
     }
     else {
-      // Draw line from last position to current
-      ctx.strokeStyle = props.strokeColor
+      currentPath.push({ x: currentX, y: currentY })
+      redrawAll()
+
+      // Draw current path in progress
+      ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
+      ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
       ctx.lineWidth = props.strokeWidth
+
       ctx.beginPath()
-      ctx.moveTo(lastX, lastY)
-      ctx.lineTo(currentX, currentY)
+      ctx.moveTo(currentPath[0].x, currentPath[0].y)
+      for (let i = 1; i < currentPath.length; i++) {
+        ctx.lineTo(currentPath[i].x, currentPath[i].y)
+      }
       ctx.stroke()
+
       lastX = currentX
       lastY = currentY
     }
   }
+  else if (moveOnly.value) {
+    lastX = currentX
+    lastY = currentY
+  }
+}
+
+function endDrag() {
+  if (isDrawing.value && currentPath.length > 0) {
+    allStrokes.push({
+      points: [...currentPath],
+      color: props.strokeColor,
+      width: props.strokeWidth,
+      isEraser: props.eraserMode,
+    })
+    saveStrokes()
+    notifyUpdate()
+  }
+
+  isDragging.value = false
+  isDrawing.value = false
+  moveOnly.value = false
+  currentPath = []
+
+  window.removeEventListener('mousemove', drag)
+  window.removeEventListener('mouseup', endDrag)
 }
 
 function handleMouseMove(e: MouseEvent) {
@@ -155,43 +272,30 @@ function handleMouseLeave() {
   isHovered.value = false
 }
 
-function endDrag() {
-  isDragging.value = false
-  isDrawing.value = false
-
-  // Remove global listeners
-  window.removeEventListener('mousemove', drag)
-  window.removeEventListener('mouseup', endDrag)
-}
-
-// Expose clear method for parent components if needed
 defineExpose({
   clearCanvas: () => {
-    if (ctx && canvasRef.value) {
-      ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
+    const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+    if (sharedCtx && sharedCanvas) {
+      sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+      allStrokes.length = 0
+      currentPath = []
+      saveStrokes()
     }
   },
+  saveDrawing: saveStrokes,
+  loadDrawing: loadStrokes,
 })
 </script>
 
 <template>
-  <!-- Canvas layer for drawing - fixed position covering viewport -->
-  <canvas
-    ref="canvasRef"
-    class="drawing-canvas"
-  />
+  <canvas ref="canvasRef" class="drawing-canvas" />
 
-  <!-- Inline container that flows with document content -->
-  <span ref="inlineContainerRef" class="pen-inline-container">
+  <span class="pen-inline-container">
     <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ dragging: isDragging, detached: isDetached }"
-      :style="isDetached ? {
-        position: 'fixed',
-        left: `${penPosition.x}px`,
-        top: `${penPosition.y}px`,
-      } : {}"
+      :class="{ dragging: isDragging, detached: isDetached, flipped: flip }"
+      :style="isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}"
       @mousedown="startDrag"
       @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
@@ -201,12 +305,7 @@ defineExpose({
     </span>
   </span>
 
-  <HoverTooltip
-    :text="hoverText || ''"
-    :x="mousePosition.x"
-    :y="mousePosition.y"
-    :show="isHovered && !isDragging"
-  />
+  <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging" />
 </template>
 
 <style scoped>
@@ -229,7 +328,6 @@ html.dark .drawing-canvas {
   position: relative;
   vertical-align: middle;
   line-height: 0;
-  /* Fixed size to prevent reflow when pen detaches */
   width: 2.5rem;
   height: 2.5rem;
 }
@@ -241,7 +339,6 @@ html.dark .drawing-canvas {
   user-select: none;
   transition: transform 0.1s ease;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  transform: scaleX(-1);
   line-height: 1;
 }
 
@@ -251,10 +348,22 @@ html.dark .drawing-canvas {
 
 .pen-emoji.dragging {
   cursor: grabbing;
-  transform: scaleX(-1) scale(1.1) rotate(-15deg);
+  transform: scale(1.1) rotate(-15deg);
 }
 
 .pen-emoji:hover:not(.dragging) {
+  transform: scale(1.15);
+}
+
+.pen-emoji.flipped {
+  transform: scaleX(-1);
+}
+
+.pen-emoji.flipped.dragging {
+  transform: scaleX(-1) scale(1.1) rotate(15deg);
+}
+
+.pen-emoji.flipped:hover:not(.dragging) {
   transform: scaleX(-1) scale(1.15);
 }
 </style>
