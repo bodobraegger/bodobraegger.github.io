@@ -155,8 +155,9 @@ onMounted(() => {
   if (!canvasData.canvas && canvasRef.value) {
     // First instance - initialize shared canvas
     canvasData.canvas = canvasRef.value
-    canvasData.canvas.width = window.innerWidth
-    canvasData.canvas.height = window.innerHeight
+    // Use document dimensions to cover the entire scrollable area
+    canvasData.canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
+    canvasData.canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
     canvasData.ctx = canvasData.canvas.getContext('2d')
     ctx = canvasData.ctx
 
@@ -213,8 +214,9 @@ function handleResize() {
     return
 
   const imageData = sharedCtx.getImageData(0, 0, sharedCanvas.width, sharedCanvas.height)
-  sharedCanvas.width = window.innerWidth
-  sharedCanvas.height = window.innerHeight
+  // Update to cover entire scrollable area
+  sharedCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
+  sharedCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
   sharedCtx.putImageData(imageData, 0, 0)
 }
 
@@ -291,8 +293,12 @@ function startDrag(e: MouseEvent) {
   isDrawing.value = false
   mousePosition.value = { x: e.clientX, y: e.clientY }
   currentPath = []
-  lastX = rect.left + props.tipOffsetX
-  lastY = rect.top + props.tipOffsetY
+
+  // Account for scroll position when starting to draw
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  lastX = rect.left + scrollX + props.tipOffsetX
+  lastY = rect.top + scrollY + props.tipOffsetY
 
   e.preventDefault()
 
@@ -312,8 +318,11 @@ function drag(e: MouseEvent) {
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
   mousePosition.value = { x: e.clientX, y: e.clientY }
 
-  const currentX = e.clientX + props.tipOffsetX - offsetX
-  const currentY = e.clientY + props.tipOffsetY - offsetY
+  // Account for scroll position when drawing
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
+  const currentY = e.clientY + scrollY + props.tipOffsetY - offsetY
 
   if (ctx && !moveOnly.value) {
     if (!isDrawing.value) {
@@ -425,11 +434,11 @@ defineExpose({
 
 <style scoped>
 .drawing-canvas {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 9998;
 }
