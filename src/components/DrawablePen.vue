@@ -23,9 +23,6 @@ const props = withDefaults(defineProps<Props>(), {
   tipOffsetX: 5,
   tipOffsetY: 45,
   canvasId: 'default',
-  save: false,
-  eraserMode: false,
-  penId: '', // Auto-generated if not provided
 })
 
 const penRef = ref<HTMLElement>()
