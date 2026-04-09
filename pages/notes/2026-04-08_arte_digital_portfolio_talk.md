@@ -11,16 +11,8 @@ plum: true
 import DrawablePen from '../../src/components/DrawablePen.vue'
 </script>
 
+<div>
 <DrawablePen :save="true" />
+& <DrawablePen strokeColor="red" penEmoji="🖍️" :tipOffsetX="5" :tipOffsetY="43" :save="true" /> & <DrawablePen strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" penEmoji="🖉" :tipOffsetX="5" :tipOffsetY="43" :save="true" /> & <DrawablePen strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" penEmoji="🧹" :save="true" />
 
-&
-
-<DrawablePen strokeColor="red" penEmoji="🖍️" :tipOffsetX="5" :tipOffsetY="43" :save="true" />
-
-&
-
-<DrawablePen strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" penEmoji="🖉" :tipOffsetX="5" :tipOffsetY="43" :save="true" />
-
-&
-
-<DrawablePen strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" penEmoji="🧹" :save="true" />
+</div>
