@@ -30,6 +30,7 @@ const effectiveCanvasId = props.canvasId || window.location.pathname
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
+const backgroundCanvasRef = ref<HTMLCanvasElement>()
 const isDragging = ref(false)
 const isDrawing = ref(false)
 const isHovered = ref(false)
@@ -44,9 +45,12 @@ const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-$
 const effectivePenId = props.penId || autoPenId
 
 let ctx: CanvasRenderingContext2D | null = null
+let bgCtx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
+let saveTimeout: number | null = null
+let rafId: number | null = null
 
 // Global shared canvas state per canvasId
 const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
@@ -54,10 +58,54 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
   canvas: null as HTMLCanvasElement | null,
   ctx: null as CanvasRenderingContext2D | null,
+  backgroundCanvas: null as HTMLCanvasElement | null,
+  bgCtx: null as CanvasRenderingContext2D | null,
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
 const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
+
+// Path simplification using Ramer-Douglas-Peucker algorithm
+function simplifyPath(points: { x: number, y: number }[], tolerance = 2.0): { x: number, y: number }[] {
+  if (points.length <= 2)
+    return points
+
+  function perpendicularDistance(point: { x: number, y: number }, lineStart: { x: number, y: number }, lineEnd: { x: number, y: number }): number {
+    const dx = lineEnd.x - lineStart.x
+    const dy = lineEnd.y - lineStart.y
+    const mag = Math.sqrt(dx * dx + dy * dy)
+    if (mag === 0)
+      return Math.sqrt((point.x - lineStart.x) ** 2 + (point.y - lineStart.y) ** 2)
+    const u = ((point.x - lineStart.x) * dx + (point.y - lineStart.y) * dy) / (mag * mag)
+    const ix = lineStart.x + u * dx
+    const iy = lineStart.y + u * dy
+    return Math.sqrt((point.x - ix) ** 2 + (point.y - iy) ** 2)
+  }
+
+  function rdp(points: { x: number, y: number }[], start: number, end: number, tolerance: number): { x: number, y: number }[] {
+    let maxDist = 0
+    let index = 0
+
+    for (let i = start + 1; i < end; i++) {
+      const dist = perpendicularDistance(points[i], points[start], points[end])
+      if (dist > maxDist) {
+        maxDist = dist
+        index = i
+      }
+    }
+
+    if (maxDist > tolerance) {
+      const left = rdp(points, start, index, tolerance)
+      const right = rdp(points, index, end, tolerance)
+      return [...left.slice(0, -1), ...right]
+    }
+    else {
+      return [points[start], points[end]]
+    }
+  }
+
+  return rdp(points, 0, points.length - 1, tolerance)
+}
 
 function loadPenPosition() {
   if (!props.save)
@@ -110,35 +158,99 @@ function loadStrokes() {
 function saveStrokes() {
   if (!props.save)
     return
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(allStrokes))
-  }
-  catch (e) {
-    console.warn('Failed to save strokes:', e)
-  }
+
+  // Debounce saves to avoid blocking on every stroke
+  if (saveTimeout)
+    clearTimeout(saveTimeout)
+
+  saveTimeout = window.setTimeout(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(allStrokes))
+    }
+    catch (e) {
+      console.warn('Failed to save strokes:', e)
+    }
+  }, 500)
 }
 
 function redrawAll() {
-  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-  if (!sharedCtx || !sharedCanvas)
+  const { bgCtx: sharedBgCtx, backgroundCanvas: sharedBgCanvas } = canvasData
+  if (!sharedBgCtx || !sharedBgCanvas)
     return
 
-  sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+  sharedBgCtx.clearRect(0, 0, sharedBgCanvas.width, sharedBgCanvas.height)
 
   for (const stroke of allStrokes) {
-    sharedCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
-    sharedCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
-    sharedCtx.lineWidth = stroke.width
+    sharedBgCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
+    sharedBgCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
+    sharedBgCtx.lineWidth = stroke.width
 
-    sharedCtx.beginPath()
-    sharedCtx.moveTo(stroke.points[0].x, stroke.points[0].y)
+    sharedBgCtx.beginPath()
+    sharedBgCtx.moveTo(stroke.points[0].x, stroke.points[0].y)
     for (let i = 1; i < stroke.points.length; i++) {
-      sharedCtx.lineTo(stroke.points[i].x, stroke.points[i].y)
+      sharedBgCtx.lineTo(stroke.points[i].x, stroke.points[i].y)
     }
-    sharedCtx.stroke()
+    sharedBgCtx.stroke()
   }
 
-  sharedCtx.globalCompositeOperation = 'source-over'
+  sharedBgCtx.globalCompositeOperation = 'source-over'
+}
+
+function drawCurrentStroke() {
+  if (!ctx || currentPath.length === 0)
+    return
+
+  const { canvas, backgroundCanvas, bgCtx: sharedBgCtx } = canvasData
+  if (!canvas || !backgroundCanvas)
+    return
+
+  // Clear foreground
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // For eraser mode, we need to show the effect in real-time
+  // Copy background and apply current eraser stroke to it
+  if (props.eraserMode && sharedBgCtx) {
+    // Hide background, show composite on foreground
+    backgroundCanvas.style.opacity = '0'
+
+    ctx.drawImage(backgroundCanvas, 0, 0)
+
+    // Draw eraser stroke
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.strokeStyle = 'rgba(0,0,0,1)'
+    ctx.lineWidth = props.strokeWidth
+
+    ctx.beginPath()
+    ctx.moveTo(currentPath[0].x, currentPath[0].y)
+    for (let i = 1; i < currentPath.length; i++) {
+      ctx.lineTo(currentPath[i].x, currentPath[i].y)
+    }
+    ctx.stroke()
+    ctx.globalCompositeOperation = 'source-over'
+  }
+  else {
+    // For normal drawing, just draw the current stroke
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.strokeStyle = props.strokeColor
+    ctx.lineWidth = props.strokeWidth
+
+    ctx.beginPath()
+    ctx.moveTo(currentPath[0].x, currentPath[0].y)
+    for (let i = 1; i < currentPath.length; i++) {
+      ctx.lineTo(currentPath[i].x, currentPath[i].y)
+    }
+    ctx.stroke()
+  }
+}
+
+function scheduleRedraw() {
+  if (rafId !== null)
+    return
+
+  rafId = requestAnimationFrame(() => {
+    drawCurrentStroke()
+    rafId = null
+  })
 }
 
 function notifyUpdate() {
@@ -150,14 +262,26 @@ onMounted(() => {
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
     canvasData.canvas = null
     canvasData.ctx = null
+    canvasData.backgroundCanvas = null
+    canvasData.bgCtx = null
   }
 
-  if (!canvasData.canvas && canvasRef.value) {
-    // First instance - initialize shared canvas
+  if (!canvasData.canvas && canvasRef.value && backgroundCanvasRef.value) {
+    // First instance - initialize shared canvases
+    const width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
+    const height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
+
+    // Background canvas for completed strokes
+    canvasData.backgroundCanvas = backgroundCanvasRef.value
+    canvasData.backgroundCanvas.width = width
+    canvasData.backgroundCanvas.height = height
+    canvasData.bgCtx = canvasData.backgroundCanvas.getContext('2d')
+    bgCtx = canvasData.bgCtx
+
+    // Foreground canvas for current stroke
     canvasData.canvas = canvasRef.value
-    // Use document dimensions to cover the entire scrollable area
-    canvasData.canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-    canvasData.canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
+    canvasData.canvas.width = width
+    canvasData.canvas.height = height
     canvasData.ctx = canvasData.canvas.getContext('2d')
     ctx = canvasData.ctx
 
@@ -165,10 +289,14 @@ onMounted(() => {
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
     }
+    if (bgCtx) {
+      bgCtx.lineCap = 'round'
+      bgCtx.lineJoin = 'round'
+    }
 
     loadStrokes()
 
-    // Redraw any existing strokes (in case we navigated back to a page with existing strokes)
+    // Redraw any existing strokes
     if (allStrokes.length > 0) {
       redrawAll()
     }
@@ -180,8 +308,11 @@ onMounted(() => {
   else {
     // Subsequent instances - use shared canvas
     ctx = canvasData.ctx
+    bgCtx = canvasData.bgCtx
     if (canvasRef.value)
       canvasRef.value.style.display = 'none'
+    if (backgroundCanvasRef.value)
+      backgroundCanvasRef.value.style.display = 'none'
   }
 
   // Load this pen's saved position
@@ -196,6 +327,15 @@ onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('keydown', handleClearCommand)
+
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+  if (saveTimeout) {
+    clearTimeout(saveTimeout)
+    saveTimeout = null
+  }
 })
 
 function handleStorageChange(e: StorageEvent) {
@@ -209,19 +349,33 @@ function handleDrawingUpdate(e: Event) {
 }
 
 function handleResize() {
-  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-  if (!sharedCtx || !sharedCanvas)
+  const { bgCtx: sharedBgCtx, backgroundCanvas: sharedBgCanvas, ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (!sharedBgCtx || !sharedBgCanvas || !sharedCtx || !sharedCanvas)
     return
 
-  const imageData = sharedCtx.getImageData(0, 0, sharedCanvas.width, sharedCanvas.height)
-  // Update to cover entire scrollable area
-  sharedCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-  sharedCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
-  sharedCtx.putImageData(imageData, 0, 0)
+  const bgImageData = sharedBgCtx.getImageData(0, 0, sharedBgCanvas.width, sharedBgCanvas.height)
+  const width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
+  const height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
+
+  sharedBgCanvas.width = width
+  sharedBgCanvas.height = height
+  sharedCanvas.width = width
+  sharedCanvas.height = height
+
+  sharedBgCtx.putImageData(bgImageData, 0, 0)
+
+  if (sharedCtx) {
+    sharedCtx.lineCap = 'round'
+    sharedCtx.lineJoin = 'round'
+  }
+  if (sharedBgCtx) {
+    sharedBgCtx.lineCap = 'round'
+    sharedBgCtx.lineJoin = 'round'
+  }
 }
 
 // Track typed characters for "clear" command
-let typedChars = ''
+const typedCharsBuffer: string[] = []
 let typedTimeout: number | null = null
 
 function handleClearCommand(e: KeyboardEvent) {
@@ -230,7 +384,11 @@ function handleClearCommand(e: KeyboardEvent) {
     return
 
   // Add character to buffer
-  typedChars += e.key.toLowerCase()
+  typedCharsBuffer.push(e.key.toLowerCase())
+
+  // Keep buffer size reasonable
+  if (typedCharsBuffer.length > 10)
+    typedCharsBuffer.shift()
 
   // Clear timeout
   if (typedTimeout)
@@ -238,19 +396,21 @@ function handleClearCommand(e: KeyboardEvent) {
 
   // Reset after 2 seconds of no typing
   typedTimeout = window.setTimeout(() => {
-    typedChars = ''
+    typedCharsBuffer.length = 0
   }, 2000)
 
   // Check if "clear" was typed
-  if (typedChars.includes('clear')) {
-    typedChars = ''
+  const typed = typedCharsBuffer.join('')
+  if (typed.includes('clear')) {
+    typedCharsBuffer.length = 0
     clearAllData()
   }
 }
 
 function clearAllData() {
-  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-  if (sharedCtx && sharedCanvas) {
+  const { bgCtx: sharedBgCtx, backgroundCanvas: sharedBgCanvas, ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (sharedBgCtx && sharedBgCanvas && sharedCtx && sharedCanvas) {
+    sharedBgCtx.clearRect(0, 0, sharedBgCanvas.width, sharedBgCanvas.height)
     sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
     allStrokes.length = 0
     currentPath = []
@@ -259,11 +419,15 @@ function clearAllData() {
     if (props.save) {
       localStorage.removeItem(storageKey)
       // Clear all pen positions for this canvasId
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`)) {
-          localStorage.removeItem(key)
+      const keysToRemove: string[] = []
+      const prefix = `drawable-pen-position-${effectiveCanvasId}-`
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key?.startsWith(prefix)) {
+          keysToRemove.push(key)
         }
-      })
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key))
     }
 
     // Reset all pens to inline position
@@ -294,7 +458,7 @@ function startDrag(e: MouseEvent) {
   mousePosition.value = { x: e.clientX, y: e.clientY }
   currentPath = []
 
-  // Account for scroll position when starting to draw
+  // Account for scroll position
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
   lastX = rect.left + scrollX + props.tipOffsetX
@@ -333,19 +497,9 @@ function drag(e: MouseEvent) {
     }
     else {
       currentPath.push({ x: currentX, y: currentY })
-      redrawAll()
 
-      // Draw current path in progress
-      ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
-      ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
-      ctx.lineWidth = props.strokeWidth
-
-      ctx.beginPath()
-      ctx.moveTo(currentPath[0].x, currentPath[0].y)
-      for (let i = 1; i < currentPath.length; i++) {
-        ctx.lineTo(currentPath[i].x, currentPath[i].y)
-      }
-      ctx.stroke()
+      // Use requestAnimationFrame to batch drawing updates
+      scheduleRedraw()
 
       lastX = currentX
       lastY = currentY
@@ -365,6 +519,30 @@ function endDrag() {
       width: props.strokeWidth,
       isEraser: props.eraserMode,
     })
+
+    // Draw completed stroke to background canvas
+    if (bgCtx) {
+      bgCtx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
+      bgCtx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
+      bgCtx.lineWidth = props.strokeWidth
+
+      bgCtx.beginPath()
+      bgCtx.moveTo(currentPath[0].x, currentPath[0].y)
+      for (let i = 1; i < currentPath.length; i++) {
+        bgCtx.lineTo(currentPath[i].x, currentPath[i].y)
+      }
+      bgCtx.stroke()
+      bgCtx.globalCompositeOperation = 'source-over'
+    }
+
+    // Clear foreground canvas and show background again
+    if (ctx && canvasData.canvas) {
+      ctx.clearRect(0, 0, canvasData.canvas.width, canvasData.canvas.height)
+    }
+    if (canvasData.backgroundCanvas) {
+      canvasData.backgroundCanvas.style.opacity = '1'
+    }
+
     saveStrokes()
     notifyUpdate()
   }
@@ -398,8 +576,9 @@ function handleMouseLeave() {
 
 defineExpose({
   clearCanvas: () => {
-    const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-    if (sharedCtx && sharedCanvas) {
+    const { bgCtx: sharedBgCtx, backgroundCanvas: sharedBgCanvas, ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+    if (sharedBgCtx && sharedBgCanvas && sharedCtx && sharedCanvas) {
+      sharedBgCtx.clearRect(0, 0, sharedBgCanvas.width, sharedBgCanvas.height)
       sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
       allStrokes.length = 0
       currentPath = []
@@ -412,7 +591,8 @@ defineExpose({
 </script>
 
 <template>
-  <canvas ref="canvasRef" class="drawing-canvas" />
+  <canvas ref="backgroundCanvasRef" class="drawing-canvas background-canvas" />
+  <canvas ref="canvasRef" class="drawing-canvas foreground-canvas" />
 
   <span class="pen-inline-container">
     <span
@@ -440,6 +620,13 @@ defineExpose({
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.background-canvas {
+  z-index: 9997;
+}
+
+.foreground-canvas {
   z-index: 9998;
 }
 
