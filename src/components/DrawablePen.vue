@@ -22,8 +22,11 @@ const props = withDefaults(defineProps<Props>(), {
   strokeWidth: 3,
   tipOffsetX: 5,
   tipOffsetY: 45,
-  canvasId: 'default',
+  canvasId: '', // Will be auto-set to current page path
 })
+
+// Use current page path as default canvasId
+const effectiveCanvasId = props.canvasId || window.location.pathname
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
@@ -47,14 +50,14 @@ let currentPath: { x: number, y: number }[] = []
 
 // Global shared canvas state per canvasId
 const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
-const canvasData = (globalCanvases[props.canvasId] ||= {
+const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
   canvas: null as HTMLCanvasElement | null,
   ctx: null as CanvasRenderingContext2D | null,
 })
 const allStrokes = canvasData.strokes
-const storageKey = `drawable-pen-${props.canvasId}`
-const penStorageKey = `drawable-pen-position-${props.canvasId}-${effectivePenId}`
+const storageKey = `drawable-pen-${effectiveCanvasId}`
+const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
 
 function loadPenPosition() {
   if (!props.save)
@@ -139,10 +142,16 @@ function redrawAll() {
 }
 
 function notifyUpdate() {
-  window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: props.canvasId } }))
+  window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
 }
 
 onMounted(() => {
+  // Check if stored canvas still exists in DOM, if not reset it
+  if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
+    canvasData.canvas = null
+    canvasData.ctx = null
+  }
+
   if (!canvasData.canvas && canvasRef.value) {
     // First instance - initialize shared canvas
     canvasData.canvas = canvasRef.value
@@ -157,6 +166,11 @@ onMounted(() => {
     }
 
     loadStrokes()
+
+    // Redraw any existing strokes (in case we navigated back to a page with existing strokes)
+    if (allStrokes.length > 0) {
+      redrawAll()
+    }
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('storage', handleStorageChange)
@@ -189,7 +203,7 @@ function handleStorageChange(e: StorageEvent) {
 }
 
 function handleDrawingUpdate(e: Event) {
-  if ((e as CustomEvent).detail?.canvasId === props.canvasId)
+  if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId)
     redrawAll()
 }
 
@@ -244,7 +258,7 @@ function clearAllData() {
       localStorage.removeItem(storageKey)
       // Clear all pen positions for this canvasId
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(`drawable-pen-position-${props.canvasId}-`)) {
+        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`)) {
           localStorage.removeItem(key)
         }
       })
