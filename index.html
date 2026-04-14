@@ -17,22 +17,27 @@
           document.documentElement.classList.toggle('dark', true)
       })()
     </script>
-    <script
-      id="cid0027770408674072725"
-      data-cfasync="false"
-      async
-      src="//st.chatango.com/js/gz/emb.js"
-      style="width: 352px; height: 400px"
-      title="chatango chat widget"
-    >
-      {"handle":"brbrbrbrbrbrb",
-      "arch":"js","styles":{"a":"FFF","b":0,"c":"777","d":"777","e":"000","f":0,"g":"777","i":0,"j":"777","k":"777","l":"777","m":"777","n":"777","o":50,"p":"10","q":"777","r":0,"t":1,"v":0,"usricon":0.88,"pos":"br","cv":1,"cvfnt":"BradfordMonoLL, monospace, sans-serif","cvbg":"CC7770","cvbga":0,"cvfg":"777","cvw":280,"cvh": 21,"sba":0,"surl":0,"ticker":1,"fwtickm":0,"useonm": 1}}
+    <script>
+      // Defer Chatango loading until after page load for better performance
+      window.addEventListener('load', function () {
+        const script = document.createElement('script')
+        script.id = 'cid0027770408674072725'
+        script.setAttribute('data-cfasync', 'false')
+        script.src = '//st.chatango.com/js/gz/emb.js'
+        script.style.width = '352px'
+        script.style.height = '400px'
+        script.title = 'Chatango chat widget'
+        script.text =
+          '{"handle":"brbrbrbrbrbrb","arch":"js","styles":{"a":"FFF","b":0,"c":"777","d":"777","e":"000","f":0,"g":"777","i":0,"j":"777","k":"777","l":"777","m":"777","n":"777","o":50,"p":"10","q":"777","r":0,"t":1,"v":0,"usricon":0.88,"pos":"br","cv":1,"cvfnt":"BradfordMonoLL, monospace, sans-serif","cvbg":"CC7770","cvbga":0,"cvfg":"777","cvw":280,"cvh": 21,"sba":0,"surl":0,"ticker":1,"fwtickm":0,"useonm": 1}}'
+        document.head.appendChild(script)
+      })
     </script>
 
     <!-- DNS Prefetch for external resources -->
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <link rel="dns-prefetch" href="https://unpkg.com" />
     <link rel="dns-prefetch" href="https://hyper-hydra.glitch.me" />
+    <link rel="dns-prefetch" href="//st.chatango.com" />
 
     <!-- Preconnect to critical domains -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />

@@ -30,6 +30,22 @@ for = "/logos/*"
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"
 
+# HTML files - shorter cache but still cacheable
+[[headers]]
+for = "/*.html"
+
+[headers.values]
+Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Enable compression for all text files
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "SAMEORIGIN"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"

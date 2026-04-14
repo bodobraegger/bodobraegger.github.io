@@ -165,7 +165,13 @@ export default defineConfig({
         if (warning.code !== 'UNUSED_EXTERNAL_IMPORT')
           next(warning)
       },
-
+      output: {
+        // Better code splitting
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router'],
+          'vueuse-vendor': ['@vueuse/core'],
+        },
+      },
     },
     // Enable minification
     minify: 'terser',
@@ -173,10 +179,15 @@ export default defineConfig({
       compress: {
         drop_console: true, // Remove console.logs in production
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Enable sourcemap only for debugging when needed
+    sourcemap: false,
   },
 
   ssgOptions: {
