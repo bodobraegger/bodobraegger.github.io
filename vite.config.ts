@@ -166,10 +166,15 @@ export default defineConfig({
           next(warning)
       },
       output: {
-        // Better code splitting
-        manualChunks: {
-          'vue-vendor': ['vue', 'vue-router'],
-          'vueuse-vendor': ['@vueuse/core'],
+        // Better code splitting (only for client build, not SSR)
+        manualChunks(id) {
+          // Skip manual chunking for SSR builds
+          if (id.includes('node_modules')) {
+            if (id.includes('vue') || id.includes('vue-router'))
+              return 'vue-vendor'
+            if (id.includes('@vueuse'))
+              return 'vueuse-vendor'
+          }
         },
       },
     },
