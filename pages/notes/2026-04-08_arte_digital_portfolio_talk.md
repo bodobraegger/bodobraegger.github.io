@@ -1,6 +1,6 @@
 ---
-title: Arte Digital 09.04.26
-place: Escola de Belas Artes - UFRJ, Rio de Janeiro, RJ, Brasil
+title: Arte Digital @ EBA
+place: UFRJ, Rio de Janeiro, Brasil
 date: 2026-04-08T19:34:05-03:00
 lang: en
 type: note+blog
