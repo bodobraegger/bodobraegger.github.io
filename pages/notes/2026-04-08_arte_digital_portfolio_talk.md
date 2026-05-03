@@ -26,9 +26,9 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 - **Live site**: [bbo.do](https://bbo.do)
 - **Source**: [github.com/bodobraegger/bodobraegger.github.io](https://github.com/bodobraegger/bodobraegger.github.io)
 - Built with Vue.js, Vite, UnoCSS
-- DrawablePen component lets visitors draw on pages - traces persist via localStorage
+- DrawablePen component: draw on pages, share via URL hash, or save to Supabase for real-time collaboration
 
-The portfolio functions as both documentation and artwork. It's not a static CV but an evolving space where projects live alongside notes, experiments, and interactive elements. The DrawablePen component you see at the top of this page is an example: visitors can leave marks, scribbles, annotations. These can persist locally, turning the portfolio into a personal, marked-up document for each visitor. Getting these to persist and be shared is WIP.
+The portfolio functions as both documentation and artwork. It's not a static CV but an evolving space where projects live alongside notes, experiments, and interactive elements. The DrawablePen component you see at the top of this page is an example: visitors can leave marks, scribbles, annotations. These persist locally, can be shared instantly via URL, or synced in real-time using Supabase for collaborative drawing sessions.
 
 ### Chatango Live Chat
 

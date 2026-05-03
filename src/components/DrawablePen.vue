@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
+import { supabase } from '../lib/supabase'
 import HoverTooltip from './HoverTooltip.vue'
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   save?: boolean
   eraserMode?: boolean
   penId?: string // Unique ID for this pen instance to save its position
+  shareId?: string // Optional share ID for Supabase
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,10 +25,12 @@ const props = withDefaults(defineProps<Props>(), {
   tipOffsetX: 6,
   tipOffsetY: 44.5,
   canvasId: '', // Will be auto-set to current page path
+  shareId: '', // Will be auto-set to current page path
 })
 
-// Use current page path as default canvasId
+// Use current page path as default canvasId and shareId
 const effectiveCanvasId = props.canvasId || window.location.pathname
+const effectiveShareId = props.shareId || window.location.pathname
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
@@ -67,6 +71,10 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
 const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
+const showNotification = ref(false)
+const notificationMessage = ref('')
+const isSaving = ref(false)
+let broadcastChannel: any = null
 
 function loadPenPosition() {
   if (!props.save)
@@ -331,6 +339,19 @@ onMounted(() => {
   // Load this pen's saved position
   loadPenPosition()
 
+  // Load from URL hash if present
+  loadFromHash()
+
+  // Load from Supabase if shareId provided
+  if (effectiveShareId)
+    loadFromSupabase()
+
+  // Setup real-time sync
+  const cleanup = setupSupabaseSync()
+  if (cleanup) {
+    onUnmounted(cleanup)
+  }
+
   // Listen for global "clear" command
   window.addEventListener('keydown', handleClearCommand)
 
@@ -404,6 +425,176 @@ function handleClearCommand(e: KeyboardEvent) {
     typedChars = ''
     clearAllData()
   }
+  // Check if "share" was typed
+  else if (typedChars.includes('share')) {
+    typedChars = ''
+    exportToHash()
+  }
+  // Check if "cloud" was typed
+  else if (typedChars.includes('cloud')) {
+    typedChars = ''
+    if (supabase && effectiveShareId) {
+      saveToSupabase()
+    }
+    else {
+      notificationMessage.value = 'Cloud not configured'
+      showNotification.value = true
+      setTimeout(() => showNotification.value = false, 1500)
+    }
+  }
+}
+
+// URL Hash Sharing
+function compressData(strokes: any[]) {
+  const json = JSON.stringify(strokes)
+  // Simple compression: base64 encode
+  return btoa(unescape(encodeURIComponent(json)))
+}
+
+function decompressData(compressed: string) {
+  try {
+    const json = decodeURIComponent(escape(atob(compressed)))
+    return JSON.parse(json)
+  }
+  catch {
+    return null
+  }
+}
+
+function exportToHash() {
+  const compressed = compressData(allStrokes)
+  const url = `${window.location.origin}${window.location.pathname}#draw=${compressed}`
+  navigator.clipboard.writeText(url)
+}
+
+function loadFromHash() {
+  const hash = window.location.hash
+  const match = hash.match(/#draw=(.+)/)
+  if (match) {
+    const data = decompressData(match[1])
+    if (data) {
+      allStrokes.length = 0
+      allStrokes.push(...data)
+      redrawAll()
+      saveStrokes()
+    }
+  }
+}
+
+// Supabase Integration
+async function saveToSupabase() {
+  if (!supabase || !effectiveShareId)
+    return
+
+  isSaving.value = true
+  notificationMessage.value = 'Saving...'
+  showNotification.value = true
+
+  try {
+    const { error } = await supabase
+      .from('drawings')
+      .upsert({
+        id: effectiveShareId,
+        canvas_id: effectiveCanvasId,
+        strokes: allStrokes,
+        updated_at: new Date().toISOString(),
+      })
+
+    if (error) {
+      console.error('Save error:', error)
+      notificationMessage.value = 'Failed'
+    }
+    else {
+      notificationMessage.value = 'Saved'
+    }
+  }
+  catch (e) {
+    console.error('Supabase save failed:', e)
+    notificationMessage.value = 'Failed'
+  }
+  finally {
+    isSaving.value = false
+    setTimeout(() => showNotification.value = false, 1500)
+  }
+}
+
+async function loadFromSupabase() {
+  if (!supabase || !effectiveShareId)
+    return
+
+  try {
+    const { data, error } = await supabase
+      .from('drawings')
+      .select('strokes')
+      .eq('id', effectiveShareId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Load error:', error)
+      return
+    }
+
+    if (data?.strokes) {
+      allStrokes.length = 0
+      allStrokes.push(...data.strokes)
+      redrawAll()
+      saveStrokes()
+    }
+  }
+  catch (e) {
+    console.error('Supabase load failed:', e)
+  }
+}
+
+function setupSupabaseSync() {
+  if (!supabase || !effectiveShareId)
+    return
+
+  // Broadcast-based real-time collaboration
+  broadcastChannel = supabase
+    .channel(`drawing:${effectiveShareId}:strokes`, {
+      config: { broadcast: { self: false } },
+    })
+    .on('broadcast', { event: 'stroke_added' }, ({ payload }) => {
+      if (payload.stroke) {
+        allStrokes.push(payload.stroke)
+        redrawAll()
+        saveStrokes()
+      }
+    })
+    .on('broadcast', { event: 'clear' }, () => {
+      allStrokes.length = 0
+      redrawAll()
+      saveStrokes()
+    })
+    .subscribe()
+
+  return () => {
+    if (broadcastChannel && supabase) {
+      supabase.removeChannel(broadcastChannel)
+      broadcastChannel = null
+    }
+  }
+}
+
+function broadcastStroke(stroke: any) {
+  if (broadcastChannel) {
+    broadcastChannel.send({
+      type: 'broadcast',
+      event: 'stroke_added',
+      payload: { stroke },
+    })
+  }
+}
+
+function broadcastClear() {
+  if (broadcastChannel) {
+    broadcastChannel.send({
+      type: 'broadcast',
+      event: 'clear',
+      payload: {},
+    })
+  }
 }
 
 function clearAllData() {
@@ -427,6 +618,9 @@ function clearAllData() {
     // Reset all pens to inline position
     isDetached.value = false
     penPosition.value = { x: 0, y: 0 }
+
+    // Broadcast clear to other users
+    broadcastClear()
 
     // Notify other pens
     notifyUpdate()
@@ -517,14 +711,18 @@ function endDrag() {
     pushToUndoStack()
     // Simplify points before storing to reduce memory
     const simplifiedPoints = simplifyPoints(currentPath, 1.5)
-    allStrokes.push({
+    const newStroke = {
       points: simplifiedPoints,
       color: props.strokeColor,
       width: props.strokeWidth,
       isEraser: props.eraserMode,
-    })
+    }
+    allStrokes.push(newStroke)
     saveStrokes()
     notifyUpdate()
+
+    // Broadcast stroke to other users
+    broadcastStroke(newStroke)
   }
 
   isDragging.value = false
@@ -566,11 +764,20 @@ defineExpose({
   },
   saveDrawing: saveStrokes,
   loadDrawing: loadStrokes,
+  exportToHash,
+  loadFromHash,
+  saveToSupabase,
+  loadFromSupabase,
 })
 </script>
 
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
+
+  <!-- Notification -->
+  <div v-if="showNotification" class="notification">
+    ☁️ {{ notificationMessage }}
+  </div>
 
   <span class="pen-inline-container">
     <span
@@ -647,5 +854,13 @@ html.dark .drawing-canvas {
 
 .pen-emoji.flipped:hover:not(.dragging) {
   transform: scaleX(-1) scale(1.15);
+}
+
+.notification {
+  position: fixed;
+  top: 5rem;
+  right: 2rem;
+  opacity: 0.7;
+  z-index: 10002;
 }
 </style>
