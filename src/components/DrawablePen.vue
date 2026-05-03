@@ -39,7 +39,11 @@ const isDetached = ref(false)
 const moveOnly = ref(false)
 const notWindows = !navigator.userAgent.includes('Win')
 const flip = (props.penEmoji === '✏️' && notWindows) || props.flip
-console.log(navigator.userAgent, 'flip:', flip)
+
+// Performance optimization
+const rafId: number | null = null
+const lastDrawTime = 0
+const DRAW_THROTTLE = 16 // ~60fps
 
 // Auto-generate unique pen ID based on props if not provided
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
@@ -56,6 +60,9 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
   canvas: null as HTMLCanvasElement | null,
   ctx: null as CanvasRenderingContext2D | null,
+  undoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
+  redoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
+  undoRedoHandlerRegistered: false,
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
@@ -147,6 +154,141 @@ function notifyUpdate() {
   window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
 }
 
+// Simplify points using Ramer-Douglas-Peucker algorithm for storage efficiency
+function simplifyPoints(points: { x: number, y: number }[], tolerance = 2): { x: number, y: number }[] {
+  if (points.length <= 2)
+    return points
+
+  const sqTolerance = tolerance * tolerance
+
+  function getSqSegDist(p: { x: number, y: number }, p1: { x: number, y: number }, p2: { x: number, y: number }) {
+    let x = p1.x
+    let y = p1.y
+    let dx = p2.x - x
+    let dy = p2.y - y
+
+    if (dx !== 0 || dy !== 0) {
+      const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy)
+      if (t > 1) {
+        x = p2.x
+        y = p2.y
+      }
+      else if (t > 0) {
+        x += dx * t
+        y += dy * t
+      }
+    }
+
+    dx = p.x - x
+    dy = p.y - y
+
+    return dx * dx + dy * dy
+  }
+
+  function simplifyDPStep(points: { x: number, y: number }[], first: number, last: number, sqTolerance: number, simplified: { x: number, y: number }[]) {
+    let maxSqDist = sqTolerance
+    let index = 0
+
+    for (let i = first + 1; i < last; i++) {
+      const sqDist = getSqSegDist(points[i], points[first], points[last])
+      if (sqDist > maxSqDist) {
+        index = i
+        maxSqDist = sqDist
+      }
+    }
+
+    if (maxSqDist > sqTolerance) {
+      if (index - first > 1)
+        simplifyDPStep(points, first, index, sqTolerance, simplified)
+      simplified.push(points[index])
+      if (last - index > 1)
+        simplifyDPStep(points, index, last, sqTolerance, simplified)
+    }
+  }
+
+  const last = points.length - 1
+  const simplified = [points[0]]
+  simplifyDPStep(points, 0, last, sqTolerance, simplified)
+  simplified.push(points[last])
+
+  return simplified
+}
+
+function pushToUndoStack() {
+  // Save current strokes state to undo stack (state BEFORE new stroke is added)
+  const currentState = allStrokes.map((stroke: any) => ({
+    points: [...stroke.points],
+    color: stroke.color,
+    width: stroke.width,
+    isEraser: stroke.isEraser,
+  }))
+  canvasData.undoStack.push(currentState)
+  // Clear redo stack when a new action is performed
+  canvasData.redoStack.length = 0
+}
+
+function undo() {
+  if (canvasData.undoStack.length === 0)
+    return
+
+  // Save current state to redo stack before reverting
+  const currentState = allStrokes.map((stroke: any) => ({
+    points: [...stroke.points],
+    color: stroke.color,
+    width: stroke.width,
+    isEraser: stroke.isEraser,
+  }))
+  canvasData.redoStack.push(currentState)
+
+  // Restore previous state from undo stack
+  const previousState = canvasData.undoStack.pop()
+  if (previousState) {
+    allStrokes.length = 0
+    allStrokes.push(...previousState)
+    redrawAll()
+    saveStrokes()
+    notifyUpdate()
+  }
+}
+
+function redo() {
+  if (canvasData.redoStack.length === 0)
+    return
+
+  // Save current state to undo stack before moving forward
+  const currentState = allStrokes.map((stroke: any) => ({
+    points: [...stroke.points],
+    color: stroke.color,
+    width: stroke.width,
+    isEraser: stroke.isEraser,
+  }))
+  canvasData.undoStack.push(currentState)
+
+  // Restore next state from redo stack
+  const nextState = canvasData.redoStack.pop()
+  if (nextState) {
+    allStrokes.length = 0
+    allStrokes.push(...nextState)
+    redrawAll()
+    saveStrokes()
+    notifyUpdate()
+  }
+}
+
+function handleUndoRedo(e: KeyboardEvent) {
+  // Check for Ctrl+Z (undo) or Ctrl+Y (redo)
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 'z' || e.key === 'Z') {
+      e.preventDefault()
+      undo()
+    }
+    else if (e.key === 'y' || e.key === 'Y') {
+      e.preventDefault()
+      redo()
+    }
+  }
+}
+
 onMounted(() => {
   // Check if stored canvas still exists in DOM, if not reset it
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
@@ -191,13 +333,27 @@ onMounted(() => {
 
   // Listen for global "clear" command
   window.addEventListener('keydown', handleClearCommand)
+
+  // Register undo/redo handler only once per canvasId
+  if (!canvasData.undoRedoHandlerRegistered) {
+    window.addEventListener('keydown', handleUndoRedo)
+    canvasData.undoRedoHandlerRegistered = true
+  }
 })
 
 onUnmounted(() => {
+  // Cancel any pending animation frames
+  if (rafId) {
+    cancelAnimationFrame(rafId)
+  }
+
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('keydown', handleClearCommand)
+
+  // Note: We don't remove the undo/redo handler here because it's shared across all pen instances
+  // for this canvasId. It will be cleaned up when all pens are unmounted or page is reloaded.
 })
 
 function handleStorageChange(e: StorageEvent) {
@@ -335,18 +491,15 @@ function drag(e: MouseEvent) {
     }
     else {
       currentPath.push({ x: currentX, y: currentY })
-      redrawAll()
 
-      // Draw current path in progress
+      // Draw only the new segment incrementally
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
       ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
       ctx.lineWidth = props.strokeWidth
 
       ctx.beginPath()
-      ctx.moveTo(currentPath[0].x, currentPath[0].y)
-      for (let i = 1; i < currentPath.length; i++) {
-        ctx.lineTo(currentPath[i].x, currentPath[i].y)
-      }
+      ctx.moveTo(lastX, lastY)
+      ctx.lineTo(currentX, currentY)
       ctx.stroke()
 
       lastX = currentX
@@ -361,8 +514,11 @@ function drag(e: MouseEvent) {
 
 function endDrag() {
   if (isDrawing.value && currentPath.length > 0) {
+    pushToUndoStack()
+    // Simplify points before storing to reduce memory
+    const simplifiedPoints = simplifyPoints(currentPath, 1.5)
     allStrokes.push({
-      points: [...currentPath],
+      points: simplifiedPoints,
       color: props.strokeColor,
       width: props.strokeWidth,
       isEraser: props.eraserMode,
