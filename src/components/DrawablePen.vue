@@ -17,11 +17,11 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  penEmoji: '✏️',
+  penEmoji: '🖊️',
   strokeColor: '#111',
   strokeWidth: 3,
-  tipOffsetX: 5,
-  tipOffsetY: 45,
+  tipOffsetX: 6,
+  tipOffsetY: 44.5,
   canvasId: '', // Will be auto-set to current page path
 })
 
@@ -37,7 +37,9 @@ const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
-const flip = props.penEmoji === '✏️' || props.flip
+const notWindows = !navigator.userAgent.includes('Win')
+const flip = (props.penEmoji === '✏️' && notWindows) || props.flip
+console.log(navigator.userAgent, 'flip:', flip)
 
 // Auto-generate unique pen ID based on props if not provided
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
@@ -472,7 +474,7 @@ html.dark .drawing-canvas {
 
 .pen-emoji.dragging {
   cursor: grabbing;
-  transform: scale(1.1) rotate(-15deg);
+  transform: scale(1.1) rotate(-5deg);
 }
 
 .pen-emoji:hover:not(.dragging) {
@@ -484,7 +486,7 @@ html.dark .drawing-canvas {
 }
 
 .pen-emoji.flipped.dragging {
-  transform: scaleX(-1) scale(1.1) rotate(15deg);
+  transform: scaleX(-1) scale(1.1) rotate(5deg);
 }
 
 .pen-emoji.flipped:hover:not(.dragging) {
