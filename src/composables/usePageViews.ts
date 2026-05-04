@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { supabase } from '~/lib/supabase'
 
 export function usePageViews(pagePath: string) {
-  const viewCount = ref<number | null>(null)
+  const viewCount = ref<number>(0)
 
   function trackView() {
     if (!supabase || !pagePath)

@@ -262,11 +262,11 @@ if (frontmatter.hydra) {
         <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
       <span class="op-50 ml-2">
-        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount ?? 'NaN' }} {{ viewCount === 1 ? 'view' : 'views' }}
+        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount.toString().padStart(3, '0') }} view(s)
       </span>
     </p>
     <p v-else class="font-serif-extra font-italic mt--4! op-50">
-      {{ viewCount ?? 'NaN' }} {{ viewCount === 1 ? 'view' : 'views' }}
+      {{ viewCount.toString().padStart(3, '0') }} view(s)
     </p>
     <p
       v-if="frontmatter.subtitle"
