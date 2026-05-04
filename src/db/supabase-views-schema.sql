@@ -1,5 +1,4 @@
 -- View tracking for notes
--- Run this SQL in your Supabase SQL Editor
 
 -- Create page_views table
 CREATE TABLE IF NOT EXISTS public.page_views (

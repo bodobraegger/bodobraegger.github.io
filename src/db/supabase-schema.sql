@@ -1,5 +1,4 @@
 -- Supabase Setup for DrawablePen
--- Run this SQL in your Supabase SQL Editor
 
 -- Create drawings table
 CREATE TABLE IF NOT EXISTS public.drawings (
