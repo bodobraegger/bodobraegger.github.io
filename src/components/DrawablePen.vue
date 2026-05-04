@@ -62,6 +62,7 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   undoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
   redoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
   undoHandlerRegistered: false,
+  scrollHandlerRegistered: false,
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
@@ -133,15 +134,51 @@ function redrawAll() {
 
   sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
 
+  // Get viewport bounds
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const buffer = 100 // Buffer to render slightly outside viewport
+
+  // Position canvas at current scroll position
+  if (sharedCanvas.style.transform !== `translate(${scrollX}px, ${scrollY}px)`) {
+    sharedCanvas.style.transform = `translate(${scrollX}px, ${scrollY}px)`
+  }
+
+  // Only render strokes that are visible in viewport
   for (const stroke of allStrokes) {
+    // Quick bounds check
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const p of stroke.points) {
+      if (p.x < minX)
+        minX = p.x
+      if (p.x > maxX)
+        maxX = p.x
+      if (p.y < minY)
+        minY = p.y
+      if (p.y > maxY)
+        maxY = p.y
+    }
+
+    // Skip if stroke is completely outside viewport
+    if (maxX < scrollX - buffer || minX > scrollX + viewportWidth + buffer
+      || maxY < scrollY - buffer || minY > scrollY + viewportHeight + buffer) {
+      continue
+    }
+
     sharedCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
     sharedCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
     sharedCtx.lineWidth = stroke.width
 
     sharedCtx.beginPath()
-    sharedCtx.moveTo(stroke.points[0].x, stroke.points[0].y)
+    // Draw in viewport-relative coordinates (subtract scroll position)
+    sharedCtx.moveTo(stroke.points[0].x - scrollX, stroke.points[0].y - scrollY)
     for (let i = 1; i < stroke.points.length; i++) {
-      sharedCtx.lineTo(stroke.points[i].x, stroke.points[i].y)
+      sharedCtx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
     }
     sharedCtx.stroke()
   }
@@ -162,10 +199,9 @@ onMounted(() => {
 
   if (!canvasData.canvas && canvasRef.value) {
     canvasData.canvas = canvasRef.value
-    const w = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-    const h = Math.min(Math.max(document.documentElement.scrollHeight, window.innerHeight), props.maxCanvasHeight)
-    canvasData.canvas.width = w
-    canvasData.canvas.height = h
+    // Canvas is viewport-sized, not document-sized
+    canvasData.canvas.width = window.innerWidth
+    canvasData.canvas.height = window.innerHeight
     canvasData.ctx = canvasData.canvas.getContext('2d')
     ctx = canvasData.ctx
 
@@ -186,6 +222,11 @@ onMounted(() => {
     if (!canvasData.undoHandlerRegistered) {
       window.addEventListener('keydown', handleUndoRedo)
       canvasData.undoHandlerRegistered = true
+    }
+
+    if (!canvasData.scrollHandlerRegistered) {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      canvasData.scrollHandlerRegistered = true
     }
   }
   else {
@@ -222,14 +263,19 @@ function handleDrawingUpdate(e: Event) {
 }
 
 function handleResize() {
-  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-  if (!sharedCtx || !sharedCanvas)
+  const { canvas: sharedCanvas } = canvasData
+  if (!sharedCanvas)
     return
 
-  const imageData = sharedCtx.getImageData(0, 0, sharedCanvas.width, sharedCanvas.height)
-  sharedCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-  sharedCanvas.height = Math.min(Math.max(document.documentElement.scrollHeight, window.innerHeight), props.maxCanvasHeight)
-  sharedCtx.putImageData(imageData, 0, 0)
+  // Resize canvas to match viewport
+  sharedCanvas.width = window.innerWidth
+  sharedCanvas.height = window.innerHeight
+  redrawAll()
+}
+
+function handleScroll() {
+  // Redraw when scrolling to show different parts of the infinite canvas
+  redrawAll()
 }
 
 let typedChars = ''
@@ -480,13 +526,17 @@ function drag(e: MouseEvent) {
     else {
       currentPath.push({ x: currentX, y: currentY })
 
+      // Get current scroll position to transform coordinates
+      const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
+      const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
+
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
       ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
       ctx.lineWidth = props.strokeWidth
 
       ctx.beginPath()
-      ctx.moveTo(lastX, lastY)
-      ctx.lineTo(currentX, currentY)
+      ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
+      ctx.lineTo(currentX - viewScrollX, currentY - viewScrollY)
       ctx.stroke()
 
       lastX = currentX
@@ -589,10 +639,11 @@ defineExpose({
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
   z-index: 9998;
+  will-change: transform;
 }
 
 html.dark .drawing-canvas {
