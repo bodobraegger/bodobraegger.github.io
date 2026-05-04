@@ -42,8 +42,6 @@ const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
-const showNotification = ref(false)
-const notificationMessage = ref('')
 
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
@@ -307,25 +305,24 @@ function handleClearCommand(e: KeyboardEvent) {
     return
 
   typedChars += e.key
+
+  typedChars = typedChars.slice(-6)
+
   if (typedTimeout)
     clearTimeout(typedTimeout)
   typedTimeout = window.setTimeout(() => typedChars = '', 2000)
 
   const lowerChars = typedChars.toLowerCase()
 
-  if (lowerChars.includes('clear!')) {
+  if (lowerChars.includes('delete')) {
     typedChars = ''
-    clearAllData(true) // Clear with database deletion
-  }
-  else if (lowerChars.includes('clear') && e.key !== '!') {
-    // Only trigger basic clear if the key pressed is not "!"
-    // This gives time for user to type "clear!"
-    const clearIndex = lowerChars.lastIndexOf('clear')
-    if (clearIndex !== -1 && lowerChars.length > clearIndex + 5) {
-      // "clear" is followed by non-! character
-      typedChars = ''
-      clearAllData(false)
+    if (supabase && effectiveShareId) {
+      clearAllData()
+      deleteFromSupabase()
     }
+  }
+  else if (lowerChars.includes('clear')) {
+    clearAllData()
   }
   else if (lowerChars.includes('share')) {
     typedChars = ''
@@ -361,6 +358,11 @@ function undo() {
     redrawAll()
     saveStrokes()
     notifyUpdate()
+
+    // Automatically save to Supabase if shareId is set
+    if (effectiveShareId && supabase) {
+      saveToSupabase()
+    }
   }
 }
 
@@ -375,6 +377,11 @@ function redo() {
     redrawAll()
     saveStrokes()
     notifyUpdate()
+
+    // Automatically save to Supabase if shareId is set
+    if (effectiveShareId && supabase) {
+      saveToSupabase()
+    }
   }
 }
 
@@ -415,12 +422,18 @@ async function saveToSupabase() {
   if (!supabase || !effectiveShareId)
     return
   try {
-    await supabase.from('drawings').upsert({
+    const { error } = await supabase.from('drawings').upsert({
       id: effectiveShareId,
       canvas_id: effectiveCanvasId,
       strokes: allStrokes,
       updated_at: new Date().toISOString(),
     })
+    if (error) {
+      console.error('Supabase save error:', error)
+    }
+    else {
+      console.info('Successfully saved to Supabase')
+    }
   }
   catch (e) {
     console.error('Supabase save failed:', e)
@@ -454,23 +467,22 @@ async function deleteFromSupabase() {
   if (!supabase || !effectiveShareId)
     return
 
-  notificationMessage.value = '☁️ Deleting...'
-  showNotification.value = true
-
   try {
-    await supabase
+    const { error } = await supabase
       .from('drawings')
       .delete()
       .eq('id', effectiveShareId)
 
-    notificationMessage.value = '🗑️ Deleted from cloud!'
+    if (error) {
+      console.error('Supabase delete error:', error)
+    }
+    else {
+      console.info('Successfully deleted from Supabase')
+    }
   }
   catch (e) {
     console.error('Supabase delete failed:', e)
-    notificationMessage.value = '❌ Delete failed'
   }
-
-  setTimeout(() => showNotification.value = false, 2000)
 }
 
 function setupSupabaseSync() {
@@ -504,8 +516,8 @@ function setupSupabaseSync() {
   }
 }
 
-function clearAllData(deleteFromDatabase = false) {
-  console.info('Clearing canvas and all saved data...')
+function clearAllData() {
+  console.info('Clearing canvas')
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (sharedCtx && sharedCanvas) {
     sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
@@ -525,11 +537,6 @@ function clearAllData(deleteFromDatabase = false) {
 
     if (broadcastChannel) {
       broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
-    }
-
-    // Delete from Supabase if requested
-    if (deleteFromDatabase && supabase && effectiveShareId) {
-      deleteFromSupabase()
     }
 
     notifyUpdate()
@@ -634,6 +641,11 @@ function endDrag() {
     saveStrokes()
     notifyUpdate()
 
+    // Automatically save to Supabase if shareId is set
+    if (effectiveShareId && supabase) {
+      saveToSupabase()
+    }
+
     if (broadcastChannel) {
       broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: newStroke } })
     }
@@ -685,11 +697,6 @@ defineExpose({
 
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
-
-  <!-- Notification -->
-  <div v-if="showNotification" class="notification">
-    {{ notificationMessage }}
-  </div>
 
   <span class="pen-inline-container">
     <span
@@ -770,34 +777,5 @@ html.dark .drawing-canvas {
 
 .pen-emoji.flipped:hover:not(.dragging) {
   transform: scaleX(-1) scale(1.15);
-}
-
-.notification {
-  position: fixed;
-  top: 5rem;
-  right: 2rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  z-index: 10002;
-  animation: slideIn 0.2s ease-out;
-}
-
-html.dark .notification {
-  background: rgba(255, 255, 255, 0.9);
-  color: black;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(2rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 </style>
