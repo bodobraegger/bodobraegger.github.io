@@ -221,8 +221,19 @@ function notifyUpdate() {
   window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
 }
 
-function notifyClear() {
-  window.dispatchEvent(new CustomEvent('drawingCleared', { detail: { canvasId: effectiveCanvasId } }))
+function notifyReset() {
+  window.dispatchEvent(new CustomEvent('toolsReset', { detail: { canvasId: effectiveCanvasId } }))
+}
+
+function handleToolsReset(e: Event) {
+  // Reset this pen instance when the local reset event is triggered
+  if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId) {
+    isDetached.value = false
+    penPosition.value = { x: 0, y: 0 }
+    moveOnly.value = false
+    isDragging.value = false
+    isDrawing.value = false
+  }
 }
 
 onMounted(() => {
@@ -272,6 +283,7 @@ onMounted(() => {
 
   // All pen instances need to listen for clear events
   window.addEventListener('drawingCleared', handleDrawingCleared)
+  window.addEventListener('toolsReset', handleToolsReset)
 
   loadPenPosition()
   loadFromHash()
@@ -288,6 +300,7 @@ onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('drawingCleared', handleDrawingCleared)
+  window.removeEventListener('toolsReset', handleToolsReset)
   window.removeEventListener('keydown', handleClearCommand)
 })
 
@@ -345,15 +358,19 @@ function handleClearCommand(e: KeyboardEvent) {
 
   const lowerChars = typedChars.toLowerCase()
 
-  if (lowerChars.includes('delete')) {
+  // if (lowerChars.includes('delete')) {
+  //   typedChars = ''
+  //   if (supabase && effectiveShareId) {
+  //     clearAllData()
+  //     deleteFromSupabase()
+  //   }
+  // }
+  // else if (lowerChars.includes('clear')) {
+  //   clearAllData()
+  // }
+  if (lowerChars.includes('reset')) {
     typedChars = ''
-    if (supabase && effectiveShareId) {
-      clearAllData()
-      deleteFromSupabase()
-    }
-  }
-  else if (lowerChars.includes('clear')) {
-    clearAllData()
+    resetTools()
   }
   else if (lowerChars.includes('share')) {
     typedChars = ''
@@ -528,29 +545,6 @@ async function loadFromSupabase() {
   }
 }
 
-async function deleteFromSupabase() {
-  console.info('Deleting from Supabase...', { shareId: effectiveShareId })
-  if (!supabase || !effectiveShareId)
-    return
-
-  try {
-    const { error } = await supabase
-      .from('drawings')
-      .delete()
-      .eq('id', effectiveShareId)
-
-    if (error) {
-      console.error('Supabase delete error:', error)
-    }
-    else {
-      console.info('Successfully deleted from Supabase')
-    }
-  }
-  catch (e) {
-    console.error('Supabase delete failed:', e)
-  }
-}
-
 function setupSupabaseSync() {
   if (!supabase || !effectiveShareId)
     return
@@ -599,31 +593,16 @@ function setupSupabaseSync() {
   }
 }
 
-function clearAllData() {
-  console.info('Clearing canvas')
-  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-  if (sharedCtx && sharedCanvas) {
-    sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
-    allStrokes.length = 0
-    currentPath = []
+function resetTools() {
+  // Notify all local pen instances (on this browser) to reset
+  notifyReset()
 
-    if (props.save) {
-      localStorage.removeItem(storageKey)
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
-          localStorage.removeItem(key)
-      })
-    }
-
-    isDetached.value = false
-    penPosition.value = { x: 0, y: 0 }
-
-    // if (broadcastChannel) {
-    //   broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
-    // }
-
-    // notifyUpdate()
-    // notifyClear()
+  // Clear all pen positions from localStorage
+  if (props.save) {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
+        localStorage.removeItem(key)
+    })
   }
 }
 
@@ -762,15 +741,6 @@ function handleMouseLeave() {
 }
 
 defineExpose({
-  clearCanvas: () => {
-    const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
-    if (sharedCtx && sharedCanvas) {
-      sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
-      allStrokes.length = 0
-      currentPath = []
-      saveStrokes()
-    }
-  },
   saveDrawing: saveStrokes,
   loadDrawing: loadStrokes,
   exportToHash,

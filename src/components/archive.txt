@@ -1,0 +1,66 @@
+  clearCanvas: () => {
+    const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+    if (sharedCtx && sharedCanvas) {
+      sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+      allStrokes.length = 0
+      currentPath = []
+      saveStrokes()
+    }
+  },
+
+function clearAllData() {
+  console.info('Clearing canvas')
+  const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
+  if (sharedCtx && sharedCanvas) {
+    sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+    allStrokes.length = 0
+    currentPath = []
+
+    if (props.save) {
+      localStorage.removeItem(storageKey)
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
+          localStorage.removeItem(key)
+      })
+    }
+
+    isDetached.value = false
+    penPosition.value = { x: 0, y: 0 }
+
+    // if (broadcastChannel) {
+    //   broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
+    // }
+
+    // notifyUpdate()
+    // notifyClear()
+  }
+}
+
+
+async function deleteFromSupabase() {
+  console.info('Deleting from Supabase...', { shareId: effectiveShareId })
+  if (!supabase || !effectiveShareId)
+    return
+
+  try {
+    const { error } = await supabase
+      .from('drawings')
+      .delete()
+      .eq('id', effectiveShareId)
+
+    if (error) {
+      console.error('Supabase delete error:', error)
+    }
+    else {
+      console.info('Successfully deleted from Supabase')
+    }
+  }
+  catch (e) {
+    console.error('Supabase delete failed:', e)
+  }
+}
+
+
+function notifyClear() {
+  window.dispatchEvent(new CustomEvent('drawingCleared', { detail: { canvasId: effectiveCanvasId } }))
+}
