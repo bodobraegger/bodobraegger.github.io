@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import { useScriptTag } from '@vueuse/core'
 import { formatDate } from '~/logics'
+import { usePageViews } from '~/composables/usePageViews'
 
 const { frontmatter } = defineProps({
   frontmatter: {
@@ -14,7 +15,13 @@ const route = useRoute()
 const content = ref<HTMLDivElement>()
 const fontsLoaded = ref(false)
 
+// View tracking
+const { viewCount, trackView } = usePageViews(route.path)
+
 onMounted(() => {
+  // Track view on mount
+  trackView()
+
   // Check if font is already loaded or wait for it
   if (document.fonts) {
     document.fonts.ready.then(() => {
@@ -246,7 +253,7 @@ if (frontmatter.hydra) {
     >
       {{ formatDate(frontmatter.date, false) }} <span v-if="frontmatter.duration">· {{ frontmatter.duration }}</span>
     </p>
-    <p v-if="frontmatter.place" class="mt--4!">
+    <p v-if="frontmatter.place" class="font-serif-extra font-italic mt--4!">
       <span class="op50">at </span>
       <a v-if="frontmatter.placeLink" :href="frontmatter.placeLink" target="_blank">
         {{ frontmatter.place }}
@@ -254,6 +261,12 @@ if (frontmatter.hydra) {
       <span v-else class="op-75 font-light">
         <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
+      <span class="op-50 ml-2">
+        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount ?? 'NaN' }} {{ viewCount === 1 ? 'view' : 'views' }}
+      </span>
+    </p>
+    <p v-else class="font-serif-extra font-italic mt--4! op-50">
+      {{ viewCount ?? 'NaN' }} {{ viewCount === 1 ? 'view' : 'views' }}
     </p>
     <p
       v-if="frontmatter.subtitle"
