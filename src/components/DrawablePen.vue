@@ -535,12 +535,12 @@ function clearAllData() {
     isDetached.value = false
     penPosition.value = { x: 0, y: 0 }
 
-    if (broadcastChannel) {
-      broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
-    }
+    // if (broadcastChannel) {
+    //   broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
+    // }
 
-    notifyUpdate()
-    notifyClear()
+    // notifyUpdate()
+    // notifyClear()
   }
 }
 
