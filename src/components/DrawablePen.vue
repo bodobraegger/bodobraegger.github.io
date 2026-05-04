@@ -20,11 +20,11 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  penEmoji: '✏️',
+  penEmoji: '🖉',
   strokeColor: '#111',
   strokeWidth: 3,
-  tipOffsetX: 5,
-  tipOffsetY: 45,
+  tipOffsetX: 3.6,
+  tipOffsetY: 37,
   canvasId: '',
   shareId: '',
   maxCanvasHeight: 10000,
@@ -42,6 +42,8 @@ const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
+const showNotification = ref(false)
+const notificationMessage = ref('')
 
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
@@ -190,6 +192,10 @@ function notifyUpdate() {
   window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
 }
 
+function notifyClear() {
+  window.dispatchEvent(new CustomEvent('drawingCleared', { detail: { canvasId: effectiveCanvasId } }))
+}
+
 onMounted(() => {
   // Check if stored canvas still exists in DOM, if not reset it
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
@@ -235,6 +241,9 @@ onMounted(() => {
       canvasRef.value.style.display = 'none'
   }
 
+  // All pen instances need to listen for clear events
+  window.addEventListener('drawingCleared', handleDrawingCleared)
+
   loadPenPosition()
   loadFromHash()
   if (effectiveShareId)
@@ -249,6 +258,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
+  window.removeEventListener('drawingCleared', handleDrawingCleared)
   window.removeEventListener('keydown', handleClearCommand)
 })
 
@@ -260,6 +270,13 @@ function handleStorageChange(e: StorageEvent) {
 function handleDrawingUpdate(e: Event) {
   if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId)
     redrawAll()
+}
+
+function handleDrawingCleared(e: Event) {
+  if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId) {
+    isDetached.value = false
+    penPosition.value = { x: 0, y: 0 }
+  }
 }
 
 function handleResize() {
@@ -285,20 +302,36 @@ function handleClearCommand(e: KeyboardEvent) {
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
     return
 
-  typedChars += e.key.toLowerCase()
+  // Ignore modifier keys
+  if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape'].includes(e.key))
+    return
+
+  typedChars += e.key
   if (typedTimeout)
     clearTimeout(typedTimeout)
   typedTimeout = window.setTimeout(() => typedChars = '', 2000)
 
-  if (typedChars.includes('clear')) {
+  const lowerChars = typedChars.toLowerCase()
+
+  if (lowerChars.includes('clear!')) {
     typedChars = ''
-    clearAllData()
+    clearAllData(true) // Clear with database deletion
   }
-  else if (typedChars.includes('share')) {
+  else if (lowerChars.includes('clear') && e.key !== '!') {
+    // Only trigger basic clear if the key pressed is not "!"
+    // This gives time for user to type "clear!"
+    const clearIndex = lowerChars.lastIndexOf('clear')
+    if (clearIndex !== -1 && lowerChars.length > clearIndex + 5) {
+      // "clear" is followed by non-! character
+      typedChars = ''
+      clearAllData(false)
+    }
+  }
+  else if (lowerChars.includes('share')) {
     typedChars = ''
     exportToHash()
   }
-  else if (typedChars.includes('cloud') && supabase && effectiveShareId) {
+  else if (lowerChars.includes('cloud') && supabase && effectiveShareId) {
     typedChars = ''
     saveToSupabase()
   }
@@ -416,6 +449,30 @@ async function loadFromSupabase() {
   }
 }
 
+async function deleteFromSupabase() {
+  console.info('Deleting from Supabase...', { shareId: effectiveShareId })
+  if (!supabase || !effectiveShareId)
+    return
+
+  notificationMessage.value = '☁️ Deleting...'
+  showNotification.value = true
+
+  try {
+    await supabase
+      .from('drawings')
+      .delete()
+      .eq('id', effectiveShareId)
+
+    notificationMessage.value = '🗑️ Deleted from cloud!'
+  }
+  catch (e) {
+    console.error('Supabase delete failed:', e)
+    notificationMessage.value = '❌ Delete failed'
+  }
+
+  setTimeout(() => showNotification.value = false, 2000)
+}
+
 function setupSupabaseSync() {
   if (!supabase || !effectiveShareId)
     return
@@ -433,6 +490,9 @@ function setupSupabaseSync() {
       allStrokes.length = 0
       redrawAll()
       saveStrokes()
+      // Also reset pen position on clear
+      isDetached.value = false
+      penPosition.value = { x: 0, y: 0 }
     })
     .subscribe()
 
@@ -444,7 +504,7 @@ function setupSupabaseSync() {
   }
 }
 
-function clearAllData() {
+function clearAllData(deleteFromDatabase = false) {
   console.info('Clearing canvas and all saved data...')
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (sharedCtx && sharedCanvas) {
@@ -466,7 +526,14 @@ function clearAllData() {
     if (broadcastChannel) {
       broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
     }
+
+    // Delete from Supabase if requested
+    if (deleteFromDatabase && supabase && effectiveShareId) {
+      deleteFromSupabase()
+    }
+
     notifyUpdate()
+    notifyClear()
   }
 }
 
@@ -619,6 +686,11 @@ defineExpose({
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
 
+  <!-- Notification -->
+  <div v-if="showNotification" class="notification">
+    {{ notificationMessage }}
+  </div>
+
   <span class="pen-inline-container">
     <span
       ref="penRef"
@@ -698,5 +770,34 @@ html.dark .drawing-canvas {
 
 .pen-emoji.flipped:hover:not(.dragging) {
   transform: scaleX(-1) scale(1.15);
+}
+
+.notification {
+  position: fixed;
+  top: 5rem;
+  right: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  z-index: 10002;
+  animation: slideIn 0.2s ease-out;
+}
+
+html.dark .notification {
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 </style>
