@@ -14,21 +14,22 @@ interface Props {
   canvasId?: string
   save?: boolean
   eraserMode?: boolean
-  penId?: string // Unique ID for this pen instance to save its position
-  shareId?: string // Optional share ID for Supabase
+  penId?: string
+  shareId?: string
+  maxCanvasHeight?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  penEmoji: '🖊️',
+  penEmoji: '✏️',
   strokeColor: '#111',
   strokeWidth: 3,
-  tipOffsetX: 6,
-  tipOffsetY: 44.5,
-  canvasId: '', // Will be auto-set to current page path
-  shareId: '', // Will be auto-set to current page path
+  tipOffsetX: 5,
+  tipOffsetY: 45,
+  canvasId: '',
+  shareId: '',
+  maxCanvasHeight: 10000,
 })
 
-// Use current page path as default canvasId and shareId
 const effectiveCanvasId = props.canvasId || window.location.pathname
 const effectiveShareId = props.shareId || window.location.pathname
 
@@ -41,24 +42,18 @@ const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
-const notWindows = !navigator.userAgent.includes('Win')
-const flip = (props.penEmoji === '✏️' && notWindows) || props.flip
 
-// Performance optimization
-const rafId: number | null = null
-const lastDrawTime = 0
-const DRAW_THROTTLE = 16 // ~60fps
-
-// Auto-generate unique pen ID based on props if not provided
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
+const notWindows = !navigator.userAgent.includes('Win')
+const flip = (props.penEmoji === '✏️' && notWindows) || props.flip
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
+let broadcastChannel: any = null
 
-// Global shared canvas state per canvasId
 const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
 const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
@@ -66,15 +61,11 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   ctx: null as CanvasRenderingContext2D | null,
   undoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
   redoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
-  undoRedoHandlerRegistered: false,
+  undoHandlerRegistered: false,
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
 const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
-const showNotification = ref(false)
-const notificationMessage = ref('')
-const isSaving = ref(false)
-let broadcastChannel: any = null
 
 function loadPenPosition() {
   if (!props.save)
@@ -162,141 +153,6 @@ function notifyUpdate() {
   window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
 }
 
-// Simplify points using Ramer-Douglas-Peucker algorithm for storage efficiency
-function simplifyPoints(points: { x: number, y: number }[], tolerance = 2): { x: number, y: number }[] {
-  if (points.length <= 2)
-    return points
-
-  const sqTolerance = tolerance * tolerance
-
-  function getSqSegDist(p: { x: number, y: number }, p1: { x: number, y: number }, p2: { x: number, y: number }) {
-    let x = p1.x
-    let y = p1.y
-    let dx = p2.x - x
-    let dy = p2.y - y
-
-    if (dx !== 0 || dy !== 0) {
-      const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy)
-      if (t > 1) {
-        x = p2.x
-        y = p2.y
-      }
-      else if (t > 0) {
-        x += dx * t
-        y += dy * t
-      }
-    }
-
-    dx = p.x - x
-    dy = p.y - y
-
-    return dx * dx + dy * dy
-  }
-
-  function simplifyDPStep(points: { x: number, y: number }[], first: number, last: number, sqTolerance: number, simplified: { x: number, y: number }[]) {
-    let maxSqDist = sqTolerance
-    let index = 0
-
-    for (let i = first + 1; i < last; i++) {
-      const sqDist = getSqSegDist(points[i], points[first], points[last])
-      if (sqDist > maxSqDist) {
-        index = i
-        maxSqDist = sqDist
-      }
-    }
-
-    if (maxSqDist > sqTolerance) {
-      if (index - first > 1)
-        simplifyDPStep(points, first, index, sqTolerance, simplified)
-      simplified.push(points[index])
-      if (last - index > 1)
-        simplifyDPStep(points, index, last, sqTolerance, simplified)
-    }
-  }
-
-  const last = points.length - 1
-  const simplified = [points[0]]
-  simplifyDPStep(points, 0, last, sqTolerance, simplified)
-  simplified.push(points[last])
-
-  return simplified
-}
-
-function pushToUndoStack() {
-  // Save current strokes state to undo stack (state BEFORE new stroke is added)
-  const currentState = allStrokes.map((stroke: any) => ({
-    points: [...stroke.points],
-    color: stroke.color,
-    width: stroke.width,
-    isEraser: stroke.isEraser,
-  }))
-  canvasData.undoStack.push(currentState)
-  // Clear redo stack when a new action is performed
-  canvasData.redoStack.length = 0
-}
-
-function undo() {
-  if (canvasData.undoStack.length === 0)
-    return
-
-  // Save current state to redo stack before reverting
-  const currentState = allStrokes.map((stroke: any) => ({
-    points: [...stroke.points],
-    color: stroke.color,
-    width: stroke.width,
-    isEraser: stroke.isEraser,
-  }))
-  canvasData.redoStack.push(currentState)
-
-  // Restore previous state from undo stack
-  const previousState = canvasData.undoStack.pop()
-  if (previousState) {
-    allStrokes.length = 0
-    allStrokes.push(...previousState)
-    redrawAll()
-    saveStrokes()
-    notifyUpdate()
-  }
-}
-
-function redo() {
-  if (canvasData.redoStack.length === 0)
-    return
-
-  // Save current state to undo stack before moving forward
-  const currentState = allStrokes.map((stroke: any) => ({
-    points: [...stroke.points],
-    color: stroke.color,
-    width: stroke.width,
-    isEraser: stroke.isEraser,
-  }))
-  canvasData.undoStack.push(currentState)
-
-  // Restore next state from redo stack
-  const nextState = canvasData.redoStack.pop()
-  if (nextState) {
-    allStrokes.length = 0
-    allStrokes.push(...nextState)
-    redrawAll()
-    saveStrokes()
-    notifyUpdate()
-  }
-}
-
-function handleUndoRedo(e: KeyboardEvent) {
-  // Check for Ctrl+Z (undo) or Ctrl+Y (redo)
-  if (e.ctrlKey || e.metaKey) {
-    if (e.key === 'z' || e.key === 'Z') {
-      e.preventDefault()
-      undo()
-    }
-    else if (e.key === 'y' || e.key === 'Y') {
-      e.preventDefault()
-      redo()
-    }
-  }
-}
-
 onMounted(() => {
   // Check if stored canvas still exists in DOM, if not reset it
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
@@ -305,11 +161,11 @@ onMounted(() => {
   }
 
   if (!canvasData.canvas && canvasRef.value) {
-    // First instance - initialize shared canvas
     canvasData.canvas = canvasRef.value
-    // Use document dimensions to cover the entire scrollable area
-    canvasData.canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-    canvasData.canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
+    const w = Math.max(document.documentElement.scrollWidth, window.innerWidth)
+    const h = Math.min(Math.max(document.documentElement.scrollHeight, window.innerHeight), props.maxCanvasHeight)
+    canvasData.canvas.width = w
+    canvasData.canvas.height = h
     canvasData.ctx = canvasData.canvas.getContext('2d')
     ctx = canvasData.ctx
 
@@ -319,62 +175,40 @@ onMounted(() => {
     }
 
     loadStrokes()
-
-    // Redraw any existing strokes (in case we navigated back to a page with existing strokes)
-    if (allStrokes.length > 0) {
+    if (allStrokes.length > 0)
       redrawAll()
-    }
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('drawingUpdated', handleDrawingUpdate)
+    window.addEventListener('keydown', handleClearCommand)
+
+    if (!canvasData.undoHandlerRegistered) {
+      window.addEventListener('keydown', handleUndoRedo)
+      canvasData.undoHandlerRegistered = true
+    }
   }
   else {
-    // Subsequent instances - use shared canvas
     ctx = canvasData.ctx
     if (canvasRef.value)
       canvasRef.value.style.display = 'none'
   }
 
-  // Load this pen's saved position
   loadPenPosition()
-
-  // Load from URL hash if present
   loadFromHash()
-
-  // Load from Supabase if shareId provided
   if (effectiveShareId)
     loadFromSupabase()
 
-  // Setup real-time sync
   const cleanup = setupSupabaseSync()
-  if (cleanup) {
+  if (cleanup)
     onUnmounted(cleanup)
-  }
-
-  // Listen for global "clear" command
-  window.addEventListener('keydown', handleClearCommand)
-
-  // Register undo/redo handler only once per canvasId
-  if (!canvasData.undoRedoHandlerRegistered) {
-    window.addEventListener('keydown', handleUndoRedo)
-    canvasData.undoRedoHandlerRegistered = true
-  }
 })
 
 onUnmounted(() => {
-  // Cancel any pending animation frames
-  if (rafId) {
-    cancelAnimationFrame(rafId)
-  }
-
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('keydown', handleClearCommand)
-
-  // Note: We don't remove the undo/redo handler here because it's shared across all pen instances
-  // for this canvasId. It will be cleaned up when all pens are unmounted or page is reloaded.
 })
 
 function handleStorageChange(e: StorageEvent) {
@@ -393,68 +227,85 @@ function handleResize() {
     return
 
   const imageData = sharedCtx.getImageData(0, 0, sharedCanvas.width, sharedCanvas.height)
-  // Update to cover entire scrollable area
   sharedCanvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth)
-  sharedCanvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight)
+  sharedCanvas.height = Math.min(Math.max(document.documentElement.scrollHeight, window.innerHeight), props.maxCanvasHeight)
   sharedCtx.putImageData(imageData, 0, 0)
 }
 
-// Track typed characters for "clear" command
 let typedChars = ''
 let typedTimeout: number | null = null
 
 function handleClearCommand(e: KeyboardEvent) {
-  // Ignore if user is typing in an input/textarea
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
     return
 
-  // Add character to buffer
   typedChars += e.key.toLowerCase()
-
-  // Clear timeout
   if (typedTimeout)
     clearTimeout(typedTimeout)
+  typedTimeout = window.setTimeout(() => typedChars = '', 2000)
 
-  // Reset after 2 seconds of no typing
-  typedTimeout = window.setTimeout(() => {
-    typedChars = ''
-  }, 2000)
-
-  // Check if "clear" was typed
   if (typedChars.includes('clear')) {
     typedChars = ''
     clearAllData()
   }
-  // Check if "share" was typed
   else if (typedChars.includes('share')) {
     typedChars = ''
     exportToHash()
   }
-  // Check if "cloud" was typed
-  else if (typedChars.includes('cloud')) {
+  else if (typedChars.includes('cloud') && supabase && effectiveShareId) {
     typedChars = ''
-    if (supabase && effectiveShareId) {
-      saveToSupabase()
+    saveToSupabase()
+  }
+}
+
+function handleUndoRedo(e: KeyboardEvent) {
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 'z' || e.key === 'Z') {
+      e.preventDefault()
+      undo()
     }
-    else {
-      notificationMessage.value = 'Cloud not configured'
-      showNotification.value = true
-      setTimeout(() => showNotification.value = false, 1500)
+    else if (e.key === 'y' || e.key === 'Y') {
+      e.preventDefault()
+      redo()
     }
   }
 }
 
-// URL Hash Sharing
+function undo() {
+  if (canvasData.undoStack.length === 0)
+    return
+  canvasData.redoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
+  const prev = canvasData.undoStack.pop()
+  if (prev) {
+    allStrokes.length = 0
+    allStrokes.push(...prev)
+    redrawAll()
+    saveStrokes()
+    notifyUpdate()
+  }
+}
+
+function redo() {
+  if (canvasData.redoStack.length === 0)
+    return
+  canvasData.undoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
+  const next = canvasData.redoStack.pop()
+  if (next) {
+    allStrokes.length = 0
+    allStrokes.push(...next)
+    redrawAll()
+    saveStrokes()
+    notifyUpdate()
+  }
+}
+
 function compressData(strokes: any[]) {
-  const json = JSON.stringify(strokes)
-  // Simple compression: base64 encode
-  return btoa(unescape(encodeURIComponent(json)))
+  return btoa(unescape(encodeURIComponent(JSON.stringify(strokes))))
 }
 
 function decompressData(compressed: string) {
   try {
-    const json = decodeURIComponent(escape(atob(compressed)))
-    return JSON.parse(json)
+    return JSON.parse(decodeURIComponent(escape(atob(compressed))))
   }
   catch {
     return null
@@ -462,14 +313,12 @@ function decompressData(compressed: string) {
 }
 
 function exportToHash() {
-  const compressed = compressData(allStrokes)
-  const url = `${window.location.origin}${window.location.pathname}#draw=${compressed}`
+  const url = `${window.location.origin}${window.location.pathname}#draw=${compressData(allStrokes)}`
   navigator.clipboard.writeText(url)
 }
 
 function loadFromHash() {
-  const hash = window.location.hash
-  const match = hash.match(/#draw=(.+)/)
+  const match = window.location.hash.match(/#draw=(.+)/)
   if (match) {
     const data = decompressData(match[1])
     if (data) {
@@ -481,47 +330,25 @@ function loadFromHash() {
   }
 }
 
-// Supabase Integration
 async function saveToSupabase() {
   if (!supabase || !effectiveShareId)
     return
-
-  isSaving.value = true
-  notificationMessage.value = 'Saving...'
-  showNotification.value = true
-
   try {
-    const { error } = await supabase
-      .from('drawings')
-      .upsert({
-        id: effectiveShareId,
-        canvas_id: effectiveCanvasId,
-        strokes: allStrokes,
-        updated_at: new Date().toISOString(),
-      })
-
-    if (error) {
-      console.error('Save error:', error)
-      notificationMessage.value = 'Failed'
-    }
-    else {
-      notificationMessage.value = 'Saved'
-    }
+    await supabase.from('drawings').upsert({
+      id: effectiveShareId,
+      canvas_id: effectiveCanvasId,
+      strokes: allStrokes,
+      updated_at: new Date().toISOString(),
+    })
   }
   catch (e) {
     console.error('Supabase save failed:', e)
-    notificationMessage.value = 'Failed'
-  }
-  finally {
-    isSaving.value = false
-    setTimeout(() => showNotification.value = false, 1500)
   }
 }
 
 async function loadFromSupabase() {
   if (!supabase || !effectiveShareId)
     return
-
   try {
     const { data, error } = await supabase
       .from('drawings')
@@ -529,12 +356,7 @@ async function loadFromSupabase() {
       .eq('id', effectiveShareId)
       .single()
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Load error:', error)
-      return
-    }
-
-    if (data?.strokes) {
+    if (!error && data?.strokes) {
       allStrokes.length = 0
       allStrokes.push(...data.strokes)
       redrawAll()
@@ -550,11 +372,8 @@ function setupSupabaseSync() {
   if (!supabase || !effectiveShareId)
     return
 
-  // Broadcast-based real-time collaboration
   broadcastChannel = supabase
-    .channel(`drawing:${effectiveShareId}:strokes`, {
-      config: { broadcast: { self: false } },
-    })
+    .channel(`drawing:${effectiveShareId}:strokes`, { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'stroke_added' }, ({ payload }) => {
       if (payload.stroke) {
         allStrokes.push(payload.stroke)
@@ -577,26 +396,6 @@ function setupSupabaseSync() {
   }
 }
 
-function broadcastStroke(stroke: any) {
-  if (broadcastChannel) {
-    broadcastChannel.send({
-      type: 'broadcast',
-      event: 'stroke_added',
-      payload: { stroke },
-    })
-  }
-}
-
-function broadcastClear() {
-  if (broadcastChannel) {
-    broadcastChannel.send({
-      type: 'broadcast',
-      event: 'clear',
-      payload: {},
-    })
-  }
-}
-
 function clearAllData() {
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (sharedCtx && sharedCanvas) {
@@ -604,25 +403,20 @@ function clearAllData() {
     allStrokes.length = 0
     currentPath = []
 
-    // Clear from localStorage
     if (props.save) {
       localStorage.removeItem(storageKey)
-      // Clear all pen positions for this canvasId
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`)) {
+        if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
           localStorage.removeItem(key)
-        }
       })
     }
 
-    // Reset all pens to inline position
     isDetached.value = false
     penPosition.value = { x: 0, y: 0 }
 
-    // Broadcast clear to other users
-    broadcastClear()
-
-    // Notify other pens
+    if (broadcastChannel) {
+      broadcastChannel.send({ type: 'broadcast', event: 'clear', payload: {} })
+    }
     notifyUpdate()
   }
 }
@@ -686,7 +480,6 @@ function drag(e: MouseEvent) {
     else {
       currentPath.push({ x: currentX, y: currentY })
 
-      // Draw only the new segment incrementally
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
       ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
       ctx.lineWidth = props.strokeWidth
@@ -708,11 +501,11 @@ function drag(e: MouseEvent) {
 
 function endDrag() {
   if (isDrawing.value && currentPath.length > 0) {
-    pushToUndoStack()
-    // Simplify points before storing to reduce memory
-    const simplifiedPoints = simplifyPoints(currentPath, 1.5)
+    canvasData.undoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
+    canvasData.redoStack.length = 0
+
     const newStroke = {
-      points: simplifiedPoints,
+      points: [...currentPath],
       color: props.strokeColor,
       width: props.strokeWidth,
       isEraser: props.eraserMode,
@@ -721,16 +514,15 @@ function endDrag() {
     saveStrokes()
     notifyUpdate()
 
-    // Broadcast stroke to other users
-    broadcastStroke(newStroke)
+    if (broadcastChannel) {
+      broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: newStroke } })
+    }
   }
 
   isDragging.value = false
   isDrawing.value = false
   moveOnly.value = false
   currentPath = []
-
-  // Save pen position when drag ends
   savePenPosition()
 
   window.removeEventListener('mousemove', drag)
@@ -773,11 +565,6 @@ defineExpose({
 
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
-
-  <!-- Notification -->
-  <div v-if="showNotification" class="notification">
-    ☁️ {{ notificationMessage }}
-  </div>
 
   <span class="pen-inline-container">
     <span
@@ -854,13 +641,5 @@ html.dark .drawing-canvas {
 
 .pen-emoji.flipped:hover:not(.dragging) {
   transform: scaleX(-1) scale(1.15);
-}
-
-.notification {
-  position: fixed;
-  top: 5rem;
-  right: 2rem;
-  opacity: 0.7;
-  z-index: 10002;
 }
 </style>
