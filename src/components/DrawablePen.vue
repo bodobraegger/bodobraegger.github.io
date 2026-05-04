@@ -359,6 +359,7 @@ function decompressData(compressed: string) {
 }
 
 function exportToHash() {
+  console.info('Exporting drawing to URL hash...', { strokeCount: allStrokes.length })
   const url = `${window.location.origin}${window.location.pathname}#draw=${compressData(allStrokes)}`
   navigator.clipboard.writeText(url)
 }
@@ -377,6 +378,7 @@ function loadFromHash() {
 }
 
 async function saveToSupabase() {
+  console.info('Saving to Supabase...', { shareId: effectiveShareId, canvasId: effectiveCanvasId, strokeCount: allStrokes.length })
   if (!supabase || !effectiveShareId)
     return
   try {
@@ -443,6 +445,7 @@ function setupSupabaseSync() {
 }
 
 function clearAllData() {
+  console.info('Clearing canvas and all saved data...')
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (sharedCtx && sharedCanvas) {
     sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
@@ -621,7 +624,10 @@ defineExpose({
       ref="penRef"
       class="pen-emoji"
       :class="{ dragging: isDragging, detached: isDetached, flipped: flip }"
-      :style="isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}"
+      :style="{
+        ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
+        color: strokeColor,
+      }"
       @mousedown="startDrag"
       @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
