@@ -54,13 +54,44 @@ let lastY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
 
+// Generate or retrieve persistent user ID
+function getUserId(): string {
+  const storageKey = 'drawable-pen-user-id'
+  try {
+    let userId = localStorage.getItem(storageKey)
+    if (!userId) {
+      userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      localStorage.setItem(storageKey, userId)
+    }
+    return userId
+  }
+  catch {
+    // Fallback to session-based ID if localStorage unavailable
+    if (!(window as any).__drawablePenUserId__) {
+      (window as any).__drawablePenUserId__ = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    }
+    return (window as any).__drawablePenUserId__
+  }
+}
+
+const currentUserId = getUserId()
+
+interface Stroke {
+  points: { x: number, y: number }[]
+  color: string
+  width: number
+  isEraser?: boolean
+  userId?: string
+  timestamp?: number
+}
+
 const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
 const canvasData = (globalCanvases[effectiveCanvasId] ||= {
-  strokes: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[],
+  strokes: [] as Stroke[],
   canvas: null as HTMLCanvasElement | null,
   ctx: null as CanvasRenderingContext2D | null,
-  undoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
-  redoStack: [] as { points: { x: number, y: number }[], color: string, width: number, isEraser?: boolean }[][],
+  undoStack: [] as Stroke[][], // Not used anymore but kept for compatibility
+  redoStack: [] as Stroke[], // Stack of individual strokes that can be redone
   undoHandlerRegistered: false,
   scrollHandlerRegistered: false,
 })
@@ -348,40 +379,75 @@ function handleUndoRedo(e: KeyboardEvent) {
 }
 
 function undo() {
-  if (canvasData.undoStack.length === 0)
-    return
-  canvasData.redoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
-  const prev = canvasData.undoStack.pop()
-  if (prev) {
-    allStrokes.length = 0
-    allStrokes.push(...prev)
-    redrawAll()
-    saveStrokes()
-    notifyUpdate()
-
-    // Automatically save to Supabase if shareId is set
-    if (effectiveShareId && supabase) {
-      saveToSupabase()
+  // Find the last stroke by current user
+  let lastUserStrokeIndex = -1
+  for (let i = allStrokes.length - 1; i >= 0; i--) {
+    if (allStrokes[i].userId === currentUserId) {
+      lastUserStrokeIndex = i
+      break
     }
+  }
+
+  if (lastUserStrokeIndex === -1)
+    return // No strokes by current user to undo
+
+  // Save to redo stack (only the stroke being removed)
+  const removedStroke = allStrokes[lastUserStrokeIndex]
+  canvasData.redoStack.push({ ...removedStroke, points: [...removedStroke.points] })
+
+  // Remove the stroke
+  allStrokes.splice(lastUserStrokeIndex, 1)
+
+  redrawAll()
+  saveStrokes()
+  notifyUpdate()
+
+  // Automatically save to Supabase if shareId is set
+  if (effectiveShareId && supabase) {
+    saveToSupabase()
+  }
+
+  // Broadcast the removal to other clients with full stroke data
+  if (broadcastChannel) {
+    broadcastChannel.send({
+      type: 'broadcast',
+      event: 'stroke_removed',
+      payload: {
+        stroke: removedStroke,
+      },
+    })
   }
 }
 
 function redo() {
   if (canvasData.redoStack.length === 0)
     return
-  canvasData.undoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
-  const next = canvasData.redoStack.pop()
-  if (next) {
-    allStrokes.length = 0
-    allStrokes.push(...next)
-    redrawAll()
-    saveStrokes()
-    notifyUpdate()
 
-    // Automatically save to Supabase if shareId is set
-    if (effectiveShareId && supabase) {
-      saveToSupabase()
-    }
+  const strokeToRestore = canvasData.redoStack.pop()
+  if (!strokeToRestore)
+    return
+
+  // Add the stroke back
+  allStrokes.push(strokeToRestore)
+
+  redrawAll()
+  saveStrokes()
+  notifyUpdate()
+
+  // Automatically save to Supabase if shareId is set
+  if (effectiveShareId && supabase) {
+    saveToSupabase()
+  }
+
+  // Broadcast the restoration to other clients
+  if (broadcastChannel) {
+    broadcastChannel.send({
+      type: 'broadcast',
+      event: 'stroke_added',
+      payload: {
+        stroke: strokeToRestore,
+      },
+    })
   }
 }
 
@@ -496,6 +562,23 @@ function setupSupabaseSync() {
         allStrokes.push(payload.stroke)
         redrawAll()
         saveStrokes()
+      }
+    })
+    .on('broadcast', { event: 'stroke_removed' }, ({ payload }) => {
+      // Find and remove the stroke by matching userId and timestamp
+      // This is more reliable than using index which can change
+      if (payload.stroke) {
+        const index = allStrokes.findIndex((s: Stroke) =>
+          s.userId === payload.stroke.userId
+          && s.timestamp === payload.stroke.timestamp
+          && JSON.stringify(s.points) === JSON.stringify(payload.stroke.points),
+        )
+        if (index !== -1) {
+          console.info(`Removing stroke from user ${payload.stroke.userId}`)
+          allStrokes.splice(index, 1)
+          redrawAll()
+          saveStrokes()
+        }
       }
     })
     .on('broadcast', { event: 'clear' }, () => {
@@ -628,14 +711,16 @@ function drag(e: MouseEvent) {
 
 function endDrag() {
   if (isDrawing.value && currentPath.length > 0) {
-    canvasData.undoStack.push(allStrokes.map((s: any) => ({ ...s, points: [...s.points] })))
+    // Clear redo stack when a new stroke is added
     canvasData.redoStack.length = 0
 
-    const newStroke = {
+    const newStroke: Stroke = {
       points: [...currentPath],
       color: props.strokeColor,
       width: props.strokeWidth,
       isEraser: props.eraserMode,
+      userId: currentUserId,
+      timestamp: Date.now(),
     }
     allStrokes.push(newStroke)
     saveStrokes()
