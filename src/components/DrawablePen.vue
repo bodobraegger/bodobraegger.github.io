@@ -789,8 +789,11 @@ defineExpose({
   will-change: transform;
 }
 
-html.dark .drawing-canvas {
-  filter: invert(1);
+html.dark {
+  .drawing-canvas,
+  .pen-emoji {
+    filter: invert(1);
+  }
 }
 
 .pen-inline-container {
