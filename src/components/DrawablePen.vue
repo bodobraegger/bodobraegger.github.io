@@ -12,10 +12,11 @@ interface Props {
   tipOffsetY?: number
   flip?: boolean
   canvasId?: string
-  save?: boolean
+  localStorage?: boolean
   eraserMode?: boolean
   penId?: string
-  shareId?: string
+  cloudStorage?: boolean
+  cloudStorageId?: string
   maxCanvasHeight?: number
 }
 
@@ -26,12 +27,13 @@ const props = withDefaults(defineProps<Props>(), {
   tipOffsetX: 3.6,
   tipOffsetY: 37,
   canvasId: '',
-  shareId: '',
+  cloudStorage: false,
+  cloudStorageId: '',
   maxCanvasHeight: 10000,
 })
 
 const effectiveCanvasId = props.canvasId || window.location.pathname
-const effectiveShareId = props.shareId || window.location.pathname
+const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? window.location.pathname : '')
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
@@ -100,7 +102,7 @@ const storageKey = `drawable-pen-${effectiveCanvasId}`
 const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
 
 function loadPenPosition() {
-  if (!props.save)
+  if (!props.localStorage)
     return
   try {
     const saved = localStorage.getItem(penStorageKey)
@@ -118,7 +120,7 @@ function loadPenPosition() {
 }
 
 function savePenPosition() {
-  if (!props.save)
+  if (!props.localStorage)
     return
   try {
     localStorage.setItem(penStorageKey, JSON.stringify({
@@ -132,7 +134,7 @@ function savePenPosition() {
 }
 
 function loadStrokes() {
-  if (!props.save)
+  if (!props.localStorage)
     return
   try {
     const saved = localStorage.getItem(storageKey)
@@ -148,7 +150,7 @@ function loadStrokes() {
 }
 
 function saveStrokes() {
-  if (!props.save)
+  if (!props.localStorage)
     return
   try {
     localStorage.setItem(storageKey, JSON.stringify(allStrokes))
@@ -287,7 +289,8 @@ onMounted(() => {
 
   loadPenPosition()
   loadFromHash()
-  if (effectiveShareId)
+  // Only load from Supabase if cloudStorage is enabled
+  if (props.cloudStorage && effectiveCloudStorageId)
     loadFromSupabase()
 
   const cleanup = setupSupabaseSync()
@@ -305,7 +308,7 @@ onUnmounted(() => {
 })
 
 function handleStorageChange(e: StorageEvent) {
-  if (e.key === storageKey && e.newValue && props.save)
+  if (e.key === storageKey && e.newValue && props.localStorage)
     loadStrokes()
 }
 
@@ -376,7 +379,7 @@ function handleClearCommand(e: KeyboardEvent) {
     typedChars = ''
     exportToHash()
   }
-  else if (lowerChars.includes('cloud') && supabase && effectiveShareId) {
+  else if (lowerChars.includes('cloud') && supabase && effectiveCloudStorageId) {
     typedChars = ''
     saveToSupabase()
   }
@@ -419,8 +422,8 @@ function undo() {
   saveStrokes()
   notifyUpdate()
 
-  // Automatically save to Supabase if shareId is set
-  if (effectiveShareId && supabase) {
+  // Automatically save to Supabase if cloudStorage is set
+  if (effectiveCloudStorageId && supabase) {
     saveToSupabase()
   }
 
@@ -451,8 +454,8 @@ function redo() {
   saveStrokes()
   notifyUpdate()
 
-  // Automatically save to Supabase if shareId is set
-  if (effectiveShareId && supabase) {
+  // Automatically save to Supabase if cloudStorage is set
+  if (effectiveCloudStorageId && supabase) {
     saveToSupabase()
   }
 
@@ -501,12 +504,12 @@ function loadFromHash() {
 }
 
 async function saveToSupabase() {
-  console.info('Saving to Supabase...', { shareId: effectiveShareId, canvasId: effectiveCanvasId, strokeCount: allStrokes.length })
-  if (!supabase || !effectiveShareId)
+  console.info('Saving to Supabase...', { cloudStorageId: effectiveCloudStorageId, canvasId: effectiveCanvasId, strokeCount: allStrokes.length })
+  if (!supabase || !effectiveCloudStorageId)
     return
   try {
     const { error } = await supabase.from('drawings').upsert({
-      id: effectiveShareId,
+      id: effectiveCloudStorageId,
       canvas_id: effectiveCanvasId,
       strokes: allStrokes,
       updated_at: new Date().toISOString(),
@@ -524,13 +527,13 @@ async function saveToSupabase() {
 }
 
 async function loadFromSupabase() {
-  if (!supabase || !effectiveShareId)
+  if (!supabase || !effectiveCloudStorageId)
     return
   try {
     const { data, error } = await supabase
       .from('drawings')
       .select('strokes')
-      .eq('id', effectiveShareId)
+      .eq('id', effectiveCloudStorageId)
       .single()
 
     if (!error && data?.strokes) {
@@ -546,11 +549,11 @@ async function loadFromSupabase() {
 }
 
 function setupSupabaseSync() {
-  if (!supabase || !effectiveShareId)
+  if (!supabase || !effectiveCloudStorageId)
     return
 
   broadcastChannel = supabase
-    .channel(`drawing:${effectiveShareId}:strokes`, { config: { broadcast: { self: false } } })
+    .channel(`drawing:${effectiveCloudStorageId}:strokes`, { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'stroke_added' }, ({ payload }) => {
       if (payload.stroke) {
         allStrokes.push(payload.stroke)
@@ -598,7 +601,7 @@ function resetTools() {
   notifyReset()
 
   // Clear all pen positions from localStorage
-  if (props.save) {
+  if (props.localStorage) {
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
         localStorage.removeItem(key)
@@ -705,8 +708,8 @@ function endDrag() {
     saveStrokes()
     notifyUpdate()
 
-    // Automatically save to Supabase if shareId is set
-    if (effectiveShareId && supabase) {
+    // Automatically save to Supabase if cloudStorage is set
+    if (effectiveCloudStorageId && supabase) {
       saveToSupabase()
     }
 
