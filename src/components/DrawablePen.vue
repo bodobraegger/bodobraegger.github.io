@@ -777,7 +777,21 @@ defineExpose({
   <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging" />
 </template>
 
+<style>
+:root {
+  --pen-filter: drop-shadow(0 2px 4px rgba(255, 127, 255, 0.5));
+}
+
+html.dark {
+  --pen-filter: invert(1) drop-shadow(0 2px 4px rgba(255, 127, 255, 0.5));
+}
+</style>
+
 <style scoped>
+html.dark .drawing-canvas {
+  filter: invert(1);
+}
+
 .drawing-canvas {
   position: absolute;
   top: 0;
@@ -788,14 +802,6 @@ defineExpose({
   z-index: 9998;
   will-change: transform;
 }
-
-html.dark {
-  .drawing-canvas,
-  .pen-emoji {
-    filter: invert(1);
-  }
-}
-
 .pen-inline-container {
   display: inline-block;
   position: relative;
@@ -811,32 +817,32 @@ html.dark {
   cursor: grab;
   user-select: none;
   transition: transform 0.1s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  filter: var(--pen-filter, drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)));
   line-height: 1;
-}
 
-.pen-emoji.detached {
-  z-index: 10000;
-}
+  &.detached {
+    z-index: 10000;
+  }
 
-.pen-emoji.dragging {
-  cursor: grabbing;
-  transform: scale(1.1) rotate(-5deg);
-}
+  &.dragging {
+    cursor: grabbing;
+    transform: scale(1.1) rotate(-5deg);
+  }
 
-.pen-emoji:hover:not(.dragging) {
-  transform: scale(1.15);
-}
+  &:hover:not(.dragging) {
+    transform: scale(1.15);
+  }
 
-.pen-emoji.flipped {
-  transform: scaleX(-1);
-}
+  &.flipped {
+    transform: scaleX(-1);
 
-.pen-emoji.flipped.dragging {
-  transform: scaleX(-1) scale(1.1) rotate(5deg);
-}
+    &.dragging {
+      transform: scaleX(-1) scale(1.1) rotate(5deg);
+    }
 
-.pen-emoji.flipped:hover:not(.dragging) {
-  transform: scaleX(-1) scale(1.15);
+    &:hover:not(.dragging) {
+      transform: scaleX(-1) scale(1.15);
+    }
+  }
 }
 </style>
