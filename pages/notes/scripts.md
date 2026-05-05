@@ -1,6 +1,6 @@
 ---
-title: Scripts+Configs, Admin of my System
-place: Rio de Janeiro, RJ, Brasil
+title: Scripts + Configs
+place: Rio de Janeiro, Brasil
 date: 2026-04-26T16:23:49-03:00
 lang: en
 type: note+blog

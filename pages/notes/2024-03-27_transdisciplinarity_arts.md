@@ -1,6 +1,6 @@
 ---
 title: Transdisciplinary Studies Dialogue
-place: ZHdK, Zürich, Switzerland
+place: ZHdK, Switzerland
 date: 2024-03-27T11:20:00.000+01:00
 lang: en
 type: note+blog

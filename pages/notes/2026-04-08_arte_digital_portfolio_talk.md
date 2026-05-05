@@ -1,6 +1,6 @@
 ---
 title: Arte Digital @ EBA
-place: UFRJ, Rio de Janeiro, Brasil
+place: UFRJ, Brasil
 date: 2026-04-08T19:34:05-03:00
 lang: en
 type: note+blog

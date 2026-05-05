@@ -4,7 +4,7 @@ place: Zürich, Switzerland
 date: 2024-01-17T16:00:00.000+01:00
 lang: en
 type: note+blog
-duration: 15 min
+# duration: 15 min
 draft: false
 ---
 
