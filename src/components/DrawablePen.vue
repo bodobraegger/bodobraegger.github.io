@@ -62,6 +62,7 @@ let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
+let saveToSupabaseTimeout: number | null = null
 
 // Generate or retrieve persistent user ID
 function getUserId(): string {
@@ -103,6 +104,7 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   redoStack: [] as Stroke[], // Stack of individual strokes that can be redone
   undoHandlerRegistered: false,
   scrollHandlerRegistered: false,
+  supabaseLoaded: false, // Track if we've already loaded from Supabase for this canvas
 })
 const allStrokes = canvasData.strokes
 const storageKey = `drawable-pen-${effectiveCanvasId}`
@@ -419,6 +421,10 @@ function handleClearCommand(e: KeyboardEvent) {
 }
 
 function handleUndoRedo(e: KeyboardEvent) {
+  // Don't interfere with typing in input fields
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+    return
+
   if (e.ctrlKey || e.metaKey) {
     if (e.key === 'z' || e.key === 'Z') {
       e.preventDefault()
@@ -455,12 +461,12 @@ function undo() {
   saveStrokes()
   notifyUpdate()
 
-  // Automatically save to Supabase if cloudStorage is set
+  // Debounced save to Supabase - batches rapid undos
   if (effectiveCloudStorageId && supabase) {
-    saveToSupabase()
+    saveToSupabaseDebounced()
   }
 
-  // Broadcast the removal to other clients with full stroke data
+  // Broadcast immediately for real-time collaboration
   if (broadcastChannel) {
     broadcastChannel.send({
       type: 'broadcast',
@@ -487,12 +493,12 @@ function redo() {
   saveStrokes()
   notifyUpdate()
 
-  // Automatically save to Supabase if cloudStorage is set
+  // Debounced save to Supabase - batches rapid redos
   if (effectiveCloudStorageId && supabase) {
-    saveToSupabase()
+    saveToSupabaseDebounced()
   }
 
-  // Broadcast the restoration to other clients
+  // Broadcast immediately for real-time collaboration
   if (broadcastChannel) {
     broadcastChannel.send({
       type: 'broadcast',
@@ -559,9 +565,29 @@ async function saveToSupabase() {
   }
 }
 
+// Debounced version - waits 500ms after last change before saving
+function saveToSupabaseDebounced() {
+  if (!effectiveCloudStorageId || !supabase)
+    return
+
+  if (saveToSupabaseTimeout)
+    clearTimeout(saveToSupabaseTimeout)
+  saveToSupabaseTimeout = window.setTimeout(() => {
+    saveToSupabase()
+  }, 500)
+}
+
 async function loadFromSupabase() {
   if (!supabase || !effectiveCloudStorageId)
     return
+
+  // Check if this canvas has already loaded from Supabase
+  if (canvasData.supabaseLoaded)
+    return
+
+  // Mark as loading immediately to prevent duplicate fetches from other pen instances
+  canvasData.supabaseLoaded = true
+
   try {
     const { data, error } = await supabase
       .from('drawings')
@@ -578,6 +604,8 @@ async function loadFromSupabase() {
   }
   catch (e) {
     console.error('Supabase load failed:', e)
+    // Reset flag on error so it can be retried
+    canvasData.supabaseLoaded = false
   }
 }
 
