@@ -552,7 +552,8 @@ async function saveStrokeToSupabase(stroke: Stroke) {
     if (!stroke.id)
       stroke.id = `${currentUserId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    const { error } = await supabase.from('strokes').insert({
+    // Insert without 'id' field - let database generate it
+    const insertData: any = {
       canvas_id: effectiveCloudStorageId,
       stroke_id: stroke.id,
       user_id: stroke.userId || currentUserId,
@@ -560,7 +561,9 @@ async function saveStrokeToSupabase(stroke: Stroke) {
       color: stroke.color,
       width: stroke.width,
       eraser: stroke.isEraser || false,
-    })
+    }
+
+    const { error } = await supabase.from('strokes').insert(insertData)
 
     if (error) {
       console.error('Supabase stroke save error:', error)
