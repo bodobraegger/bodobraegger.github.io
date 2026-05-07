@@ -1,0 +1,80 @@
+// Shared canvas drawing utilities
+import type { Stroke } from '../types/strokes'
+
+export function drawStroke(
+  ctx: CanvasRenderingContext2D,
+  stroke: Stroke,
+  options: {
+    isSelected?: boolean
+    showAsEraser?: boolean
+  } = {},
+) {
+  const { isSelected, showAsEraser } = options
+  const isEraser = stroke.isEraser || stroke.eraser
+
+  ctx.save()
+
+  // Admin view: show erasers as semi-transparent red with dashed line
+  if (showAsEraser && isEraser) {
+    ctx.strokeStyle = isSelected ? '#ff8888' : 'rgba(255, 100, 100, 0.5)'
+    ctx.lineWidth = isSelected ? stroke.width + 4 : stroke.width
+    ctx.globalAlpha = isSelected ? 0.8 : 0.5
+    ctx.setLineDash([5, 5])
+  }
+  else if (isSelected) {
+    ctx.strokeStyle = '#ff4444'
+    ctx.lineWidth = stroke.width + 4
+    ctx.globalAlpha = 0.5
+  }
+  else {
+    ctx.strokeStyle = stroke.color
+    ctx.lineWidth = stroke.width
+    ctx.globalAlpha = 1
+  }
+
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
+  // Single point: draw a dot
+  if (stroke.points.length === 1) {
+    const pt = stroke.points[0]
+    ctx.beginPath()
+    ctx.arc(pt.x, pt.y, stroke.width / 2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  else {
+    // Multiple points: draw line
+    ctx.beginPath()
+    ctx.moveTo(stroke.points[0].x, stroke.points[0].y)
+    for (let i = 1; i < stroke.points.length; i++) {
+      ctx.lineTo(stroke.points[i].x, stroke.points[i].y)
+    }
+    ctx.stroke()
+  }
+
+  ctx.restore()
+}
+
+export function drawGrid(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  gridSize = 50,
+) {
+  ctx.strokeStyle = '#eee'
+  ctx.lineWidth = 0.5
+
+  for (let x = 0; x < width; x += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, height)
+    ctx.stroke()
+  }
+
+  for (let y = 0; y < height; y += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(width, y)
+    ctx.stroke()
+  }
+}
