@@ -63,6 +63,22 @@ const penFontSize = computed(() => {
   return `${baseSize + widthContribution}rem`
 })
 
+// Computed tip offsets that scale with the dynamic pen size
+// The base offsets (3.6, 37) were for a 2.3rem pen, so we scale proportionally
+const scaledTipOffsetX = computed(() => {
+  const baseSize = 2.3
+  const currentSize = 2.3 + currentStrokeWidth.value / 40
+  const scale = currentSize / baseSize
+  return props.tipOffsetX * scale
+})
+
+const scaledTipOffsetY = computed(() => {
+  const baseSize = 2.3
+  const currentSize = 2.3 + currentStrokeWidth.value / 40
+  const scale = currentSize / baseSize
+  return props.tipOffsetY * scale
+})
+
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
 const notWindows = !navigator.userAgent.includes('Win')
@@ -824,13 +840,12 @@ function handleRightClick(e: MouseEvent) {
 }
 
 function startDrawing(e: MouseEvent) {
-  const offsetX = (handlePenMove as any).offsetX || 20
-  const offsetY = (handlePenMove as any).offsetY || 20
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
-  lastX = e.clientX + scrollX + props.tipOffsetX - offsetX
-  lastY = e.clientY + scrollY + props.tipOffsetY - offsetY
+  // Use the pen's current position plus the tip offset
+  lastX = penPosition.value.x + scrollX + props.tipOffsetX
+  lastY = penPosition.value.y + scrollY + props.tipOffsetY
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
 
