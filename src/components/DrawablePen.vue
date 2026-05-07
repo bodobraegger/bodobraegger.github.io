@@ -1023,6 +1023,11 @@ function saveStroke(stroke: Stroke) {
   saveStrokes()
   notifyUpdate()
 
+  // If it's an eraser stroke, redraw the entire canvas to properly apply the eraser
+  if (stroke.isEraser) {
+    redrawAll()
+  }
+
   // Save to Supabase with new schema (one row per stroke)
   if (effectiveCloudStorageId && supabase)
     saveStrokeToSupabase(stroke)
