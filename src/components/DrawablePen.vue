@@ -62,7 +62,6 @@ let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
-let saveToSupabaseTimeout: number | null = null
 
 // Generate or retrieve persistent user ID
 function getUserId(): string {
@@ -87,6 +86,7 @@ function getUserId(): string {
 const currentUserId = getUserId()
 
 interface Stroke {
+  id?: string // UUID from database or client-generated
   points: { x: number, y: number }[]
   color: string
   width: number
@@ -461,9 +461,9 @@ function undo() {
   saveStrokes()
   notifyUpdate()
 
-  // Debounced save to Supabase - batches rapid undos
-  if (effectiveCloudStorageId && supabase) {
-    saveToSupabaseDebounced()
+  // Delete from Supabase immediately (new schema)
+  if (effectiveCloudStorageId && supabase && removedStroke.id) {
+    deleteStrokeFromSupabase(removedStroke.id)
   }
 
   // Broadcast immediately for real-time collaboration
@@ -493,9 +493,9 @@ function redo() {
   saveStrokes()
   notifyUpdate()
 
-  // Debounced save to Supabase - batches rapid redos
+  // Re-save to Supabase immediately (new schema)
   if (effectiveCloudStorageId && supabase) {
-    saveToSupabaseDebounced()
+    saveStrokeToSupabase(strokeToRestore)
   }
 
   // Broadcast immediately for real-time collaboration
@@ -542,39 +542,62 @@ function loadFromHash() {
   }
 }
 
-async function saveToSupabase() {
-  console.info('Saving to Supabase...', { cloudStorageId: effectiveCloudStorageId, canvasId: effectiveCanvasId, strokeCount: allStrokes.length })
+// Save a single stroke to Supabase (new schema - one row per stroke)
+async function saveStrokeToSupabase(stroke: Stroke) {
   if (!supabase || !effectiveCloudStorageId)
     return
+
   try {
-    const { error } = await supabase.from('drawings').upsert({
-      id: effectiveCloudStorageId,
-      canvas_id: effectiveCanvasId,
-      strokes: allStrokes,
-      updated_at: new Date().toISOString(),
+    // Generate a unique ID for the stroke if it doesn't have one
+    if (!stroke.id)
+      stroke.id = `${currentUserId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    const { error } = await supabase.from('strokes').insert({
+      canvas_id: effectiveCloudStorageId,
+      stroke_id: stroke.id,
+      user_id: stroke.userId || currentUserId,
+      points: stroke.points,
+      color: stroke.color,
+      width: stroke.width,
+      eraser: stroke.isEraser || false,
     })
+
     if (error) {
-      console.error('Supabase save error:', error)
-    }
-    else {
-      console.info('Successfully saved to Supabase')
+      console.error('Supabase stroke save error:', error)
     }
   }
   catch (e) {
-    console.error('Supabase save failed:', e)
+    console.error('Supabase stroke save failed:', e)
   }
 }
 
-// Debounced version - waits 500ms after last change before saving
-function saveToSupabaseDebounced() {
-  if (!effectiveCloudStorageId || !supabase)
+// Delete a stroke from Supabase (for undo)
+async function deleteStrokeFromSupabase(strokeId: string) {
+  if (!supabase || !effectiveCloudStorageId)
     return
 
-  if (saveToSupabaseTimeout)
-    clearTimeout(saveToSupabaseTimeout)
-  saveToSupabaseTimeout = window.setTimeout(() => {
-    saveToSupabase()
-  }, 500)
+  try {
+    const { error } = await supabase.from('strokes')
+      .delete()
+      .eq('stroke_id', strokeId)
+
+    if (error) {
+      console.error('Supabase stroke delete error:', error)
+    }
+  }
+  catch (e) {
+    console.error('Supabase stroke delete failed:', e)
+  }
+}
+
+// Legacy function - no longer used with new schema
+async function saveToSupabase() {
+  console.warn('saveToSupabase (bulk) is deprecated with new schema. Use saveStrokeToSupabase instead.')
+}
+
+// Debounced version - no longer needed with new schema (saves are instant)
+function saveToSupabaseDebounced() {
+  // No-op with new schema
 }
 
 async function loadFromSupabase() {
@@ -589,17 +612,27 @@ async function loadFromSupabase() {
   canvasData.supabaseLoaded = true
 
   try {
+    // New schema: load all strokes for this canvas
     const { data, error } = await supabase
-      .from('drawings')
-      .select('strokes')
-      .eq('id', effectiveCloudStorageId)
-      .single()
+      .from('strokes')
+      .select('*')
+      .eq('canvas_id', effectiveCloudStorageId)
+      .order('created_at', { ascending: true })
 
-    if (!error && data?.strokes) {
+    if (!error && data) {
       allStrokes.length = 0
-      allStrokes.push(...data.strokes)
+      // Convert database rows to Stroke format
+      allStrokes.push(...data.map(row => ({
+        id: row.stroke_id,
+        points: row.points,
+        color: row.color,
+        width: row.width,
+        isEraser: row.eraser,
+        userId: row.user_id,
+        timestamp: new Date(row.created_at).getTime(),
+      })))
       redrawAll()
-      saveStrokes()
+      saveStrokes() // Save to localStorage
     }
   }
   catch (e) {
@@ -608,7 +641,6 @@ async function loadFromSupabase() {
     canvasData.supabaseLoaded = false
   }
 }
-
 function setupSupabaseSync() {
   if (!supabase || !effectiveCloudStorageId)
     return
@@ -954,8 +986,10 @@ function saveStroke(stroke: Stroke) {
   saveStrokes()
   notifyUpdate()
 
+  // Save to Supabase with new schema (one row per stroke)
   if (effectiveCloudStorageId && supabase)
-    saveToSupabase()
+    saveStrokeToSupabase(stroke)
+
   if (broadcastChannel) {
     broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
   }
