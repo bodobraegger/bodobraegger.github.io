@@ -450,8 +450,8 @@ onMounted(async () => {
 
 <template>
   <div class="admin-container">
-    <div class="admin-header">
-      <span class="admin-title">stroke admin</span>
+    <header class="admin-header">
+      <span>stroke admin</span>
 
       <div class="admin-controls">
         <select v-if="!loading || strokes.length > 0" v-model="filterCanvas">
@@ -475,22 +475,20 @@ onMounted(async () => {
         </button>
       </div>
 
-      <div v-if="user" class="auth-status">
-        <span class="user-email">{{ user.email }}</span>
-        <button class="btn-secondary" @click="signOut">
+      <div class="auth-status">
+        <span v-if="user" op70>{{ user.email }}</span>
+        <button v-if="user" @click="signOut">
           sign out
         </button>
-      </div>
-      <div v-else class="auth-status">
-        <button class="btn-secondary" @click="showAuth = !showAuth">
+        <button v-else @click="showAuth = !showAuth">
           {{ showAuth ? 'hide login' : 'sign in' }}
         </button>
       </div>
+    </header>
 
-      <p v-if="error" class="error-msg">
-        {{ error }}
-      </p>
-    </div>
+    <p v-if="error" op70>
+      {{ error }}
+    </p>
 
     <!-- Auth Form -->
     <div v-if="showAuth && !user" class="auth-form">
@@ -517,12 +515,12 @@ onMounted(async () => {
     </div>
 
     <!-- Confirm Delete Dialog -->
-    <div v-if="showConfirmDelete" class="confirm-dialog">
-      <div class="confirm-content">
+    <div v-if="showConfirmDelete" class="confirm-overlay">
+      <div class="confirm-dialog">
         <h3>confirm deletion</h3>
         <p>Delete {{ selectedStrokes.size }} stroke{{ selectedStrokes.size === 1 ? '' : 's' }}?</p>
         <div class="confirm-actions">
-          <button class="cancel-btn" @click="cancelDelete">
+          <button @click="cancelDelete">
             cancel
           </button>
           <button class="delete-btn" @click="confirmDelete">
@@ -553,13 +551,12 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Minimal admin-specific styles - inherit site theme */
+/* Minimal overrides - inherit everything else from site */
 .admin-container {
   position: fixed;
   inset: 0;
   background: var(--c-bg);
   z-index: 9999;
-  overflow: hidden;
   font-family: var(--fonts-mono);
 }
 
@@ -567,10 +564,9 @@ html.dark .admin-container canvas {
   filter: invert(1);
 }
 
-.admin-header {
+header {
   position: sticky;
   top: 0;
-  z-index: 10;
   background: var(--c-bg);
   border-bottom: 1px dashed var(--fg-deep);
   padding: 1.75rem;
@@ -580,57 +576,47 @@ html.dark .admin-container canvas {
   gap: 1.2rem;
 }
 
-.admin-title {
+header > span:first-child {
   font-weight: 600;
-  color: var(--fg-deeper);
-  justify-self: start;
 }
 
 .admin-controls {
   display: flex;
-  align-items: center;
   gap: 1.2rem;
   justify-self: center;
 }
 
-.admin-controls select,
-.admin-controls button,
-.btn-secondary {
+.auth-status {
+  display: flex;
+  gap: 0.8rem;
+  justify-self: end;
+  align-items: center;
+}
+
+/* Reuse site button styles */
+select,
+button {
   background: transparent;
   color: var(--fg);
   border: 1px dashed var(--fg-deep);
   padding: 0 4px;
-  font-size: 0.95rem;
   font-family: var(--fonts-mono);
   cursor: pointer;
-  transition: opacity 0.2s;
   opacity: 0.7;
 }
 
-.admin-controls select:hover,
-.admin-controls button:hover:not(:disabled),
-.btn-secondary:hover {
+select:hover,
+button:hover:not(:disabled) {
   opacity: 1;
 }
 
-.admin-controls button:disabled {
+button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
-.auth-status {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  justify-self: end;
-}
-
-.user-email {
-  opacity: 0.7;
-}
-
 .auth-form,
-.confirm-dialog .confirm-content {
+.confirm-dialog {
   background: var(--c-bg);
   border: 1px dashed var(--fg-deep);
   padding: 2rem;
@@ -639,17 +625,10 @@ html.dark .admin-container canvas {
 
 .auth-form {
   position: absolute;
-  top: 70px;
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-}
-
-.auth-form h3,
-.confirm-content h3 {
-  margin: 0 0 1.5rem 0;
-  font-weight: 600;
-  color: var(--fg-deeper);
 }
 
 .auth-form form {
@@ -659,92 +638,54 @@ html.dark .admin-container canvas {
 }
 
 .auth-form input {
-  background: var(--c-bg);
-  color: var(--fg);
-  border: 1px dashed var(--fg-deep);
   padding: 0.5rem;
-  font-family: var(--fonts-mono);
 }
 
-.auth-form input:focus {
-  outline: none;
-  border-color: var(--fg-deeper);
-}
-
-.confirm-dialog {
+.confirm-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.confirm-content p {
-  margin: 0 0 1.5rem 0;
-  color: var(--fg);
+  display: grid;
+  place-items: center;
 }
 
 .confirm-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+  margin-top: 1.5rem;
 }
 
-.cancel-btn,
-.delete-btn {
-  background: transparent;
-  color: var(--fg);
-  border: 1px dashed var(--fg-deep);
+.confirm-actions button {
   padding: 0.5rem 1rem;
-  font-family: var(--fonts-mono);
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.cancel-btn:hover,
-.delete-btn:hover {
-  opacity: 1;
 }
 
 .delete-btn {
-  color: #ff4444;
-  border-color: #ff4444;
-}
-
-.delete-btn:hover {
-  background: rgba(255, 68, 68, 0.1);
-}
-
-.error-msg {
-  color: var(--fg);
-  opacity: 0.7;
+  color: #f44;
+  border-color: #f44;
 }
 
 .canvas-container {
   position: absolute;
   top: 70px;
-  bottom: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   overflow: auto;
 }
 
 canvas {
   display: block;
-  width: 100%;
   cursor: crosshair;
 }
 
 .empty-state,
 .loading-state {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset: 50% 0 0 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: var(--fg);
   opacity: 0.5;
 }
 
