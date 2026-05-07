@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import type { Stroke as BaseStroke } from '../types/strokes'
-import { drawGrid, drawStroke } from '../utils/canvas'
+import { drawStroke } from '../utils/canvas'
 
 // Admin-specific stroke type with required fields
 interface AdminStroke extends BaseStroke {
@@ -98,9 +98,6 @@ function drawAll() {
 
   const canvas = canvasRef.value
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-  // Draw grid using shared utility
-  drawGrid(ctx, canvas.width, canvas.height)
 
   // Draw strokes using shared utility
   filteredStrokes.value.forEach((stroke) => {
@@ -462,6 +459,9 @@ onMounted(async () => {
             {{ canvas }}
           </option>
         </select>
+        <button v-if="!loading || strokes.length > 0" :disabled="loading" @click="loadStrokes">
+          refresh
+        </button>
         <button
           v-if="!loading || strokes.length > 0"
           :disabled="selectedStrokes.size === 0 || !user"
@@ -469,9 +469,6 @@ onMounted(async () => {
           @click="deleteSelected"
         >
           delete ({{ selectedStrokes.size }})
-        </button>
-        <button v-if="!loading || strokes.length > 0" :disabled="loading" @click="loadStrokes">
-          refresh
         </button>
       </div>
 
@@ -555,7 +552,6 @@ onMounted(async () => {
 .admin-container {
   position: fixed;
   inset: 0;
-  background: var(--c-bg);
   z-index: 9999;
   font-family: var(--fonts-mono);
 }
@@ -567,7 +563,7 @@ html.dark .admin-container canvas {
 header {
   position: sticky;
   top: 0;
-  background: var(--c-bg);
+  background: transparent;
   border-bottom: 1px dashed var(--fg-deep);
   padding: 1.75rem;
   display: grid;
@@ -583,25 +579,21 @@ header > span:first-child {
 .admin-controls {
   display: flex;
   gap: 1.2rem;
-  justify-self: center;
 }
 
 .auth-status {
   display: flex;
   gap: 0.8rem;
   justify-self: end;
-  align-items: center;
 }
 
 /* Reuse site button styles */
 select,
 button {
-  background: transparent;
+  background: var(--c-bg);
   color: var(--fg);
   border: 1px dashed var(--fg-deep);
   padding: 0 4px;
-  font-family: var(--fonts-mono);
-  cursor: pointer;
   opacity: 0.7;
 }
 
