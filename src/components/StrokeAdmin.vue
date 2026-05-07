@@ -20,6 +20,7 @@ const error = ref('')
 const selectedStrokes = ref<Set<string>>(new Set())
 const filterCanvas = ref('')
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
 const isDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const dragEnd = ref({ x: 0, y: 0 })
@@ -31,6 +32,7 @@ const password = ref('')
 const showAuth = ref(false)
 const showConfirmDelete = ref(false)
 let ctx: CanvasRenderingContext2D | null = null
+let overlayCtx: CanvasRenderingContext2D | null = null
 
 if (!supabase) {
   error.value = 'Supabase is not configured.'
@@ -89,6 +91,13 @@ function setupCanvas() {
   canvas.height = Math.max(window.innerHeight * 3, 3000) // Large scrollable area
   ctx = canvas.getContext('2d')
 
+  // Setup overlay canvas for selection rectangle
+  if (overlayCanvasRef.value) {
+    overlayCanvasRef.value.width = canvas.width
+    overlayCanvasRef.value.height = canvas.height
+    overlayCtx = overlayCanvasRef.value.getContext('2d')
+  }
+
   drawAll()
 }
 
@@ -106,18 +115,25 @@ function drawAll() {
     const isSelected = selectedStrokes.value.has(stroke.stroke_id)
     drawStroke(ctx, stroke, { isSelected, showAsEraser: true })
   })
+}
 
-  // Draw drag selection rectangle
+function drawSelectionRect() {
+  if (!overlayCtx || !overlayCanvasRef.value)
+    return
+
+  const canvas = overlayCanvasRef.value
+  overlayCtx.clearRect(0, 0, canvas.width, canvas.height)
+
   if (isDragging.value) {
-    ctx.strokeStyle = '#4444ff'
-    ctx.lineWidth = 2
-    ctx.setLineDash([5, 5])
+    overlayCtx.strokeStyle = '#4444ff'
+    overlayCtx.lineWidth = 2
+    overlayCtx.setLineDash([5, 5])
     const x = Math.min(dragStart.value.x, dragEnd.value.x)
     const y = Math.min(dragStart.value.y, dragEnd.value.y)
     const w = Math.abs(dragEnd.value.x - dragStart.value.x)
     const h = Math.abs(dragEnd.value.y - dragStart.value.y)
-    ctx.strokeRect(x, y, w, h)
-    ctx.setLineDash([])
+    overlayCtx.strokeRect(x, y, w, h)
+    overlayCtx.setLineDash([])
   }
 }
 
@@ -144,7 +160,7 @@ function handleMouseMove(e: MouseEvent) {
 
   if (isDragging.value) {
     dragEnd.value = { x, y }
-    drawAll()
+    drawSelectionRect() // Only redraw selection rectangle, not all strokes
   }
 }
 
@@ -158,6 +174,7 @@ function handleMouseUp(e: MouseEvent) {
 
   dragEnd.value = { x, y }
   isDragging.value = false
+  drawSelectionRect() // Clear the selection rectangle
 
   const dragDistance = Math.sqrt(
     (dragEnd.value.x - dragStart.value.x) ** 2
@@ -535,6 +552,14 @@ onMounted(async () => {
         @mousemove="handleMouseMove"
         @mouseup="handleMouseUp"
       />
+      <canvas
+        v-if="filterCanvas"
+        ref="overlayCanvasRef"
+        class="overlay-canvas"
+        @mousedown="handleMouseDown"
+        @mousemove="handleMouseMove"
+        @mouseup="handleMouseUp"
+      />
 
       <div v-else-if="!loading" class="empty-state">
         <p>select a canvas to begin</p>
@@ -670,6 +695,13 @@ button:disabled {
 canvas {
   display: block;
   cursor: crosshair;
+}
+
+.overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }
 
 .empty-state,
