@@ -622,7 +622,7 @@ html {
 .admin-container {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 39;
   font-family: var(--fonts-mono);
 }
 
