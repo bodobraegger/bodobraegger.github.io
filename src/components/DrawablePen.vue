@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import type { Stroke } from '../types/strokes'
+import { drawStroke } from '../utils/canvas'
 import HoverTooltip from './HoverTooltip.vue'
 
 interface Props {
@@ -96,16 +98,6 @@ const currentUserId = getUserId()
 
 // Global state to track which pen is currently picked up
 const globalPickedUpPen = ((window as any).__drawablePenPickedUp__ ||= { penId: null })
-
-interface Stroke {
-  id?: string // UUID from database or client-generated
-  points: { x: number, y: number }[]
-  color: string
-  width: number
-  isEraser?: boolean
-  userId?: string
-  timestamp?: number
-}
 
 const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
 const canvasData = (globalCanvases[effectiveCanvasId] ||= {
@@ -224,27 +216,8 @@ function redrawAll() {
       continue
     }
 
-    sharedCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
-    sharedCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
-    sharedCtx.lineWidth = stroke.width
-    sharedCtx.lineCap = 'round'
-    sharedCtx.lineJoin = 'round'
-
-    sharedCtx.beginPath()
-    // Draw in viewport-relative coordinates (subtract scroll position)
-    sharedCtx.moveTo(stroke.points[0].x - scrollX, stroke.points[0].y - scrollY)
-
-    if (stroke.points.length === 1) {
-      // For single-point strokes (dots), draw a tiny line to make it visible
-      sharedCtx.lineTo(stroke.points[0].x - scrollX + 0.1, stroke.points[0].y - scrollY + 0.1)
-    }
-    else {
-      // For multi-point strokes, draw the full path
-      for (let i = 1; i < stroke.points.length; i++) {
-        sharedCtx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
-      }
-    }
-    sharedCtx.stroke()
+    // Use shared drawing utility
+    drawStroke(sharedCtx, stroke, { scrollX, scrollY })
   }
 
   sharedCtx.globalCompositeOperation = 'source-over'
