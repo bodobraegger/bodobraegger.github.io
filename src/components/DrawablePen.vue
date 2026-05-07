@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { supabase } from '../lib/supabase'
 import HoverTooltip from './HoverTooltip.vue'
 
@@ -52,6 +52,15 @@ const currentStrokeColor = ref(props.strokeColor)
 const currentStrokeWidth = ref(props.strokeWidth)
 const sliderValue = ref(Math.log2(props.strokeWidth)) // Linear slider value that maps to exponential width
 
+// Computed pen size based on stroke width with offset
+const penFontSize = computed(() => {
+  // Base size with subtle correlation to stroke width
+  // Offset of 2.3rem + stroke width mapped to rems (divided by 40 for subtle scaling)
+  const baseSize = 2.3 // Base offset in rem
+  const widthContribution = currentStrokeWidth.value / 40 // Scale stroke width to rem (more subtle)
+  return `${baseSize + widthContribution}rem`
+})
+
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
 const notWindows = !navigator.userAgent.includes('Win')
@@ -84,6 +93,9 @@ function getUserId(): string {
 }
 
 const currentUserId = getUserId()
+
+// Global state to track which pen is currently picked up
+const globalPickedUpPen = ((window as any).__drawablePenPickedUp__ ||= { penId: null })
 
 interface Stroke {
   id?: string // UUID from database or client-generated
@@ -295,7 +307,7 @@ onMounted(() => {
     window.addEventListener('keydown', handleClearCommand)
 
     if (!canvasData.undoHandlerRegistered) {
-      window.addEventListener('keydown', handleUndoRedo)
+      window.addEventListener('keydown', handleUndoRedo, { capture: true })
       canvasData.undoHandlerRegistered = true
     }
 
@@ -425,15 +437,26 @@ function handleUndoRedo(e: KeyboardEvent) {
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
     return
 
-  if (e.ctrlKey || e.metaKey) {
+  // Check if target is inside pen controls - still allow undo/redo
+  const isControlPanel = (e.target as HTMLElement)?.closest?.('.pen-controls-container')
+
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
     if (e.key === 'z' || e.key === 'Z') {
       e.preventDefault()
+      e.stopPropagation()
       undo()
     }
     else if (e.key === 'y' || e.key === 'Y') {
       e.preventDefault()
+      e.stopPropagation()
       redo()
     }
+  }
+  // Also support Ctrl+Shift+Z for redo
+  else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+    e.preventDefault()
+    e.stopPropagation()
+    redo()
   }
 }
 
@@ -724,18 +747,27 @@ function pickUpPen(e: MouseEvent) {
   if (!rect)
     return
 
+  // Check if another pen is already picked up
+  if (globalPickedUpPen.penId && globalPickedUpPen.penId !== effectivePenId)
+    return
+
+  // Mark this pen as picked up globally
+  globalPickedUpPen.penId = effectivePenId
+
   isPickedUp.value = true
   isDetached.value = true
   showControls.value = true
 
+  // Store offset as percentages of the pen's size to handle dynamic sizing
   const offsetX = e.clientX - rect.left
   const offsetY = e.clientY - rect.top
 
+  // Store as ratio of the pen's dimensions for dynamic resizing
+  ;(handlePenMove as any).offsetRatioX = offsetX / rect.width
+  ;(handlePenMove as any).offsetRatioY = offsetY / rect.height
+
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
   mousePosition.value = { x: e.clientX, y: e.clientY }
-
-  ;(handlePenMove as any).offsetX = offsetX
-  ;(handlePenMove as any).offsetY = offsetY
 
   window.addEventListener('mousemove', handlePenMove)
   window.addEventListener('mousedown', handlePenMouseDown)
@@ -747,6 +779,10 @@ function putDownPen() {
   isPickedUp.value = false
   showControls.value = false
   savePenPosition()
+
+  // Clear global picked up state
+  if (globalPickedUpPen.penId === effectivePenId)
+    globalPickedUpPen.penId = null
 
   window.removeEventListener('mousemove', handlePenMove)
   window.removeEventListener('mousedown', handlePenMouseDown)
@@ -761,6 +797,10 @@ function returnPen() {
   penPosition.value = { x: 0, y: 0 }
   savePenPosition()
 
+  // Clear global picked up state
+  if (globalPickedUpPen.penId === effectivePenId)
+    globalPickedUpPen.penId = null
+
   window.removeEventListener('mousemove', handlePenMove)
   window.removeEventListener('mousedown', handlePenMouseDown)
   window.removeEventListener('mouseup', handlePenMouseUp)
@@ -771,8 +811,14 @@ function handlePenMove(e: MouseEvent) {
   if (!isPickedUp.value)
     return
 
-  const offsetX = (handlePenMove as any).offsetX || 20
-  const offsetY = (handlePenMove as any).offsetY || 20
+  // Get current pen dimensions to calculate offset based on stored ratios
+  const rect = penRef.value?.getBoundingClientRect()
+  const offsetRatioX = (handlePenMove as any).offsetRatioX || 0.5
+  const offsetRatioY = (handlePenMove as any).offsetRatioY || 0.5
+
+  // Calculate actual offset based on current pen size
+  const offsetX = rect ? rect.width * offsetRatioX : 20
+  const offsetY = rect ? rect.height * offsetRatioY : 20
 
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
   mousePosition.value = { x: e.clientX, y: e.clientY }
@@ -1019,6 +1065,7 @@ defineExpose({
       :style="{
         ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
         color: currentStrokeColor,
+        fontSize: penFontSize,
       }"
       @mousedown="startDrag"
       @mouseenter="handleMouseEnter"
@@ -1034,7 +1081,7 @@ defineExpose({
     v-if="showControls && !props.dragAndDraw"
     class="pen-controls-container"
   >
-    <div class="pen-controls-header" @mousedown.stop @mouseup.stop @click.stop>
+    <div class="pen-controls-header" @mousedown.stop @mouseup.stop @click.stop @contextmenu.stop>
       <button class="close-btn" title="Return pen to original position" @click="returnPen">
         <span>✕</span>
         <sub>right-click</sub>
@@ -1095,11 +1142,45 @@ html.dark .drawing-canvas {
   will-change: transform;
 }
 .pen-inline-container {
-  display: inline-block;
-  vertical-align: middle;
+  position: fixed;
+  left: 1rem;
   line-height: 0;
-  width: 2.5rem;
-  height: 2.5rem;
+  /* Remove fixed dimensions to allow pen to grow/shrink with stroke width */
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  z-index: 9999;
+}
+
+/* Stack pens vertically using nth-of-type */
+.pen-inline-container:nth-of-type(1) {
+  top: 6rem;
+}
+.pen-inline-container:nth-of-type(2) {
+  top: calc(6rem + 4rem);
+}
+.pen-inline-container:nth-of-type(3) {
+  top: calc(6rem + 8rem);
+}
+.pen-inline-container:nth-of-type(4) {
+  top: calc(6rem + 12rem);
+}
+.pen-inline-container:nth-of-type(5) {
+  top: calc(6rem + 16rem);
+}
+.pen-inline-container:nth-of-type(6) {
+  top: calc(6rem + 20rem);
+}
+.pen-inline-container:nth-of-type(7) {
+  top: calc(6rem + 24rem);
+}
+.pen-inline-container:nth-of-type(8) {
+  top: calc(6rem + 28rem);
+}
+.pen-inline-container:nth-of-type(9) {
+  top: calc(6rem + 32rem);
+}
+.pen-inline-container:nth-of-type(10) {
+  top: calc(6rem + 36rem);
 }
 
 /* Disable on mobile/touch devices */
@@ -1112,7 +1193,7 @@ html.dark .drawing-canvas {
 
 .pen-emoji {
   display: inline-block;
-  font-size: 2.5rem;
+  /* font-size is now dynamic, set via inline style */
   cursor: grab;
   user-select: none;
   transition: transform 0.2s ease;
