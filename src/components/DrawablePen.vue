@@ -23,7 +23,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   penEmoji: '🖉',
-  strokeColor: '#111',
+  strokeColor: '#111111',
   strokeWidth: 3,
   tipOffsetX: 3.6,
   tipOffsetY: 37,
@@ -691,6 +691,19 @@ function putDownPen() {
   window.removeEventListener('contextmenu', handleRightClick)
 }
 
+function returnPen() {
+  isPickedUp.value = false
+  showControls.value = false
+  isDetached.value = false
+  penPosition.value = { x: 0, y: 0 }
+  savePenPosition()
+
+  window.removeEventListener('mousemove', handlePenMove)
+  window.removeEventListener('mousedown', handlePenMouseDown)
+  window.removeEventListener('mouseup', handlePenMouseUp)
+  window.removeEventListener('contextmenu', handleRightClick)
+}
+
 function handlePenMove(e: MouseEvent) {
   if (!isPickedUp.value)
     return
@@ -788,29 +801,15 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
 
 function endDrawing() {
   if (isDrawing.value && currentPath.length > 0) {
-    canvasData.redoStack.length = 0
-
-    const newStroke: Stroke = {
+    saveStroke({
       points: [...currentPath],
       color: currentStrokeColor.value,
       width: currentStrokeWidth.value,
       isEraser: props.eraserMode,
       userId: currentUserId,
       timestamp: Date.now(),
-    }
-    allStrokes.push(newStroke)
-    saveStrokes()
-    notifyUpdate()
-
-    if (effectiveCloudStorageId && supabase) {
-      saveToSupabase()
-    }
-
-    if (broadcastChannel) {
-      broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: newStroke } })
-    }
+    })
   }
-
   isDrawing.value = false
   currentPath = []
 }
@@ -960,6 +959,19 @@ function handleWidthChange(e: Event) {
   currentStrokeWidth.value = 2 ** linearValue
 }
 
+function saveStroke(stroke: Stroke) {
+  canvasData.redoStack.length = 0
+  allStrokes.push(stroke)
+  saveStrokes()
+  notifyUpdate()
+
+  if (effectiveCloudStorageId && supabase)
+    saveToSupabase()
+  if (broadcastChannel) {
+    broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
+  }
+}
+
 defineExpose({
   saveDrawing: saveStrokes,
   loadDrawing: loadStrokes,
@@ -997,27 +1009,33 @@ defineExpose({
     class="pen-controls-container"
   >
     <div class="pen-controls-header" @mousedown.stop @mouseup.stop @click.stop>
-      <button title="Put down pen (or right-click)" @click="putDownPen">
-        ✕
+      <button class="close-btn" title="Return pen to original position" @click="returnPen">
+        <span>✕</span>
+        <sub>right-click</sub>
+      </button>
+      <button title="Undo (Ctrl+Z)" @click="undo">
+        <span>↶</span>
+        <sub>ctrl+z</sub>
+      </button>
+      <button title="Redo (Ctrl+Y)" @click="redo">
+        <span>↷</span>
+        <sub>ctrl+y</sub>
       </button>
       <div class="pen-controls-items">
-        <label>
-          <input
-            v-model.number="sliderValue"
-            type="range"
-            min="0"
-            max="8"
-            step="0.1"
-            @input="handleWidthChange"
-          >
-          <span>{{ Math.round(currentStrokeWidth) }}px</span>
-        </label>
-        <label v-if="!props.eraserMode">
-          <input
-            v-model="currentStrokeColor"
-            type="color"
-          >
-        </label>
+        <input
+          v-model.number="sliderValue"
+          type="range"
+          min="0"
+          max="8"
+          step="0.1"
+          @input="handleWidthChange"
+        >
+        <span>{{ Math.round(currentStrokeWidth) }}px</span>
+        <input
+          v-if="!props.eraserMode"
+          v-model="currentStrokeColor"
+          type="color"
+        >
       </div>
     </div>
   </div>
@@ -1127,6 +1145,19 @@ html.dark .drawing-canvas {
 
 .pen-controls-header button {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  line-height: 0.5;
+}
+
+.pen-controls-header button span {
+  display: block;
+}
+
+.pen-controls-header button sub {
+  font-size: 0.65rem;
 }
 
 .pen-controls-items {
@@ -1137,10 +1168,7 @@ html.dark .drawing-canvas {
 }
 
 .pen-controls-items label {
-  display: flex;
   gap: 0.5rem;
-  align-items: center;
-  white-space: nowrap;
 }
 
 .pen-controls-items input[type='range'] {
@@ -1159,7 +1187,10 @@ html.dark .drawing-canvas {
 .pen-controls-items input[type='color'] {
   cursor: pointer;
   height: 2rem;
-  width: 3rem;
+  width: 2rem;
+  border: none;
+  background: transparent;
+  padding: 0;
 }
 
 .pen-controls-items span {
