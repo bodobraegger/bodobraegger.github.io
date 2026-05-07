@@ -744,30 +744,23 @@ function handleRightClick(e: MouseEvent) {
 function startDrawing(e: MouseEvent) {
   const offsetX = (handlePenMove as any).offsetX || 20
   const offsetY = (handlePenMove as any).offsetY || 20
-
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
   lastX = e.clientX + scrollX + props.tipOffsetX - offsetX
   lastY = e.clientY + scrollY + props.tipOffsetY - offsetY
-
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
 
-  // Draw a dot for single clicks (no movement)
+  // Draw initial dot for single clicks
   if (ctx) {
-    const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
-    const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
-
     ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
     ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
     ctx.lineWidth = currentStrokeWidth.value
     ctx.lineCap = 'round'
-
-    // Draw a single point as a small line
     ctx.beginPath()
-    ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
-    ctx.lineTo(lastX - viewScrollX + 0.1, lastY - viewScrollY + 0.1)
+    ctx.moveTo(lastX - scrollX, lastY - scrollY)
+    ctx.lineTo(lastX - scrollX + 0.1, lastY - scrollY + 0.1)
     ctx.stroke()
   }
 }
@@ -775,7 +768,6 @@ function startDrawing(e: MouseEvent) {
 function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
   if (!ctx || !isDrawing.value)
     return
-
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
   const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
@@ -783,16 +775,12 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
 
   currentPath.push({ x: currentX, y: currentY })
 
-  const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
-
   ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
   ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
   ctx.lineWidth = currentStrokeWidth.value
-
   ctx.beginPath()
-  ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
-  ctx.lineTo(currentX - viewScrollX, currentY - viewScrollY)
+  ctx.moveTo(lastX - scrollX, lastY - scrollY)
+  ctx.lineTo(currentX - scrollX, currentY - scrollY)
   ctx.stroke()
 
   lastX = currentX
@@ -814,10 +802,7 @@ function endDrawing() {
   currentPath = []
 }
 
-const dragLegacy = drag
-const endDragLegacy = endDrag
-
-// Legacy drag-and-draw mode
+// Legacy mode uses same drag function with different setup
 function startDragLegacy(e: MouseEvent) {
   const rect = penRef.value?.getBoundingClientRect()
   if (!rect)
@@ -828,16 +813,11 @@ function startDragLegacy(e: MouseEvent) {
     penPosition.value = { x: rect.left, y: rect.top }
   }
 
-  const offsetX = e.clientX - rect.left
-  const offsetY = e.clientY - rect.top
-
   isDragging.value = true
   moveOnly.value = e.shiftKey
-  isDrawing.value = false
   mousePosition.value = { x: e.clientX, y: e.clientY }
   currentPath = []
 
-  // Account for scroll position when starting to draw
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
   lastX = rect.left + scrollX + props.tipOffsetX
@@ -845,11 +825,13 @@ function startDragLegacy(e: MouseEvent) {
 
   e.preventDefault()
 
-  ;(dragLegacy as any).offsetX = offsetX
-  ;(dragLegacy as any).offsetY = offsetY
+  const offsetX = e.clientX - rect.left
+  const offsetY = e.clientY - rect.top
+  ;(drag as any).offsetX = offsetX
+  ;(drag as any).offsetY = offsetY
 
-  window.addEventListener('mousemove', dragLegacy)
-  window.addEventListener('mouseup', endDragLegacy)
+  window.addEventListener('mousemove', drag)
+  window.addEventListener('mouseup', endDrag)
 }
 
 function drag(e: MouseEvent) {
@@ -861,7 +843,6 @@ function drag(e: MouseEvent) {
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
   mousePosition.value = { x: e.clientX, y: e.clientY }
 
-  // Account for scroll position when drawing
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
   const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
@@ -877,17 +858,12 @@ function drag(e: MouseEvent) {
     else {
       currentPath.push({ x: currentX, y: currentY })
 
-      // Get current scroll position to transform coordinates
-      const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
-      const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
-
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
       ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
       ctx.lineWidth = currentStrokeWidth.value
-
       ctx.beginPath()
-      ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
-      ctx.lineTo(currentX - viewScrollX, currentY - viewScrollY)
+      ctx.moveTo(lastX - scrollX, lastY - scrollY)
+      ctx.lineTo(currentX - scrollX, currentY - scrollY)
       ctx.stroke()
 
       lastX = currentX
@@ -902,29 +878,14 @@ function drag(e: MouseEvent) {
 
 function endDrag() {
   if (isDrawing.value && currentPath.length > 0) {
-    // Clear redo stack when a new stroke is added
-    canvasData.redoStack.length = 0
-
-    const newStroke: Stroke = {
+    saveStroke({
       points: [...currentPath],
       color: currentStrokeColor.value,
       width: currentStrokeWidth.value,
       isEraser: props.eraserMode,
       userId: currentUserId,
       timestamp: Date.now(),
-    }
-    allStrokes.push(newStroke)
-    saveStrokes()
-    notifyUpdate()
-
-    // Automatically save to Supabase if cloudStorage is set
-    if (effectiveCloudStorageId && supabase) {
-      saveToSupabase()
-    }
-
-    if (broadcastChannel) {
-      broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: newStroke } })
-    }
+    })
   }
 
   isDragging.value = false
@@ -989,7 +950,7 @@ defineExpose({
     <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ 'dragging': isDragging || isPickedUp, 'detached': isDetached, 'flipped': flip, 'picked-up': isPickedUp }"
+      :class="{ 'dragging': isDragging, 'detached': isDetached, 'flipped': flip, 'picked-up': isPickedUp, 'drawing': isDrawing }"
       :style="{
         ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
         color: currentStrokeColor,
@@ -1070,11 +1031,18 @@ html.dark .drawing-canvas {
 }
 .pen-inline-container {
   display: inline-block;
-  position: relative;
   vertical-align: middle;
   line-height: 0;
   width: 2.5rem;
   height: 2.5rem;
+}
+
+/* Disable on mobile/touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .pen-emoji {
+    pointer-events: none;
+    opacity: 0.5;
+  }
 }
 
 .pen-emoji {
@@ -1082,36 +1050,46 @@ html.dark .drawing-canvas {
   font-size: 2.5rem;
   cursor: grab;
   user-select: none;
-  transition: transform 0.1s ease;
+  transition: transform 0.2s ease;
   filter: var(--pen-filter, drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)));
   line-height: 1;
+}
 
-  &.detached {
-    z-index: 10000;
-  }
+.pen-emoji.detached {
+  z-index: 10000;
+}
 
-  &.dragging,
-  &.picked-up {
-    cursor: grabbing;
-    transform: scale(1.1) rotate(-5deg);
-  }
+/* Hover and picked up: same scale, no rotation */
+.pen-emoji:hover,
+.pen-emoji.picked-up {
+  transform: scale(1.15);
+  cursor: grabbing;
+}
 
-  &:hover:not(.dragging):not(.picked-up) {
-    transform: scale(1.15);
-  }
+/* Drawing: tilt while drawing */
+.pen-emoji.drawing {
+  transform: scale(1.15) rotate(-8deg);
+}
 
-  &.flipped {
-    transform: scaleX(-1);
+/* Legacy dragging mode */
+.pen-emoji.dragging {
+  transform: scale(1.15) rotate(-8deg);
+  cursor: grabbing;
+}
 
-    &.dragging,
-    &.picked-up {
-      transform: scaleX(-1) scale(1.1) rotate(5deg);
-    }
-
-    &:hover:not(.dragging):not(.picked-up) {
-      transform: scaleX(-1) scale(1.15);
-    }
-  }
+/* Flipped variants */
+.pen-emoji.flipped {
+  transform: scaleX(-1);
+}
+.pen-emoji.flipped:hover,
+.pen-emoji.flipped.picked-up {
+  transform: scaleX(-1) scale(1.15);
+}
+.pen-emoji.flipped.drawing {
+  transform: scaleX(-1) scale(1.15) rotate(8deg);
+}
+.pen-emoji.flipped.dragging {
+  transform: scaleX(-1) scale(1.15) rotate(8deg);
 }
 
 .pen-controls-container {
