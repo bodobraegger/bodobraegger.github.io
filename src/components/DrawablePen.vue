@@ -1030,7 +1030,7 @@ defineExpose({
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
 
-  <span class="pen-inline-container">
+  <span class="pen-inline-container" :class="{ 'legacy-mode': dragAndDraw }">
     <span
       ref="penRef"
       class="pen-emoji"
@@ -1115,8 +1115,6 @@ html.dark .drawing-canvas {
   will-change: transform;
 }
 .pen-inline-container {
-  position: fixed;
-  left: 1rem;
   line-height: 0;
   /* Remove fixed dimensions to allow pen to grow/shrink with stroke width */
   min-width: 2.5rem;
@@ -1124,36 +1122,48 @@ html.dark .drawing-canvas {
   z-index: 9999;
 }
 
-/* Stack pens vertically using nth-of-type */
-.pen-inline-container:nth-of-type(1) {
+/* New control scheme: pens fixed on the side */
+.pen-inline-container:not(.legacy-mode) {
+  position: fixed;
+  left: 1rem;
+}
+
+/* Stack pens vertically using nth-of-type (only for new mode) */
+.pen-inline-container:not(.legacy-mode):nth-of-type(1) {
   top: 6rem;
 }
-.pen-inline-container:nth-of-type(2) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(2) {
   top: calc(6rem + 4rem);
 }
-.pen-inline-container:nth-of-type(3) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(3) {
   top: calc(6rem + 8rem);
 }
-.pen-inline-container:nth-of-type(4) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(4) {
   top: calc(6rem + 12rem);
 }
-.pen-inline-container:nth-of-type(5) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(5) {
   top: calc(6rem + 16rem);
 }
-.pen-inline-container:nth-of-type(6) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(6) {
   top: calc(6rem + 20rem);
 }
-.pen-inline-container:nth-of-type(7) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(7) {
   top: calc(6rem + 24rem);
 }
-.pen-inline-container:nth-of-type(8) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(8) {
   top: calc(6rem + 28rem);
 }
-.pen-inline-container:nth-of-type(9) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(9) {
   top: calc(6rem + 32rem);
 }
-.pen-inline-container:nth-of-type(10) {
+.pen-inline-container:not(.legacy-mode):nth-of-type(10) {
   top: calc(6rem + 36rem);
+}
+
+/* Legacy mode: pens positioned inline where placed */
+.pen-inline-container.legacy-mode {
+  position: relative;
+  display: inline-block;
 }
 
 /* Disable on mobile/touch devices */
