@@ -81,17 +81,52 @@ async function loadStrokes() {
   }
 }
 
+function calculateCanvasBounds() {
+  if (filteredStrokes.value.length === 0) {
+    return { width: 800, height: 600 } // Default size when no strokes
+  }
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  // Find the bounding box of all strokes
+  filteredStrokes.value.forEach((stroke) => {
+    stroke.points.forEach((point) => {
+      minX = Math.min(minX, point.x)
+      minY = Math.min(minY, point.y)
+      maxX = Math.max(maxX, point.x)
+      maxY = Math.max(maxY, point.y)
+    })
+  })
+
+  // Add padding
+  const padding = 100
+  const width = Math.max(maxX - minX + padding * 2, 800)
+  const height = Math.max(maxY - minY + padding * 2, 600)
+
+  return { width, height, offsetX: minX - padding, offsetY: minY - padding }
+}
+
 function setupCanvas() {
   if (!canvasRef.value)
     return
 
   const canvas = canvasRef.value
-  // Make canvas large enough for scrolling content
-  canvas.width = window.innerWidth
-  canvas.height = Math.max(window.innerHeight * 3, 3000) // Large scrollable area
+  const container = canvas.parentElement
+  if (!container)
+    return
+
+  // Calculate bounds based on stroke positions
+  const bounds = calculateCanvasBounds()
+
+  // Set canvas to encompass all strokes with padding
+  canvas.width = bounds.width
+  canvas.height = bounds.height
   ctx = canvas.getContext('2d')
 
-  // Setup overlay canvas for selection rectangle
+  // Setup overlay canvas
   if (overlayCanvasRef.value) {
     overlayCanvasRef.value.width = canvas.width
     overlayCanvasRef.value.height = canvas.height
@@ -490,7 +525,7 @@ onMounted(async () => {
       </div>
 
       <div class="auth-status">
-        <span v-if="user" op70>{{ user.email }}</span>
+        <span v-if="user">{{ user.email }}</span>
         <button v-if="user" @click="signOut">
           sign out
         </button>
@@ -500,7 +535,7 @@ onMounted(async () => {
       </div>
     </header>
 
-    <p v-if="error" op70>
+    <p v-if="error">
       {{ error }}
     </p>
 
@@ -572,12 +607,22 @@ onMounted(async () => {
   </div>
 </template>
 
+<style>
+main > div:last-child {
+  display: none;
+}
+</style>
+
 <style scoped>
-/* Minimal overrides - inherit everything else from site */
+html {
+  overflow: hidden;
+  scrollbar-gutter: unset;
+}
+
 .admin-container {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 999;
   font-family: var(--fonts-mono);
 }
 
@@ -587,18 +632,15 @@ html.dark .admin-container canvas {
 
 header {
   position: sticky;
-  top: 0;
+  /* account for the normal page header */
+  top: 3.5rem;
   background: transparent;
   border-bottom: 1px dashed var(--fg-deep);
-  padding: 1.75rem;
+  padding: 1.25rem 1.75rem;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 1.2rem;
-}
-
-header > span:first-child {
-  font-weight: 600;
 }
 
 .admin-controls {
@@ -627,16 +669,11 @@ button:hover:not(:disabled) {
   opacity: 1;
 }
 
-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
 .auth-form,
 .confirm-dialog {
   background: var(--c-bg);
   border: 1px dashed var(--fg-deep);
-  padding: 2rem;
+  padding: 1rem;
   min-width: 300px;
 }
 
@@ -654,10 +691,6 @@ button:disabled {
   gap: 1rem;
 }
 
-.auth-form input {
-  padding: 0.5rem;
-}
-
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -667,17 +700,6 @@ button:disabled {
   place-items: center;
 }
 
-.confirm-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-}
-
-.confirm-actions button {
-  padding: 0.5rem 1rem;
-}
-
 .delete-btn {
   color: #f44;
   border-color: #f44;
@@ -685,15 +707,16 @@ button:disabled {
 
 .canvas-container {
   position: absolute;
-  top: 70px;
+  top: 7.9rem;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 3.5rem;
+  /* scroll without scrollbars */
   overflow: auto;
+  scrollbar-width: none;
 }
 
 canvas {
-  display: block;
   cursor: crosshair;
 }
 
@@ -702,58 +725,5 @@ canvas {
   top: 0;
   left: 0;
   pointer-events: none;
-}
-
-.empty-state,
-.loading-state {
-  position: absolute;
-  inset: 50% 0 0 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  opacity: 0.5;
-}
-
-.loading-state {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-</style>
-
-<style>
-/* Global styles to remove ALL page scaffolding and make admin feel distinct */
-body:has(.admin-container) {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* Hide the entire parent layout structure */
-body:has(.admin-container) .page-background,
-body:has(.admin-container) nav,
-body:has(.admin-container) footer {
-  display: none !important;
-}
-
-/* Remove all constraints from main wrapper */
-body:has(.admin-container) main {
-  padding: 0 !important;
-  margin: 0 !important;
-  max-width: none !important;
-  overflow: visible !important;
-}
-
-/* Reset the flex container that wraps everything */
-body:has(.admin-container) > div > div.flex {
-  min-height: 100vh !important;
-  max-width: none !important;
 }
 </style>
