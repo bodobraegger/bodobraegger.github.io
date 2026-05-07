@@ -18,6 +18,7 @@ interface Props {
   cloudStorage?: boolean
   cloudStorageId?: string
   maxCanvasHeight?: number
+  dragAndDraw?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -30,6 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
   cloudStorage: false,
   cloudStorageId: '',
   maxCanvasHeight: 10000,
+  dragAndDraw: false,
 })
 
 const effectiveCanvasId = props.canvasId || window.location.pathname
@@ -44,6 +46,11 @@ const penPosition = ref({ x: 0, y: 0 })
 const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
+const isPickedUp = ref(false)
+const showControls = ref(false)
+const currentStrokeColor = ref(props.strokeColor)
+const currentStrokeWidth = ref(props.strokeWidth)
+const sliderValue = ref(Math.log2(props.strokeWidth)) // Linear slider value that maps to exponential width
 
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
@@ -206,12 +213,22 @@ function redrawAll() {
     sharedCtx.globalCompositeOperation = stroke.isEraser ? 'destination-out' : 'source-over'
     sharedCtx.strokeStyle = stroke.isEraser ? 'rgba(0,0,0,1)' : stroke.color
     sharedCtx.lineWidth = stroke.width
+    sharedCtx.lineCap = 'round'
+    sharedCtx.lineJoin = 'round'
 
     sharedCtx.beginPath()
     // Draw in viewport-relative coordinates (subtract scroll position)
     sharedCtx.moveTo(stroke.points[0].x - scrollX, stroke.points[0].y - scrollY)
-    for (let i = 1; i < stroke.points.length; i++) {
-      sharedCtx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
+
+    if (stroke.points.length === 1) {
+      // For single-point strokes (dots), draw a tiny line to make it visible
+      sharedCtx.lineTo(stroke.points[0].x - scrollX + 0.1, stroke.points[0].y - scrollY + 0.1)
+    }
+    else {
+      // For multi-point strokes, draw the full path
+      for (let i = 1; i < stroke.points.length; i++) {
+        sharedCtx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
+      }
     }
     sharedCtx.stroke()
   }
@@ -235,6 +252,14 @@ function handleToolsReset(e: Event) {
     moveOnly.value = false
     isDragging.value = false
     isDrawing.value = false
+    isPickedUp.value = false
+    showControls.value = false
+
+    // Clean up event listeners if pen was picked up
+    window.removeEventListener('mousemove', handlePenMove)
+    window.removeEventListener('mousedown', handlePenMouseDown)
+    window.removeEventListener('mouseup', handlePenMouseUp)
+    window.removeEventListener('contextmenu', handleRightClick)
   }
 }
 
@@ -321,6 +346,14 @@ function handleDrawingCleared(e: Event) {
   if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId) {
     isDetached.value = false
     penPosition.value = { x: 0, y: 0 }
+    isPickedUp.value = false
+    showControls.value = false
+
+    // Clean up event listeners if pen was picked up
+    window.removeEventListener('mousemove', handlePenMove)
+    window.removeEventListener('mousedown', handlePenMouseDown)
+    window.removeEventListener('mouseup', handlePenMouseUp)
+    window.removeEventListener('contextmenu', handleRightClick)
   }
 }
 
@@ -610,6 +643,183 @@ function resetTools() {
 }
 
 function startDrag(e: MouseEvent) {
+  // Legacy drag-and-draw mode
+  if (props.dragAndDraw) {
+    startDragLegacy(e)
+    return
+  }
+
+  // New mode: left-click to pick up only
+  if (e.button === 0 && !isPickedUp.value) { // Left click to pick up
+    e.preventDefault()
+    pickUpPen(e)
+  }
+}
+
+function pickUpPen(e: MouseEvent) {
+  const rect = penRef.value?.getBoundingClientRect()
+  if (!rect)
+    return
+
+  isPickedUp.value = true
+  isDetached.value = true
+  showControls.value = true
+
+  const offsetX = e.clientX - rect.left
+  const offsetY = e.clientY - rect.top
+
+  penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
+  mousePosition.value = { x: e.clientX, y: e.clientY }
+
+  ;(handlePenMove as any).offsetX = offsetX
+  ;(handlePenMove as any).offsetY = offsetY
+
+  window.addEventListener('mousemove', handlePenMove)
+  window.addEventListener('mousedown', handlePenMouseDown)
+  window.addEventListener('mouseup', handlePenMouseUp)
+  window.addEventListener('contextmenu', handleRightClick)
+}
+
+function putDownPen() {
+  isPickedUp.value = false
+  showControls.value = false
+  savePenPosition()
+
+  window.removeEventListener('mousemove', handlePenMove)
+  window.removeEventListener('mousedown', handlePenMouseDown)
+  window.removeEventListener('mouseup', handlePenMouseUp)
+  window.removeEventListener('contextmenu', handleRightClick)
+}
+
+function handlePenMove(e: MouseEvent) {
+  if (!isPickedUp.value)
+    return
+
+  const offsetX = (handlePenMove as any).offsetX || 20
+  const offsetY = (handlePenMove as any).offsetY || 20
+
+  penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
+  mousePosition.value = { x: e.clientX, y: e.clientY }
+
+  // Draw if mouse is down
+  if (isDrawing.value) {
+    drawAtPosition(e, offsetX, offsetY)
+  }
+}
+
+function handlePenMouseDown(e: MouseEvent) {
+  if (e.button === 0 && isPickedUp.value && !e.defaultPrevented) { // Left click while picked up
+    e.preventDefault()
+    startDrawing(e)
+  }
+}
+
+function handlePenMouseUp(e: MouseEvent) {
+  if (e.button === 0 && isDrawing.value) { // Left click release
+    e.preventDefault()
+    endDrawing()
+  }
+}
+
+function handleRightClick(e: MouseEvent) {
+  if (isPickedUp.value) {
+    e.preventDefault()
+    putDownPen()
+  }
+}
+
+function startDrawing(e: MouseEvent) {
+  const offsetX = (handlePenMove as any).offsetX || 20
+  const offsetY = (handlePenMove as any).offsetY || 20
+
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+
+  lastX = e.clientX + scrollX + props.tipOffsetX - offsetX
+  lastY = e.clientY + scrollY + props.tipOffsetY - offsetY
+
+  isDrawing.value = true
+  currentPath = [{ x: lastX, y: lastY }]
+
+  // Draw a dot for single clicks (no movement)
+  if (ctx) {
+    const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
+    const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
+
+    ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
+    ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
+    ctx.lineWidth = currentStrokeWidth.value
+    ctx.lineCap = 'round'
+
+    // Draw a single point as a small line
+    ctx.beginPath()
+    ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
+    ctx.lineTo(lastX - viewScrollX + 0.1, lastY - viewScrollY + 0.1)
+    ctx.stroke()
+  }
+}
+
+function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
+  if (!ctx || !isDrawing.value)
+    return
+
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
+  const currentY = e.clientY + scrollY + props.tipOffsetY - offsetY
+
+  currentPath.push({ x: currentX, y: currentY })
+
+  const viewScrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
+
+  ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
+  ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
+  ctx.lineWidth = currentStrokeWidth.value
+
+  ctx.beginPath()
+  ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
+  ctx.lineTo(currentX - viewScrollX, currentY - viewScrollY)
+  ctx.stroke()
+
+  lastX = currentX
+  lastY = currentY
+}
+
+function endDrawing() {
+  if (isDrawing.value && currentPath.length > 0) {
+    canvasData.redoStack.length = 0
+
+    const newStroke: Stroke = {
+      points: [...currentPath],
+      color: currentStrokeColor.value,
+      width: currentStrokeWidth.value,
+      isEraser: props.eraserMode,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    }
+    allStrokes.push(newStroke)
+    saveStrokes()
+    notifyUpdate()
+
+    if (effectiveCloudStorageId && supabase) {
+      saveToSupabase()
+    }
+
+    if (broadcastChannel) {
+      broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: newStroke } })
+    }
+  }
+
+  isDrawing.value = false
+  currentPath = []
+}
+
+const dragLegacy = drag
+const endDragLegacy = endDrag
+
+// Legacy drag-and-draw mode
+function startDragLegacy(e: MouseEvent) {
   const rect = penRef.value?.getBoundingClientRect()
   if (!rect)
     return
@@ -636,11 +846,11 @@ function startDrag(e: MouseEvent) {
 
   e.preventDefault()
 
-  ;(drag as any).offsetX = offsetX
-  ;(drag as any).offsetY = offsetY
+  ;(dragLegacy as any).offsetX = offsetX
+  ;(dragLegacy as any).offsetY = offsetY
 
-  window.addEventListener('mousemove', drag)
-  window.addEventListener('mouseup', endDrag)
+  window.addEventListener('mousemove', dragLegacy)
+  window.addEventListener('mouseup', endDragLegacy)
 }
 
 function drag(e: MouseEvent) {
@@ -673,8 +883,8 @@ function drag(e: MouseEvent) {
       const viewScrollY = window.pageYOffset || document.documentElement.scrollTop
 
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
-      ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : props.strokeColor
-      ctx.lineWidth = props.strokeWidth
+      ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
+      ctx.lineWidth = currentStrokeWidth.value
 
       ctx.beginPath()
       ctx.moveTo(lastX - viewScrollX, lastY - viewScrollY)
@@ -698,8 +908,8 @@ function endDrag() {
 
     const newStroke: Stroke = {
       points: [...currentPath],
-      color: props.strokeColor,
-      width: props.strokeWidth,
+      color: currentStrokeColor.value,
+      width: currentStrokeWidth.value,
       isEraser: props.eraserMode,
       userId: currentUserId,
       timestamp: Date.now(),
@@ -743,6 +953,13 @@ function handleMouseLeave() {
   isHovered.value = false
 }
 
+function handleWidthChange(e: Event) {
+  const target = e.target as HTMLInputElement
+  const linearValue = Number(target.value)
+  sliderValue.value = linearValue
+  currentStrokeWidth.value = 2 ** linearValue
+}
+
 defineExpose({
   saveDrawing: saveStrokes,
   loadDrawing: loadStrokes,
@@ -760,10 +977,10 @@ defineExpose({
     <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ dragging: isDragging, detached: isDetached, flipped: flip }"
+      :class="{ 'dragging': isDragging || isPickedUp, 'detached': isDetached, 'flipped': flip, 'picked-up': isPickedUp }"
       :style="{
         ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
-        color: strokeColor,
+        color: currentStrokeColor,
       }"
       @mousedown="startDrag"
       @mouseenter="handleMouseEnter"
@@ -774,7 +991,38 @@ defineExpose({
     </span>
   </span>
 
-  <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging" />
+  <!-- Control panel when pen is picked up (new mode only) -->
+  <div
+    v-if="showControls && !props.dragAndDraw"
+    class="pen-controls-container"
+  >
+    <div class="pen-controls-header" @mousedown.stop @mouseup.stop @click.stop>
+      <button title="Put down pen (or right-click)" @click="putDownPen">
+        ✕
+      </button>
+      <div class="pen-controls-items">
+        <label>
+          <input
+            v-model.number="sliderValue"
+            type="range"
+            min="0"
+            max="8"
+            step="0.1"
+            @input="handleWidthChange"
+          >
+          <span>{{ Math.round(currentStrokeWidth) }}px</span>
+        </label>
+        <label v-if="!props.eraserMode">
+          <input
+            v-model="currentStrokeColor"
+            type="color"
+          >
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging && !isPickedUp" />
 </template>
 
 <style>
@@ -824,25 +1072,99 @@ html.dark .drawing-canvas {
     z-index: 10000;
   }
 
-  &.dragging {
+  &.dragging,
+  &.picked-up {
     cursor: grabbing;
     transform: scale(1.1) rotate(-5deg);
   }
 
-  &:hover:not(.dragging) {
+  &:hover:not(.dragging):not(.picked-up) {
     transform: scale(1.15);
   }
 
   &.flipped {
     transform: scaleX(-1);
 
-    &.dragging {
+    &.dragging,
+    &.picked-up {
       transform: scaleX(-1) scale(1.1) rotate(5deg);
     }
 
-    &:hover:not(.dragging) {
+    &:hover:not(.dragging):not(.picked-up) {
       transform: scaleX(-1) scale(1.15);
     }
   }
+}
+
+.pen-controls-container {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+  z-index: 10001;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pen-controls-header {
+  pointer-events: auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.75rem;
+  justify-content: center;
+}
+
+/* Remove backdrop filter on very large screens (matching header behavior) */
+@media (min-width: 1817px) {
+  .pen-controls-container {
+    backdrop-filter: unset;
+    -webkit-backdrop-filter: unset;
+  }
+}
+
+.pen-controls-header button {
+  cursor: pointer;
+}
+
+.pen-controls-items {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.pen-controls-items label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.pen-controls-items input[type='range'] {
+  cursor: pointer;
+  min-width: 100px;
+}
+
+/* Shrink range input if not enough room */
+@media (min-width: 640px) and (max-width: 900px) {
+  .pen-controls-items input[type='range'] {
+    min-width: 60px;
+    width: 60px;
+  }
+}
+
+.pen-controls-items input[type='color'] {
+  cursor: pointer;
+  height: 2rem;
+  width: 3rem;
+}
+
+.pen-controls-items span {
+  font-family: monospace;
+  font-size: 0.875rem;
+  min-width: 3rem;
 }
 </style>

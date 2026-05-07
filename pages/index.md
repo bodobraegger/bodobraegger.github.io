@@ -12,7 +12,7 @@ Hi, I am Bodo Braegger, and I make hard- and software for research, industry and
 
 This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on.
 
-<DrawablePen />
+<DrawablePen dragAndDraw />
 
 <div flex-auto />
 
