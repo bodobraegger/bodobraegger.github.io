@@ -2,6 +2,12 @@ import { createClient } from '@supabase/supabase-js'
 
 // Generate or retrieve persistent user ID for RLS
 function getUserId(): string {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') {
+    // SSR/build time - return a placeholder
+    return 'ssr-placeholder'
+  }
+
   const storageKey = 'drawable-pen-user-id'
   try {
     let userId = localStorage.getItem(storageKey)
