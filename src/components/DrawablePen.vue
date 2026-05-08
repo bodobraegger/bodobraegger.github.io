@@ -449,7 +449,7 @@ function handleUndoRedo(e: KeyboardEvent) {
   }
 }
 
-function undo() {
+async function undo() {
   // Find the last stroke by current user
   let lastUserStrokeIndex = -1
   for (let i = allStrokes.length - 1; i >= 0; i--) {
@@ -464,21 +464,28 @@ function undo() {
 
   // Save to redo stack (only the stroke being removed)
   const removedStroke = allStrokes[lastUserStrokeIndex]
-  canvasData.redoStack.push({ ...removedStroke, points: [...removedStroke.points] })
+  const removedStrokeCopy = { ...removedStroke, points: [...removedStroke.points] }
 
-  // Remove the stroke
+  // Try to delete from Supabase FIRST before modifying local state
+  if (effectiveCloudStorageId && supabase && removedStroke.id) {
+    try {
+      await deleteStrokeFromSupabase(removedStroke.id)
+    }
+    catch (error) {
+      console.error('Failed to delete stroke from backend:', error)
+      return // Don't proceed with local removal
+    }
+  }
+
+  // Only proceed with local changes if backend delete succeeded (or no backend)
+  canvasData.redoStack.push(removedStrokeCopy)
   allStrokes.splice(lastUserStrokeIndex, 1)
 
   redrawAll()
   saveStrokes()
   notifyUpdate()
 
-  // Delete from Supabase immediately (new schema)
-  if (effectiveCloudStorageId && supabase && removedStroke.id) {
-    deleteStrokeFromSupabase(removedStroke.id)
-  }
-
-  // Broadcast immediately for real-time collaboration
+  // Broadcast for real-time collaboration (only after successful backend delete)
   if (broadcastChannel) {
     broadcastChannel.send({
       type: 'broadcast',
@@ -490,7 +497,7 @@ function undo() {
   }
 }
 
-function redo() {
+async function redo() {
   if (canvasData.redoStack.length === 0)
     return
 
@@ -498,19 +505,26 @@ function redo() {
   if (!strokeToRestore)
     return
 
-  // Add the stroke back
+  // Try to save to Supabase FIRST before modifying local state
+  if (effectiveCloudStorageId && supabase) {
+    try {
+      await saveStrokeToSupabase(strokeToRestore)
+    }
+    catch (error) {
+      console.error('Failed to save stroke to backend:', error)
+      canvasData.redoStack.push(strokeToRestore) // Put it back
+      return // Don't proceed with local addition
+    }
+  }
+
+  // Only proceed with local changes if backend save succeeded (or no backend)
   allStrokes.push(strokeToRestore)
 
   redrawAll()
   saveStrokes()
   notifyUpdate()
 
-  // Re-save to Supabase immediately (new schema)
-  if (effectiveCloudStorageId && supabase) {
-    saveStrokeToSupabase(strokeToRestore)
-  }
-
-  // Broadcast immediately for real-time collaboration
+  // Broadcast for real-time collaboration (only after successful backend save)
   if (broadcastChannel) {
     broadcastChannel.send({
       type: 'broadcast',
@@ -1017,8 +1031,21 @@ function handleWidthChange(e: Event) {
   currentStrokeWidth.value = 2 ** linearValue
 }
 
-function saveStroke(stroke: Stroke) {
+async function saveStroke(stroke: Stroke) {
   canvasData.redoStack.length = 0
+
+  // Save to Supabase FIRST if cloud storage is enabled
+  if (effectiveCloudStorageId && supabase) {
+    try {
+      await saveStrokeToSupabase(stroke)
+    }
+    catch (error) {
+      console.error('Failed to save stroke to backend:', error)
+      return // Don't proceed with local save
+    }
+  }
+
+  // Only save locally after successful backend save (or if no backend)
   allStrokes.push(stroke)
   saveStrokes()
   notifyUpdate()
@@ -1028,10 +1055,7 @@ function saveStroke(stroke: Stroke) {
     redrawAll()
   }
 
-  // Save to Supabase with new schema (one row per stroke)
-  if (effectiveCloudStorageId && supabase)
-    saveStrokeToSupabase(stroke)
-
+  // Broadcast for real-time collaboration (only after successful save)
   if (broadcastChannel) {
     broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
   }
