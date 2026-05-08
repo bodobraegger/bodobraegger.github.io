@@ -141,23 +141,45 @@ function setupCanvas() {
     overlayCtx = overlayCanvasRef.value.getContext('2d')
   }
 
-  drawAll()
+  drawAllStrokes()
 }
 
-function drawAll() {
+function drawAllStrokes() {
   if (!ctx || !canvasRef.value)
     return
 
   const canvas = canvasRef.value
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // Draw strokes using shared utility
+  // Draw all strokes without selection highlights (static base layer)
   filteredStrokes.value.forEach((stroke) => {
     if (!ctx)
       return
-    const isSelected = selectedStrokes.value.has(stroke.stroke_id)
-    drawStroke(ctx, stroke, { isSelected, showAsEraser: true })
+    drawStroke(ctx, stroke, { isSelected: false, showAsEraser: true })
   })
+}
+
+function drawSelectionHighlights() {
+  if (!overlayCtx || !overlayCanvasRef.value || !containerRef.value)
+    return
+
+  const canvas = overlayCanvasRef.value
+  const scrollX = containerRef.value.scrollLeft
+  const scrollY = containerRef.value.scrollTop
+
+  overlayCtx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // Draw selection highlights for selected strokes
+  if (selectedStrokes.value.size > 0) {
+    filteredStrokes.value.forEach((stroke) => {
+      if (!overlayCtx)
+        return
+      const isSelected = selectedStrokes.value.has(stroke.stroke_id)
+      if (isSelected) {
+        drawStroke(overlayCtx, stroke, { isSelected: true, showAsEraser: true, scrollX, scrollY })
+      }
+    })
+  }
 }
 
 function drawSelectionRect() {
@@ -264,7 +286,7 @@ function handleMouseUp(e: MouseEvent) {
     })
   }
 
-  drawAll()
+  drawSelectionHighlights()
 }
 
 function strokeTouchesRect(stroke: AdminStroke, minX: number, minY: number, maxX: number, maxY: number): boolean {
@@ -350,7 +372,7 @@ function toggleStroke(strokeId: string) {
   else {
     selectedStrokes.value.add(strokeId)
   }
-  drawAll()
+  drawSelectionHighlights()
 }
 
 function saveState() {
@@ -364,7 +386,7 @@ function undo() {
   redoStack.value.push(Array.from(selectedStrokes.value))
   const prevState = undoStack.value.pop()!
   selectedStrokes.value = new Set(prevState)
-  drawAll()
+  drawSelectionHighlights()
 }
 
 function redo() {
@@ -373,7 +395,7 @@ function redo() {
   undoStack.value.push(Array.from(selectedStrokes.value))
   const nextState = redoStack.value.pop()!
   selectedStrokes.value = new Set(nextState)
-  drawAll()
+  drawSelectionHighlights()
 }
 
 function handleKeyDown(e: KeyboardEvent) {
@@ -471,7 +493,8 @@ async function confirmDelete() {
 
     strokes.value = strokes.value.filter(s => !selectedStrokes.value.has(s.stroke_id))
     selectedStrokes.value.clear()
-    drawAll()
+    // Redraw everything since strokes were deleted
+    setupCanvas()
   }
   catch (e: any) {
     error.value = e.message || 'Failed to delete strokes'
