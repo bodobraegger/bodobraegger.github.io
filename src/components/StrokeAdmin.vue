@@ -31,8 +31,11 @@ const email = ref('')
 const password = ref('')
 const showAuth = ref(false)
 const showConfirmDelete = ref(false)
+const containerRef = ref<HTMLDivElement | null>(null)
+const canvasSpacerRef = ref<HTMLDivElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 let overlayCtx: CanvasRenderingContext2D | null = null
+let canvasBounds = { width: 800, height: 600 }
 
 if (!supabase) {
   error.value = 'Supabase is not configured.'
@@ -110,26 +113,31 @@ function calculateCanvasBounds() {
 }
 
 function setupCanvas() {
-  if (!canvasRef.value)
+  if (!canvasRef.value || !containerRef.value)
     return
 
   const canvas = canvasRef.value
-  const container = canvas.parentElement
-  if (!container)
-    return
 
-  // Calculate bounds based on stroke positions
+  // Calculate bounds based on stroke positions - this is the FULL size needed
   const bounds = calculateCanvasBounds()
+  canvasBounds = bounds
 
-  // Set canvas to encompass all strokes with padding
+  // Set spacer to full size for scrolling
+  if (canvasSpacerRef.value) {
+    canvasSpacerRef.value.style.width = `${bounds.width}px`
+    canvasSpacerRef.value.style.height = `${bounds.height}px`
+  }
+
+  // Set main canvas to full size (but we'll only draw visible portion)
   canvas.width = bounds.width
   canvas.height = bounds.height
   ctx = canvas.getContext('2d')
 
-  // Setup overlay canvas
+  // Setup overlay canvas - VIEWPORT SIZE ONLY for performance
   if (overlayCanvasRef.value) {
-    overlayCanvasRef.value.width = canvas.width
-    overlayCanvasRef.value.height = canvas.height
+    const containerRect = containerRef.value.getBoundingClientRect()
+    overlayCanvasRef.value.width = containerRect.width
+    overlayCanvasRef.value.height = containerRect.height
     overlayCtx = overlayCanvasRef.value.getContext('2d')
   }
 
@@ -153,18 +161,22 @@ function drawAll() {
 }
 
 function drawSelectionRect() {
-  if (!overlayCtx || !overlayCanvasRef.value)
+  if (!overlayCtx || !overlayCanvasRef.value || !containerRef.value)
     return
 
   const canvas = overlayCanvasRef.value
   overlayCtx.clearRect(0, 0, canvas.width, canvas.height)
 
   if (isDragging.value) {
+    // Get scroll position to adjust coordinates
+    const scrollX = containerRef.value.scrollLeft
+    const scrollY = containerRef.value.scrollTop
+
     overlayCtx.strokeStyle = '#4444ff'
     overlayCtx.lineWidth = 2
     overlayCtx.setLineDash([5, 5])
-    const x = Math.min(dragStart.value.x, dragEnd.value.x)
-    const y = Math.min(dragStart.value.y, dragEnd.value.y)
+    const x = Math.min(dragStart.value.x, dragEnd.value.x) - scrollX
+    const y = Math.min(dragStart.value.y, dragEnd.value.y) - scrollY
     const w = Math.abs(dragEnd.value.x - dragStart.value.x)
     const h = Math.abs(dragEnd.value.y - dragStart.value.y)
     overlayCtx.strokeRect(x, y, w, h)
@@ -173,12 +185,14 @@ function drawSelectionRect() {
 }
 
 function handleMouseDown(e: MouseEvent) {
-  if (!canvasRef.value)
+  if (!containerRef.value)
     return
 
-  const rect = canvasRef.value.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  const rect = containerRef.value.getBoundingClientRect()
+  const scrollX = containerRef.value.scrollLeft
+  const scrollY = containerRef.value.scrollTop
+  const x = e.clientX - rect.left + scrollX
+  const y = e.clientY - rect.top + scrollY
 
   dragStart.value = { x, y }
   dragEnd.value = { x, y }
@@ -186,12 +200,14 @@ function handleMouseDown(e: MouseEvent) {
 }
 
 function handleMouseMove(e: MouseEvent) {
-  if (!canvasRef.value)
+  if (!containerRef.value)
     return
 
-  const rect = canvasRef.value.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  const rect = containerRef.value.getBoundingClientRect()
+  const scrollX = containerRef.value.scrollLeft
+  const scrollY = containerRef.value.scrollTop
+  const x = e.clientX - rect.left + scrollX
+  const y = e.clientY - rect.top + scrollY
 
   if (isDragging.value) {
     dragEnd.value = { x, y }
@@ -200,12 +216,14 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseUp(e: MouseEvent) {
-  if (!canvasRef.value || !isDragging.value)
+  if (!containerRef.value || !isDragging.value)
     return
 
-  const rect = canvasRef.value.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  const rect = containerRef.value.getBoundingClientRect()
+  const scrollX = containerRef.value.scrollLeft
+  const scrollY = containerRef.value.scrollTop
+  const x = e.clientX - rect.left + scrollX
+  const y = e.clientY - rect.top + scrollY
 
   dragEnd.value = { x, y }
   isDragging.value = false
@@ -579,21 +597,23 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="canvas-container">
-      <canvas
-        v-if="filterCanvas"
-        ref="canvasRef"
-        @mousedown="handleMouseDown"
-        @mousemove="handleMouseMove"
-        @mouseup="handleMouseUp"
-      />
+    <div
+      ref="containerRef"
+      class="canvas-container"
+      @mousedown="handleMouseDown"
+      @mousemove="handleMouseMove"
+      @mouseup="handleMouseUp"
+    >
+      <div ref="canvasSpacerRef" class="canvas-spacer">
+        <canvas
+          v-if="filterCanvas"
+          ref="canvasRef"
+        />
+      </div>
       <canvas
         v-if="filterCanvas"
         ref="overlayCanvasRef"
         class="overlay-canvas"
-        @mousedown="handleMouseDown"
-        @mousemove="handleMouseMove"
-        @mouseup="handleMouseUp"
       />
 
       <div v-else-if="!loading" class="empty-state">
@@ -714,16 +734,27 @@ button:hover:not(:disabled) {
   /* scroll without scrollbars */
   overflow: auto;
   scrollbar-width: none;
+  z-index: 1;
+}
+
+.canvas-spacer {
+  position: relative;
+  /* Size set dynamically by JS */
 }
 
 canvas {
   cursor: crosshair;
+  display: block;
 }
 
 .overlay-canvas {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 7.9rem;
   left: 0;
+  right: 0;
+  bottom: 3.5rem;
   pointer-events: none;
+  cursor: crosshair;
+  z-index: 10;
 }
 </style>
