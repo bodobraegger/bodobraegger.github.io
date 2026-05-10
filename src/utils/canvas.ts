@@ -1,4 +1,3 @@
-// Shared canvas drawing utilities
 import type { Stroke } from '../types/strokes'
 
 export function drawStroke(
@@ -15,36 +14,34 @@ export function drawStroke(
   const isEraser = stroke.isEraser || stroke.eraser
 
   ctx.save()
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  // Normal stroke
+  ctx.strokeStyle = stroke.color
+  ctx.fillStyle = stroke.color
+  ctx.lineWidth = stroke.width
 
-  // Admin view: show erasers as semi-transparent red with dashed line
+  // Setup styles
   if (showAsEraser && isEraser) {
+    // Admin view: visualize erasers in red
     ctx.strokeStyle = isSelected ? '#ff8888' : 'rgba(255, 100, 100, 0.5)'
+    ctx.fillStyle = ctx.strokeStyle
     ctx.lineWidth = isSelected ? stroke.width + 4 : stroke.width
     ctx.globalAlpha = isSelected ? 0.8 : 0.5
     ctx.setLineDash([5, 5])
   }
   else if (isSelected) {
-    ctx.strokeStyle = '#ff4444'
+    // Selection highlight
     ctx.lineWidth = stroke.width + 4
     ctx.globalAlpha = 0.5
   }
-  else {
-    // Normal drawing: erasers use destination-out, regular strokes use color
-    if (isEraser) {
-      ctx.globalCompositeOperation = 'destination-out'
-      ctx.strokeStyle = 'rgba(0,0,0,1)'
-    }
-    else {
-      ctx.strokeStyle = stroke.color
-    }
+  else if (isEraser) {
+    // Normal eraser: removes pixels
+    ctx.globalCompositeOperation = 'destination-out'
     ctx.lineWidth = stroke.width
-    ctx.globalAlpha = 1
   }
 
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
-
-  // Single point: draw a dot
+  // Draw single point as dot, multi-point as line
   if (stroke.points.length === 1) {
     const pt = stroke.points[0]
     ctx.beginPath()
@@ -52,18 +49,10 @@ export function drawStroke(
     ctx.fill()
   }
   else {
-    // Multiple points: draw line
     ctx.beginPath()
     ctx.moveTo(stroke.points[0].x - scrollX, stroke.points[0].y - scrollY)
-
-    // Handle single-point strokes by adding tiny offset
-    if (stroke.points.length === 1) {
-      ctx.lineTo(stroke.points[0].x - scrollX + 0.1, stroke.points[0].y - scrollY + 0.1)
-    }
-    else {
-      for (let i = 1; i < stroke.points.length; i++) {
-        ctx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
-      }
+    for (let i = 1; i < stroke.points.length; i++) {
+      ctx.lineTo(stroke.points[i].x - scrollX, stroke.points[i].y - scrollY)
     }
     ctx.stroke()
   }
