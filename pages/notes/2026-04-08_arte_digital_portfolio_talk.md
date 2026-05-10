@@ -12,8 +12,8 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 </script>
 
 <div>
-<DrawablePen :localStorage="true" :cloudStorage="true" penEmoji="🖋️" />
-& <DrawablePen strokeColor="red" penEmoji="🖍️" :tipOffsetX="5" :tipOffsetY="43" :localStorage="true" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" penEmoji="🖉" :tipOffsetX="5" :tipOffsetY="43" :localStorage="true" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" penEmoji="🧹" :localStorage="true" :cloudStorage="true" />
+<DrawablePen :cloudStorage="true" penEmoji="🖋️" />
+& <DrawablePen strokeColor="red" penEmoji="🖍️" :tipOffsetX="5" :tipOffsetY="43" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" penEmoji="🖉" :tipOffsetX="5" :tipOffsetY="43" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" penEmoji="🧹" :cloudStorage="true" />
 
 </div>
 
