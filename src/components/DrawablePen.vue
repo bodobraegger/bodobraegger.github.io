@@ -1217,8 +1217,7 @@ html.dark .drawing-canvas {
 /* Disable on mobile/touch devices */
 @media (hover: none) and (pointer: coarse) {
   .pen-emoji {
-    pointer-events: none;
-    opacity: 0.5;
+    display: none;
   }
 }
 
