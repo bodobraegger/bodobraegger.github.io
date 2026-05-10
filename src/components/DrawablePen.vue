@@ -858,8 +858,8 @@ function startDrawing(e: MouseEvent) {
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
   // Use the pen's current position plus the tip offset
-  lastX = penPosition.value.x + scrollX + props.tipOffsetX
-  lastY = penPosition.value.y + scrollY + props.tipOffsetY
+  lastX = penPosition.value.x + scrollX + scaledTipOffsetX.value
+  lastY = penPosition.value.y + scrollY + scaledTipOffsetY.value
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
 
@@ -881,8 +881,8 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
     return
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
-  const currentY = e.clientY + scrollY + props.tipOffsetY - offsetY
+  const currentX = e.clientX + scrollX + scaledTipOffsetX.value - offsetX
+  const currentY = e.clientY + scrollY + scaledTipOffsetY.value - offsetY
 
   currentPath.push({ x: currentX, y: currentY })
 
@@ -931,8 +931,8 @@ function startDragLegacy(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  lastX = rect.left + scrollX + props.tipOffsetX
-  lastY = rect.top + scrollY + props.tipOffsetY
+  lastX = rect.left + scrollX + scaledTipOffsetX.value
+  lastY = rect.top + scrollY + scaledTipOffsetY.value
 
   e.preventDefault()
 
@@ -956,8 +956,8 @@ function drag(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + props.tipOffsetX - offsetX
-  const currentY = e.clientY + scrollY + props.tipOffsetY - offsetY
+  const currentX = e.clientX + scrollX + scaledTipOffsetX.value - offsetX
+  const currentY = e.clientY + scrollY + scaledTipOffsetY.value - offsetY
 
   if (ctx && !moveOnly.value) {
     if (!isDrawing.value) {
@@ -1078,7 +1078,7 @@ defineExpose({
     <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ 'dragging': isDragging, 'detached': isDetached, 'flipped': flip, 'picked-up': isPickedUp, 'drawing': isDrawing }"
+      :class="{ 'dragging': isDragging, 'flipped': flip, 'picked-up': isPickedUp, 'drawing': isDrawing }"
       :style="{
         ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
         color: currentStrokeColor,
@@ -1136,10 +1136,14 @@ defineExpose({
 <style>
 :root {
   --pen-filter: drop-shadow(0 2px 4px rgba(255, 127, 255, 0.5));
+  --pen-transform: scale(1.15) rotate(-8deg);
 }
 
 html.dark {
   --pen-filter: invert(1) drop-shadow(0 2px 4px rgba(255, 127, 255, 0.5));
+}
+.flipped {
+  --pen-transform: scaleX(-1) scale(1.15) rotate(-8deg);
 }
 </style>
 
@@ -1221,48 +1225,18 @@ html.dark .drawing-canvas {
 .pen-emoji {
   display: inline-block;
   /* font-size is now dynamic, set via inline style */
-  cursor: grab;
   user-select: none;
   transition: transform 0.2s ease;
   filter: var(--pen-filter, drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)));
   line-height: 1;
-}
-
-.pen-emoji.detached {
+  transform: var(--pen-transform);
+  cursor: grabbing;
   z-index: 10000;
 }
 
-/* Hover and picked up: same scale, no rotation */
-.pen-emoji:hover,
-.pen-emoji.picked-up {
-  transform: scale(1.15);
-  cursor: grabbing;
-}
-
-/* Drawing: tilt while drawing */
-.pen-emoji.drawing {
-  transform: scale(1.15) rotate(-8deg);
-}
-
-/* Legacy dragging mode */
-.pen-emoji.dragging {
-  transform: scale(1.15) rotate(-8deg);
-  cursor: grabbing;
-}
-
-/* Flipped variants */
-.pen-emoji.flipped {
-  transform: scaleX(-1);
-}
-.pen-emoji.flipped:hover,
-.pen-emoji.flipped.picked-up {
-  transform: scaleX(-1) scale(1.15);
-}
-.pen-emoji.flipped.drawing {
-  transform: scaleX(-1) scale(1.15) rotate(8deg);
-}
-.pen-emoji.flipped.dragging {
-  transform: scaleX(-1) scale(1.15) rotate(8deg);
+[class='pen-emoji'] {
+  cursor: grab;
+  transform: unset;
 }
 
 .pen-controls-container {
@@ -1324,15 +1298,7 @@ html.dark .drawing-canvas {
 
 .pen-controls-items input[type='range'] {
   cursor: pointer;
-  min-width: 100px;
-}
-
-/* Shrink range input if not enough room */
-@media (min-width: 640px) and (max-width: 900px) {
-  .pen-controls-items input[type='range'] {
-    min-width: 60px;
-    width: 60px;
-  }
+  width: 40%;
 }
 
 .pen-controls-items input[type='color'] {
