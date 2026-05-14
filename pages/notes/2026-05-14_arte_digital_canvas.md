@@ -34,16 +34,11 @@ I work with found footage, satellite imagery, and live feeds from webcams and su
 
 **Some interesting finds:**
 
-| Description                | URL                                                      |
-| -------------------------- | -------------------------------------------------------- |
-| Controllable lake camera   | http://209.216.188.4:81/view/viewer_index.shtml?id=21057 |
-| Baby zoo / fish cam        | http://myfishcam.homedns.org:444/multi.html              |
-| Chickens                   | http://213.144.145.239:8090/                             |
-| Controllable Zurich camera | http://213.3.59.218:81/cgi-bin/guestimage.html           |
-| Astrofísica de Canarias    | http://webcam3.tt.iac.es/view/view.shtml?id=355          |
-| Flaine ski resort          | http://193.251.72.159:8091/mjpg/video.mjpg               |
-| Wind turbine control       | https://185.156.235.214/awp/mainPage.html                |
-| Etna volcanic stream       | https://www.ct.ingv.it/sezioniesterne/StreamingEtna.php  |
+| Description          | URL                                                     |
+| -------------------- | ------------------------------------------------------- |
+| fish cam             | http://myfishcam.homedns.org:444/multi.html             |
+| Wind turbine control | https://185.156.235.214/awp/mainPage.html               |
+| Etna volcanic stream | https://www.ct.ingv.it/sezioniesterne/StreamingEtna.php |
 
 **Image backup discoveries** - sometimes search engines index unprotected file directories containing photo backups:
 
