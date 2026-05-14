@@ -49,7 +49,7 @@ const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
 const isPickedUp = ref(false)
-const showControls = ref(false)
+const controlsVisible = ref(false)
 const currentStrokeColor = ref(props.strokeColor)
 const currentStrokeWidth = ref(props.strokeWidth)
 const sliderValue = ref(Math.log2(props.strokeWidth)) // Linear slider value that maps to exponential width
@@ -256,7 +256,7 @@ function handleToolsReset(e: Event) {
     isDragging.value = false
     isDrawing.value = false
     isPickedUp.value = false
-    showControls.value = false
+    hideControls()
 
     // Clean up event listeners if pen was picked up
     window.removeEventListener('mousemove', handlePenMove)
@@ -311,8 +311,7 @@ onMounted(() => {
       canvasRef.value.style.display = 'none'
   }
 
-  // All pen instances need to listen for clear events
-  window.addEventListener('drawingCleared', handleDrawingCleared)
+  // All pen instances need to listen for reset events
   window.addEventListener('toolsReset', handleToolsReset)
 
   loadPenPosition()
@@ -330,7 +329,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
-  window.removeEventListener('drawingCleared', handleDrawingCleared)
   window.removeEventListener('toolsReset', handleToolsReset)
   window.removeEventListener('keydown', handleClearCommand)
 })
@@ -343,21 +341,6 @@ function handleStorageChange(e: StorageEvent) {
 function handleDrawingUpdate(e: Event) {
   if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId)
     redrawAll()
-}
-
-function handleDrawingCleared(e: Event) {
-  if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId) {
-    isDetached.value = false
-    penPosition.value = { x: 0, y: 0 }
-    isPickedUp.value = false
-    showControls.value = false
-
-    // Clean up event listeners if pen was picked up
-    window.removeEventListener('mousemove', handlePenMove)
-    window.removeEventListener('mousedown', handlePenMouseDown)
-    window.removeEventListener('mouseup', handlePenMouseUp)
-    window.removeEventListener('contextmenu', handleRightClick)
-  }
 }
 
 function handleResize() {
@@ -745,6 +728,17 @@ function startDrag(e: MouseEvent) {
   }
 }
 
+function showControls() {
+  controlsVisible.value = true
+  document.getElementById('projects')!.style.display = 'none'
+  document.getElementById('notes')!.style.display = 'none'
+}
+function hideControls() {
+  controlsVisible.value = false
+  document.getElementById('projects')!.style.display = ''
+  document.getElementById('notes')!.style.display = ''
+}
+
 function pickUpPen(e: MouseEvent) {
   const rect = penRef.value?.getBoundingClientRect()
   if (!rect)
@@ -759,7 +753,7 @@ function pickUpPen(e: MouseEvent) {
 
   isPickedUp.value = true
   isDetached.value = true
-  showControls.value = true
+  showControls()
 
   // Store offset as percentages of the pen's size to handle dynamic sizing
   const offsetX = e.clientX - rect.left
@@ -780,7 +774,7 @@ function pickUpPen(e: MouseEvent) {
 
 function putDownPen() {
   isPickedUp.value = false
-  showControls.value = false
+  hideControls()
   savePenPosition()
 
   // Clear global picked up state
@@ -795,7 +789,7 @@ function putDownPen() {
 
 function returnPen() {
   isPickedUp.value = false
-  showControls.value = false
+  hideControls()
   isDetached.value = false
   penPosition.value = { x: 0, y: 0 }
   savePenPosition()
@@ -1095,38 +1089,37 @@ defineExpose({
 
   <!-- Control panel when pen is picked up (new mode only) -->
   <div
-    v-if="showControls && !props.dragAndDraw"
-    class="pen-controls-container"
+    v-if="controlsVisible && !props.dragAndDraw"
+    class="pen-controls-container z-1000"
+    @mousedown.stop @mouseup.stop @click.stop @contextmenu.stop
   >
-    <div class="pen-controls-header" @mousedown.stop @mouseup.stop @click.stop @contextmenu.stop>
-      <button class="close-btn" title="Return pen to original position" @click="returnPen">
-        <span>✕</span>
-        <sub>right-click</sub>
-      </button>
-      <button title="Undo (Ctrl+Z)" @click="undo">
-        <span>↶</span>
-        <sub>ctrl+z</sub>
-      </button>
-      <button title="Redo (Ctrl+Y)" @click="redo">
-        <span>↷</span>
-        <sub>ctrl+y</sub>
-      </button>
-      <div class="pen-controls-items">
-        <input
-          v-model.number="sliderValue"
-          type="range"
-          min="0"
-          max="8"
-          step="0.1"
-          @input="handleWidthChange"
-        >
-        <span>{{ Math.round(currentStrokeWidth) }}px</span>
-        <input
-          v-if="!props.eraserMode"
-          v-model="currentStrokeColor"
-          type="color"
-        >
-      </div>
+    <button class="close-btn" title="Return pen to original position" @click="returnPen">
+      <span>✕</span>
+      <sub>right-click</sub>
+    </button>
+    <button title="Undo (Ctrl+Z)" @click="undo">
+      <span>↶</span>
+      <sub>ctrl+z</sub>
+    </button>
+    <button title="Redo (Ctrl+Y)" @click="redo">
+      <span>↷</span>
+      <sub>ctrl+y</sub>
+    </button>
+    <div class="pen-controls-items">
+      <input
+        v-model.number="sliderValue"
+        type="range"
+        min="0"
+        max="8"
+        step="0.1"
+        @input="handleWidthChange"
+      >
+      <span>{{ Math.round(currentStrokeWidth) }}px</span>
+      <input
+        v-if="!props.eraserMode"
+        v-model="currentStrokeColor"
+        type="color"
+      >
     </div>
   </div>
 
@@ -1159,7 +1152,7 @@ html.dark .drawing-canvas {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 998;
   will-change: transform;
 }
 .pen-inline-container {
@@ -1167,7 +1160,7 @@ html.dark .drawing-canvas {
   /* Remove fixed dimensions to allow pen to grow/shrink with stroke width */
   min-width: 2.5rem;
   min-height: 2.5rem;
-  z-index: 9999;
+  z-index: 999;
 }
 
 /* New control scheme: pens fixed on the side */
@@ -1245,74 +1238,40 @@ html.dark .drawing-canvas {
   left: 50%;
   transform: translateX(-50%);
   right: auto;
-  z-index: 10001;
-  pointer-events: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.pen-controls-header {
   pointer-events: auto;
   display: flex;
   gap: 1rem;
-  align-items: center;
   padding: 1.75rem;
-  justify-content: center;
-}
 
-/* Remove backdrop filter on very large screens (matching header behavior) */
-@media (min-width: 1817px) {
-  .pen-controls-container {
-    backdrop-filter: unset;
-    -webkit-backdrop-filter: unset;
+  button {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    sub {
+      margin: -0.5rem 0 0.5rem;
+    }
   }
-}
-
-.pen-controls-header button {
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  line-height: 0.5;
-}
-
-.pen-controls-header button span {
-  display: block;
-}
-
-.pen-controls-header button sub {
-  font-size: 0.65rem;
-}
-
-.pen-controls-items {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.pen-controls-items label {
-  gap: 0.5rem;
-}
-
-.pen-controls-items input[type='range'] {
-  cursor: pointer;
-  width: 40%;
-}
-
-.pen-controls-items input[type='color'] {
-  cursor: pointer;
-  height: 2rem;
-  width: 2rem;
-  border: none;
-  background: transparent;
-  padding: 0;
-}
-
-.pen-controls-items span {
-  font-family: monospace;
-  font-size: 0.875rem;
-  min-width: 3rem;
+  .pen-controls-items {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    label {
+      gap: 0.5rem;
+    }
+    input {
+      cursor: pointer;
+    }
+    input[type='range'] {
+      width: 40%;
+    }
+    input[type='color'] {
+      height: 2rem;
+      width: 2rem;
+      background: transparent;
+      padding: 0;
+    }
+  }
 }
 </style>
