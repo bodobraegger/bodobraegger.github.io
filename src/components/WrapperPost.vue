@@ -284,12 +284,11 @@ if (frontmatter.hydra) {
   <article ref="content" :class="[frontmatter.tocAlwaysOn ? 'toc-always-on' : '', frontmatter.class]">
     <slot />
   </article>
-  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden">
+  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden font-mono op50">
     <br>
-    <span class="font-mono op50">> </span>
+    <span>> </span>
     <RouterLink
       :to="route.path.split('/').slice(0, -1).join('/') || '/'"
-      class="font-mono op50 hover:op75"
       v-text="'cd ..'"
     />
   </div>
