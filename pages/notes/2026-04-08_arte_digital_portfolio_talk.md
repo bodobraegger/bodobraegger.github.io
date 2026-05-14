@@ -169,15 +169,15 @@ Hydra is a browser-based environment for live coding video synthesis, created by
 
 The system is built around a small set of sources (oscillators, noise, shapes, gradients, webcam input) that you can transform (rotate, scale, pixelate, kaleidoscope) and combine (blend, multiply, modulate). The modular, chainable syntax means complex visuals emerge from simple operations.
 
-### Key Links
+### Docs & Source
 
-| Resource          | URL                                                                                |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| **Editor**        | [hydra.ojack.xyz](https://hydra.ojack.xyz)                                         |
-| **Documentation** | [hydra.ojack.xyz/docs](https://hydra.ojack.xyz/docs)                               |
-| **Functions**     | [hydra.ojack.xyz/docs/docs/reference](https://hydra.ojack.xyz/docs/docs/reference) |
-| **Tutorial Book** | [hydra-book.glitch.me](https://hydra-book.glitch.me)                               |
-| **Source Code**   | [github.com/hydra-synth/hydra](https://github.com/hydra-synth/hydra)               |
+| Resource          | URL                                         |
+| ----------------- | ------------------------------------------- |
+| **Editor**        | https://hydra.ojack.xyz                     |
+| **Documentation** | https://hydra.ojack.xyz/docs                |
+| **Functions**     | https://hydra.ojack.xyz/docs/docs/reference |
+| **Tutorial Book** | https://hydra-book.glitch.me                |
+| **Source Code**   | https://github.com/hydra-synth/hydra        |
 
 ### Other Live Coding Tools
 
@@ -277,20 +277,16 @@ Both books are useful, even if polemic, for thinking about the relationship betw
 
 ### My Projects
 
-| Project                   | Live                                                 | Source                                                                                                       |
-| ------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Portfolio, other Projects | [bbo.do](https://bbo.do/projects)                    | [github](https://github.com/bodobraegger/bodobraegger.github.io)                                             |
-| bidi                      | [bbo.do/projects/bidi](https://bbo.do/projects/bidi) | [github](https://github.com/bodobraegger/bodobraegger.github.io/blob/main/src/components/BidiTranslator.vue) |
-| rj-bd                     | [bbo.do/rj-bd](https://bbo.do/rj-bd)                 | [github](https://github.com/bodobraegger/rj-bd)                                                              |
+you are on the portfolio already! go [up](../), or to the [root](../../), or the [projects page](../../projects).
 
 ### CCTV & Surveillance Resources
 
-| Resource                    | Link                                                            |
-| --------------------------- | --------------------------------------------------------------- |
-| Insecam (camera aggregator) | [insecam.org](http://www.insecam.org/en/bycountry/ch/)          |
-| Shodan (device search)      | [shodan.io](https://www.shodan.io)                              |
-| Etna Volcanic Stream        | [INGV](https://www.ct.ingv.it/sezioniesterne/StreamingEtna.php) |
-| YouTube first uploads       | [walzr.com/IMG_0001](https://walzr.com/IMG_0001)                |
+| Resource                    | Link                                                    |
+| --------------------------- | ------------------------------------------------------- |
+| Insecam (camera aggregator) | http://www.insecam.org/en/bycountry/ch/                 |
+| Shodan (device search)      | https://www.shodan.io                                   |
+| Etna Volcanic Stream        | https://www.ct.ingv.it/sezioniesterne/StreamingEtna.php |
+| YouTube first uploads       | https://walzr.com/IMG_0001                              |
 
 ### Hydra & Live Coding
 
@@ -308,14 +304,14 @@ Both books are useful, even if polemic, for thinking about the relationship betw
 
 ### Reference Artists & Works
 
-| Artist/Work                       | Link                                                               |
-| --------------------------------- | ------------------------------------------------------------------ |
-| Xu Bing - Dragonfly Eyes          | [YouTube trailer](https://www.youtube.com/watch?v=A0fedg-Skns)     |
-| !Mediengruppe Bitnik              | [bitnik.org](https://wwwwwwwwwwwwwwwwwwwwww.bitnik.org/)           |
-| Jill Magid - Evidence Locker      | [jillmagid.com](https://jillmagid.com/projects/evidence-locker-2)  |
-| Julia Scher                       | [Artforum](https://www.artforum.com/features/securityland-218780/) |
-| Hito Steyerl - How Not to Be Seen | [MoMA Docs](https://www.moma.org/collection/works/181784)          |
-| Devine Lu Linvega - XXIIVV        | [wiki.xxiivv.com](https://wiki.xxiivv.com/)                        |
-| XXIIVV Webring                    | [webring.xxiivv.com](https://webring.xxiivv.com/)                  |
-| Merveilles                        | [merveilles.town](https://merveilles.town)                         |
-| Roberta Caravalho                 | [home](https://www.robertacarvalho.art.br/)                        |
+| Artist/Work                       | Link                                                   |
+| --------------------------------- | ------------------------------------------------------ |
+| Xu Bing - Dragonfly Eyes          | https://www.youtube.com/watch?v=A0fedg-Skns            |
+| !Mediengruppe Bitnik              | https://wwwwwwwwwwwwwwwwwwwwww.bitnik.org/             |
+| Jill Magid - Evidence Locker      | https://jillmagid.com/projects/evidence-locker-2       |
+| Julia Scher                       | https://www.artforum.com/features/securityland-218780/ |
+| Hito Steyerl - How Not to Be Seen | https://www.moma.org/collection/works/181784           |
+| Devine Lu Linvega - XXIIVV        | https://wiki.xxiivv.com/                               |
+| XXIIVV Webring                    | https://webring.xxiivv.com/                            |
+| Merveilles                        | https://merveilles.town                                |
+| Roberta Caravalho                 | https://www.robertacarvalho.art.br/                    |
