@@ -1,7 +1,7 @@
 ---
 title: Arte Digital @ EBA
 place: UFRJ, Brasil
-date: 2026-04-14T20:28:05-03:00
+date: 2026-05-14T20:28:05-03:00
 lang: en
 type: note+blog
 ---
@@ -11,9 +11,12 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 </script>
 
 <div>
-<DrawablePen :cloudStorage="true" penEmoji="🖋️" />
-& <DrawablePen strokeColor="red" penEmoji="🖍️" :tipOffsetX="5" :tipOffsetY="43" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" penEmoji="🖉" :tipOffsetX="5" :tipOffsetY="43" :cloudStorage="true" /> & <DrawablePen strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" penEmoji="🧹" :cloudStorage="true" />
-
+<DrawablePen :cloudStorage="true" penEmoji="🖉" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="green" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="blue" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🖍️" strokeColor="red" :tipOffsetX="5" :tipOffsetY="43" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" :tipOffsetX="5" :tipOffsetY="43" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🧹" strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" />
 </div>
 
 ---
