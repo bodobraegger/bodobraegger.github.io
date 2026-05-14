@@ -78,7 +78,7 @@ This project emerged from a practical need: INEA publishes beach water quality d
 
 My digital visual practice spans photography, curation, and live-coded video synthesis. I work with found footage, satellite imagery, and live feeds from webcams and surveillance cameras. The outputs range from still images to real-time performances to recordings, installations and stills.
 
-For live performances and events (including the Elektrosmog party series I organized with collaborators), I create visuals that incorporate:
+For live performances and events I create visuals that incorporate:
 
 - Live-coded Hydra sketches
 - CCTV camera feeds from around the world
@@ -86,7 +86,7 @@ For live performances and events (including the Elektrosmog party series I organ
 - Found footage from documentaries and films
 - Webcam streams
 
-The temporal and geographical dimension of live feeds adds something that pre-recorded material can't - you're watching something happening _now_, somewhere else. There's an intimacy and voyeurism to it, a connection across distance.
+The temporal and geographical dimension of live feeds adds something that pre-recorded material can't.
 
 ### CCTV & Surveillance Camera Art
 
@@ -117,8 +117,6 @@ These searches reveal cameras left open - sometimes intentionally (public webcam
 - [insecam.org](http://www.insecam.org/en/bycountry/ch/) - aggregator of open cameras by country
 - [Shodan](https://shodian.io) - search engine for internet-connected devices
 
-This practice connects directly to the surveillance artists mentioned later - Xu Bing, Manu Luksch, !Mediengruppe Bitnik. The difference is that I'm not (yet) constructing narratives or films from this material, but using it as raw input for live visual performances and as a research archive exploring what's visible and accessible on the open internet.
-
 ### Events & Parties: Elektrosmog, Braui, Regula, ...
 
 I organized and provided visuals for different series of events. These were underground electronic music events where I performed live visuals, music, often incorporating CCTV feeds, live-coded Hydra sketches, and processed found footage.
@@ -137,13 +135,11 @@ My approach to both audio and visual work centers on found material:
 
 ### Modular Synthesis
 
-As my music practice evolved from software-based production, I got into hardware - specifically eurorack modular synthesizers. The modular approach mirrors some of the same principles as live coding: signal flow, patching, real-time manipulation, happy accidents. The difference is physical - cables, knobs, voltage. There's an inherent quality to tactile interfaces.
+As my music practice evolved from software-based production, I got into hardware, including eurorack modular synthesizers. The modular approach mirrors some of the same principles as live coding: signal flow, patching, real-time manipulation, happy accidents.
 
-### Activism & Physical Work
+### Activism
 
-Beyond digital work, I've been involved in activism and physical interventions - documentation exists in my personal archive from 2021. This work operates in a different register than the digital projects: bodies in space, risk, collective action. The documentation is photographic, not meant for public circulation.
-
-At Furka in 2024, we created a temporary canvas installation by a creek. When lit at night, the flowing water created moving reflections on the surface; ... meshwork quilting with the environment.
+Beyond digital work, I've been involved in activism and physical interventions - documentation exists in my personal archive from 2021. This work operates in a different register than the digital projects: bodies in space, risk, collective action and is strictly political. The documentation is photographic, not meant for public circulation.
 
 ---
 
@@ -168,8 +164,6 @@ Live coding as a practice collapses the distinction between composing and perfor
 ---
 
 ## Hydra - Live Coding Visuals
-
-### What is Hydra?
 
 Hydra is a browser-based environment for live coding video synthesis, created by [Olivia Jack](https://ojack.xyz/). You write JavaScript-like code, and it generates real-time visuals - no compilation, no waiting. Change a number and the visual changes instantly.
 
