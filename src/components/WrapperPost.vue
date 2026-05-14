@@ -249,7 +249,7 @@ if (frontmatter.hydra) {
     </h1>
     <p
       v-if="frontmatter.date"
-      class="opacity-50 !-mt-6"
+      class="opacity-50 !-mt-6 font-serif-extra font-italic"
     >
       {{ formatDate(frontmatter.date, false) }} <span v-if="frontmatter.duration">· {{ frontmatter.duration }}</span>
     </p>
