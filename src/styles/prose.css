@@ -203,7 +203,6 @@
   }
 
   pre {
-    overflow-x: wrap;
     scrollbar-width: none;
     font-size: 0.875em;
     margin-top: 1.7142857em;
@@ -213,8 +212,7 @@
 
     &:has(code[class*='language-javascript']) {
       background-color: black;
-      padding-left: 0;
-      padding-right: 0;
+      padding: 0;
     }
 
     .dark {
@@ -230,8 +228,6 @@
       color: inherit;
       font-size: inherit;
       line-height: inherit;
-
-      aspect-ratio: 1;
       width: 100%;
 
       &::before {
@@ -240,6 +236,15 @@
 
       &::after {
         content: unset;
+      }
+
+      &[class*='language-javascript'] {
+        padding: 1em;
+        overflow: auto;
+        scrollbar-width: none;
+        &::scroll-marker {
+          display: none;
+        }
       }
     }
     .line {
