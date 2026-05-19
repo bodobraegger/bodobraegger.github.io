@@ -117,8 +117,8 @@ src(s0)
   )
   .color(
     () => Math.sin(time / 17),
-    () => Math.sin(time / 13),
-    () => Math.sin(time / 19)
+    () => Math.tan(time / 13), // using primes / disjoint numbers allows using same sin for all too.
+    () => Math.cosin(time / 19)
   )
   .scale(1, innerHeight / innerWidth).out()
 render(o0)
