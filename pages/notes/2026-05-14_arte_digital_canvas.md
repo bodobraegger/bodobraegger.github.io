@@ -12,11 +12,11 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 </script>
 
 <div>
-<DrawablePen :cloudStorage="true" penEmoji="🖉" /> &
-<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="green" /> &
-<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="blue" /> &
-<DrawablePen :cloudStorage="true" penEmoji="🖍️" strokeColor="red" :tipOffsetX="5" :tipOffsetY="43" /> &
-<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" :tipOffsetX="5" :tipOffsetY="43" /> &
+<DrawablePen :cloudStorage="true" penEmoji="🖉" />
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="green" />
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="blue" />
+<DrawablePen :cloudStorage="true" penEmoji="🖍️" strokeColor="red" :tipOffsetX="5" :tipOffsetY="43" />
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(0, 255, 255, 0.5)" :strokeWidth="25" :tipOffsetX="5" :tipOffsetY="43" />
 <DrawablePen :cloudStorage="true" penEmoji="🧹" strokeColor="rgba(0,0,0,1)" :eraserMode="true" :strokeWidth="80" />
 </div>
 
