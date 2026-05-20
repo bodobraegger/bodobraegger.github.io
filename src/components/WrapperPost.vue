@@ -138,6 +138,7 @@ if (frontmatter.hydra) {
     hydraCanvas.width = width
     hydraCanvas.height = height
     hydraCanvas.id = 'hydraCanvas'
+    hydraCanvas.classList += 'rounded-md'
     const placeholders = []
 
     // @ts-ignore - hydra global
@@ -152,12 +153,12 @@ if (frontmatter.hydra) {
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
     codeBlocks.forEach((preEl) => {
       // const parentEl = preEl.parentElement
-      preEl.classList += ' grid grid-cols-1 grid-rows-1 relative aspect-square'
+      preEl.classList += ' grid grid-cols-1 grid-rows-1 relative aspect-square children:rounded-md'
       const codeEl = preEl.firstChild as HTMLElement
       codeEl.classList += ' row-start-1 col-start-1 z-1 hover:cursor-pointer'
 
       const placeholder = document.createElement('div')
-      placeholder.classList += 'hydracontainer row-start-1 col-start-1 z-0 sticky top-0 rounded-md children:rounded-md'
+      placeholder.classList += 'hydracontainer row-start-1 col-start-1 z-0 sticky top-0'
       placeholders.push(placeholder)
       preEl.insertAdjacentElement('beforeend', placeholder)
 
@@ -165,7 +166,7 @@ if (frontmatter.hydra) {
       linkEl.href = `https://hydra.ojack.xyz/?code=${btoa(encodeURIComponent(codeEl.textContent!))}`
       linkEl.target = '_blank'
       linkEl.textContent = 'open in hydra'
-      linkEl.classList += 'artwork-link z-2 text-right color-white!'
+      linkEl.classList += 'artwork-link z-2 text-right color-white! rounded-tl-0 rounded-tr-0'
       preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
       preEl.addEventListener('focus', () => {
