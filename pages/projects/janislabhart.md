@@ -5,6 +5,8 @@ description: Documentation for the portfolio website of Janis Labhart, built wit
 plum: true
 ---
 
+![Screenshot of janislabhart.ch 21.05.2026](../../src/assets/images/projects/janislabhart.ch-2026-05-21.png)
+
 ## About
 
 The portfolio website for fellow artist and musician Janis Labhart, based on a design by Lara Koller. It is built with [Astro.js](https://astro.build/), a modern static site generator. The backend is powered by wordpress, which is pulled in during the build process.

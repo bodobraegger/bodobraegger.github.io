@@ -5,6 +5,8 @@ description: Real-time beach water quality monitoring for Rio's coastline
 plum: true
 ---
 
+![Screenshot of bbo.do/rj-bd 21.05.2026](../../src/assets/images/projects/bbo.do_rj-bd-2026-05-21.png)
+
 ## About
 
 A minimal website displaying water quality data for Rio de Janeiro's beaches. Updated weekly via automated parsing of INEA (Instituto Estadual do Ambiente) PDF bulletins.
