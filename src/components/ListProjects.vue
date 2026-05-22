@@ -1,5 +1,9 @@
 <script setup lang="ts">
-defineProps<{ projects: Record<string, any[]> }>()
+import { onMounted, ref } from 'vue'
+
+const props = defineProps<{ projects: Record<string, any[]> }>()
+
+const projectImages = ref<Record<string, string>>({})
 
 function slug(name: string) {
   return name.toLowerCase().replace(/[\s\\/]+/g, '-')
@@ -7,6 +11,45 @@ function slug(name: string) {
 
 function prependLocalLink(link: string) {
   return (link.startsWith('http') || link.startsWith('/')) ? link : `/projects/${link}`
+}
+
+async function loadProjectImages() {
+  const images: Record<string, string> = {}
+
+  for (const category of Object.keys(props.projects)) {
+    for (const item of props.projects[category]) {
+      if (item.link && !item.link.startsWith('http') && !item.link.startsWith('//') && item.link !== '.') {
+        try {
+          const projectSlug = item.link.replace('./projects/', '').replace('./', '')
+          const response = await fetch(`/pages/projects/${projectSlug}.md`)
+          if (response.ok) {
+            const content = await response.text()
+            const imageMatch = content.match(/!\[.*?\]\((.*?)\)/)
+            if (imageMatch && imageMatch[1]) {
+              images[item.name] = imageMatch[1]
+            }
+          }
+        }
+        catch (e) {
+          // Silently fail
+        }
+      }
+    }
+  }
+
+  projectImages.value = images
+}
+
+onMounted(() => {
+  loadProjectImages()
+})
+
+function getBackgroundImage(item: any): string | undefined {
+  const image = projectImages.value[item.name]
+  if (image) {
+    return `url(${image})`
+  }
+  return undefined
 }
 </script>
 
@@ -37,7 +80,8 @@ function prependLocalLink(link: string) {
           </div> -->
           <div class="flex-auto">
             <div class="text-normal">{{ item.name }}</div>
-            <div class="desc text-sm font-light opacity-75 font-normal prose" v-html="item.desc" />
+            <div class="desc text-sm font-light opacity-85 font-normal prose" v-html="item.desc" />
+            <div v-if="getBackgroundImage(item)" class="absolute inset-0 bg-cover bg-center op-30 mix-blend-difference pointer-events-none" :style="`background-image: ${getBackgroundImage(item)}`" />
           </div>
         </a>
       </div>
