@@ -100,14 +100,6 @@ html:not(.dark) {
   white-space: pre-wrap;
 }
 
-html.dark {
-  .prose {
-    --fg: #bbb;
-    --fg-deep: #ddd;
-    --fg-deeper: #eee;
-  }
-}
-
 .project-grid {
   a.item {
     background: transparent;

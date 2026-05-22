@@ -12,7 +12,7 @@ html {
     url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.25' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); */
   overflow-x: hidden;
   overflow-y: scroll;
-  --fg: #444;
+  --fg: #333;
   --fg-deep: #222;
   --fg-deeper: #111;
   scrollbar-gutter: stable both-edges;
@@ -32,7 +32,7 @@ html {
     --c-bg: #050505;
     --c-scrollbar: #111;
     --c-scrollbar-hover: #222;
-    --fg: #bbb;
+    --fg: #ccc;
     --fg-deep: #ddd;
     --fg-deeper: #eee;
   }
@@ -53,6 +53,11 @@ html {
 
 ::selection {
   background: #8884;
+}
+
+*:focus {
+  outline: 1px solid blue;
+  outline-offset: 4px;
 }
 
 #nprogress {
