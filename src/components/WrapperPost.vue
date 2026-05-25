@@ -3,12 +3,9 @@ import { useScriptTag } from '@vueuse/core'
 import { formatDate } from '~/logics'
 import { usePageViews } from '~/composables/usePageViews'
 
-const { frontmatter } = defineProps({
-  frontmatter: {
-    type: Object,
-    required: true,
-  },
-})
+const { frontmatter } = defineProps<{
+  frontmatter: Record<string, any>
+}>()
 
 const router = useRouter()
 const route = useRoute()
@@ -17,6 +14,8 @@ const fontsLoaded = ref(false)
 
 // View tracking
 const { viewCount, trackView } = usePageViews(route.path)
+
+const isTrackedPage = computed(() => frontmatter.showViews)
 
 onMounted(() => {
   // Track view on mount
@@ -262,11 +261,11 @@ if (frontmatter.hydra) {
       <span v-else class="op-75 font-light">
         <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
-      <span class="op-50 ml-2">
+      <span v-if="isTrackedPage" class="op-50 ml-2">
         ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount.toString().padStart(3, '0') }} view(s)
       </span>
     </p>
-    <p v-else class="font-serif-extra font-italic mt--4! op-50">
+    <p v-else-if="isTrackedPage" class="font-serif-extra font-italic mt--4! op-50">
       {{ viewCount.toString().padStart(3, '0') }} view(s)
     </p>
     <p
