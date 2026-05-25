@@ -78,10 +78,8 @@ onBeforeMount(() => {
         </span>
       </div>
       <div
-        class="slide-enter"
         :class="isVisible(category) ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
         style="transition: opacity 0.1s ease"
-        :style="{ '--enter-stage': idx, '--enter-step': '60ms' }"
       >
         <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="hoveredCategory = $event" />
       </div>
