@@ -8,8 +8,8 @@ export const englishOnly = useStorage('bodobraegger-english-only', false)
  * @see https://github.com/vuejs/vitepress/pull/2347
  */
 export function toggleDark(event: MouseEvent) {
-  isDark.value = !isDark.value;
-  return;
+  isDark.value = !isDark.value
+  return
 
   // @ts-expect-error experimental API
   const isAppearanceTransition = document.startViewTransition
@@ -54,8 +54,10 @@ export function toggleDark(event: MouseEvent) {
     })
 }
 
-export function formatDate(d: string | Date, onlyDate = true) {
+export function formatDate(d: string | Date, onlyDate = true, format?: string) {
   const date = dayjs(d)
+  if (format)
+    return date.format(format)
   if (onlyDate || date.year() === dayjs().year())
     return date.format('MMM D')
   return date.format('MMM D, YYYY')

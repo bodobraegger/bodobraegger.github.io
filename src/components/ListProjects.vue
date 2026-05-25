@@ -1,114 +1,116 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-
 const props = defineProps<{ projects: Record<string, any[]> }>()
 
-const projectImages = ref<Record<string, string>>({})
+const activeCategory = ref<string | null>(null)
+const hoveredCategory = ref<string | null>(null)
+const ALL = null
 
-function slug(name: string) {
-  return name.toLowerCase().replace(/[\s\\/]+/g, '-')
-}
+const categories = computed(() => Object.keys(props.projects))
 
-function prependLocalLink(link: string) {
-  return (link.startsWith('http') || link.startsWith('/')) ? link : `/projects/${link}`
-}
-
-async function loadProjectImages() {
-  const images: Record<string, string> = {}
-
-  for (const category of Object.keys(props.projects)) {
+const flatProjects = computed(() => {
+  const all: Array<{ item: any, category: string }> = []
+  for (const category of categories.value) {
     for (const item of props.projects[category]) {
-      if (item.link && !item.link.startsWith('http') && !item.link.startsWith('//') && item.link !== '.') {
-        try {
-          const projectSlug = item.link.replace('./projects/', '').replace('./', '')
-          const response = await fetch(`/pages/projects/${projectSlug}.md`)
-          if (response.ok) {
-            const content = await response.text()
-            const imageMatch = content.match(/!\[.*?\]\((.*?)\)/)
-            if (imageMatch && imageMatch[1]) {
-              images[item.name] = imageMatch[1]
-            }
-          }
-        }
-        catch (e) {
-          // Silently fail
-        }
-      }
+      all.push({ item, category })
     }
   }
-
-  projectImages.value = images
-}
-
-onMounted(() => {
-  loadProjectImages()
+  return all.sort((a, b) => +new Date(b.item.date ?? 0) - +new Date(a.item.date ?? 0))
 })
 
-function getBackgroundImage(item: any): string | undefined {
-  const image = projectImages.value[item.name]
-  if (image) {
-    return `url(${image})`
+function isVisible(category: string) {
+  return activeCategory.value === ALL || activeCategory.value === category
+}
+
+function toggleCategory(key: string | null) {
+  activeCategory.value = key === activeCategory.value ? ALL : key
+}
+
+watch(hoveredCategory, (val) => {
+  document.documentElement.classList.toggle('toc-always-on', !!val)
+})
+
+onUnmounted(() => {
+  document.documentElement.classList.remove('toc-always-on')
+})
+
+const getYear = (date?: string) => date ? new Date(date).getFullYear() : '?'
+const isSameYear = (a?: string, b?: string) => getYear(a) === getYear(b)
+
+// For year headers: find the first visible item before current idx
+function prevVisibleItem(idx: number) {
+  for (let i = idx - 1; i >= 0; i--) {
+    if (isVisible(flatProjects.value[i].category))
+      return flatProjects.value[i]
   }
   return undefined
 }
+
+const fontsLoaded = ref(false)
+
+onBeforeMount(() => {
+  if (document.fonts) {
+    document.fonts.ready.then(() => {
+      fontsLoaded.value = true
+    })
+  }
+  else {
+    fontsLoaded.value = true
+  }
+
+  const hasVisited = sessionStorage.getItem('visited-projects')
+  if (hasVisited)
+    document.documentElement.classList.add('no-sliding')
+  else sessionStorage.setItem('visited-projects', new Date().toISOString())
+})
 </script>
 
 <template>
-  <div class="prose m-auto max-w-300 projects">
-    <div
-      v-for="key, in Object.keys(projects)" :key="key"
-    >
-      <h4 :id="slug(key)" class="mt-15 mb-2 font-medium op90">
-        {{ key }}
-      </h4>
+  <ul class="posts">
+    <template v-for="({ item, category }, idx) in flatProjects" :key="`${category}-${item.name}`">
       <div
-        class="project-grid py-2 max-w-500 grid cols-1 md:cols-2 gap-4"
-        :class="projects[key].length === 1 ? 'flex' : projects[key].length > 2 ? 'lg:grid-cols-3' : ''"
+        v-if="!isSameYear(item.date, prevVisibleItem(idx)?.item.date)"
+        class="select-none relative h20 pointer-events-none slide-enter"
+        :class="[{ 'op0!': !fontsLoaded }, !isVisible(category) ? 'hidden' : '']"
+        :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
       >
-        <a
-          v-for="item, idx in projects[key]"
-          :key="idx"
-          class="item relative flex"
-          :href="prependLocalLink(item.link)"
-          :target="(item.link && (item.link.startsWith('http') || item.link.startsWith('//'))) ? '_blank' : undefined"
-          :class="!item.link ? 'opacity-0 pointer-events-none h-0 -mt-8 -mb-4' : ''"
-          :title="item.name"
-        >
-          <!-- <div v-if="item.icon" class="pt-2 pr-5">
-            <Logo v-if="item.icon === 'monogram'" class="text-4xl opacity-50" />
-            <div v-else class="text-3xl opacity-50" :class="item.icon || 'i-carbon-unknown'" />
-          </div> -->
-          <div class="flex-auto">
-            <div class="text-normal">{{ item.name }}</div>
-            <div class="desc text-sm font-light opacity-85 font-normal prose" v-html="item.desc" />
-            <div v-if="getBackgroundImage(item)" class="absolute inset-0 bg-cover bg-center op-30 mix-blend-difference pointer-events-none" :style="`background-image: ${getBackgroundImage(item)}`" />
-          </div>
-        </a>
+        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa">
+          {{ getYear(item.date) }}
+        </span>
       </div>
-    </div>
-    <!-- <div class="prose pb5 mx-auto mt10 text-center">
-      <p op75>
-        <em>
-          Thanks for your interest in my work! If you are feeling charitable, please consider
-          &nbsp;<a
-            href="https://github.com/sponsors/bodobraegger"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >sponsoring me</a>&nbsp; to keep my work sustainable. Thank you!
-        </em>
-      </p>
+      <div
+        class="slide-enter"
+        :class="isVisible(category) ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
+        style="transition: opacity 0.1s ease"
+        :style="{ '--enter-stage': idx, '--enter-step': '60ms' }"
+      >
+        <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="hoveredCategory = $event" />
+      </div>
+    </template>
+  </ul>
 
-      <SponsorButton />
-    </div> -->
-  </div>
   <div>
     <div class="table-of-contents">
       <div class="table-of-contents-anchor">
         <div class="i-ri-menu-2-fill" />
       </div>
       <ul>
-        <li v-for="key of Object.keys(projects)" :key="key">
-          <a :href="`#${slug(key)}`">{{ key }}</a>
+        <li>
+          <a
+            href="javascript:void(0)"
+            :class="activeCategory === null ? 'op100!' : ''"
+            :style="activeCategory === null ? 'border-style: solid' : ''"
+            @click="toggleCategory(null)"
+          >all</a>
+        </li>
+        <li v-for="key of categories" :key="key">
+          <a
+            href="javascript:void(0)"
+            :class="activeCategory === key || hoveredCategory === key ? 'op100!' : ''"
+            :style="activeCategory === key || hoveredCategory === key ? 'border-style: solid' : ''"
+            @mouseenter="hoveredCategory = key"
+            @mouseleave="hoveredCategory = null"
+            @click="toggleCategory(key)"
+          >{{ key }}</a>
         </li>
       </ul>
     </div>
