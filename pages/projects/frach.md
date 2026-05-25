@@ -3,6 +3,7 @@ title: Frach Collective
 display: Frach Collective
 description: Volunteer refugee aid collective active in the Balkans, 2020–2022
 plum: true
+showViews: true
 ---
 
 **Frach Collective** was a self-organized, grassroots volunteer collective that supported people on the move in the Una-Sana Canton of Bosnia and Herzegovina from December 2020 through autumn 2022. It was co-founded together with the [KochKollektiv](https://wemakeit.com/users/kochkollektiv), a Zurich-based action kitchen that normally cooks for demonstrations and climate camps. With their existing infrastructure, network, and fundraising experience they helped get the project off the ground quickly - the first group was on the ground in Bihać within weeks of the [Lipa Camp fire](https://en.wikipedia.org/wiki/Lipa_camp) in December 2020, a month earlier than originally planned.

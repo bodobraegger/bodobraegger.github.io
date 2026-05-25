@@ -1,9 +1,8 @@
 ---
 title: B - Projects
 display: Projects
-description: List of projects and interesting resources
+description: Projects past & present
 plum: true
-wrapperClass: 'text-center'
 projects:
   current focus:
     - name: Transdisciplinary Studies @ ZHdK
@@ -12,7 +11,7 @@ projects:
       icon: 'i-carbon-chart-multitype'
       date: '2024-09-01'
       place: Zürich, CH
-    - name: Software Engineer
+    - name: Software Engineering
       link: 'https://ethz.ch'
       desc: 'I work at the <a href="https://descil.ethz.ch/">Decision Science Laboratory</a>, where I maintain the existing lab infrastructure and develop new tools for behavioral research, mainly using Python and C#. I also containerize the tech stack and migrate it to an in-house Kubernetes cluster.'
       icon: 'i-carbon-cloud-logging'
@@ -25,6 +24,11 @@ projects:
       desc: 'A simple bidirectional translator that lets you type in either text box. Crowd-sourced translations via MyMemory API.'
       icon: 'i-carbon-translate'
       date: '2026-03-01'
+      place: Rio de Janeiro, BR
+    - name: 'drawing board'
+      link: './drawing-board'
+      desc: 'A collaborative drawing tool as a Vue component, embeddable on every subpage here. Strokes are stored in a Supabase database and shared across visitors in real time.'
+      date: '2026-04-08'
       place: Rio de Janeiro, BR
     - name: 'janislabhart.ch'
       link: 'janislabhart'
@@ -54,7 +58,7 @@ projects:
       link: 'https://networktheory.art'
       desc: 'The continuation of the artist network theory zine, coming soon. Code is available on <a href="https://github.com/bodobraegger/artist-network-theory">GitHub</a>.'
       icon: 'i-mdi:local-area-network-pending'
-      date: '2024-10-01'
+      date: '2024-04-01'
       place: Zürich, CH
    # - name: 'gleis161.ch'
    #   link: './gleis161'
@@ -62,48 +66,48 @@ projects:
    #   icon: 'i-ri-pages-line'
 
   research:
-    - name: Research Assistant @ ETH Zürich
+    - name: Research Assistance
       link: 'https://ethz.ch'
       desc: 'I worked as a research assistant in the <a href="https://ip.ethz.ch/">Intellectual Property Group</a> of <a href="https://ethz.ch">ETH Zürich</a> for five years, next to my studies. I mainly engineered behavioral research software, building on Python, Django, and oTree, used in laboratories and online experiments that I also supervised at times, assisting on several papers and research projects at the <a href="https://gess.ethz.ch/en.html">ETH Department of Humanities, Social and Political Sciences</a>.'
       icon: 'i-carbon-microscope'
       date: '2017-05-01'
-      place: Zürich, CH
-    - name: 'Green VVZ - University of Zurich'
+      place: ETH Zürich, CH
+    - name: 'Green VVZ'
       link: 'https://www.sustainability.uzh.ch/en/research-teaching/teaching/Green-VVZ.html'
       desc: 'I ported and reviewed the <a href="https://www.sustainability.uzh.ch/en/research-teaching/teaching/Green-VVZ.html">Green VVZ</a> tool, which allows admins to create and display collection of courses at UZH with a focus on sustainability. The project was done for the <a href="https://www.ifi.uzh.ch/en/isr.html">Informatics and Sustainability Research</a> group.'
       icon: 'i-carbon-wind-power'
       date: '2019-03-01'
-      place: Zürich, CH
-    - name: Prototype Automated Social Media Environment
-      link: 'https://github.com/broggoli/chat-room'
+      place: UZH, Zürich, CH
+    - name: Prototype Automated Social Media
+      link: 'https://github.com/nick-bachmann/chat-room'
       desc: 'I developed a prototype for an automated social media environment for researching chat moderation for the <a href="https://www.ipz.uzh.ch/en.html">UZH Department of Political Science</a>.'
       icon: 'i-carbon-ibm-watsonx-assistant'
-      date: '2021-08-01'
+      date: '2022-02-01'
       place: Zürich, CH
-    - name: Full-Stack Developer @ UZH SemanticLab
+    - name: SemanticLab
       link: 'https://www.semanticlab.net/'
       desc: 'I worked as a full-stack developer at the <a href="https://www.semanticlab.net/">SemanticLab</a> of the University of Zurich, building tools for semantic data processing and visualization.'
       icon: 'i-carbon-data-structured'
       date: '2021-12-01'
-      place: Remote
-  events and collectives:
+      place: UZH Zürich, CH
+  collective action:
     - name: Elektrosmog I-VI
-      desc: 'A series of electronic experimental events, raves coupled with lan-parties hosted in squats and off spaces in Zurich. Notably the <a href="https://www.kochareal.ch/">Koch Areal</a>.'
-      link: 'https://www.kochareal.ch/'
+      desc: 'A series of electronic experimental events, raves coupled with lan-parties hosted in squats and off spaces in Zurich, notably the <a href="https://www.kochareal.ch/">Koch Areal</a>.'
+      link: '.'
       date: '2019-06-01'
       place: Zürich, CH
-    - name: Regula
+    - name: regula
       desc: 'Come back later for more information.'
       link: '.'
       date: '2023-01-01'
       place: Zürich, CH
-    - name: Braui
+    - name: braui
       desc: 'Come back later for more information.'
       link: '.'
       date: '2024-01-01'
       place: Zürich, CH
     - name: Frach Collective
-      desc: 'A self-organized volunteer collective supporting refugees in Bosnia and Herzegovina, 2020 - 2022. Raised over <strong>93,750 CHF</strong> across three crowdfunding campaigns and distributed 20+ donation runs of non-food items around Bihać and Velika Kladuša.'
+      desc: 'A self-organized volunteer collective supporting refugees in Bosnia and Herzegovina, 2020 - 2022. Raised over <strong>93750 CHF</strong> across three crowdfunding campaigns and distributed 20+ donation runs of non-food items around Bihać and Velika Kladuša.'
       link: './frach'
       icon: 'i-carbon-pedestrian'
       date: '2020-12-01'
@@ -114,7 +118,7 @@ projects:
       desc: 'A game to teach fundamental programmatic thinking to children, used in studies at <a href="https://ethz.ch">ETH Zürich</a>.
       Implemented using <a href="https://phaser.io/">Phaser</a>, set in a semi-procedurally generated world, with mouse and text controls, emulating terminal usage.'
       icon: 'i-carbon-fish-multiple'
-      date: '2022-06-01'
+      date: '2022-02-01'
       place: Zürich, CH
 
     - name: 'the real walter'
@@ -122,7 +126,7 @@ projects:
       desc: 'A simple online port of the popular Swiss party game <a href="https://urs.fatamorgana.ch/wahre.html">Der wahre Walter</a>.
         Implemented as a PWA.'
       icon: 'i-ri-book-3-line'
-      date: '2023-03'
+      date: '2020-01-10'
       place: Zürich, CH
 
   generative art:
