@@ -103,9 +103,10 @@ projects:
       date: '2024-01-01'
       place: Zürich, CH
     - name: Frach Collective
-      desc: 'A collective founded to support refugees with shelter, food, and medicine after the <a href="https://en.wikipedia.org/wiki/Lipa_camp">Lipa Camp fire</a>. <a href="">Raised over 71,940 CHF</a> in funding and distributed 20+ donation runs of non-food items.'
-      link: 'https://frachcollective.org/en/'
-      date: '2018-03-01'
+      desc: 'A self-organized volunteer collective supporting refugees in Bosnia and Herzegovina, 2020 - 2022. Raised over <strong>93,750 CHF</strong> across three crowdfunding campaigns and distributed 20+ donation runs of non-food items around Bihać and Velika Kladuša.'
+      link: './frach'
+      icon: 'i-carbon-pedestrian'
+      date: '2020-12-01'
       place: Bihać, BA
   games:
     - name: 'slugs'
