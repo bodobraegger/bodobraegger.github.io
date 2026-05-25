@@ -1,7 +1,7 @@
 ---
 title: B - Notes
 plum: true
-display: ''
+display: 'Notes'
 ---
 
 <!-- <SubNav /> -->

@@ -1,6 +1,6 @@
 ---
-title: B - Blog
-display: ''
+title: B - Posts
+display: 'Posts'
 plum: true
 ---
 
