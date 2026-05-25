@@ -48,7 +48,7 @@ onMounted(() => {
     "
     class="item block mb-6 mt-2 no-underline"
   >
-    <li class="no-underline flex flex-col md:flex-row gap-2 md:items-center">
+    <li class="flex flex-col md:flex-row gap-2 md:items-center">
       <div class="title text-lg leading-1.2em flex gap-2 wrap">
         <span
           v-if="route.lang === 'zh'"
@@ -57,7 +57,7 @@ onMounted(() => {
         <span class="align-middle tracking-wider">{{ route.title }}</span>
       </div>
 
-      <div class="flex gap-2 items-center op50 text-sm font-light font-serif-extra font-italic">
+      <div class="flex gap-2 items-center op50 grow [&>*:last-child]:ml-auto text-sm font-light font-serif-extra font-italic">
         <span
           v-if="route.redirect"
           class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right"
