@@ -8,7 +8,7 @@ projects:
     - name: Transdisciplinary Studies @ ZHdK
       link: 'https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies'
       desc: 'I am currently enrolled in the <a href="https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies">Transdisciplinary Studies</a> program at <a href="https://www.zhdk.ch/en">ZHdK</a>, where I am exploring the intersection of music, visual art, technology, and science.'
-      date: '2024-09-01'
+      date: '2025-09-01'
       place: Zürich, CH
     - name: Software Engineering
       link: 'https://ethz.ch'
@@ -21,11 +21,6 @@ projects:
       link: './bidi'
       desc: 'A simple bidirectional translator that lets you type in either text box. Crowd-sourced translations via MyMemory API.'
       date: '2026-03-01'
-      place: Rio de Janeiro, BR
-    - name: 'drawing board'
-      link: './drawing-board'
-      desc: 'A collaborative drawing tool as a Vue component, embeddable on every subpage here. Strokes are stored in a Supabase database and shared across visitors in real time.'
-      date: '2026-04-08'
       place: Rio de Janeiro, BR
     - name: 'janislabhart.ch'
       link: 'janislabhart'
@@ -100,6 +95,11 @@ projects:
       date: '2020-12-01'
       place: Bihać, BA
   games:
+    - name: 'drawing board'
+      link: './drawing-board'
+      desc: 'A collaborative drawing tool as a Vue component, embeddable on every subpage here. Strokes are stored in a Supabase database and shared across visitors in real time.'
+      date: '2026-04-08'
+      place: Rio de Janeiro, BR
     - name: 'slugs'
       link: 'https://github.com/bodobraegger/slugs'
       desc: 'A game to teach fundamental programmatic thinking to children, used in studies at <a href="https://ethz.ch">ETH Zürich</a>.
