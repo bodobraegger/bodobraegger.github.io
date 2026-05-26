@@ -80,7 +80,7 @@ onMounted(async () => {
         <span v-if="item.place" class="ws-nowrap ml-auto">&#10028; {{ item.place }}</span>
         <span
           v-if="category"
-          class="category-badge not-italic font-normal font-mono text-xs border border-dashed px-px my-auto cursor-pointer transition-opacity"
+          class="category-badge not-italic font-normal font-mono text-xs border border-current border-dashed px-px my-auto cursor-pointer transition-opacity"
           :class="[
             activeCategory === category || hoveredCategory === category ? 'op100 border-solid' : 'op70 hover:op100 hover:border-solid',
             !item.place ? 'ml-auto' : '',
