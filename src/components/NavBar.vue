@@ -110,15 +110,16 @@ a,
 button {
   cursor: pointer;
   text-decoration: none;
-  color: inherit;
+  color: var(--fg);
   transition: opacity 0.2s ease;
-  opacity: 0.7;
+  opacity: 0.9;
   border: 1px dashed var(--fg-deep);
   padding: 0 2px;
 
   &:hover {
     opacity: 1;
     border: 1px solid var(--fg-deeper);
+    color: var(--fg-deeper);
   }
   &.router-link-active,
   &.router-link-exact-active {

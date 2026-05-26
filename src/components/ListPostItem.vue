@@ -22,7 +22,7 @@ onMounted(() => {
         .from('page_views')
         .select('view_count')
         .eq('page_path', props.route.path)
-        .single()
+        .maybeSingle()
 
       if (data)
         viewCount.value = data.view_count
@@ -82,6 +82,7 @@ onMounted(() => {
         <span v-if="route.duration" class="op80 ws-nowrap">· {{ route.duration }}</span>
         <span v-if="route.platform" class="op80 ws-nowrap">· {{ route.platform }}</span>
         <span v-if="route.place" class="op80 ws-nowrap">✬ {{ route.place }}</span>
+        <span class="op80 ws-nowrap">✶ <span class="w-9 inline-block text-right">{{ viewCount?.toString().padStart(3, '0') }}</span> view(s)</span>
         <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
           中文
         </span>
