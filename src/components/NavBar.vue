@@ -30,20 +30,20 @@
           focusable="false"
         >
           <!-- <Logo /> -->
-          <span>bodobraegger</span>
+          bodobraegger
           <!-- <span class="sm:hidden">b</span> -->
         </RouterLink>
       </div>
       <!-- <div class="spacer" /> -->
       <div class="right print:op0">
         <RouterLink to="/" title="Home" class="justify-self-start">
-          <span>Home</span>
+          Home
         </RouterLink>
         <RouterLink id="projects" to="/projects" title="Projects" class="justify-self-center">
-          <span>Projects</span>
+          Projects
         </RouterLink>
         <RouterLink id="notes" to="/notes" title="Blog" class="justify-self-center">
-          <span>Notes</span>
+          Notes
         </RouterLink>
         <!-- <a title="Webring" href="https://webring.xxiivv.com/#bodo" target="_blank" rel="noopener"
         class="select-none b-none! hover:b-none! w-19px h-24px">
