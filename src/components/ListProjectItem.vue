@@ -13,8 +13,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ filter: [category: string], hover: [category: string | null] }>()
 
-const primaryImage = ref<string | null>(null)
-
 const isExternal = computed(() =>
   !props.item.link || props.item.link === '.' || props.item.link.startsWith('http') || props.item.link.startsWith('//'),
 )
@@ -48,19 +46,6 @@ onMounted(async () => {
     }
     catch {}
   }
-  if (isExternal.value)
-    return
-  try {
-    const slug = props.item.link!.replace('./projects/', '').replace('./', '')
-    const res = await fetch(`/pages/projects/${slug}.md`)
-    if (!res.ok)
-      return
-    const text = await res.text()
-    const m = text.match(/!\[.*?\]\((.*?)\)/)
-    if (m?.[1])
-      primaryImage.value = m[1]
-  }
-  catch {}
 })
 </script>
 
@@ -79,13 +64,6 @@ onMounted(async () => {
       :class="isHovering ? 'op100!' : ''"
     >
       <li class="relative isolate flex flex-wrap gap-2 md:items-center">
-        <img
-          v-if="primaryImage"
-          :src="primaryImage"
-          :alt="item.name"
-          class="absolute right-0 top-0 h-full w-40 object-cover op-30 mix-blend-difference pointer-events-none z--1"
-          aria-hidden="true"
-        >
         <div class="title text-lg leading-1.2em flex gap-2 wrap">
           <span class="align-middle tracking-wider">{{ item.name }}</span>
           <span v-if="isExternal && item.link && item.link !== '.'" class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right" title="External" />
@@ -108,7 +86,6 @@ onMounted(async () => {
     <div
       v-if="item.desc"
       class="w-full transition-opacity text-sm font-light mt-1 mb-8 leading-snug"
-      :class="primaryImage ? 'pr-28' : ''"
       v-html="item.desc"
     />
   </div>
