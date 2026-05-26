@@ -120,14 +120,18 @@ html:not(.dark) {
   }
 }
 
-.posts {
-  a.item {
-    /* note and post listings */
-    transition: 0.2s all ease-out;
-    text-decoration: none;
-    border: none !important;
-    opacity: 0.6;
-  }
+.posts a.item,
+.projects a.item {
+  /* note and post listings */
+  transition: 0.2s all ease-out;
+  text-decoration: none;
+  border: none;
+}
+.projects a.item .title {
+  border: 1px dashed var(--fg);
+}
+.projects a.item:hover .title {
+  border: 1px solid var(--fg-deep);
 }
 
 a.item {
@@ -220,7 +224,7 @@ h6:focus .header-anchor {
     text-overflow: ellipsis;
     height: 100%;
     overflow-y: auto;
-    --uno: rounded op0 mt-1 pb-5 transition duration-700;
+    --uno: rounded op40 mt-1 pb-5 transition duration-700;
   }
 
   ul > li {
@@ -248,11 +252,8 @@ h6:focus .header-anchor {
   --uno: text-inherit;
 }
 
+*:hover > .table-of-contents > ul,
 .toc-always-on .table-of-contents > ul {
-  opacity: 0.6;
-}
-
-*:hover > .table-of-contents > ul {
   opacity: 0.75;
 }
 

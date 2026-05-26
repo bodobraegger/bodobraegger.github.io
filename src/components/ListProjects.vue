@@ -33,7 +33,13 @@ onUnmounted(() => {
   document.documentElement.classList.remove('toc-always-on')
 })
 
-const getYear = (date?: string) => date ? new Date(date).getFullYear() : '?'
+const hasTimezone = (date: string) => /Z|[+-]\d{2}:?\d{2}$/.test(date)
+function getYear(date?: string) {
+  if (!date)
+    return '?'
+  const tz = hasTimezone(date) ? undefined : 'Europe/Zurich'
+  return Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: tz }).format(new Date(date)))
+}
 const isSameYear = (a?: string, b?: string) => getYear(a) === getYear(b)
 
 // For year headers: find the first visible item before current idx
@@ -65,7 +71,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <ul class="posts">
+  <ul class="projects">
     <template v-for="({ item, category }, idx) in flatProjects" :key="`${category}-${item.name}`">
       <div
         v-if="!isSameYear(item.date, prevVisibleItem(idx)?.item.date)"
