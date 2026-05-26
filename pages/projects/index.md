@@ -30,7 +30,7 @@ projects:
     - name: 'janislabhart.ch'
       link: 'janislabhart'
       desc: 'The portfolio website for fellow artist and musician Janis labhart, based on a design by Lara Koller. Built with <a href="https://astro.build/">Astro.js</a>. The code can be found <a href="https://github.com/bodobraegger/janislabhart">here</a>.'
-      date: '2023-11-01'
+      date: '2025-06-09'
       place: Zürich, CH
     - name: 'bbo.do'
       link: './self'
