@@ -119,7 +119,7 @@ projects:
       link: 'https://hydra.ojack.xyz'
       desc: 'A JavaScript-based live-coding environment for audiovisuals, simulating analog video synthesis. Created by <a href="https://ojack.xyz">Olivia Jack</a>.'
       tags: ['live-coding']
-      date: '2022-01-01'
+      date: '2018-07-11'
     - name: 'strudel'
       link: 'https://github.com/tidalcycles/strudel'
       desc: 'A JavaScript port of <a href="https://tidalcycles.org/">Tidal Cycles</a>, a live-coding environment for music.'
