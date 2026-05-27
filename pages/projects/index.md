@@ -8,7 +8,7 @@ projects:
     - name: Transdisciplinary Studies @ ZHdK
       link: 'https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies'
       desc: 'I am currently enrolled in the <a href="https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies">Transdisciplinary Studies</a> program at <a href="https://www.zhdk.ch/en">ZHdK</a>, where I am exploring the intersection of music, visual art, technology, and science.'
-      date: '2025-09-01'
+      date: '2024-09-01'
       place: Zürich, CH
     - name: Software Engineering
       link: 'https://ethz.ch'
