@@ -96,22 +96,43 @@
   src: url('/src/assets/fonts/ModernGothicMono-Regular.woff2') format('woff2');
 }
 
+/* Size-adjusted fallbacks to prevent layout shift (CLS) on font swap.
+   Metrics computed from actual font files vs. universal system font metrics:
+   - Times New Roman: upem=2048, cap=1356, asc=1420, desc=-442, gap=0
+   - Georgia:         upem=2048, cap=1419, asc=1878, desc=-449, gap=0
+   - Courier New:     upem=2048, cap=1170, asc=1705, desc=-615, gap=0        */
+
+/* Ogg-Regular: cap=82.9%, asc=88%, desc=27.9%, gap=52.9%
+   size-adjust = 82.9% / (1356/2048=66.2%) = 125.21% */
 @font-face {
   font-family: 'OggFallback';
-  src: local('Georgia'), local('Times New Roman');
-  size-adjust: 115%;
-  ascent-override: 85%;
-  descent-override: 22%;
+  src: local('Times New Roman'), local('TimesNewRomanPSMT');
+  size-adjust: 125.21%;
+  ascent-override: 88%;
+  descent-override: 27.9%;
+  line-gap-override: 52.9%;
+}
+
+/* BradfordLL-Regular: cap=69.2%, asc=77%, desc=23%, gap=0%
+   size-adjust = 69.2% / (1419/2048=69.29%) = 99.87% */
+@font-face {
+  font-family: 'BradfordLLFallback';
+  src: local('Georgia'), local('GeorgiaMT');
+  size-adjust: 99.87%;
+  ascent-override: 77%;
+  descent-override: 23%;
   line-gap-override: 0%;
 }
 
+/* BradfordMonoLL-Regular: cap=69.2%, asc=77%, desc=23%, gap=20%
+   size-adjust = 69.2% / (1170/2048=57.13%) = 121.13% */
 @font-face {
   font-family: 'BradfordMonoLLFallback';
-  src: local('SF Mono'), local('Menlo'), local('Consolas'), local('monospace');
-  size-adjust: 105%;
-  ascent-override: 90%;
-  descent-override: 25%;
-  line-gap-override: 0%;
+  src: local('Courier New'), local('CourierNewPSMT');
+  size-adjust: 121.13%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
 }
 
 @font-face {
