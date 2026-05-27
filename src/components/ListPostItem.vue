@@ -83,7 +83,7 @@ onMounted(() => {
         <span v-if="route.platform" class="op80 ws-nowrap">· {{ route.platform }}</span>
         <span v-if="route.place" class="op80 ws-nowrap">✬ {{ route.place }}</span>
         <div class="ml-auto flex gap-2 items-center">
-          <span class="op80 ws-nowrap" :class="viewCount === null ? 'invisible' : ''">✶ <span class="inline-block min-w-6 text-right">{{ viewCount }}</span></span>
+          <span class="op80 ws-nowrap transition-opacity duration-500" :class="viewCount === null ? 'invisible opacity-0' : 'opacity-100'">✶ {{ viewCount }}</span>
           <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
             中文
           </span>

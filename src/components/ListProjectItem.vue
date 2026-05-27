@@ -72,7 +72,7 @@ onMounted(async () => {
           <span v-if="item.date" class="ws-nowrap shrink-0">✹ {{ formatDate(item.date, false, 'MMM YYYY') }}</span>
           <span v-if="item.place" class="op80 ws-nowrap overflow-hidden min-w-0 shrink hidden md:inline">&#10028; {{ item.place }}</span>
           <div class="ml-auto flex gap-2 items-center shrink-0">
-            <span v-if="pagePath" class="op80 ws-nowrap" :class="viewCount === null ? 'invisible' : ''">✶ <span class="inline-block min-w-6 text-right">{{ viewCount }}</span></span>
+            <span v-if="pagePath" class="op80 ws-nowrap transition-opacity duration-500" :class="viewCount === null ? 'invisible opacity-0' : 'opacity-100'">✶ {{ viewCount }}</span>
             <span
               v-if="category"
               class="align-middle flex-none not-italic font-normal font-mono text-xs border border-current border-dashed px-px my-auto cursor-pointer transition-opacity"
