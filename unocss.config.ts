@@ -26,7 +26,7 @@ export default defineConfig({
     })],
     ['font-sans', { 'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif' }],
     ['font-serif', { 'font-family': 'BradfordLL, Ogg, "Times New Roman",Georgia,serif' }],
-    ['font-serif-extra', { 'font-family': 'Ogg, "Times New Roman",Georgia,serif' }],
+    ['font-serif-extra', { 'font-family': 'Ogg, OggFallback, "Times New Roman",Georgia,serif' }],
     ['font-mono', { 'font-family': 'BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace' }],
 
   ],
