@@ -57,7 +57,7 @@ onMounted(() => {
         <span class="align-middle tracking-wider">{{ route.title }}</span>
       </div>
 
-      <div class="flex gap-2 items-center op50 grow [&>*:last-child]:ml-auto text-sm font-light font-serif-extra font-italic">
+      <div class="flex gap-2 items-center op50 grow text-sm font-light font-serif-extra font-italic">
         <span
           v-if="route.redirect"
           class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right"
@@ -82,10 +82,12 @@ onMounted(() => {
         <span v-if="route.duration" class="op80 ws-nowrap">· {{ route.duration }}</span>
         <span v-if="route.platform" class="op80 ws-nowrap">· {{ route.platform }}</span>
         <span v-if="route.place" class="op80 ws-nowrap">✬ {{ route.place }}</span>
-        <span class="op80 ws-nowrap">✶ <span class="w-9 inline-block text-right">{{ viewCount?.toString().padStart(3, '0') }}</span> view(s)</span>
-        <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
-          中文
-        </span>
+        <div class="ml-auto flex gap-2 items-center">
+          <span class="op80 ws-nowrap" :class="viewCount === null ? 'invisible' : ''">✶ <span class="inline-block min-w-6 text-right">{{ viewCount }}</span></span>
+          <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
+            中文
+          </span>
+        </div>
       </div>
     </li>
   </component>
