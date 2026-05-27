@@ -106,6 +106,15 @@
 }
 
 @font-face {
+  font-family: 'BradfordMonoLLFallback';
+  src: local('SF Mono'), local('Menlo'), local('Consolas'), local('monospace');
+  size-adjust: 105%;
+  ascent-override: 90%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
   font-family: 'Ogg';
   font-style: normal;
   font-weight: 700;
@@ -238,4 +247,5 @@
   font-style: normal;
   font-weight: 400;
   src: url('/src/assets/fonts/BradfordMonoLL-Regular.woff2') format('woff2');
+  font-display: swap;
 }
