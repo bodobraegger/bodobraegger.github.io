@@ -262,11 +262,11 @@ if (frontmatter.hydra) {
         <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
       <span v-if="isTrackedPage" class="op-50 ml-2">
-        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount.toString().padStart(3, '0') }} view(s)
+        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)
       </span>
     </p>
     <p v-else-if="isTrackedPage" class="font-serif-extra font-italic mt--4! op-50">
-      {{ viewCount.toString().padStart(3, '0') }} view(s)
+      {{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)
     </p>
     <p
       v-if="frontmatter.subtitle"

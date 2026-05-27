@@ -36,8 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
   dragAndDraw: false,
 })
 
-const effectiveCanvasId = props.canvasId || window.location.pathname
-const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? window.location.pathname : '')
+const effectiveCanvasId = props.canvasId || (typeof window !== 'undefined' ? window.location.pathname : '')
+const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? (typeof window !== 'undefined' ? window.location.pathname : '') : '')
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
