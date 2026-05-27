@@ -1,11 +1,11 @@
-import { defineConfig, presetAttributify, presetIcons, presetUno, presetWebFonts, transformerDirectives } from 'unocss'
+import { defineConfig, presetIcons, presetUno, presetWebFonts, transformerDirectives } from 'unocss'
 
 export default defineConfig({
   preflights: [
     {
       getCSS: () => `
         html {
-          font-family: BradfordLL, Ogg, "Times New Roman", Georgia, serif;
+          font-family: var(--fonts-serif);
         }
         .font-phonetics {
           font-size: smaller;
@@ -18,17 +18,16 @@ export default defineConfig({
       'bg-base': 'bg-white dark:bg-black',
       'border-base': 'border-[#8884]',
     },
-    [/^btn-(\w+)$/, ([_, color]) => `op50 px2.5 py1 transition-all duration-200 ease-out no-underline! hover:(op100 text-${color} bg-${color}/10) border border-base! rounded`],
   ],
   rules: [
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', { 'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif' }],
-    ['font-serif', { 'font-family': 'BradfordLL, Ogg, "Times New Roman",Georgia,serif' }],
-    ['font-serif-extra', { 'font-family': 'Ogg, "Times New Roman",Georgia,serif' }],
-    ['font-mono', { 'font-family': 'BradfordMonoLL, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace' }],
-
+    // Font rules reference CSS custom properties defined in main.css
+    ['font-sans', { 'font-family': 'var(--fonts-sans)' }],
+    ['font-serif', { 'font-family': 'var(--fonts-serif)' }],
+    ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)' }],
+    ['font-mono', { 'font-family': 'var(--fonts-mono)' }],
   ],
   presets: [
     presetIcons({
@@ -39,7 +38,6 @@ export default defineConfig({
         'vertical-align': 'text-bottom',
       },
     }),
-    presetAttributify(),
     presetUno(),
     presetWebFonts({
       fonts: {

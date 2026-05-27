@@ -46,47 +46,25 @@ onMounted(() => {
         to: route.path,
       }
     "
-    class="item block mb-6 mt-2 no-underline"
   >
-    <li class="flex flex-col md:flex-row gap-2 md:items-center">
-      <div class="title text-lg leading-1.2em flex gap-2 wrap">
-        <span
-          v-if="route.lang === 'zh'"
-          class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
-        >中文</span>
-        <span class="align-middle tracking-wider">{{ route.title }}</span>
-      </div>
+    <li>
+      <span class="title">
+        <span v-if="route.lang === 'zh'" class="lang hidden md:inline">中文</span>
+        {{ route.title }}
+      </span>
 
-      <div class="flex gap-2 items-center op50 grow [&>*:last-child]:ml-auto text-sm font-light font-serif-extra font-italic">
-        <span
-          v-if="route.redirect"
-          class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right"
-          title="External"
-        />
-        <span
-          v-if="route.inperson"
-          class="i-ri:group-2-line align-middle op50 flex-none"
-          title="In person"
-        />
-        <span
-          v-if="route.recording || route.video"
-          class="i-ri:film-line align-middle op50 flex-none"
-          title="Provided in video"
-        />
-        <span
-          v-if="route.radio"
-          class="i-ri:radio-line align-middle op50 flex-none"
-          title="Provided in radio"
-        />
-        <span v-if="route.date" class="ws-nowrap">✹ {{ formatDate(route.date, true) }}</span>
-        <span v-if="route.duration" class="op80 ws-nowrap">· {{ route.duration }}</span>
-        <span v-if="route.platform" class="op80 ws-nowrap">· {{ route.platform }}</span>
-        <span v-if="route.place" class="op80 ws-nowrap">✬ {{ route.place }}</span>
-        <span class="op80 ws-nowrap">✶ <span class="w-9 inline-block text-right">{{ viewCount?.toString().padStart(3, '0') }}</span> view(s)</span>
-        <span v-if="route.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
-          中文
-        </span>
-      </div>
+      <span class="meta">
+        <span v-if="route.redirect" class="i-carbon-arrow-up-right" title="External" />
+        <span v-if="route.inperson" class="i-ri:group-2-line" title="In person" />
+        <span v-if="route.recording || route.video" class="i-ri:film-line" title="Provided in video" />
+        <span v-if="route.radio" class="i-ri:radio-line" title="Provided in radio" />
+        <span v-if="route.date">✹ {{ formatDate(route.date, true) }}</span>
+        <span v-if="route.duration" class="dim">· {{ route.duration }}</span>
+        <span v-if="route.platform" class="dim">· {{ route.platform }}</span>
+        <span v-if="route.place" class="dim">✬ {{ route.place }}</span>
+        <span class="dim">✶ {{ viewCount?.toString().padStart(3, '0') }} views</span>
+        <span v-if="route.lang === 'zh'" class="lang md:hidden">中文</span>
+      </span>
     </li>
   </component>
 </template>

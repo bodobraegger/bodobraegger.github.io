@@ -20,7 +20,7 @@ This page will hold portfolio and curriculum vitae fragments, notes and an archi
 
 Find me on
 
-<p class="mt--2! flex gap-3 wrap">
+<p class="mt--2! flex gap-3 flex-wrap">
   <a href="https://github.com/bodobraegger" target="_blank">
     <!-- <span op75 i-simple-icons-github />  -->
     GitHub
@@ -34,7 +34,7 @@ Find me on
 
 and for inquiries, please contact me via
 
-<p class="mt--2! flex gap-3 wrap">
+<p class="mt--2! flex gap-3 flex-wrap">
   <a href="mailto:hi@bbo.do">
     <!-- <span op75 i-carbon-email /> -->
     hi@bbo.do

@@ -1,0 +1,103 @@
+/* ==========================================================================
+   List Components - Using CSS Nesting
+   ========================================================================== */
+
+.posts,
+.projects {
+  /* The list item link */
+  a {
+    display: block;
+    text-decoration: none;
+    margin-block: 0.5rem;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  /* Each list row */
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+
+    @media (min-width: 768px) {
+      align-items: center;
+    }
+  }
+
+  /* Title */
+  .title {
+    font-size: 1.125rem;
+    line-height: 1.2;
+    letter-spacing: 0.025em;
+  }
+
+  /* Metadata (date, place, views) */
+  .meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-grow: 1;
+    align-items: center;
+    font: italic 300 0.875rem var(--fonts-serif-extra);
+    opacity: 0.6;
+
+    > :last-child {
+      margin-left: auto;
+    }
+
+    span {
+      white-space: nowrap;
+    }
+
+    .dim {
+      opacity: 0.75;
+    }
+  }
+
+  /* Year watermark headers */
+  .year {
+    position: absolute;
+    inset-inline-start: -3rem;
+    inset-block-start: -2rem;
+    font: italic 8em var(--fonts-serif-extra);
+    color: transparent;
+    -webkit-text-stroke: 1px #aaa;
+    opacity: 0.4;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Category filter tag */
+  .tag {
+    font: 400 0.75rem var(--fonts-mono);
+    border: 1px dashed currentColor;
+    padding-inline: 2px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.15s;
+
+    &:hover,
+    &.active {
+      opacity: 1;
+      border-style: solid;
+    }
+  }
+
+  /* Description below item */
+  .desc {
+    width: 100%;
+    font: 300 0.875rem/1.4 inherit;
+    margin-block: 0.25rem 2rem;
+  }
+}
+
+/* Language badge */
+.lang {
+  font-size: 0.75rem;
+  background: rgb(113 113 122 / 15%);
+  color: rgb(113 113 122);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+}

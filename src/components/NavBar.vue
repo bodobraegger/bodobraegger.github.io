@@ -35,7 +35,7 @@
         </RouterLink>
       </div>
       <!-- <div class="spacer" /> -->
-      <div class="right print:op0">
+      <div class="right print:op-0">
         <RouterLink to="/" title="Home" class="justify-self-start">
           <span>Home</span>
         </RouterLink>
@@ -50,7 +50,7 @@
           <WebringLogo stroke="var(--fg)" transform="translate(-140, -138) scale(0.08)"/>
         </a>
         <a id="github" class="select-none" href="https://github.com/bodobraegger" target="_blank" title="GitHub">
-          <div i-uil-github-alt />
+          <div class="i-uil-github-alt" />
         </a> -->
         <ToggleTheme class="justify-self-end" />
       </div>

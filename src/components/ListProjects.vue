@@ -75,48 +75,40 @@ onBeforeMount(() => {
     <template v-for="({ item, category }, idx) in flatProjects" :key="`${category}-${item.name}`">
       <div
         v-if="!isSameYear(item.date, prevVisibleItem(idx)?.item.date)"
-        class="select-none relative h20 pointer-events-none slide-enter"
-        :class="[{ 'op0!': !fontsLoaded }, !isVisible(category) ? 'hidden' : '']"
+        v-show="fontsLoaded && isVisible(category)"
+        class="slide-enter"
+        style="position: relative; height: 5rem"
         :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
       >
-        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa">
-          {{ getYear(item.date) }}
-        </span>
+        <span class="year">{{ getYear(item.date) }}</span>
       </div>
-      <div
-        :class="isVisible(category) ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
-        style="transition: opacity 0.1s ease"
-      >
+      <div v-show="isVisible(category)">
         <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="hoveredCategory = $event" />
       </div>
     </template>
   </ul>
 
-  <div>
-    <div class="table-of-contents">
-      <div class="table-of-contents-anchor">
-        <div class="i-ri-menu-2-fill" />
-      </div>
-      <ul>
-        <li>
-          <a
-            href="javascript:void(0)"
-            :class="activeCategory === null ? 'op100!' : ''"
-            :style="activeCategory === null ? 'border-style: solid' : ''"
-            @click="toggleCategory(null)"
-          >all</a>
-        </li>
-        <li v-for="key of categories" :key="key">
-          <a
-            href="javascript:void(0)"
-            :class="activeCategory === key || hoveredCategory === key ? 'op100!' : ''"
-            :style="activeCategory === key || hoveredCategory === key ? 'border-style: solid' : ''"
-            @mouseenter="hoveredCategory = key"
-            @mouseleave="hoveredCategory = null"
-            @click="toggleCategory(key)"
-          >{{ key }}</a>
-        </li>
-      </ul>
+  <div class="table-of-contents">
+    <div class="table-of-contents-anchor">
+      <div class="i-ri-menu-2-fill" />
     </div>
+    <ul>
+      <li>
+        <a
+          href="javascript:void(0)"
+          :class="{ active: activeCategory === null }"
+          @click="toggleCategory(null)"
+        >all</a>
+      </li>
+      <li v-for="key of categories" :key="key">
+        <a
+          href="javascript:void(0)"
+          :class="{ active: activeCategory === key || hoveredCategory === key }"
+          @mouseenter="hoveredCategory = key"
+          @mouseleave="hoveredCategory = null"
+          @click="toggleCategory(key)"
+        >{{ key }}</a>
+      </li>
+    </ul>
   </div>
 </template>

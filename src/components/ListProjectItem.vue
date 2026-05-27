@@ -51,7 +51,6 @@ onMounted(async () => {
 
 <template>
   <div
-    class="group"
     @mouseenter="isHovering = true"
     @mouseleave="isHovering = false; emit('hover', null)"
   >
@@ -60,33 +59,27 @@ onMounted(async () => {
       v-bind="isExternal
         ? (item.link && item.link !== '.' ? { href, target: '_blank', rel: 'noopener noreferrer' } : {})
         : { to: href }"
-      class="item block mb-2 mt-2 no-underline font-normal"
-      :class="isHovering ? 'op100!' : ''"
     >
-      <li class="relative isolate flex flex-wrap gap-2 md:items-center">
-        <div class="title text-lg leading-1.2em flex gap-2 wrap">
-          <span class="align-middle tracking-wider">{{ item.name }}</span>
-          <span v-if="isExternal && item.link && item.link !== '.'" class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right" title="External" />
-        </div>
-        <div class="flex gap-2 items-center op70 grow [&>*:last-child]:ml-auto text-sm font-light font-serif-extra font-italic">
-          <span v-if="item.date" class="ws-nowrap">✹ {{ formatDate(item.date, false, 'MMM YYYY') }}</span>
-          <span v-if="item.place" class="op80 ws-nowrap">&#10028; {{ item.place }}</span>
-          <span v-if="pagePath" class="op80 ws-nowrap">✶ <span class="w-9 inline-block text-right">{{ viewCount?.toString().padStart(3, '0') }}</span> view(s)</span>
+      <li>
+        <span class="title">
+          {{ item.name }}
+          <span v-if="isExternal && item.link && item.link !== '.'" class="i-carbon-arrow-up-right" title="External" />
+        </span>
+        <span class="meta">
+          <span v-if="item.date">✹ {{ formatDate(item.date, false, 'MMM YYYY') }}</span>
+          <span v-if="item.place" class="dim">✬ {{ item.place }}</span>
+          <span v-if="pagePath" class="dim">✶ {{ viewCount?.toString().padStart(3, '0') }} views</span>
           <span
             v-if="category"
-            class="align-middle flex-none not-italic font-normal font-mono text-xs border border-current border-dashed px-px my-auto cursor-pointer transition-opacity"
-            :class="activeCategory === category || hoveredCategory === category ? 'op100 border-solid' : 'op60 hover:op100 hover:border-solid'"
+            class="tag"
+            :class="{ active: activeCategory === category || hoveredCategory === category }"
             @mouseenter="emit('hover', category ?? null)"
             @mouseleave.stop="emit('hover', null)"
             @click.stop.prevent="emit('filter', category)"
           >{{ category }}</span>
-        </div>
+        </span>
       </li>
     </component>
-    <div
-      v-if="item.desc"
-      class="w-full transition-opacity text-sm font-light mt-1 mb-8 leading-snug"
-      v-html="item.desc"
-    />
+    <p v-if="item.desc" class="desc" v-html="item.desc" />
   </div>
 </template>

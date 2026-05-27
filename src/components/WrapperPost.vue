@@ -242,41 +242,41 @@ if (frontmatter.hydra) {
       {{ frontmatter.display ?? frontmatter.title }}
       <span
         v-if="frontmatter.phonetic"
-        class="opacity-30 font-phonetics"
+        class="op-25 font-phonetics"
         :style="{ visibility: fontsLoaded ? 'visible' : 'hidden' }"
       >({{ frontmatter.phonetic }})
       </span>
     </h1>
     <p
       v-if="frontmatter.date"
-      class="opacity-50 !-mt-6 font-serif-extra font-italic"
+      class="text-muted !-mt-6 font-serif-extra italic"
     >
       {{ formatDate(frontmatter.date, false) }} <span v-if="frontmatter.duration">· {{ frontmatter.duration }}</span>
     </p>
-    <p v-if="frontmatter.place" class="font-serif-extra font-italic mt--4!">
-      <span class="op50">at </span>
+    <p v-if="frontmatter.place" class="font-serif-extra italic mt--4!">
+      <span class="text-muted">at </span>
       <a v-if="frontmatter.placeLink" :href="frontmatter.placeLink" target="_blank">
         {{ frontmatter.place }}
       </a>
-      <span v-else class="op-75 font-light">
+      <span v-else class="text-dimmed font-light">
         <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
       </span>
-      <span v-if="isTrackedPage" class="op-50 ml-2">
+      <span v-if="isTrackedPage" class="text-muted ml-2">
         ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ viewCount.toString().padStart(3, '0') }} view(s)
       </span>
     </p>
-    <p v-else-if="isTrackedPage" class="font-serif-extra font-italic mt--4! op-50">
+    <p v-else-if="isTrackedPage" class="font-serif-extra italic mt--4! text-muted">
       {{ viewCount.toString().padStart(3, '0') }} view(s)
     </p>
     <p
       v-if="frontmatter.subtitle"
-      class="opacity-50 !-mt-6 italic"
+      class="text-muted !-mt-6 italic"
     >
       {{ frontmatter.subtitle }}
     </p>
     <p
       v-if="frontmatter.draft"
-      bg-orange-4:10 text-orange-4 border="l-3 orange-4" px4 py2
+      class="bg-orange-4/10 text-orange-4 border-l-3 border-orange-4 px-4 py-2"
     >
       This is a draft, the content may be incomplete. Please check back later.
     </p>
@@ -284,7 +284,7 @@ if (frontmatter.hydra) {
   <article ref="content" :class="[frontmatter.tocAlwaysOn ? 'toc-always-on' : '', frontmatter.class]">
     <slot />
   </article>
-  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden font-mono op50">
+  <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden font-mono text-muted">
     <br>
     <span>> </span>
     <RouterLink

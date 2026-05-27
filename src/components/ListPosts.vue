@@ -67,30 +67,22 @@ onBeforeMount(() => {
 <template>
   <ul class="posts">
     <template v-if="!posts.length">
-      <div class="py2 op50">
+      <p style="opacity: 0.5">
         { nothing here yet }
-      </div>
+      </p>
     </template>
 
     <template v-for="route, idx in posts" :key="route.path">
       <div
         v-if="!isSameGroup(route, posts[idx - 1])"
-        class="select-none relative h20 pointer-events-none slide-enter"
-        :class="{ 'op0!': !fontsLoaded }"
-        :style="{
-          '--enter-stage': idx - 2,
-          '--enter-step': '60ms',
-        }"
+        v-show="fontsLoaded"
+        class="slide-enter"
+        style="position: relative; height: 5rem"
+        :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
       >
-        <span
-          class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
-          :class="{ 'max-sm:text-5.4em': getGroupName(route) === 'Upcoming' }"
-        > {{ getGroupName(route) }}
-        </span>
+        <span class="year">{{ getGroupName(route) }}</span>
       </div>
-      <div>
-        <ListPostItem :route="route" />
-      </div>
+      <ListPostItem :route="route" />
     </template>
   </ul>
 </template>
