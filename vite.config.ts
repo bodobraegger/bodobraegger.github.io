@@ -113,6 +113,16 @@ export default defineConfig({
           slugify,
           containerHeaderHtml: '<div class="table-of-contents-anchor"><div class="i-ri-menu-2-fill" /></div>',
         })
+
+        // Wrap tables in a scrollable container
+        const defaultTableOpen = md.renderer.rules.table_open || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
+        md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+          return `<div class="table-wrapper">${defaultTableOpen(tokens, idx, options, env, self)}`
+        }
+        const defaultTableClose = md.renderer.rules.table_close || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
+        md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
+          return `${defaultTableClose(tokens, idx, options, env, self)}</div>`
+        }
       },
       frontmatterPreprocess(frontmatter, options, id, defaults) {
         const head = defaults(frontmatter, options)
