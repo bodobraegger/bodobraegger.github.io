@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { supabase } from '../lib/supabase'
+import { getUserId, supabase } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import HoverTooltip from './HoverTooltip.vue'
@@ -81,34 +81,14 @@ const scaledTipOffsetY = computed(() => {
 
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
-const notWindows = !navigator.userAgent.includes('Win')
-const flip = (props.penEmoji === '✏️' && notWindows) || props.flip
+// Computed in onMounted to avoid accessing navigator at module-init time (SSR-safe)
+const flip = ref(false)
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
-
-// Generate or retrieve persistent user ID
-function getUserId(): string {
-  const storageKey = 'drawable-pen-user-id'
-  try {
-    let userId = localStorage.getItem(storageKey)
-    if (!userId) {
-      userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem(storageKey, userId)
-    }
-    return userId
-  }
-  catch {
-    // Fallback to session-based ID if localStorage unavailable
-    if (!(window as any).__drawablePenUserId__) {
-      (window as any).__drawablePenUserId__ = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }
-    return (window as any).__drawablePenUserId__
-  }
-}
 
 const currentUserId = getUserId()
 
@@ -267,6 +247,10 @@ function handleToolsReset(e: Event) {
 }
 
 onMounted(() => {
+  // Safe to access navigator here (client-only, no SSR risk)
+  const notWindows = !navigator.userAgent.includes('Win')
+  flip.value = (props.penEmoji === '✏️' && notWindows) || !!props.flip
+
   // Check if stored canvas still exists in DOM, if not reset it
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
     canvasData.canvas = null
