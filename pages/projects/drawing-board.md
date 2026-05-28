@@ -52,8 +52,8 @@ The canvas ID defaults to the current page path, so each page gets its own share
 ## Pages using it
 
 - [bbo.do/](/): the home page has a drag-and-draw pen embedded in the background
-- [/notes/canvas](/notes/canvas): a dedicated multi-pen canvas session
-- [/notes/arte-digital-canvas](/notes/arte-digital-canvas): used during an Arte Digital session at EBA / UFRJ
+- [/notes/2026-05-03_canvas](/notes/2026-05-03_canvas): a dedicated multi-pen canvas session
+- [/notes/2026-05-14_arte_digital_canvas](notes/2026-05-14_arte_digital_canvas): used during an Arte Digital session at EBA / UFRJ
 
 ## How it works
 
