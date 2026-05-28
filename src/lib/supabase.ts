@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Generate or retrieve persistent user ID for RLS
-function getUserId(): string {
+export function getUserId(): string {
   // Check if we're in a browser environment
   if (typeof window === 'undefined') {
     // SSR/build time - return a placeholder

@@ -234,7 +234,7 @@
       }
 
       &[class*='language-javascript'] {
-        padding: 1em;
+        margin-left: 1em;
         overflow: auto;
         scrollbar-width: none;
         &::scroll-marker {
