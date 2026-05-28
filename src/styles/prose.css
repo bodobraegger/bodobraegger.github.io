@@ -242,16 +242,7 @@
       }
     }
     .line {
-      overflow-wrap: anywhere;
-      display: inline-block;
-      padding-left: 4ch;
-      text-indent: -4ch;
-      /* strings / text in quotes have this style */
-      @media (min-width: 768px) {
-        span:not([style*='--s-dark: #C98A7D; --s-light: #B56959;']) {
-          white-space: nowrap;
-        }
-      }
+      text-indent: 3ch hanging;
     }
   }
 
