@@ -1,5 +1,5 @@
 ---
-title: B - bidi
+title: bidi
 display: bidi
 phonetic: ˌbaɪˈdaɪ
 description: translate text to and fro

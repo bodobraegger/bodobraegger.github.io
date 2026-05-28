@@ -1,5 +1,5 @@
 ---
-title: B - gleis161
+title: gleis161
 display: gleis161.ch
 description: Documentation for the portfolio website of Janis Labhart, built with Astro.js
 plum: true

@@ -1,5 +1,5 @@
 ---
-title: B - The Real Walter
+title: The Real Walter
 display: The Real Walter
 description: docs for this (one and only?) implementation of der wahre walter.
 plum: true

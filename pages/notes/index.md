@@ -1,5 +1,5 @@
 ---
-title: B - Notes
+title: Notes
 plum: true
 display: 'Notes'
 ---

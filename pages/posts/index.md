@@ -1,5 +1,5 @@
 ---
-title: B - Posts
+title: Posts
 display: 'Posts'
 plum: true
 ---

@@ -1,5 +1,5 @@
 ---
-title: B - janislabhart
+title: janislabhart
 display: Janis Labhart's Portfolio
 description: Documentation for the portfolio website of Janis Labhart, built with Astro.js
 plum: true

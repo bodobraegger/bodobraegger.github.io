@@ -1,5 +1,5 @@
 ---
-title: B - Projects
+title: Projects
 display: Projects
 description: Projects past & present
 plum: true

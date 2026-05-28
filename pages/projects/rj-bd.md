@@ -1,5 +1,5 @@
 ---
-title: B - RJ-BD
+title: RJ-BD
 display: Rio Beach Water Quality
 description: Real-time beach water quality monitoring for Rio's coastline
 plum: true
