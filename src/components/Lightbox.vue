@@ -76,7 +76,7 @@ onKeyStroke('ArrowRight', (e) => {
   <Transition name="fade">
     <div v-if="imageModel" class="lightbox  fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 flex cursor-zoom-out ">
       <div class="absolute top-0 left-0 right-0 bottom-0 bg-white:50 dark:bg-dark:50 z--1" />
-      <button v-if="images.length > 1" class="lightbox prev  text-right cursor-w-resize h-full absolute top-0 left-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pr-2">
+      <button v-if="images.length > 1" class="lightbox prev text-right cursor-w-resize h-full absolute top-0 left-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pr-2">
         <span class="prev  i-bi:arrow-left w-7 h-7 bg-transparent backdrop-invert font-mono text-xl"><-</span>
       </button>
       <figure class="m-auto max-w-100vw lg:max-w-84vw">
@@ -91,3 +91,15 @@ onKeyStroke('ArrowRight', (e) => {
     </div>
   </Transition>
 </template>
+
+<style lang="css" scoped>
+button.lightbox {
+  border: none !important;
+  span {
+    border: 1px dashed var(--fg-deep);
+    &:hover {
+      border: 1px solid var(--fg-deeper);
+    }
+  }
+}
+</style>
