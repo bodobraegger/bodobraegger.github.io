@@ -1,6 +1,5 @@
 ---
-title: resguardo-tecnologias
-display: RESGUARDO - Tecnologias de Continuidade
+title: RESGUARDO - Tecnologias de Continuidade
 description: Hardware and software for the interactive sensor modules in Rafa Mourão's solo exhibition in Rio de Janeiro, 2026.
 plum: true
 ---
