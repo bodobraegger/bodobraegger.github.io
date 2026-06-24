@@ -129,7 +129,13 @@ projects:
     #   desc: 'This site introduces tools, methods, and concepts related to creating computational form. It discusses computational form in many mediums.'
     #   icon: 'i-carbon-notebook-reference'
     #   date: '2023-09-01'
-
+  hardware:
+    - name: 'resguardo-tecnologias'
+      link: './resguardo-tecnologias'
+      desc: 'Hardware and firmware for the interactive sensor modules in Rafa Mourão`s solo exhibition RESGUARDO, Rio de Janeiro, 2026.
+      Four independent Arduino Nano units hidden inside artwork pieces, triggering PWM-faded LED patterns and audio playback via ultrasonic proximity sensors.'
+      date: '2026-06-26'
+      place: Rio de Janeiro, BR
   # Toys:
   #   - name: 'Birthday Script'
   #     link: 'https://github.com/bodobraegger/birthday-script'
