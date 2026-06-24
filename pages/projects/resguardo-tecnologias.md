@@ -22,4 +22,4 @@ Each unit runs independent firmware, compiled and flashed with arduino-cli. The 
 
 The source code and full build documentation are available on GitHub:
 
-- https://github.com/bodobraegger/resguardo-tecnologias
+https://github.com/bodobraegger/resguardo-tecnologias
