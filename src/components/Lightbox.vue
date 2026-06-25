@@ -20,15 +20,14 @@ useEventListener('click', async (e) => {
   const path = Array.from(e.composedPath())
   const first = path[0] as HTMLElement
 
+  const lightboxButton = (e.target as HTMLElement).closest('button.lightbox')
+  if (lightboxButton) {
+    const dir = lightboxButton.classList.contains('prev') ? Direction.PREV : Direction.NEXT
+    imageModel.value = images[findNextImageIndex(dir)]
+    return
+  }
+
   switch (first.tagName) {
-    case 'BUTTON':
-      if (!first?.parentElement?.classList.contains('lightbox'))
-        return
-      if (first.classList.contains('prev'))
-        imageModel.value = images[findNextImageIndex(Direction.PREV)]
-      else
-        imageModel.value = images[findNextImageIndex(Direction.NEXT)]
-      break
     case 'IMG':
       if (first.classList.contains('no-preview')) {
         imageModel.value = undefined
