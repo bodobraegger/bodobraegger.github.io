@@ -8,7 +8,6 @@ import './styles/markdown.css'
 import 'uno.css'
 
 import autoRoutes from 'pages-generated'
-// import NProgress from 'nprogress'
 import { ViteSSG } from 'vite-ssg'
 import dayjs from 'dayjs'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat.js'
@@ -55,28 +54,31 @@ export const createApp = ViteSSG(
         behavior: 'auto',
       })
 
-      // Preload routes when navigating to home
+      function whenIdle(callback: () => void) {
+        if ('requestIdleCallback' in window)
+          requestIdleCallback(callback)
+        else
+          setTimeout(callback, 1000)
+      }
+
       router.afterEach((to) => {
-        if (to.path === '/') {
-          // Wait until the browser is idle before preloading
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-              preloadRoutes(['/projects', '/notes'])
-            })
-          }
-          else {
-            // Fallback for browsers that don't support requestIdleCallback
-            setTimeout(() => {
-              preloadRoutes(['/projects', '/notes'])
-            }, 1000)
-          }
+        // reload the page once when navigating to /der-wahre-walter
+        // to fix the issue with vue 404 showing
+        if (to.redirectedFrom?.path.includes('/walter')) {
+          document.location.reload()
+          return
         }
+
+        if (to.path === '/')
+          whenIdle(() => preloadRoutes(['/projects', '/notes']))
+
         if (to.path === '/notes') {
-          // preload all notes
-          const notePaths = routes
-            .filter(i => i.path.startsWith('/notes/') && !i.path.includes('://') && !i.path.includes('.html'))
-            .map(i => i.path)
-          preloadRoutes(notePaths)
+          whenIdle(() => {
+            const notePaths = routes
+              .filter(i => i.path.startsWith('/notes/') && !i.path.includes('://') && !i.path.includes('.html'))
+              .map(i => i.path)
+            preloadRoutes(notePaths)
+          })
         }
       })
 
@@ -97,19 +99,6 @@ export const createApp = ViteSSG(
           // console.log(`Preloaded route: ${routePath}`)
         })
       }
-
-      // router.beforeEach(() => {
-      // NProgress.start()
-      // })
-      router.afterEach((to, from) => {
-        // reload the page once when navigating to /der-wahre-walter
-        // to fix the issue with vue 404 showing
-        if (to.redirectedFrom?.path.includes('/walter')) {
-          console.log(`going to der-wahre-walter from ${to.redirectedFrom?.path}! reloading`)
-          document.location.reload()
-        }
-        // NProgress.done()
-      })
 
       // Add double-click to select code blocks
       document.addEventListener('dblclick', (e) => {
