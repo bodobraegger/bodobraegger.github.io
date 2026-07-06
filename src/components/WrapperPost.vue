@@ -129,6 +129,14 @@ if (frontmatter.hydra) {
     async: true,
   })
 
+  const hydraObservers: IntersectionObserver[] = []
+  const hydraListeners: [Element, string, EventListener][] = []
+
+  onUnmounted(() => {
+    hydraObservers.forEach(observer => observer.disconnect())
+    hydraListeners.forEach(([el, event, listener]) => el.removeEventListener(event, listener))
+  })
+
   useScriptTag('https://unpkg.com/hydra-synth', () => {
     console.log('hydra-synth loaded')
     const hydraCanvas = document.createElement('canvas')
@@ -138,7 +146,6 @@ if (frontmatter.hydra) {
     hydraCanvas.height = height
     hydraCanvas.id = 'hydraCanvas'
     hydraCanvas.classList.add('rounded-md')
-    const placeholders = []
 
     // @ts-ignore - hydra global
     let hydra = new Hydra({
@@ -158,7 +165,6 @@ if (frontmatter.hydra) {
 
       const placeholder = document.createElement('div')
       placeholder.classList.add('hydracontainer', 'row-start-1', 'col-start-1', 'z-0', 'sticky', 'top-0')
-      placeholders.push(placeholder)
       preEl.insertAdjacentElement('beforeend', placeholder)
 
       const linkEl = document.createElement('a')
@@ -168,9 +174,7 @@ if (frontmatter.hydra) {
       linkEl.classList.add('artwork-link', 'z-2', 'text-right', 'color-white!', 'rounded-tl-0', 'rounded-tr-0')
       preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
-      preEl.addEventListener('focus', () => {
-        // console.log('focusing')
-
+      const handleFocus = () => {
         // Calculate square size based on container
         const containerRect = placeholder.getBoundingClientRect()
         const size = containerRect.width;
@@ -193,31 +197,29 @@ if (frontmatter.hydra) {
         hush()
         setTimeout(() => {
           eval(codeEl.textContent!)
-          // console.log('evaluated, rendering, and waiting for 60ms');
         }, 20)
         placeholder.appendChild(hydraCanvas)
         // make text semi transparent
         codeEl.classList.add('op-80')
         // add black background
         placeholder.classList.add('bg-black!')
-      })
-      preEl.addEventListener('focusout', (e) => {
-        // remove black background
+      }
+      const handleFocusOut = () => {
         codeEl.classList.remove('op-80')
         placeholder.classList.remove('bg-black!')
-      })
+      }
+      preEl.addEventListener('focus', handleFocus)
+      preEl.addEventListener('focusout', handleFocusOut)
+      hydraListeners.push([preEl, 'focus', handleFocus], [preEl, 'focusout', handleFocusOut])
 
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting === true) {
-          // console.log('intersecting');
+        if (entries[0].isIntersecting === true)
           preEl.dispatchEvent(new Event('focus'))
-        }
-        else {
-          // console.log('not intersecting');
+        else
           preEl.dispatchEvent(new Event('focusout'))
-        }
       }, { threshold: [1], rootMargin: '0% 100% 0% 100%' })
       observer.observe(preEl)
+      hydraObservers.push(observer)
     })
   }, { async: true, defer: true })
   //     },

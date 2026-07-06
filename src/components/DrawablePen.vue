@@ -107,6 +107,9 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   supabaseLoaded: false, // Track if we've already loaded from Supabase for this canvas
 })
 const allStrokes = canvasData.strokes
+// Whether this instance registered the shared window handlers for its canvas
+let ownsUndoHandler = false
+let ownsScrollHandler = false
 const storageKey = `drawable-pen-${effectiveCanvasId}`
 const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
 
@@ -282,11 +285,13 @@ onMounted(() => {
     if (!canvasData.undoHandlerRegistered) {
       window.addEventListener('keydown', handleUndoRedo, { capture: true })
       canvasData.undoHandlerRegistered = true
+      ownsUndoHandler = true
     }
 
     if (!canvasData.scrollHandlerRegistered) {
       window.addEventListener('scroll', handleScroll, { passive: true })
       canvasData.scrollHandlerRegistered = true
+      ownsScrollHandler = true
     }
   }
   else {
@@ -315,6 +320,17 @@ onUnmounted(() => {
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('toolsReset', handleToolsReset)
   window.removeEventListener('keydown', handleClearCommand)
+
+  // Only the instance that registered the shared handlers may remove them;
+  // other instances hold different function identities for the same canvas.
+  if (ownsUndoHandler) {
+    window.removeEventListener('keydown', handleUndoRedo, { capture: true })
+    canvasData.undoHandlerRegistered = false
+  }
+  if (ownsScrollHandler) {
+    window.removeEventListener('scroll', handleScroll)
+    canvasData.scrollHandlerRegistered = false
+  }
 })
 
 function handleStorageChange(e: StorageEvent) {
@@ -712,15 +728,21 @@ function startDrag(e: MouseEvent) {
   }
 }
 
+function setNavLinksDisplay(display: string) {
+  for (const id of ['projects', 'notes']) {
+    const link = document.getElementById(id)
+    if (link)
+      link.style.display = display
+  }
+}
+
 function showControls() {
   controlsVisible.value = true
-  document.getElementById('projects')!.style.display = 'none'
-  document.getElementById('notes')!.style.display = 'none'
+  setNavLinksDisplay('none')
 }
 function hideControls() {
   controlsVisible.value = false
-  document.getElementById('projects')!.style.display = ''
-  document.getElementById('notes')!.style.display = ''
+  setNavLinksDisplay('')
 }
 
 function pickUpPen(e: MouseEvent) {

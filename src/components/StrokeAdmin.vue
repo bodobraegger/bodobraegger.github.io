@@ -518,6 +518,8 @@ watch(filterCanvas, () => {
   }, 50)
 })
 
+let authSubscription: { unsubscribe: () => void } | null = null
+
 onMounted(async () => {
   // Check initial auth state
   if (supabase) {
@@ -525,9 +527,10 @@ onMounted(async () => {
     user.value = currentUser
 
     // Subscribe to auth changes
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       user.value = session?.user ?? null
     })
+    authSubscription = data.subscription
   }
 
   loadStrokes()
@@ -535,6 +538,12 @@ onMounted(async () => {
 
   window.addEventListener('resize', setupCanvas)
   window.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setupCanvas)
+  window.removeEventListener('keydown', handleKeyDown)
+  authSubscription?.unsubscribe()
 })
 </script>
 
