@@ -3,7 +3,6 @@ import 'floating-vue/dist/style.css'
 import './styles/fonts.css'
 import './styles/main.css'
 import './styles/prose.css'
-import './styles/markdown.css'
 
 import 'uno.css'
 
