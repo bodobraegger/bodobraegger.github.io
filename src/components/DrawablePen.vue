@@ -398,10 +398,6 @@ function handleClearCommand(e: KeyboardEvent) {
     typedChars = ''
     exportToHash()
   }
-  else if (lowerChars.includes('cloud') && supabase && effectiveCloudStorageId) {
-    typedChars = ''
-    saveToSupabase()
-  }
 }
 
 function handleUndoRedo(e: KeyboardEvent) {
@@ -600,16 +596,6 @@ async function deleteStrokeFromSupabase(strokeId: string) {
   catch (e) {
     console.error('Supabase stroke delete failed:', e)
   }
-}
-
-// Legacy function - no longer used with new schema
-async function saveToSupabase() {
-  console.warn('saveToSupabase (bulk) is deprecated with new schema. Use saveStrokeToSupabase instead.')
-}
-
-// Debounced version - no longer needed with new schema (saves are instant)
-function saveToSupabaseDebounced() {
-  // No-op with new schema
 }
 
 async function loadFromSupabase() {
@@ -1066,7 +1052,6 @@ defineExpose({
   loadDrawing: loadStrokes,
   exportToHash,
   loadFromHash,
-  saveToSupabase,
   loadFromSupabase,
 })
 </script>

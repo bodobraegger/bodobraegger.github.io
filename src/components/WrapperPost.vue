@@ -98,31 +98,6 @@ onMounted(() => {
 })
 
 if (frontmatter.hydra) {
-  const codeMirrorAddOns = [
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/mode/javascript/javascript.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/javascript-hint.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/show-hint.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/selection/mark-selection.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/comment/comment.min.js',
-  ]
-
-  // useScriptTag("https://unpkg.com/torus-dom/dist/index.min.js",
-  // () => {
-  // console.log('torus loaded');
-  // useScriptTag("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/codemirror.min.js",
-  //     () => {
-  //         console.log('codemirror loaded');
-
-  //         for (const script of codeMirrorAddOns) {
-  //             useScriptTag(script, () => {
-  //                 console.log(`${script} loaded`);
-  //             }, {
-  //                 async: true,
-  //                 defer: true,
-  //             });
-  //         }
-  // });
-
   useScriptTag('https://hyper-hydra.glitch.me/hydra-arrays.js', () => {
     console.log('hydra-arrays loaded')
   }, {
@@ -222,9 +197,6 @@ if (frontmatter.hydra) {
       hydraObservers.push(observer)
     })
   }, { async: true, defer: true })
-  //     },
-  //     { async: true, defer: true, }
-  // )
 }
 </script>
 
