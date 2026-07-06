@@ -1,6 +1,7 @@
+import process from 'node:process'
 import Git from 'simple-git'
 import prompts from 'prompts'
-import { compressImages } from './img-compress'
+import { IMAGE_PATTERN, compressImages } from './img-compress'
 
 const git = Git()
 const stagedFiles = (await git.diff(['--cached', '--name-only']))
@@ -8,7 +9,7 @@ const stagedFiles = (await git.diff(['--cached', '--name-only']))
   .map(i => i.trim())
   .filter(Boolean)
 
-const images = stagedFiles.filter(i => i.match(/\.(png|jpe?g|webp|avif)$/i))
+const images = stagedFiles.filter(i => i.match(IMAGE_PATTERN))
 if (images.length > 0) {
   console.log('Images to compress:\n', images)
   const { confirm } = await prompts({
@@ -19,7 +20,7 @@ if (images.length > 0) {
 
   if (!confirm)
     process.exit(0)
-  
+
   compressImages(images, process.argv.includes('--convert2avif'))
 }
 else {
