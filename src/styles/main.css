@@ -12,14 +12,13 @@
   --c-border: color-mix(in srgb, var(--fg) 25%, transparent);
   --c-border-soft: color-mix(in srgb, var(--fg) 15%, transparent);
 
-  --fonts-sans:
-    ModernGothic, Inter, Helvetica, 'Helvetica Neue', Arial, ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, 'Noto Sans', sans-serif;
-  --fonts-serif: BradfordLL, BradfordLLFallback, Ogg, 'Times New Roman', Georgia, serif;
-  --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', Georgia, serif;
-  --fonts-mono:
-    BradfordMonoLL, BradfordMonoLLFallback, ModernGothicMono, ui-monospace, 'Fragment Mono', 'Fira Code', 'SF Mono',
-    'Cascadia', monospace;
+  /* Each stack is: web font, metric-matched local fallback (see fonts.css),
+     then generics for glyph coverage. Families listed after the fallback only
+     ever render characters missing from the first two. */
+  --fonts-sans: ModernGothic, ModernGothicFallback, Helvetica, Arial, system-ui, sans-serif;
+  --fonts-serif: BradfordLL, BradfordLLFallback, Georgia, serif;
+  --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', serif;
+  --fonts-mono: BradfordMonoLL, BradfordMonoLLFallback, 'Courier New', ui-monospace, monospace;
 
   &.dark {
     color-scheme: dark;
