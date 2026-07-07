@@ -485,7 +485,7 @@ a.item:hover {
 .table-of-contents {
   position: fixed;
   top: 90px;
-  bottom: 0;
+  max-height: calc(100dvh - 90px);
   font-size: 0.8em;
   right: 2px;
   z-index: 200;
@@ -494,7 +494,9 @@ a.item:hover {
 
   > ul {
     text-overflow: ellipsis;
-    height: 100%;
+    /* let the list shrink below content size so a long toc scrolls
+       instead of overflowing the max-height */
+    min-height: 0;
     overflow-y: auto;
     --uno: rounded op40 mt-1 pb-5 transition duration-700;
   }
