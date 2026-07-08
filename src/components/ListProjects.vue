@@ -25,11 +25,23 @@ function toggleCategory(key: string | null) {
   activeCategory.value = key === activeCategory.value ? ALL : key
 }
 
+// Clearing is delayed so mouse travel between category links (and the gaps
+// between them) does not flicker the chip highlights and the toc reveal
+let hoverClearTimer: ReturnType<typeof setTimeout> | undefined
+function setHoveredCategory(category: string | null) {
+  clearTimeout(hoverClearTimer)
+  if (category === null)
+    hoverClearTimer = setTimeout(() => hoveredCategory.value = null, 200)
+  else
+    hoveredCategory.value = category
+}
+
 watch(hoveredCategory, (val) => {
   document.documentElement.classList.toggle('toc-always-on', !!val)
 })
 
 onUnmounted(() => {
+  clearTimeout(hoverClearTimer)
   document.documentElement.classList.remove('toc-always-on')
 })
 
@@ -96,7 +108,7 @@ onBeforeMount(() => {
         :class="visible ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
         style="transition: opacity 0.1s ease"
       >
-        <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="hoveredCategory = $event" />
+        <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="setHoveredCategory" />
       </div>
     </template>
   </ul>
@@ -120,8 +132,8 @@ onBeforeMount(() => {
             href="javascript:void(0)"
             :class="activeCategory === key || hoveredCategory === key ? 'op100!' : ''"
             :style="activeCategory === key || hoveredCategory === key ? 'border-style: solid' : ''"
-            @mouseenter="hoveredCategory = key"
-            @mouseleave="hoveredCategory = null"
+            @mouseenter="setHoveredCategory(key)"
+            @mouseleave="setHoveredCategory(null)"
             @click="toggleCategory(key)"
           >{{ key }}</a>
         </li>

@@ -32,27 +32,22 @@ onMounted(() => {
     fontsLoaded.value = true
   }
 
+  // Scroll to the hash target; nav link highlighting lives in NavBar
   const navigate = () => {
-    if (location.hash) {
-      const el = document.querySelector(decodeURIComponent(location.hash))
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        const y = window.scrollY + rect.top - 40
-        window.scrollTo({
-          top: y,
-          behavior: 'smooth',
-        })
-        return true
-      }
-    }
-    if (location.pathname.length > 1) {
-      document.querySelectorAll('.nav a').forEach(el => el.classList.remove('router-link-active'))
-      document.getElementById(location.pathname.split('/')[1])?.classList.add('router-link-active')
-    }
-    else {
-      document.querySelectorAll('.nav a').forEach(el => el.classList.remove('router-link-active'))
-      document.getElementById('home')?.classList.add('router-link-active')
-    }
+    if (!location.hash)
+      return true
+
+    const el = document.querySelector(decodeURIComponent(location.hash))
+    if (!el)
+      return false
+
+    const rect = el.getBoundingClientRect()
+    const y = window.scrollY + rect.top - 40
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth',
+    })
+    return true
   }
 
   const handleAnchors = (

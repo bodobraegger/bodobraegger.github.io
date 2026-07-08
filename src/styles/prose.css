@@ -498,7 +498,11 @@ a.item:hover {
        instead of overflowing the max-height */
     min-height: 0;
     overflow-y: auto;
-    --uno: rounded op40 mt-1 pb-5 transition duration-700;
+    /* the hover zone is the toc's parent (the content column), so mouse
+       travel across the gap to the fixed toc briefly unhovers it; delay the
+       fade-out so that trip does not flash the list out and back in */
+    transition: opacity 0.4s ease 0.4s;
+    --uno: rounded op40 mt-1 pb-5;
   }
 
   ul > li {
@@ -517,16 +521,21 @@ a.item:hover {
 }
 
 .table-of-contents-anchor {
-  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base bg-op-20 rounded text-hex-8887 border border-base
-    shadow md: border-transparent md: shadow-none transition duration-400;
+  /* keep on one line: reformatting once split a variant prefix (md:) from
+     its utility, which disabled the desktop overrides */
+  /* prettier-ignore */
+  --uno: mx2 w-7 h-7 text-lg flex items-center justify-center bg-base bg-op-20 rounded text-hex-8887 border border-base shadow md:border-transparent md:shadow-none;
+  transition: color 0.3s ease 0.4s;
 }
 
 *:hover > .table-of-contents > .table-of-contents-anchor,
 .toc-always-on .table-of-contents > .table-of-contents-anchor {
   --uno: text-inherit;
+  transition-delay: 0s;
 }
 
 *:hover > .table-of-contents > ul,
 .toc-always-on .table-of-contents > ul {
   opacity: 0.75;
+  transition-delay: 0s;
 }

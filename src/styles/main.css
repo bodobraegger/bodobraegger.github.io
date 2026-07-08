@@ -147,7 +147,8 @@ html {
 
     .v-popper__arrow-inner {
       visibility: visible;
-      --at-apply: border-white dark: border-black;
+      /* prettier-ignore */
+      --at-apply: border-white dark:border-black;
     }
 
     .v-popper__arrow-outer {

@@ -1,3 +1,13 @@
+<script setup lang="ts">
+const route = useRoute()
+
+// vite-plugin-pages generates flat routes, so /notes/... is not a child
+// record of /notes and vue-router alone never marks the section link active
+function isSectionActive(section: string) {
+  return route.path === section || route.path.startsWith(`${section}/`)
+}
+</script>
+
 <template>
   <header class="header z-40 position-sticky top-0 backdrop-blur-sm">
     <nav class="nav font-mono select-none">
@@ -14,10 +24,22 @@
         <RouterLink to="/" title="Home" class="justify-self-start">
           Home
         </RouterLink>
-        <RouterLink id="projects" to="/projects" title="Projects" class="justify-self-center">
+        <RouterLink
+          id="projects"
+          to="/projects"
+          title="Projects"
+          class="justify-self-center"
+          :class="{ 'router-link-active': isSectionActive('/projects') }"
+        >
           Projects
         </RouterLink>
-        <RouterLink id="notes" to="/notes" title="Blog" class="justify-self-center">
+        <RouterLink
+          id="notes"
+          to="/notes"
+          title="Blog"
+          class="justify-self-center"
+          :class="{ 'router-link-active': isSectionActive('/notes') }"
+        >
           Notes
         </RouterLink>
         <ToggleTheme class="justify-self-end" />
