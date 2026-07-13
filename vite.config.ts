@@ -21,8 +21,6 @@ import { transformerRenderWhitespace } from '@shikijs/transformers'
 import TOC from 'markdown-it-table-of-contents'
 import { slugify } from './scripts/slugify'
 
-const promises: Promise<any>[] = []
-
 export default defineConfig({
   resolve: {
     alias: [
@@ -43,10 +41,6 @@ export default defineConfig({
 
     Vue({
       include: [/\.vue$/, /\.md$/],
-      reactivityTransform: true,
-      script: {
-        defineModel: true,
-      },
     }),
 
     Pages({
@@ -55,7 +49,7 @@ export default defineConfig({
       extendRoute(route) {
         const path = resolve(__dirname, route.component.slice(1))
 
-        if (!path.includes('projects.md') && path.endsWith('.md')) {
+        if (path.endsWith('.md')) {
           const md = fs.readFileSync(path, 'utf-8')
           const { data } = matter(md)
           route.meta = Object.assign(route.meta || {}, { frontmatter: data })
@@ -66,9 +60,7 @@ export default defineConfig({
     }),
 
     Markdown({
-      wrapperComponent: id => id.includes('/demo/')
-        ? 'WrapperDemo'
-        : 'WrapperPost',
+      wrapperComponent: 'WrapperPost',
       wrapperClasses: (id, code) => code.includes('@layout-full-width')
         ? ''
         : 'prose m-auto',
@@ -149,7 +141,7 @@ export default defineConfig({
       ],
     }),
 
-    Inspect(),
+    process.env.NODE_ENV !== 'production' && Inspect(),
 
     Icons({
       defaultClass: 'inline',
@@ -160,13 +152,6 @@ export default defineConfig({
       svgo: false,
       defaultImport: 'component',
     }),
-
-    {
-      name: 'await',
-      async closeBundle() {
-        await Promise.all(promises)
-      },
-    },
   ],
 
   build: {

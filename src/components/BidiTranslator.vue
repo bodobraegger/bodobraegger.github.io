@@ -204,6 +204,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
+  if (debounceTimer)
+    clearTimeout(debounceTimer)
 })
 </script>
 

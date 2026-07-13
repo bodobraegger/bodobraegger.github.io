@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue'
 import { formatDate } from '~/logics'
 import { usePageViews } from '~/composables/usePageViews'
-import { supabase } from '~/lib/supabase'
 
 const props = defineProps<{
   item: { name: string, link?: string, desc?: string, date?: string, place?: string }
@@ -31,22 +30,9 @@ const pagePath = computed(() =>
     : null,
 )
 
-const { viewCount } = usePageViews(pagePath.value ?? '')
+const { viewCount, fetchViewCount } = usePageViews(pagePath.value ?? '')
 
-onMounted(async () => {
-  if (pagePath.value && supabase) {
-    try {
-      const { data } = await supabase
-        .from('page_views')
-        .select('view_count')
-        .eq('page_path', pagePath.value)
-        .maybeSingle()
-      if (data)
-        viewCount.value = data.view_count
-    }
-    catch {}
-  }
-})
+onMounted(fetchViewCount)
 </script>
 
 <template>

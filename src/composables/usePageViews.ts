@@ -23,8 +23,32 @@ export function usePageViews(pagePath: string) {
     })()
   }
 
+  // Read the current count without incrementing it
+  function fetchViewCount() {
+    if (!supabase || !pagePath)
+      return
+
+    // Non-blocking async - don't await
+    void (async () => {
+      try {
+        const { data } = await supabase
+          .from('page_views')
+          .select('view_count')
+          .eq('page_path', pagePath)
+          .maybeSingle()
+
+        if (data)
+          viewCount.value = data.view_count
+      }
+      catch {
+        // Silent fail - don't impact page load
+      }
+    })()
+  }
+
   return {
     viewCount,
     trackView,
+    fetchViewCount,
   }
 }

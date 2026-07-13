@@ -32,27 +32,22 @@ onMounted(() => {
     fontsLoaded.value = true
   }
 
+  // Scroll to the hash target; nav link highlighting lives in NavBar
   const navigate = () => {
-    if (location.hash) {
-      const el = document.querySelector(decodeURIComponent(location.hash))
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        const y = window.scrollY + rect.top - 40
-        window.scrollTo({
-          top: y,
-          behavior: 'smooth',
-        })
-        return true
-      }
-    }
-    if (location.pathname.length > 1) {
-      document.querySelectorAll('.nav a').forEach(el => el.classList.remove('router-link-active'))
-      document.getElementById(location.pathname.split('/')[1])?.classList.add('router-link-active')
-    }
-    else {
-      document.querySelectorAll('.nav a').forEach(el => el.classList.remove('router-link-active'))
-      document.getElementById('home')?.classList.add('router-link-active')
-    }
+    if (!location.hash)
+      return true
+
+    const el = document.querySelector(decodeURIComponent(location.hash))
+    if (!el)
+      return false
+
+    const rect = el.getBoundingClientRect()
+    const y = window.scrollY + rect.top - 40
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth',
+    })
+    return true
   }
 
   const handleAnchors = (
@@ -98,35 +93,18 @@ onMounted(() => {
 })
 
 if (frontmatter.hydra) {
-  const codeMirrorAddOns = [
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/mode/javascript/javascript.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/javascript-hint.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/hint/show-hint.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/selection/mark-selection.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/addon/comment/comment.min.js',
-  ]
-
-  // useScriptTag("https://unpkg.com/torus-dom/dist/index.min.js",
-  // () => {
-  // console.log('torus loaded');
-  // useScriptTag("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.2/codemirror.min.js",
-  //     () => {
-  //         console.log('codemirror loaded');
-
-  //         for (const script of codeMirrorAddOns) {
-  //             useScriptTag(script, () => {
-  //                 console.log(`${script} loaded`);
-  //             }, {
-  //                 async: true,
-  //                 defer: true,
-  //             });
-  //         }
-  // });
-
   useScriptTag('https://hyper-hydra.glitch.me/hydra-arrays.js', () => {
     console.log('hydra-arrays loaded')
   }, {
     async: true,
+  })
+
+  const hydraObservers: IntersectionObserver[] = []
+  const hydraListeners: [Element, string, EventListener][] = []
+
+  onUnmounted(() => {
+    hydraObservers.forEach(observer => observer.disconnect())
+    hydraListeners.forEach(([el, event, listener]) => el.removeEventListener(event, listener))
   })
 
   useScriptTag('https://unpkg.com/hydra-synth', () => {
@@ -138,7 +116,6 @@ if (frontmatter.hydra) {
     hydraCanvas.height = height
     hydraCanvas.id = 'hydraCanvas'
     hydraCanvas.classList.add('rounded-md')
-    const placeholders = []
 
     // @ts-ignore - hydra global
     let hydra = new Hydra({
@@ -158,7 +135,6 @@ if (frontmatter.hydra) {
 
       const placeholder = document.createElement('div')
       placeholder.classList.add('hydracontainer', 'row-start-1', 'col-start-1', 'z-0', 'sticky', 'top-0')
-      placeholders.push(placeholder)
       preEl.insertAdjacentElement('beforeend', placeholder)
 
       const linkEl = document.createElement('a')
@@ -168,9 +144,7 @@ if (frontmatter.hydra) {
       linkEl.classList.add('artwork-link', 'z-2', 'text-right', 'color-white!', 'rounded-tl-0', 'rounded-tr-0')
       preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
-      preEl.addEventListener('focus', () => {
-        // console.log('focusing')
-
+      const handleFocus = () => {
         // Calculate square size based on container
         const containerRect = placeholder.getBoundingClientRect()
         const size = containerRect.width;
@@ -193,36 +167,31 @@ if (frontmatter.hydra) {
         hush()
         setTimeout(() => {
           eval(codeEl.textContent!)
-          // console.log('evaluated, rendering, and waiting for 60ms');
         }, 20)
         placeholder.appendChild(hydraCanvas)
         // make text semi transparent
         codeEl.classList.add('op-80')
         // add black background
         placeholder.classList.add('bg-black!')
-      })
-      preEl.addEventListener('focusout', (e) => {
-        // remove black background
+      }
+      const handleFocusOut = () => {
         codeEl.classList.remove('op-80')
         placeholder.classList.remove('bg-black!')
-      })
+      }
+      preEl.addEventListener('focus', handleFocus)
+      preEl.addEventListener('focusout', handleFocusOut)
+      hydraListeners.push([preEl, 'focus', handleFocus], [preEl, 'focusout', handleFocusOut])
 
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting === true) {
-          // console.log('intersecting');
+        if (entries[0].isIntersecting === true)
           preEl.dispatchEvent(new Event('focus'))
-        }
-        else {
-          // console.log('not intersecting');
+        else
           preEl.dispatchEvent(new Event('focusout'))
-        }
       }, { threshold: [1], rootMargin: '0% 100% 0% 100%' })
       observer.observe(preEl)
+      hydraObservers.push(observer)
     })
   }, { async: true, defer: true })
-  //     },
-  //     { async: true, defer: true, }
-  // )
 }
 </script>
 

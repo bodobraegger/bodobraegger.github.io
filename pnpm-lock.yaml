@@ -78,9 +78,6 @@ importers:
       esno:
         specifier: ^4.8.0
         version: 4.8.0
-      fast-glob:
-        specifier: ^3.3.3
-        version: 3.3.3
       fs-extra:
         specifier: ^11.3.5
         version: 11.3.5
@@ -105,9 +102,6 @@ importers:
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
-      pnpm:
-        specifier: ^8.15.9
-        version: 8.15.9
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
@@ -3145,11 +3139,6 @@ packages:
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
-
-  pnpm@8.15.9:
-    resolution: {integrity: sha512-SZQ0ydj90aJ5Tr9FUrOyXApjOrzuW7Fee13pDzL0e1E6ypjNXP0AHDHw20VLw4BO3M1XhQHkyik6aBYWa72fgQ==}
-    engines: {node: '>=16.14'}
-    hasBin: true
 
   postcss-selector-parser@6.1.2:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
@@ -7043,8 +7032,6 @@ snapshots:
       pathe: 2.0.3
 
   pluralize@8.0.0: {}
-
-  pnpm@8.15.9: {}
 
   postcss-selector-parser@6.1.2:
     dependencies:

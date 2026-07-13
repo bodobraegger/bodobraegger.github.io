@@ -1,47 +1,49 @@
 :root {
-  --c-bg: #fefefe;
-  --c-scrollbar: #eee;
-  --c-scrollbar-hover: #ddd;
+  /* light-dark() resolves via color-scheme, toggled by the .dark class below */
+  color-scheme: light;
+
+  --c-bg: light-dark(#fefefe, #050505);
+  --c-scrollbar: light-dark(#eee, #111);
+  --c-scrollbar-hover: light-dark(#ddd, #222);
+  --fg: light-dark(#333, #ccc);
+  --fg-deep: light-dark(#222, #ddd);
+  --fg-deeper: light-dark(#111, #eee);
+  --fg-muted: color-mix(in srgb, var(--fg) 60%, transparent);
+  --c-border: color-mix(in srgb, var(--fg) 25%, transparent);
+  --c-border-soft: color-mix(in srgb, var(--fg) 15%, transparent);
+
+  /* Each stack is: web font, metric-matched local fallback (see fonts.css),
+     then generics for glyph coverage. Families listed after the fallback only
+     ever render characters missing from the first two. */
+  --fonts-sans: ModernGothic, ModernGothicFallback, Helvetica, Arial, system-ui, sans-serif;
+  --fonts-serif: BradfordLL, BradfordLLFallback, Georgia, serif;
+  --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', serif;
+  --fonts-mono: BradfordMonoLL, BradfordMonoLLFallback, 'Courier New', ui-monospace, monospace;
+
+  &.dark {
+    color-scheme: dark;
+  }
 }
 
 html {
   background-color: var(--c-bg);
   filter: contrast(110%) brightness(100%);
-  /* background:
-    radial-gradient(circle at -8% 2%, color-mix(in xyz, var(--c-bg), rgba(0,0,0,0.8)), var(--c-bg)),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.25' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); */
   overflow-x: hidden;
   overflow-y: scroll;
-  --fg: #333;
-  --fg-deep: #222;
-  --fg-deeper: #111;
   scrollbar-gutter: stable both-edges;
-  --fonts-sans:
-    ModernGothic, Inter, Helvetica, 'Helvetica Neue', Arial, ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, 'Noto Sans', sans-serif;
-  --fonts-serif: BradfordLL, Ogg, 'Times New Roman', Georgia, serif;
-  --fonts-serif-extra: Ogg, 'Times New Roman', Georgia, serif;
-  --fonts-mono:
-    BradfordMonoLL, ModernGothicMono, ui-monospace, 'Fragment Mono', 'Fira Code', 'SF Mono', 'Cascadia', monospace;
 
   &:has(.lightbox) {
     overflow: hidden;
   }
 
-  &.dark {
-    --c-bg: #050505;
-    --c-scrollbar: #111;
-    --c-scrollbar-hover: #222;
-    --fg: #ccc;
-    --fg-deep: #ddd;
-    --fg-deeper: #eee;
+  &:not(.dark) [img-dark] {
+    display: none;
   }
 
-  &:not(.dark) {
-    [img-dark] {
-      display: none;
-    }
+  &.dark [img-light] {
+    display: none;
   }
+
   div.page-background {
     background: linear-gradient(var(--c-scrollbar-hover) 0%, var(--c-scrollbar) 30%, var(--c-bg) 100%);
     position: fixed;
@@ -55,31 +57,13 @@ html {
   background: #8884;
 }
 
-*:focus {
+:focus-visible {
   outline: 1px solid blue;
   outline-offset: 4px;
 }
 
 * {
   scrollbar-color: var(--c-scrollbar) var(--c-bg);
-}
-
-.sponsorkit {
-  &-avatar {
-    cursor: pointer;
-  }
-
-  &-tier-title {
-    font-weight: 600;
-    font-size: 20px;
-    fill: currentColor;
-  }
-
-  &-name {
-    font-weight: 300;
-    font-size: 15px;
-    transform: translateY(8px);
-  }
 }
 
 ::-webkit-scrollbar {
@@ -105,12 +89,6 @@ html {
   }
 }
 
-.dark {
-  [img-light] {
-    display: none;
-  }
-}
-
 @keyframes slide-enter {
   0% {
     opacity: 0;
@@ -124,95 +102,12 @@ html {
 @media (prefers-reduced-motion: no-preference) {
   html:not(.no-sliding) {
     [slide-enter],
-    .slide-enter,
-    .slide-enter-content > *:not(:has(.table-of-contents)) {
+    .slide-enter {
       --enter-stage: 0;
       --enter-step: 100ms;
       --enter-initial: 0ms;
       animation: slide-enter 1s both 1;
       animation-delay: calc(var(--enter-initial) - var(--enter-stage) * var(--enter-step));
-    }
-  }
-
-  .slide-enter-content > * {
-    &:nth-child(1) {
-      --enter-stage: 1 !important;
-    }
-
-    &:nth-child(2) {
-      --enter-stage: 2 !important;
-    }
-
-    &:nth-child(3) {
-      --enter-stage: 3 !important;
-    }
-
-    &:nth-child(4) {
-      --enter-stage: 4 !important;
-    }
-
-    &:nth-child(5) {
-      --enter-stage: 5 !important;
-    }
-
-    &:nth-child(6) {
-      --enter-stage: 6 !important;
-    }
-
-    &:nth-child(7) {
-      --enter-stage: 7 !important;
-    }
-
-    &:nth-child(8) {
-      --enter-stage: 8 !important;
-    }
-
-    &:nth-child(9) {
-      --enter-stage: 9 !important;
-    }
-
-    &:nth-child(10) {
-      --enter-stage: 10 !important;
-    }
-
-    &:nth-child(11) {
-      --enter-stage: 11 !important;
-    }
-
-    &:nth-child(12) {
-      --enter-stage: 12 !important;
-    }
-
-    &:nth-child(13) {
-      --enter-stage: 13 !important;
-    }
-
-    &:nth-child(14) {
-      --enter-stage: 14 !important;
-    }
-
-    &:nth-child(15) {
-      --enter-stage: 15 !important;
-    }
-
-    &:nth-child(16) {
-      --enter-stage: 16 !important;
-    }
-
-    &:nth-child(17) {
-      --enter-stage: 17 !important;
-    }
-
-    &:nth-child(18) {
-      --enter-stage: 18 !important;
-    }
-
-    &:nth-child(19) {
-      --enter-stage: 19 !important;
-    }
-
-    &:nth-child(20) {
-      --enter-stage: 20 !important;
     }
   }
 }
@@ -252,7 +147,8 @@ html {
 
     .v-popper__arrow-inner {
       visibility: visible;
-      --at-apply: border-white dark: border-black;
+      /* prettier-ignore */
+      --at-apply: border-white dark:border-black;
     }
 
     .v-popper__arrow-outer {

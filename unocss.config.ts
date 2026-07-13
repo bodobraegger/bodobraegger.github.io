@@ -5,7 +5,7 @@ export default defineConfig({
     {
       getCSS: () => `
         html {
-          font-family: BradfordLL, BradfordLLFallback, Ogg, "Times New Roman", Georgia, serif;
+          font-family: var(--fonts-serif);
         }
         .font-phonetics {
           font-size: smaller;
@@ -24,11 +24,11 @@ export default defineConfig({
     [/^slide-enter-(\d+)$/, ([_, n]) => ({
       '--enter-stage': n,
     })],
-    ['font-sans', { 'font-family': 'ModernGothic, Inter,Helvetica,"Helvetica Neue",Arial,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif' }],
-    ['font-serif', { 'font-family': 'BradfordLL, BradfordLLFallback, Ogg, "Times New Roman",Georgia,serif' }],
-    ['font-serif-extra', { 'font-family': 'Ogg, OggFallback, "Times New Roman",Georgia,serif' }],
-    ['font-mono', { 'font-family': 'BradfordMonoLL, BradfordMonoLLFallback, ModernGothicMono, ui-monospace,"Fragment Mono","Fira Code","SF Mono","Cascadia",monospace' }],
-
+    /* Stacks are single-sourced as custom properties in styles/main.css */
+    ['font-sans', { 'font-family': 'var(--fonts-sans)' }],
+    ['font-serif', { 'font-family': 'var(--fonts-serif)' }],
+    ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)' }],
+    ['font-mono', { 'font-family': 'var(--fonts-mono)' }],
   ],
   presets: [
     presetIcons({

@@ -72,9 +72,9 @@ onBeforeMount(() => {
       </div>
     </template>
 
-    <template v-for="route, idx in posts" :key="route.path">
+    <template v-for="post, idx in posts" :key="post.path">
       <div
-        v-if="!isSameGroup(route, posts[idx - 1])"
+        v-if="!isSameGroup(post, posts[idx - 1])"
         class="select-none relative h20 pointer-events-none slide-enter"
         :class="{ 'op0!': !fontsLoaded }"
         :style="{
@@ -84,12 +84,12 @@ onBeforeMount(() => {
       >
         <span
           class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
-          :class="{ 'max-sm:text-5.4em': getGroupName(route) === 'Upcoming' }"
-        > {{ getGroupName(route) }}
+          :class="{ 'max-sm:text-5.4em': getGroupName(post) === 'Upcoming' }"
+        > {{ getGroupName(post) }}
         </span>
       </div>
       <div>
-        <ListPostItem :route="route" />
+        <ListPostItem :post="post" />
       </div>
     </template>
   </ul>

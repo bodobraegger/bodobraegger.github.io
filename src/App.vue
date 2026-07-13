@@ -3,8 +3,6 @@ import { useHead } from '@unhead/vue'
 
 const route = useRoute()
 
-const MAX_LENGTH = 24 // kept for future use
-
 // Strip leading date prefix like "2024-03-27_" from a slug
 function stripDate(segment: string) {
   return segment.replace(/^\d{4}-\d{2}-\d{2}_?/, '')

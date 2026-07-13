@@ -25,31 +25,52 @@ function toggleCategory(key: string | null) {
   activeCategory.value = key === activeCategory.value ? ALL : key
 }
 
+// Clearing is delayed so mouse travel between category links (and the gaps
+// between them) does not flicker the chip highlights and the toc reveal
+let hoverClearTimer: ReturnType<typeof setTimeout> | undefined
+function setHoveredCategory(category: string | null) {
+  clearTimeout(hoverClearTimer)
+  if (category === null)
+    hoverClearTimer = setTimeout(() => hoveredCategory.value = null, 200)
+  else
+    hoveredCategory.value = category
+}
+
 watch(hoveredCategory, (val) => {
   document.documentElement.classList.toggle('toc-always-on', !!val)
 })
 
 onUnmounted(() => {
+  clearTimeout(hoverClearTimer)
   document.documentElement.classList.remove('toc-always-on')
 })
 
 const hasTimezone = (date: string) => /Z|[+-]\d{2}:?\d{2}$/.test(date)
+const yearFormatters = new Map<string | undefined, Intl.DateTimeFormat>()
 function getYear(date?: string) {
   if (!date)
     return '?'
   const tz = hasTimezone(date) ? undefined : 'Europe/Zurich'
-  return Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: tz }).format(new Date(date)))
-}
-const isSameYear = (a?: string, b?: string) => getYear(a) === getYear(b)
-
-// For year headers: find the first visible item before current idx
-function prevVisibleItem(idx: number) {
-  for (let i = idx - 1; i >= 0; i--) {
-    if (isVisible(flatProjects.value[i].category))
-      return flatProjects.value[i]
+  let formatter = yearFormatters.get(tz)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: tz })
+    yearFormatters.set(tz, formatter)
   }
-  return undefined
+  return Number(formatter.format(new Date(date)))
 }
+
+// Single pass: a year header appears on the first visible item of each year
+const displayItems = computed(() => {
+  let lastVisibleYear: number | string | undefined
+  return flatProjects.value.map(({ item, category }) => {
+    const visible = isVisible(category)
+    const year = getYear(item.date)
+    const showYearHeader = visible && year !== lastVisibleYear
+    if (visible)
+      lastVisibleYear = year
+    return { item, category, visible, year, showYearHeader }
+  })
+})
 
 const fontsLoaded = ref(false)
 
@@ -72,22 +93,22 @@ onBeforeMount(() => {
 
 <template>
   <ul class="projects">
-    <template v-for="({ item, category }, idx) in flatProjects" :key="`${category}-${item.name}`">
+    <template v-for="({ item, category, visible, year, showYearHeader }, idx) in displayItems" :key="`${category}-${item.name}`">
       <div
-        v-if="!isSameYear(item.date, prevVisibleItem(idx)?.item.date)"
+        v-if="showYearHeader"
         class="select-none relative h20 pointer-events-none slide-enter"
-        :class="[{ 'op0!': !fontsLoaded }, !isVisible(category) ? 'hidden' : '']"
+        :class="{ 'op0!': !fontsLoaded }"
         :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
       >
         <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa">
-          {{ getYear(item.date) }}
+          {{ year }}
         </span>
       </div>
       <div
-        :class="isVisible(category) ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
+        :class="visible ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
         style="transition: opacity 0.1s ease"
       >
-        <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="hoveredCategory = $event" />
+        <ListProjectItem :item="item" :category="category" :active-category="activeCategory" :hovered-category="hoveredCategory" @filter="toggleCategory" @hover="setHoveredCategory" />
       </div>
     </template>
   </ul>
@@ -111,8 +132,8 @@ onBeforeMount(() => {
             href="javascript:void(0)"
             :class="activeCategory === key || hoveredCategory === key ? 'op100!' : ''"
             :style="activeCategory === key || hoveredCategory === key ? 'border-style: solid' : ''"
-            @mouseenter="hoveredCategory = key"
-            @mouseleave="hoveredCategory = null"
+            @mouseenter="setHoveredCategory(key)"
+            @mouseleave="setHoveredCategory(null)"
             @click="toggleCategory(key)"
           >{{ key }}</a>
         </li>

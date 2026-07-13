@@ -8,7 +8,8 @@ const currentFolder = route.path.split('/').filter(Boolean).slice(-1)[0] || ''
 
 const folder = props.folder || currentFolder
 
-const files = import.meta.glob('../../pages/notes/**', { eager: true, query: '?raw' })
+// Non-eager on purpose: only the file paths are needed, not the contents
+const files = import.meta.glob('../../pages/notes/**')
 
 const fileList = Object.keys(files)
   .filter((path) => { return path.includes(`/notes/${folder}/`) && !path.includes('index.md') })

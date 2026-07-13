@@ -1,15 +1,339 @@
+/* Font loading system
+
+   Every face uses font-display: swap so the real fonts always arrive, even on
+   slow connections. The faces used above the fold are preloaded in index.html
+   (keep that list pointing at faces that exist here), so on a normal
+   connection they are ready at first paint and no swap is visible. When a
+   swap does happen, the metric-matched fallbacks below change glyph shapes
+   but not layout.
+
+   Fallback metrics measured from the woff2 files (fontTools), constant across
+   weights per family. Local font metrics (per 2048 upem): Georgia cap 1419,
+   Times New Roman cap 1356, Courier New advance 1229, Arial cap 1467. */
+
+/* BradfordLL: asc 77%, desc 23%, gap 0%, cap 69.2%
+   size-adjust = 69.2 / (1419/2048 = 69.29) = 99.87% */
 @font-face {
-  font-family: 'ModernGothic';
+  font-family: 'BradfordLLFallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Georgia'), local('Gelasio');
+  size-adjust: 99.87%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'BradfordLLFallback';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Georgia Italic'), local('Georgia-Italic'), local('Gelasio Italic');
+  size-adjust: 99.87%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'BradfordLLFallback';
   font-style: normal;
   font-weight: 700;
-  src: url('/src/assets/fonts/ModernGothic-Bold.woff2') format('woff2');
+  src: local('Georgia Bold'), local('Georgia-Bold'), local('Gelasio Bold');
+  size-adjust: 99.87%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'BradfordLLFallback';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Georgia Bold Italic'), local('Georgia-BoldItalic'), local('Gelasio Bold Italic');
+  size-adjust: 99.87%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+
+/* Ogg: cap 82.9%; overrides from hhea metrics (asc 109.3%, desc 43.6%, gap 0%)
+   because Ogg's OS/2 useTypoMetrics flag is off, so browsers use hhea, not the
+   typo metrics the old overrides were based on.
+   size-adjust = 82.9 / (1356/2048 = 66.21) = 125.21% */
+@font-face {
+  font-family: 'OggFallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Times New Roman'), local('TimesNewRomanPSMT'), local('Liberation Serif'), local('Tinos');
+  size-adjust: 125.21%;
+  ascent-override: 109.3%;
+  descent-override: 43.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'OggFallback';
+  font-style: italic;
+  font-weight: 400;
+  src:
+    local('Times New Roman Italic'), local('TimesNewRomanPS-ItalicMT'), local('Liberation Serif Italic'),
+    local('Tinos Italic');
+  size-adjust: 125.21%;
+  ascent-override: 109.3%;
+  descent-override: 43.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'OggFallback';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    local('Times New Roman Bold'), local('TimesNewRomanPS-BoldMT'), local('Liberation Serif Bold'), local('Tinos Bold');
+  size-adjust: 125.21%;
+  ascent-override: 109.3%;
+  descent-override: 43.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'OggFallback';
+  font-style: italic;
+  font-weight: 700;
+  src:
+    local('Times New Roman Bold Italic'), local('TimesNewRomanPS-BoldItalicMT'), local('Liberation Serif Bold Italic'),
+    local('Tinos Bold Italic');
+  size-adjust: 125.21%;
+  ascent-override: 109.3%;
+  descent-override: 43.6%;
+  line-gap-override: 0%;
+}
+
+/* BradfordMonoLL: asc 77%, desc 23%, gap 20% (typo metrics, useTypoMetrics on).
+   Width-matched instead of cap-matched so fallback code wraps identically:
+   size-adjust = advance 58 / (1229/2048 = 60.01) = 96.65% */
+@font-face {
+  font-family: 'BradfordMonoLLFallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Courier New'), local('CourierNewPSMT'), local('Liberation Mono'), local('Cousine');
+  size-adjust: 96.65%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
+}
+@font-face {
+  font-family: 'BradfordMonoLLFallback';
+  font-style: italic;
+  font-weight: 400;
+  src:
+    local('Courier New Italic'), local('CourierNewPS-ItalicMT'), local('Liberation Mono Italic'),
+    local('Cousine Italic');
+  size-adjust: 96.65%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
+}
+@font-face {
+  font-family: 'BradfordMonoLLFallback';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Courier New Bold'), local('CourierNewPS-BoldMT'), local('Liberation Mono Bold'), local('Cousine Bold');
+  size-adjust: 96.65%;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
+}
+
+/* ModernGothic: asc 94.5%, desc 25.5%, gap 0%, cap 69%
+   size-adjust = 69 / (1467/2048 = 71.63) = 96.33% */
+@font-face {
+  font-family: 'ModernGothicFallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Helvetica'), local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 96.33%;
+  ascent-override: 94.5%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'ModernGothicFallback';
+  font-style: italic;
+  font-weight: 400;
+  src:
+    local('Helvetica Oblique'), local('Arial Italic'), local('Arial-ItalicMT'), local('Liberation Sans Italic'),
+    local('Arimo Italic');
+  size-adjust: 96.33%;
+  ascent-override: 94.5%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'ModernGothicFallback';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    local('Helvetica Bold'), local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'),
+    local('Arimo Bold');
+  size-adjust: 96.33%;
+  ascent-override: 94.5%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'ModernGothicFallback';
+  font-style: italic;
+  font-weight: 700;
+  src:
+    local('Helvetica Bold Oblique'), local('Arial Bold Italic'), local('Arial-BoldItalicMT'),
+    local('Liberation Sans Bold Italic'), local('Arimo Bold Italic');
+  size-adjust: 96.33%;
+  ascent-override: 94.5%;
+  descent-override: 25.5%;
+  line-gap-override: 0%;
+}
+
+/* BradfordLL */
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/src/assets/fonts/BradfordLL-Regular.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
-  font-family: 'ModernGothic';
+  font-family: 'BradfordLL';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/src/assets/fonts/BradfordLL-RegularItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/src/assets/fonts/BradfordLL-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: italic;
+  font-weight: 500;
+  src: url('/src/assets/fonts/BradfordLL-MediumItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/src/assets/fonts/BradfordLL-Light.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: italic;
+  font-weight: 300;
+  src: url('/src/assets/fonts/BradfordLL-LightItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/src/assets/fonts/BradfordLL-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BradfordLL';
   font-style: italic;
   font-weight: 700;
-  src: url('/src/assets/fonts/ModernGothic-BoldItalic.woff2') format('woff2');
+  src: url('/src/assets/fonts/BradfordLL-BoldItalic.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* BradfordMonoLL */
+@font-face {
+  font-family: 'BradfordMonoLL';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/src/assets/fonts/BradfordMonoLL-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* Ogg */
+@font-face {
+  font-family: 'Ogg';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/src/assets/fonts/Ogg-RegularItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: italic;
+  font-weight: 300;
+  src: url('/src/assets/fonts/Ogg-LightItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/src/assets/fonts/Ogg-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/src/assets/fonts/Ogg-Light.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: normal;
+  font-weight: 200;
+  src: url('/src/assets/fonts/Ogg-Thin.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: italic;
+  font-weight: 200;
+  src: url('/src/assets/fonts/Ogg-ThinItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/src/assets/fonts/Ogg-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: italic;
+  font-weight: 500;
+  src: url('/src/assets/fonts/Ogg-MediumItalic.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/src/assets/fonts/Ogg-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ogg';
+  font-style: italic;
+  font-weight: 700;
+  src: url('/src/assets/fonts/Ogg-BoldItalic.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ModernGothic */
+@font-face {
+  font-family: 'ModernGothic';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/src/assets/fonts/ModernGothic-Regular.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
@@ -50,223 +374,14 @@
 @font-face {
   font-family: 'ModernGothic';
   font-style: normal;
-  font-weight: 400;
-  src: url('/src/assets/fonts/ModernGothic-Regular.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: italic;
-  font-weight: 400;
-  src: url('/src/assets/fonts/ModernGothicMono-Italic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: normal;
-  font-weight: 300;
-  src: url('/src/assets/fonts/ModernGothicMono-Light.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: italic;
-  font-weight: 300;
-  src: url('/src/assets/fonts/ModernGothicMono-LightItalic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/src/assets/fonts/ModernGothicMono-Medium.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: italic;
-  font-weight: 500;
-  src: url('/src/assets/fonts/ModernGothicMono-MediumItalic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ModernGothicMono';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/src/assets/fonts/ModernGothicMono-Regular.woff2') format('woff2');
-}
-
-/* Size-adjusted fallbacks to prevent layout shift (CLS) on font swap.
-   Metrics computed from actual font files vs. universal system font metrics:
-   - Times New Roman: upem=2048, cap=1356, asc=1420, desc=-442, gap=0
-   - Georgia:         upem=2048, cap=1419, asc=1878, desc=-449, gap=0
-   - Courier New:     upem=2048, cap=1170, asc=1705, desc=-615, gap=0        */
-
-/* Ogg-Regular: cap=82.9%, asc=88%, desc=27.9%, gap=52.9%
-   size-adjust = 82.9% / (1356/2048=66.2%) = 125.21% */
-@font-face {
-  font-family: 'OggFallback';
-  src: local('Times New Roman'), local('TimesNewRomanPSMT');
-  size-adjust: 125.21%;
-  ascent-override: 88%;
-  descent-override: 27.9%;
-  line-gap-override: 52.9%;
-}
-
-/* BradfordLL-Regular: cap=69.2%, asc=77%, desc=23%, gap=0%
-   size-adjust = 69.2% / (1419/2048=69.29%) = 99.87% */
-@font-face {
-  font-family: 'BradfordLLFallback';
-  src: local('Georgia'), local('GeorgiaMT');
-  size-adjust: 99.87%;
-  ascent-override: 77%;
-  descent-override: 23%;
-  line-gap-override: 0%;
-}
-
-/* BradfordMonoLL-Regular: cap=69.2%, asc=77%, desc=23%, gap=20%
-   size-adjust = 69.2% / (1170/2048=57.13%) = 121.13% */
-@font-face {
-  font-family: 'BradfordMonoLLFallback';
-  src: local('Courier New'), local('CourierNewPSMT');
-  size-adjust: 121.13%;
-  ascent-override: 77%;
-  descent-override: 23%;
-  line-gap-override: 20%;
-}
-
-@font-face {
-  font-family: 'Ogg';
-  font-style: normal;
   font-weight: 700;
-  src: url('/src/assets/fonts/Ogg-Bold.woff2') format('woff2');
-  font-display: block;
+  src: url('/src/assets/fonts/ModernGothic-Bold.woff2') format('woff2');
+  font-display: swap;
 }
 @font-face {
-  font-family: 'Ogg';
+  font-family: 'ModernGothic';
   font-style: italic;
   font-weight: 700;
-  src: url('/src/assets/fonts/Ogg-BoldItalic.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: normal;
-  font-weight: 300;
-  src: url('/src/assets/fonts/Ogg-Light.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: italic;
-  font-weight: 300;
-  src: url('/src/assets/fonts/Ogg-LightItalic.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/src/assets/fonts/Ogg-Medium.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: italic;
-  font-weight: 500;
-  src: url('/src/assets/fonts/Ogg-MediumItalic.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/src/assets/fonts/Ogg-Regular.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: italic;
-  font-weight: 400;
-  src: url('/src/assets/fonts/Ogg-RegularItalic.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: normal;
-  font-weight: 200;
-  src: url('/src/assets/fonts/Ogg-Thin.woff2') format('woff2');
-  font-display: block;
-}
-@font-face {
-  font-family: 'Ogg';
-  font-style: italic;
-  font-weight: 300;
-  src: url('/src/assets/fonts/Ogg-ThinItalic.woff2') format('woff2');
-  font-display: block;
-}
-
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: normal;
-  font-weight: 700;
-  src: url('/src/assets/fonts/BradfordLL-Bold.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: italic;
-  font-weight: 700;
-  src: url('/src/assets/fonts/BradfordLL-BoldItalic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: normal;
-  font-weight: 300;
-  src: url('/src/assets/fonts/BradfordLL-Light.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: italic;
-  font-weight: 300;
-  src: url('/src/assets/fonts/BradfordLL-LightItalic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/src/assets/fonts/BradfordLL-Medium.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: italic;
-  font-weight: 500;
-  src: url('/src/assets/fonts/BradfordLL-MediumItalic.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/src/assets/fonts/BradfordLL-Regular.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'BradfordLL';
-  font-style: italic;
-  font-weight: 400;
-  src: url('/src/assets/fonts/BradfordLL-RegularItalic.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'BradfordMonoLL';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/src/assets/fonts/BradfordMonoLL-Regular.woff2') format('woff2');
+  src: url('/src/assets/fonts/ModernGothic-BoldItalic.woff2') format('woff2');
   font-display: swap;
 }

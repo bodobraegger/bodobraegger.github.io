@@ -3,11 +3,7 @@ import dayjs from 'dayjs'
 export const isDark = useDark()
 export const englishOnly = useStorage('bodobraegger-english-only', false)
 
-/**
- * Credit to [@hooray](https://github.com/hooray)
- * @see https://github.com/vuejs/vitepress/pull/2347
- */
-export function toggleDark(event: MouseEvent) {
+export function toggleDark() {
   isDark.value = !isDark.value
 }
 
