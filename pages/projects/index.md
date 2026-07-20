@@ -17,6 +17,11 @@ projects:
       place: ETH Zürich, CH
 
   web:
+    - name: 'bills'
+      link: './bills'
+      desc: 'A Swiss invoice and quote generator with QR-bill payment slips. Built with <a href="https://astro.build/">Astro.js</a>.'
+      date: '2026-07-19'
+      place: Rio de Janeiro, BR
     - name: 'bidi - bidirectional translator'
       link: './bidi'
       desc: 'A simple bidirectional translator that lets you type in either text box. Crowd-sourced translations via MyMemory API.'
