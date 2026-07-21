@@ -8,7 +8,7 @@ place: Rio de Janeiro, BR
 
 A static [Astro](https://astro.build/) app for writing Offerten (quotes) and Rechnungen (invoices) that share one editable document. Two buttons print either as PDF; the Rechnung carries a full Swiss QR-bill payment slip on its own A4 page, positioned per the official QR-bill standard.
 
-Try it at [bodobraegger.github.io/bills](https://bbo.do/bills/). Source on [GitHub](https://github.com/bodobraegger/bills).
+Try it at [bbo.do/bills](https://bbo.do/bills/). Source on [GitHub](https://github.com/bodobraegger/bills).
 
 ## Features
 
