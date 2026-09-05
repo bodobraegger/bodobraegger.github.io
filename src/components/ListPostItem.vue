@@ -28,10 +28,6 @@ onMounted(fetchViewCount)
   >
     <li class="flex flex-col md:flex-row gap-2 md:items-center">
       <div class="title text-lg leading-1.2em flex gap-2 wrap">
-        <span
-          v-if="post.lang === 'zh'"
-          class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 ml--12 mr2 my-auto hidden md:block"
-        >中文</span>
         <span class="align-middle tracking-wider">{{ post.title }}</span>
       </div>
 
@@ -62,9 +58,6 @@ onMounted(fetchViewCount)
         <span v-if="post.place" class="op80 ws-nowrap">✬ {{ post.place }}</span>
         <div class="ml-auto flex gap-2 items-center">
           <span class="op80 ws-nowrap transition-opacity duration-500 tabular-nums min-w-[4ch] text-right" :class="viewCount === null ? 'opacity-0' : 'opacity-100'">✶ {{ viewCount }}</span>
-          <span v-if="post.lang === 'zh'" class="align-middle flex-none text-xs bg-zinc:15 text-zinc5 rounded px-1 py-0.5 my-auto md:hidden">
-            中文
-          </span>
         </div>
       </div>
     </li>

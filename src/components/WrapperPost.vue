@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 import { useScriptTag } from '@vueuse/core'
+import { useHead } from '@unhead/vue'
 import { formatDate } from '~/logics'
+import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage } from '~/logics/languages'
 import { usePageViews } from '~/composables/usePageViews'
 
 const { frontmatter } = defineProps<{
@@ -15,7 +17,19 @@ const fontsLoaded = ref(false)
 // View tracking
 const { viewCount, trackView } = usePageViews(route.path)
 
-const isTrackedPage = computed(() => frontmatter.showViews)
+const showViews = frontmatter.showViews ?? true
+
+const ORNAMENT_UNIT = '⋅.˳˳.⋅ॱ˙˙ॱ'
+const ORNAMENT_END = 'ᐧ.˳˳.✶'
+const ORNAMENT_REPEAT = 40
+const ornamentFiller = ORNAMENT_UNIT.repeat(ORNAMENT_REPEAT) + ORNAMENT_END
+
+const language = resolveLanguage(frontmatter.lang, route.path)
+const translations = findTranslations(router.getRoutes(), route.path, frontmatter.translations)
+
+useHead({
+  htmlAttrs: { lang: language },
+})
 
 onMounted(() => {
   // Track view on mount
@@ -214,25 +228,39 @@ if (frontmatter.hydra) {
       </span>
     </h1>
     <p
-      v-if="frontmatter.date"
-      class="opacity-50 !-mt-6 font-serif-extra font-italic"
+      v-if="frontmatter.date || frontmatter.place || translations.length"
+      class="!-mt-6 font-serif-extra font-italic flex flex-wrap gap-x-2 items-baseline"
     >
-      {{ formatDate(frontmatter.date, false) }} <span v-if="frontmatter.duration">· {{ frontmatter.duration }}</span>
-    </p>
-    <p v-if="frontmatter.place" class="font-serif-extra font-italic mt--4!">
-      <span class="op50">at </span>
-      <a v-if="frontmatter.placeLink" :href="frontmatter.placeLink" target="_blank">
-        {{ frontmatter.place }}
-      </a>
-      <span v-else class="op-75 font-light">
-        <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
+      <span v-if="frontmatter.date" class="op50">
+        ✹ {{ formatDate(frontmatter.date, false, undefined, language) }}<span v-if="frontmatter.duration"> · {{ frontmatter.duration }}</span>
       </span>
-      <span v-if="isTrackedPage" class="op-50 ml-2">
-        ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅ {{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)
+      <span v-if="frontmatter.place">
+        <span class="op50">✬ </span>
+        <a v-if="frontmatter.placeLink" :href="frontmatter.placeLink" target="_blank">
+          {{ frontmatter.place }}
+        </a>
+        <span v-else class="op-75 font-light">
+          <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
+        </span>
       </span>
-    </p>
-    <p v-else-if="isTrackedPage" class="font-serif-extra font-italic mt--4! op-50">
-      {{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)
+      <span v-if="translations.length" class="text-sm">
+        <template v-for="translation in translations" :key="translation.lang">
+          <span class="op50">✧ {{ LANGUAGE_DEFINITIONS[translation.lang].readIn }} </span>
+          <RouterLink :to="translation.path" :lang="translation.lang" :hreflang="translation.lang">
+            {{ LANGUAGE_DEFINITIONS[translation.lang].name }}
+          </RouterLink>
+        </template>
+      </span>
+      <span
+        v-if="showViews"
+        class="flex-1 flex justify-end items-baseline gap-x-2 tabular-nums transition-opacity duration-500"
+        :class="viewCount === null ? 'op0' : 'op50'"
+      >
+        <span class="relative flex-1 min-w-0 self-stretch overflow-hidden" aria-hidden="true">
+          <span class="absolute right-0 bottom-0 ws-nowrap">{{ ornamentFiller }}</span>
+        </span>
+        <span class="flex-none">{{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)</span>
+      </span>
     </p>
     <p
       v-if="frontmatter.subtitle"

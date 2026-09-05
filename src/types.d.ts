@@ -1,9 +1,11 @@
+import type { Language } from '~/logics/languages'
+
 export interface Post {
   path: string
   title: string
   place?: string
   date: string
-  lang?: string
+  lang?: Language
   desc?: string
   platform?: string
   duration?: string

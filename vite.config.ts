@@ -34,6 +34,7 @@ export default defineConfig({
       '@vueuse/core',
       'dayjs',
       'dayjs/plugin/localizedFormat',
+      'dayjs/locale/pt-br',
     ],
   },
   plugins: [

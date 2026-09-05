@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getUserId, supabase } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
+import { splitLanguageSuffix } from '../logics/languages'
 import HoverTooltip from './HoverTooltip.vue'
 
 interface Props {
@@ -36,8 +37,10 @@ const props = withDefaults(defineProps<Props>(), {
   dragAndDraw: false,
 })
 
-const effectiveCanvasId = props.canvasId || (typeof window !== 'undefined' ? window.location.pathname : '')
-const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? (typeof window !== 'undefined' ? window.location.pathname : '') : '')
+// Translations of a page share one canvas, so the default id drops the language suffix.
+const pageBasePath = typeof window !== 'undefined' ? splitLanguageSuffix(window.location.pathname).basePath : ''
+const effectiveCanvasId = props.canvasId || pageBasePath
+const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? pageBasePath : '')
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
