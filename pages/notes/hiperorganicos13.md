@@ -96,6 +96,27 @@ A two-hour session on how to use Hydra, for up to 20 participants. No prior know
 
 - A laptop and a phone!
 
+**Technical diagram**
+
+```
+         )))                     )))                    )))
+   [ NANO server ]      [ webcams & other servers ]  [ museum camera ]
+          \                       |                       /
+           \ wifi                 \ wifi                 / wifi
+            \                      \                     /
+             `----------------->  [ my laptop ]  <-------'
+                                 (Hydra + shared canvas)
+                                        |
+                                        | cable (HDMI / USB-C)
+                                        v
+                                  [ projector ]
+                                        |
+                                        v
+                              projected onto the MAC wall
+```
+
+Everything runs over wifi, so the laptop can talk to the NANO server directly, not only to the public webcams and the museum camera, if that is useful for the event's infrastructure.
+
 ![Canvas Screenshot 3](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-29.png>)
 
 **Fallback if no museum feeds are available**
