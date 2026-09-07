@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "compress": "esno scripts/img-compress-staged.ts",
+    "sizes": "scripts/asset-sizes.sh",
+    "check-sizes": "scripts/check-asset-sizes.sh",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
@@ -65,6 +67,7 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{js,ts,vue,md,css,json,yml,yaml,html}": "eslint --fix"
+    "*.{js,ts,vue,md,css,json,yml,yaml,html}": "eslint --fix",
+    "*.{png,jpg,jpeg}": "esno scripts/img-compress-cli.ts"
   }
 }

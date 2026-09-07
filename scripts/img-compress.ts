@@ -28,7 +28,8 @@ async function compressImage(file: string, convert2avif: boolean) {
   if (format !== 'jpeg' && format !== 'png' && format !== 'webp' && format !== 'avif')
     throw new Error(`Unsupported format ${format} of ${file}`)
 
-  if (width > maxSize || height > maxSize)
+  const resized = width > maxSize || height > maxSize
+  if (resized)
     image = image.resize(maxSize)
 
   if (convert2avif) {
@@ -46,8 +47,10 @@ async function compressImage(file: string, convert2avif: boolean) {
   const size = buffer.byteLength
   const outSize = outBuffer.byteLength
 
+  // A resized file is always written, even when the bytes do not shrink:
+  // the pixel cap is the point, and flat screenshots can grow slightly
   const percent = (outSize - size) / size
-  if (percent > -0.10) {
+  if (!resized && percent > -0.10) {
     console.log(c.dim(`[SKIP] ${bytesToHuman(size)} -> ${bytesToHuman(outSize)} ${(percent * 100).toFixed(1).padStart(5, ' ')}%  ${file}`))
   }
   else {
