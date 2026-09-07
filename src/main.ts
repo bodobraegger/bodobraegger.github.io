@@ -10,6 +10,7 @@ import { ViteSSG } from 'vite-ssg'
 import { setupRouterScroller } from 'vue-router-better-scroller'
 import App from './App.vue'
 import { loadChatWidgetOnInteraction } from './lib/chat-widget'
+import { whenIdle } from './logics/idle'
 
 const routes = autoRoutes.map((i) => {
   return {
@@ -45,13 +46,6 @@ export const createApp = ViteSSG(
         },
         behavior: 'auto',
       })
-
-      function whenIdle(callback: () => void) {
-        if ('requestIdleCallback' in window)
-          requestIdleCallback(callback)
-        else
-          setTimeout(callback, 1000)
-      }
 
       router.afterEach((to) => {
         // reload the page once when navigating to /der-wahre-walter

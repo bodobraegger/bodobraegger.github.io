@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import type { Fn } from '@vueuse/core'
+import { whenIdle } from '~/logics/idle'
 
 const r180 = Math.PI
 const r90 = Math.PI / 2
@@ -40,8 +41,20 @@ function polar2cart(x = 0, y = 0, r = 0, theta = 0) {
   return [x + dx, y + dy]
 }
 
-onMounted(async () => {
-  const canvas = el.value!
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+
+onMounted(() => {
+  if (window.matchMedia(REDUCED_MOTION_QUERY).matches)
+    return
+  // Draw only after hydration and font swaps have settled so the animation
+  // never competes with the page's own first paint
+  whenIdle(startDrawing)
+})
+
+function startDrawing() {
+  const canvas = el.value
+  if (!canvas)
+    return
   const { ctx } = initCanvas(canvas, size.width, size.height)
   const { width, height } = canvas
 
@@ -109,6 +122,15 @@ onMounted(async () => {
 
   controls = useRafFn(frame, { immediate: false })
 
+  useEventListener(document, 'visibilitychange', () => {
+    if (stopped.value)
+      return
+    if (document.hidden)
+      controls.pause()
+    else
+      controls.resume()
+  })
+
   /**
    * 0.2 - 0.8
    */
@@ -133,15 +155,13 @@ onMounted(async () => {
   }
 
   start.value()
-})
-const mask = computed(() => 'radial-gradient(circle, transparent, black);')
+}
 </script>
 
 <template>
   <div
     class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden"
-    style="z-index: -1"
-    :style="`mask-image: ${mask};--webkit-mask-image: ${mask};`"
+    style="z-index: -1; mask-image: radial-gradient(circle, transparent, black); -webkit-mask-image: radial-gradient(circle, transparent, black)"
   >
     <canvas ref="el" width="400" height="400" />
   </div>
