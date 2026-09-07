@@ -9,7 +9,7 @@ function isSectionActive(section: string) {
 </script>
 
 <template>
-  <header class="header z-40 position-sticky top-0 backdrop-blur-sm">
+  <header class="header z-40 position-sticky top-0">
     <nav class="nav font-mono select-none">
       <div class="left hidden sm:block">
         <RouterLink
@@ -54,20 +54,19 @@ function isSectionActive(section: string) {
 */
 
 .header {
+  /* A solid page-colour background under the mask instead of a backdrop
+     blur, which the browser would recompute on every scroll frame */
+  background-color: var(--c-bg);
   mask-image: linear-gradient(to bottom, var(--c-bg) 0%, var(--c-bg) 60%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
-  transition:
-    backdrop-filter 0.3s ease,
-    -webkit-backdrop-filter 0.9s ease,
-    mask-image 1s ease;
+  transition: mask-image 1s ease;
   /* content will touch the right side of the header nav at 1817px,
      and we have a gap of 1.2em=19.2px, so at 1855.4px, the nav
-     spaces around the main content beautifully, no backdrop-filter needed
+     spaces around the main content beautifully, no background needed
      */
   @media (min-width: 1817px) {
     & {
       mask-image: unset;
-      backdrop-filter: unset;
-      -webkit-backdrop-filter: unset;
+      background-color: transparent;
     }
   }
 }
