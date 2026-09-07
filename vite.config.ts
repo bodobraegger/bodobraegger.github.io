@@ -115,7 +115,6 @@ export default defineConfig(({ mode }) => ({
     }),
 
     Markdown({
-      wrapperComponent: 'WrapperPost',
       wrapperClasses: (id, code) => code.includes('@layout-full-width')
         ? ''
         : 'prose m-auto',
