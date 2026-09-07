@@ -43,19 +43,7 @@ function getGroupName(p: Post) {
   return getYear(p.date)
 }
 
-const fontsLoaded = ref(false)
-
 onBeforeMount(() => {
-  // Wait for fonts to load
-  if (document.fonts) {
-    document.fonts.ready.then(() => {
-      fontsLoaded.value = true
-    })
-  }
-  else {
-    fontsLoaded.value = true
-  }
-
   const hasVisited = sessionStorage.getItem('visited-notes')
   if (hasVisited)
     document.documentElement.classList.add('no-sliding')
@@ -75,7 +63,6 @@ onBeforeMount(() => {
       <div
         v-if="!isSameGroup(post, posts[idx - 1])"
         class="select-none relative h20 pointer-events-none slide-enter"
-        :class="{ 'op0!': !fontsLoaded }"
         :style="{
           '--enter-stage': idx - 2,
           '--enter-step': '60ms',
