@@ -55,7 +55,7 @@ onMounted(fetchViewCount)
           <span v-if="isExternal && item.link && item.link !== '.'" class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right" title="External" />
         </div>
         <div class="flex flex-wrap gap-2 items-center op70 grow text-xs md:text-sm font-light font-serif-extra font-italic">
-          <span v-if="item.date" class="ws-nowrap shrink-0">✹ {{ formatDate(item.date, false, 'MMM YYYY') }}</span>
+          <span v-if="item.date" class="ws-nowrap shrink-0">✹ {{ formatDate(item.date, false, { month: 'short', year: 'numeric' }) }}</span>
           <span v-if="item.place" class="op80 ws-nowrap overflow-hidden min-w-0 shrink hidden md:inline">&#10028; {{ item.place }}</span>
           <div class="ml-auto flex gap-2 items-center shrink-0">
             <span v-if="pagePath" class="op80 ws-nowrap transition-opacity duration-500 tabular-nums min-w-[4ch] text-right" :class="viewCount === null ? 'opacity-0' : 'opacity-100'">✶ {{ viewCount }}</span>

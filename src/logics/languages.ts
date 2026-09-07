@@ -1,5 +1,3 @@
-import 'dayjs/locale/pt-br'
-
 export const LANGUAGES = ['en', 'pt'] as const
 export type Language = typeof LANGUAGES[number]
 export const DEFAULT_LANGUAGE: Language = 'en'
@@ -7,25 +5,19 @@ export const DEFAULT_LANGUAGE: Language = 'en'
 interface LanguageDefinition {
   name: string
   readIn: string
-  dayjsLocale: string
-  dateFormatShort: string
-  dateFormatLong: string
+  locale: string
 }
 
 export const LANGUAGE_DEFINITIONS: Record<Language, LanguageDefinition> = {
   en: {
     name: 'English',
     readIn: 'read in',
-    dayjsLocale: 'en',
-    dateFormatShort: 'MMM D',
-    dateFormatLong: 'MMM D, YYYY',
+    locale: 'en-US',
   },
   pt: {
     name: 'Português',
     readIn: 'ler em',
-    dayjsLocale: 'pt-br',
-    dateFormatShort: 'D [de] MMM',
-    dateFormatLong: 'D [de] MMM [de] YYYY',
+    locale: 'pt-BR',
   },
 }
 

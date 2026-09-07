@@ -7,8 +7,6 @@ import 'uno.css'
 
 import autoRoutes from 'pages-generated'
 import { ViteSSG } from 'vite-ssg'
-import dayjs from 'dayjs'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat.js'
 import { setupRouterScroller } from 'vue-router-better-scroller'
 import App from './App.vue'
 
@@ -32,9 +30,7 @@ export const createApp = ViteSSG(
   {
     routes,
   },
-  ({ router, app, isClient }) => {
-    dayjs.extend(LocalizedFormat)
-
+  ({ router, isClient }) => {
     if (isClient) {
       const html = document.querySelector('html')!
       setupRouterScroller(router, {
