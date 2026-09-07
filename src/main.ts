@@ -28,6 +28,13 @@ routes.push({
   redirect: '/der-wahre-walter/',
 })
 
+const SECTION_INDEX_PATHS = ['/projects', '/notes']
+const INTENT_EVENTS = ['mouseover', 'touchstart', 'focusin'] as const
+
+function prefersReducedData() {
+  return Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
+}
+
 export const createApp = ViteSSG(
   App,
   {
@@ -56,36 +63,38 @@ export const createApp = ViteSSG(
           return
         }
 
-        if (to.path === '/')
-          whenIdle(() => preloadRoutes(['/projects', '/notes']))
-
-        if (to.path === '/notes') {
-          whenIdle(() => {
-            const notePaths = routes
-              .filter(i => i.path.startsWith('/notes/') && !i.path.includes('://') && !i.path.includes('.html'))
-              .map(i => i.path)
-            preloadRoutes(notePaths)
-          })
-        }
+        // The two section indexes are small and the likely next step from home
+        if (to.path === '/' && !prefersReducedData())
+          whenIdle(() => SECTION_INDEX_PATHS.forEach(prefetchRoute))
       })
 
-      // Helper function to preload routes
-      function preloadRoutes(paths: string[]) {
-        paths.forEach(async (routePath) => {
-          const resolved = router.resolve(routePath)
-          const component = resolved.matched[0]?.components?.default
+      const prefetchedPaths = new Set<string>()
 
-          // Preload the component if it's a function (lazy-loaded)
-          // we require the type assertion here to avoid TS errors,
-          // typeof component === 'function' is not enough, because
-          // some components are objects with a .then function (Vue components)
-          if (component && typeof component === 'function') {
-            await (component as () => Promise<any>)()
-          }
-
-          // console.log(`Preloaded route: ${routePath}`)
-        })
+      // Runs the route's lazy import so the chunk is cached before the click.
+      // Route components are import() thunks; objects with a .then are
+      // already-loaded components and need nothing.
+      function prefetchRoute(routePath: string) {
+        if (prefetchedPaths.has(routePath))
+          return
+        prefetchedPaths.add(routePath)
+        const component = router.resolve(routePath).matched[0]?.components?.default
+        if (typeof component === 'function')
+          void (component as () => Promise<unknown>)()
       }
+
+      // Prefetch on intent: hover, touch or keyboard focus on an internal link
+      // signals a navigation a few hundred milliseconds before the click
+      function prefetchOnIntent(event: Event) {
+        const link = (event.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
+        if (!link || link.target === '_blank')
+          return
+        const url = new URL(link.href, location.href)
+        if (url.origin === location.origin)
+          prefetchRoute(url.pathname)
+      }
+
+      for (const eventName of INTENT_EVENTS)
+        document.addEventListener(eventName, prefetchOnIntent, { passive: true })
 
       // Add double-click to select code blocks
       document.addEventListener('dblclick', (e) => {
