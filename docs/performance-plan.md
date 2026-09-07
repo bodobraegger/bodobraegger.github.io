@@ -292,10 +292,10 @@ path.
 
 ### 5.4 Stagger
 
-Cap the `slide-enter` delay at 300 ms, for example
-`min(var(--enter-stage) * var(--enter-step), 300ms)`. Items after the fifth
-appear at once. Chrome does not count an element with opacity 0 as painted,
-so a long stagger delays LCP on the list pages.
+No change. The `slide-enter` delay is negative
+(`--enter-initial - stage * step`), so later items start further into the
+one second fade rather than later. Nothing waits on the stagger, and the
+first item is visible on the next frame.
 
 ## 6. Phase 4: Data requests
 
@@ -331,7 +331,29 @@ Do this before phase 1 and after each phase.
    gzip or any image in `dist/assets` exceeds 300 KB. A small script over
    `dist/assets` with `gzip -9` is enough.
 
-## 9. Considered and not recommended now
+## 9. Results after implementation (2026-09-07)
+
+Measured from the local `dist` build on branch `worktree-perf-plan`.
+
+| Measure                                     | Before   | After    |
+| ------------------------------------------- | -------- | -------- |
+| JavaScript gzip on every page (entry + vendor) | 142 KB | 72 KB    |
+| Entry chunk gzip                            | 78 KB    | 30 KB    |
+| Fonts preloaded before first paint          | 481 KB   | 60 KB    |
+| Font files served                           | 27       | 11       |
+| Largest code page HTML                      | 205 KB   | 166 KB   |
+| Largest code page vnodes hydrated per token | thousands | 0 (one static string per block) |
+| Largest screenshot at the 660px column width | 2.1 MB PNG | 47 KB AVIF |
+| Requests for view counts on the projects page | 25     | 1        |
+| Supabase client in the entry chunk          | yes      | no, on demand for the pen |
+
+Not implemented, needs the Cloudflare dashboard: the immutable cache rule
+for `/assets/*` (section 3.1). Not implemented: the Lighthouse script
+(section 8, item 2). Not deleted: `public/images/maxi` and
+`public/uploads`. No page links to them, but the URLs may be linked from
+outside the site, so that is the owner's decision.
+
+## 10. Considered and not recommended now
 
 1. Migration to an islands framework such as Astro. After phases 1 to 3 the
    entry JavaScript is about 90 KB gzip, almost all Vue runtime and router.
