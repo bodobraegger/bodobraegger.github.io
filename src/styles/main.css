@@ -15,7 +15,6 @@
   /* Each stack is: web font, metric-matched local fallback (see fonts.css),
      then generics for glyph coverage. Families listed after the fallback only
      ever render characters missing from the first two. */
-  --fonts-sans: ModernGothic, ModernGothicFallback, Helvetica, Arial, system-ui, sans-serif;
   --fonts-serif: BradfordLL, BradfordLLFallback, Georgia, serif;
   --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', serif;
   --fonts-mono: BradfordMonoLL, BradfordMonoLLFallback, 'Courier New', ui-monospace, monospace;

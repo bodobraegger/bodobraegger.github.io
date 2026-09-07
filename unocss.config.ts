@@ -25,7 +25,6 @@ export default defineConfig({
       '--enter-stage': n,
     })],
     /* Stacks are single-sourced as custom properties in styles/main.css */
-    ['font-sans', { 'font-family': 'var(--fonts-sans)' }],
     ['font-serif', { 'font-family': 'var(--fonts-serif)' }],
     ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)' }],
     ['font-mono', { 'font-family': 'var(--fonts-mono)' }],

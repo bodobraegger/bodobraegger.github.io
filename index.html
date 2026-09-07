@@ -9,21 +9,11 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="darkreader-lock" />
     <title>Bodo Braegger</title>
-    <!-- Faces used above the fold, preloaded so first paint normally renders
-         them without any swap -->
-
+    <!-- The two faces that paint above the fold on every page: body serif and
+         the mono nav and headings. Other faces load on demand and swap in over
+         metric-matched fallbacks (see src/styles/fonts.css). -->
     <link rel="preload" href="/src/assets/fonts/BradfordLL-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link
-      rel="preload"
-      href="/src/assets/fonts/BradfordLL-RegularItalic.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link rel="preload" href="/src/assets/fonts/BradfordLL-Medium.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/src/assets/fonts/BradfordMonoLL-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/src/assets/fonts/Ogg-RegularItalic.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/src/assets/fonts/Ogg-LightItalic.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       ;(function () {
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
