@@ -7,13 +7,33 @@ enum Direction {
   PREV = -1,
   NEXT = 1,
 }
-function findNextImageIndex(direction: Direction): number {
-  const lightboxImg = document.getElementById(`lightbox`) as HTMLImageElement
-  index = images.findIndex(img => img.src === lightboxImg!.src)
-  const r = index + direction
-  if (r < 0)
-    return images.length - 1
-  else return r % images.length
+
+/** The largest generated variant when the build produced one, else whatever the page shows. */
+function fullSource(image: HTMLImageElement) {
+  return image.dataset.full || image.currentSrc || image.src
+}
+
+const lightboxSource = computed(() => imageModel.value ? fullSource(imageModel.value) : '')
+
+function neighbourIndex(direction: Direction) {
+  return (index + direction + images.length) % images.length
+}
+
+function preloadNeighbours() {
+  if (images.length < 2)
+    return
+  for (const direction of [Direction.PREV, Direction.NEXT])
+    new Image().src = fullSource(images[neighbourIndex(direction)])
+}
+
+function show(newIndex: number) {
+  index = newIndex
+  imageModel.value = images[index]
+  preloadNeighbours()
+}
+
+function step(direction: Direction) {
+  show(neighbourIndex(direction))
 }
 
 useEventListener('click', async (e) => {
@@ -22,8 +42,7 @@ useEventListener('click', async (e) => {
 
   const lightboxButton = (e.target as HTMLElement).closest('button.lightbox')
   if (lightboxButton) {
-    const dir = lightboxButton.classList.contains('prev') ? Direction.PREV : Direction.NEXT
-    imageModel.value = images[findNextImageIndex(dir)]
+    step(lightboxButton.classList.contains('prev') ? Direction.PREV : Direction.NEXT)
     return
   }
 
@@ -39,11 +58,11 @@ useEventListener('click', async (e) => {
       const newPos = first.getBoundingClientRect()
       if (pos.left !== newPos.left || pos.top !== newPos.top)
         return
-      imageModel.value = first as HTMLImageElement
       if (!first.dataset.folder || first.dataset.folder === 'root')
         images = Array.from(document.querySelectorAll(`main img:not(.no-preview):not(.hidden)`))
       else
         images = Array.from(document.querySelectorAll(`main img[data-folder=${first.dataset.folder}]:not(.no-preview)`))
+      show(Math.max(0, images.indexOf(first as HTMLImageElement)))
       break
     default:
       imageModel.value = undefined
@@ -59,13 +78,13 @@ onKeyStroke('Escape', (e) => {
 
 onKeyStroke('ArrowLeft', (e) => {
   if (imageModel.value) {
-    imageModel.value = images[findNextImageIndex(-1)]
+    step(Direction.PREV)
     e.preventDefault()
   }
 })
 onKeyStroke('ArrowRight', (e) => {
   if (imageModel.value) {
-    imageModel.value = images[findNextImageIndex(1)]
+    step(Direction.NEXT)
     e.preventDefault()
   }
 })
@@ -79,7 +98,7 @@ onKeyStroke('ArrowRight', (e) => {
         <span class="prev  i-bi:arrow-left w-7 h-7 bg-transparent backdrop-invert font-mono text-xl"><-</span>
       </button>
       <figure class="m-auto max-w-100vw lg:max-w-84vw">
-        <img id="lightbox" :src="imageModel.src" :alt="imageModel.alt" class="no-preview max-w-fit-content max-h-90vh m-auto">
+        <img id="lightbox" :src="lightboxSource" :alt="imageModel.alt" class="no-preview max-w-fit-content max-h-90vh m-auto">
         <figcaption v-if="imageModel.dataset.caption" class="m-2 text-center">
           {{ imageModel.alt }}
         </figcaption>

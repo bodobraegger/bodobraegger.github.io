@@ -7,7 +7,7 @@ date: '2026-04-08'
 place: Rio de Janeiro, BR
 ---
 
-![Canvas Screenshot 1](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-09-49.png>)
+![Canvas Screenshot 1](../../src/assets/images/projects/2026-09-05-canvas-screenshot-1.png)
 
 A draggable pen component built in Vue that lets visitors draw directly on any page. Strokes are stored in [Supabase](https://supabase.com/) and synced across all visitors in real time via a broadcast channel, so drawings are shared and persistent.
 
@@ -24,7 +24,7 @@ Try it on the dedicated [canvas](/notes/2026-05-03_canvas), or the [home page](/
 - Scales to page height, with a configurable `maxCanvasHeight`
 - `dragAndDraw` mode for a fixed pen that draws while scrolling
 
-![AD Canvas Screenshot](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-42.png>)
+![AD Canvas Screenshot](../../src/assets/images/projects/2026-09-05-ad-canvas-screenshot.png)
 
 ## Usage
 
@@ -53,7 +53,7 @@ Multiple pens can be placed on the same page and will share the same canvas:
 
 The canvas ID defaults to the current page path, so each page gets its own shared drawing by default. Pass `canvasId` to override.
 
-![Canvas Screenshot 2](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-18.png>)
+![Canvas Screenshot 2](../../src/assets/images/projects/2026-09-05-canvas-screenshot-2.png)
 
 ## Pages using it
 
@@ -61,7 +61,7 @@ The canvas ID defaults to the current page path, so each page gets its own share
 - [/notes/2026-05-03_canvas](/notes/2026-05-03_canvas): a dedicated multi-pen canvas session
 - [/notes/2026-05-14_arte_digital_canvas](notes/2026-05-14_arte_digital_canvas): used during an Arte Digital session at EBA / UFRJ
 
-![Canvas Screenshot 3](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-29.png>)
+![Canvas Screenshot 3](../../src/assets/images/projects/2026-09-05-canvas-screenshot-3.png)
 
 ## How it works
 

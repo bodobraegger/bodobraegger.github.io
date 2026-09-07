@@ -29,7 +29,7 @@ O tema desta edição é **Acoplamentos Sutis: Comunidade, Pertencimento, Memór
 
 **um open lab sobre código generativo, ferramentas colaborativas e as câmeras entre nós.**
 
-![Captura de tela do canvas 1](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-09-49.png>)
+![Captura de tela do canvas 1](../../src/assets/images/projects/2026-09-05-canvas-screenshot-1.png)
 
 ## Modalidade
 
@@ -45,7 +45,7 @@ Now You See Me é um open lab no sentido literal: uma mesa no museu onde trabalh
 
 A ideia é que as pessoas se sentem comigo, abram o laptop, tirem o celular do bolso, façam um pouco de OSINT e arquivem imagens. Encontrar sensores ao vivo, feeds de câmera, despejos de fotos. Podemos colocar tudo aqui no meu site, ou no seu. Você pode anotar e desenhar se não quiser programar, pode programar e publicar, pode fazer o que quiser.
 
-![Captura de tela do canvas AD](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-42.png>)
+![Captura de tela do canvas AD](../../src/assets/images/projects/2026-09-05-ad-canvas-screenshot.png)
 
 O lab faz três perguntas que seguem o tema desta edição. Comunidade: o que um grupo consegue fazer quando as ferramentas de criação estão abertas e visíveis, em vez de escondidas num aplicativo ou numa sala de controle? Pertencimento: quem pode aparecer na imagem compartilhada, quem pode mudá-la, e quem decide? Memória: uma imagem que se realimenta lembra dos próprios quadros passados, um canvas compartilhado lembra de cada traço, uma câmera de vigilância nos lembra para outra pessoa. Quais dessas memórias queremos guardar, quem as guarda, e o que podemos fazer com elas?
 
@@ -117,7 +117,7 @@ Uma sessão de duas horas sobre como usar o Hydra, para até 20 participantes. N
 
 Tudo roda por wifi, então o laptop pode falar diretamente com o servidor do NANO, além das webcams públicas e da câmera do museu, se isso for útil para a infraestrutura do evento.
 
-![Captura de tela do canvas 3](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-29.png>)
+![Captura de tela do canvas 3](../../src/assets/images/projects/2026-09-05-canvas-screenshot-3.png)
 
 **Alternativa caso os feeds do museu não estejam disponíveis**
 
@@ -130,7 +130,7 @@ O lab funciona com as câmeras que as pessoas trazem e com as webcams públicas 
 - Não uso os feeds do museu para nada além do lab, e não mantenho acesso depois do dia 12 de novembro.
 - O canvas compartilhado guarda o que as pessoas desenham, e qualquer um pode apagar. Nenhum nome ou conta é coletado.
 
-![Google Dorking](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-24-31.png>)
+![Google Dorking](../../src/assets/images/projects/2026-09-05-google-dorking.png)
 
 ## Biografia
 

@@ -20,7 +20,9 @@ import { transformerRenderWhitespace } from '@shikijs/transformers'
 
 // @ts-expect-error missing types
 import TOC from 'markdown-it-table-of-contents'
+import { imagetools } from 'vite-imagetools'
 import { slugify } from './scripts/slugify'
+import { responsiveImages } from './scripts/markdown-images'
 
 // pnpm stores packages as node_modules/.pnpm/<name>@<version>/...
 const VENDOR_CHUNK_PATTERN = /node_modules\/\.pnpm\/(?:vue@|vue-router@|vue-demi@|@vue\+|@vueuse\+)/
@@ -57,6 +59,19 @@ export default defineConfig(({ mode }) => ({
 
     Vue({
       include: [/\.vue$/, /\.md$/],
+      template: {
+        transformAssetUrls: {
+          video: ['src', 'poster'],
+          source: ['src'],
+          img: ['src', 'data-full'],
+          image: ['xlink:href', 'href'],
+          use: ['xlink:href', 'href'],
+        },
+      },
+    }),
+
+    imagetools({
+      include: /\.(?:avif|jpe?g|png|webp)\?(?:w|format|as)=/,
     }),
 
     Pages({
@@ -99,6 +114,8 @@ export default defineConfig(({ mode }) => ({
             transformerRenderWhitespace(),
           ],
         }))
+
+        md.use(responsiveImages)
 
         md.use(anchor, {
           slugify,

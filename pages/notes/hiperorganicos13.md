@@ -29,7 +29,7 @@ The theme of this edition is **Acoplamentos Sutis: Comunidade, Pertencimento, Me
 
 **an open lab on generative code, collaborative tools and the cameras among us.**
 
-![Canvas Screenshot 1](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-09-49.png>)
+![Canvas Screenshot 1](../../src/assets/images/projects/2026-09-05-canvas-screenshot-1.png)
 
 ## Modality
 
@@ -45,7 +45,7 @@ Now You See Me is an open lab in the literal sense: a table in the museum where 
 
 The idea is for people to sit down with me, open their laptop, take out their phone, do some OSINT and archive some imagery. Find some live sensors, some camera feeds, some photo dumps. We can place it all here on my website, or on yours. You can annotate and draw if you don't want to code, you can code and push, you can do what you will.
 
-![AD Canvas Screenshot](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-42.png>)
+![AD Canvas Screenshot](../../src/assets/images/projects/2026-09-05-ad-canvas-screenshot.png)
 
 The lab asks three questions that follow the theme of this edition. Community: what can a group make when the tools of making are open and visible, instead of hidden in an app or a control room? Belonging: who gets to appear in the shared image, who gets to change it, and who decides? Memory: an image that feeds back on itself remembers its own past frames, a shared canvas remembers every stroke, a surveillance camera remembers us for someone else. Which of these memories do we want to keep, who holds them, and what can we do with them?
 
@@ -117,7 +117,7 @@ A two-hour session on how to use Hydra, for up to 20 participants. No prior know
 
 Everything runs over wifi, so the laptop can talk to the NANO server directly, not only to the public webcams and the museum camera, if that is useful for the event's infrastructure.
 
-![Canvas Screenshot 3](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-29.png>)
+![Canvas Screenshot 3](../../src/assets/images/projects/2026-09-05-canvas-screenshot-3.png)
 
 **Fallback if no museum feeds are available**
 
@@ -130,7 +130,7 @@ The lab works with the cameras people bring and the public webcams of Rio that a
 - I do not use the museum's feeds for anything beyond the lab, and I do not keep access after 12 November.
 - The shared canvas stores what people draw, and anyone can erase it. No names or accounts are collected.
 
-![Google Dorking](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-24-31.png>)
+![Google Dorking](../../src/assets/images/projects/2026-09-05-google-dorking.png)
 
 ## Bio
 

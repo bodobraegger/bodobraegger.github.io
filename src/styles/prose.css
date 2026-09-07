@@ -273,13 +273,21 @@
     }
   }
 
+  /* height: auto keeps the width and height attributes as an aspect ratio,
+     so the space is reserved before the file arrives and nothing shifts */
   img {
     width: 100%;
+    height: auto;
     margin-top: 2em;
     margin-bottom: 2em;
   }
 
-  p > img {
+  picture {
+    display: block;
+  }
+
+  p > img,
+  p > picture > img {
     width: 100%;
     --uno: shadow rounded-lg;
     transform: scale(1.05);
