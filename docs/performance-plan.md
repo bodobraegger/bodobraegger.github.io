@@ -58,14 +58,14 @@ and the JavaScript again the next day.
 
 ### 1.5 Rendering
 
-| Item                                           | Cost                                                                                                                                       |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `html { filter: contrast(110%) }`              | Filter pass over the full viewport on every frame. Also makes `html` the containing block for all `position: fixed` elements.              |
-| `backdrop-filter: blur` on the sticky header   | Blur recomputed on every scroll frame.                                                                                                     |
-| `backdrop-filter: blur` on the footer          | The footer is in flow. The blur only covers the page gradient. No visible effect.                                                          |
-| Plum canvas (`useRafFn` at 40 fps)             | Runs on the home, notes, projects and every project page while the page hydrates.                                                          |
-| List pages hidden until `document.fonts.ready` | Text stays at opacity 0 until all preloaded fonts arrive. This delays LCP.                                                                 |
-| `slide-enter` stagger                          | Each list item fades in 60 ms after the previous one.                                                                                      |
+| Item                                           | Cost                                                                                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `html { filter: contrast(110%) }`              | Filter pass over the full viewport on every frame. Also makes `html` the containing block for all `position: fixed` elements. |
+| `backdrop-filter: blur` on the sticky header   | Blur recomputed on every scroll frame.                                                                                        |
+| `backdrop-filter: blur` on the footer          | The footer is in flow. The blur only covers the page gradient. No visible effect.                                             |
+| Plum canvas (`useRafFn` at 40 fps)             | Runs on the home, notes, projects and every project page while the page hydrates.                                             |
+| List pages hidden until `document.fonts.ready` | Text stays at opacity 0 until all preloaded fonts arrive. This delays LCP.                                                    |
+| `slide-enter` stagger                          | Each list item fades in 60 ms after the previous one.                                                                         |
 
 ### 1.6 Data requests
 
@@ -77,34 +77,34 @@ chunk because `WrapperPost` imports it.
 
 ### 1.7 Dead weight
 
-| Item                                                                                          | Effect                                              |
-| --------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `floating-vue` registered, never used                                                         | ~10 KB gzip JS, 80 CSS rules, one extra CSS request |
-| `dayjs` plus `pt-br` locale; `ListProjects` already uses `Intl`                               | ~4 KB gzip, two date systems                        |
-| 8 `ModernGothic` `@font-face` rules; `font-sans` is never used                                | Dead CSS                                            |
+| Item                                                                                         | Effect                                              |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `floating-vue` registered, never used                                                        | ~10 KB gzip JS, 80 CSS rules, one extra CSS request |
+| `dayjs` plus `pt-br` locale; `ListProjects` already uses `Intl`                              | ~4 KB gzip, two date systems                        |
+| 8 `ModernGothic` `@font-face` rules; `font-sans` is never used                               | Dead CSS                                            |
 | Fonts not in `fonts.css` (`Black`, `Book`, `ExtraBold`, `ModernGothicMono`, `ReformGrotesk`) | 600 KB in the repo, not deployed                    |
-| `X-UA-Compatible` and `revisit-after` meta tags                                               | Ignored by browsers                                 |
-| `Footer :key="route.path"`                                                                    | Footer remounts on every navigation                 |
-| `--webkit-mask-image` in `Plum.vue`                                                           | Typo, should be `-webkit-mask-image`                |
+| `X-UA-Compatible` and `revisit-after` meta tags                                              | Ignored by browsers                                 |
+| `Footer :key="route.path"`                                                                   | Footer remounts on every navigation                 |
+| `--webkit-mask-image` in `Plum.vue`                                                          | Typo, should be `-webkit-mask-image`                |
 
 ## 2. Priorities
 
 The table orders the work by expected effect on page view speed.
 
-| Rank | Change                                                        | Expected effect (estimate)                                                | Effort |
-| ---- | ------------------------------------------------------------- | ------------------------------------------------------------------------- | ------ |
-| 1    | Immutable cache for `/assets/*` at Cloudflare                 | Repeat visits skip 1 MB of downloads                                      | 15 min |
-| 2    | Replace `supabase-js` with `fetch` for view counts            | Entry JS from 78 KB to about 25 KB gzip                                   | 3 h    |
-| 3    | Subset fonts, preload only 2 faces                            | 481 KB to about 120 KB before first paint                                 | 2 h    |
-| 4    | Image pipeline (resize, AVIF, lazy, dimensions)               | Project pages from 1.7 MB to about 150 KB                                 | 3 h    |
-| 5    | Shiki classes instead of inline styles, drop whitespace spans | Code pages: HTML halves, hydration becomes one static node                | 2 h    |
-| 6    | Remove `html` filter and header backdrop blur                 | Smooth scroll on mobile                                                   | 1 h    |
-| 7    | Stop hiding lists until fonts load                            | LCP on list pages moves to first paint                                    | 15 min |
-| 8    | Batch view count requests                                     | 25 requests to 1 on list pages                                            | 1 h    |
-| 9    | Remove `floating-vue`, `dayjs`                                | About 14 KB gzip                                                          | 1 h    |
-| 10   | Chatango on first interaction                                 | No third-party work at load                                               | 30 min |
-| 11   | Plum after idle, respect reduced motion                       | Main thread free during hydration                                         | 30 min |
-| 12   | Prefetch routes on intent                                     | No 600 KB bulk download on `/notes`                                       | 1 h    |
+| Rank | Change                                                        | Expected effect (estimate)                                 | Effort |
+| ---- | ------------------------------------------------------------- | ---------------------------------------------------------- | ------ |
+| 1    | Immutable cache for `/assets/*` at Cloudflare                 | Repeat visits skip 1 MB of downloads                       | 15 min |
+| 2    | Replace `supabase-js` with `fetch` for view counts            | Entry JS from 78 KB to about 25 KB gzip                    | 3 h    |
+| 3    | Subset fonts, preload only 2 faces                            | 481 KB to about 120 KB before first paint                  | 2 h    |
+| 4    | Image pipeline (resize, AVIF, lazy, dimensions)               | Project pages from 1.7 MB to about 150 KB                  | 3 h    |
+| 5    | Shiki classes instead of inline styles, drop whitespace spans | Code pages: HTML halves, hydration becomes one static node | 2 h    |
+| 6    | Remove `html` filter and header backdrop blur                 | Smooth scroll on mobile                                    | 1 h    |
+| 7    | Stop hiding lists until fonts load                            | LCP on list pages moves to first paint                     | 15 min |
+| 8    | Batch view count requests                                     | 25 requests to 1 on list pages                             | 1 h    |
+| 9    | Remove `floating-vue`, `dayjs`                                | About 14 KB gzip                                           | 1 h    |
+| 10   | Chatango on first interaction                                 | No third-party work at load                                | 30 min |
+| 11   | Plum after idle, respect reduced motion                       | Main thread free during hydration                          | 30 min |
+| 12   | Prefetch routes on intent                                     | No 600 KB bulk download on `/notes`                        | 1 h    |
 
 ## 3. Phase 1: Delivery
 
@@ -335,17 +335,17 @@ Do this before phase 1 and after each phase.
 
 Measured from the local `dist` build on branch `worktree-perf-plan`.
 
-| Measure                                     | Before   | After    |
-| ------------------------------------------- | -------- | -------- |
-| JavaScript gzip on every page (entry + vendor) | 142 KB | 72 KB    |
-| Entry chunk gzip                            | 78 KB    | 30 KB    |
-| Fonts preloaded before first paint          | 481 KB   | 60 KB    |
-| Font files served                           | 27       | 11       |
-| Largest code page HTML                      | 205 KB   | 166 KB   |
-| Largest code page vnodes hydrated per token | thousands | 0 (one static string per block) |
-| Largest screenshot at the 660px column width | 2.1 MB PNG | 47 KB AVIF |
-| Requests for view counts on the projects page | 25     | 1        |
-| Supabase client in the entry chunk          | yes      | no, on demand for the pen |
+| Measure                                        | Before     | After                           |
+| ---------------------------------------------- | ---------- | ------------------------------- |
+| JavaScript gzip on every page (entry + vendor) | 142 KB     | 72 KB                           |
+| Entry chunk gzip                               | 78 KB      | 30 KB                           |
+| Fonts preloaded before first paint             | 481 KB     | 60 KB                           |
+| Font files served                              | 27         | 11                              |
+| Largest code page HTML                         | 205 KB     | 166 KB                          |
+| Largest code page vnodes hydrated per token    | thousands  | 0 (one static string per block) |
+| Largest screenshot at the 660px column width   | 2.1 MB PNG | 47 KB AVIF                      |
+| Requests for view counts on the projects page  | 25         | 1                               |
+| Supabase client in the entry chunk             | yes        | no, on demand for the pen       |
 
 Not implemented, needs the Cloudflare dashboard: the immutable cache rule
 for `/assets/*` (section 3.1). Not implemented: the Lighthouse script
