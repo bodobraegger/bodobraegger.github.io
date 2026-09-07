@@ -2,6 +2,7 @@ import '@unocss/reset/tailwind.css'
 import './styles/fonts.css'
 import './styles/main.css'
 import './styles/prose.css'
+import 'virtual:shiki-theme.css'
 
 import 'uno.css'
 

@@ -5,3 +5,5 @@ declare module 'vue-router' {
     frontmatter: any
   }
 }
+
+declare module 'virtual:shiki-theme.css'

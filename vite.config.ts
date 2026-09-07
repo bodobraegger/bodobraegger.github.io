@@ -16,13 +16,35 @@ import LinkAttributes from 'markdown-it-link-attributes'
 import UnoCSS from 'unocss/vite'
 import SVG from 'vite-svg-loader'
 import Shiki from '@shikijs/markdown-it'
-import { transformerRenderWhitespace } from '@shikijs/transformers'
 
 // @ts-expect-error missing types
 import TOC from 'markdown-it-table-of-contents'
 import { imagetools } from 'vite-imagetools'
 import { slugify } from './scripts/slugify'
 import { responsiveImages } from './scripts/markdown-images'
+import { buildShikiClasses } from './scripts/shiki-classes'
+
+const SHIKI_THEMES = { dark: 'vitesse-dark', light: 'vitesse-light' }
+const SHIKI_CSS_VARIABLE_PREFIX = '--s-'
+const SHIKI_THEME_CSS_ID = 'virtual:shiki-theme.css'
+const RESOLVED_SHIKI_THEME_CSS_ID = `\0${SHIKI_THEME_CSS_ID}`
+
+const shikiClasses = buildShikiClasses(SHIKI_THEMES, SHIKI_CSS_VARIABLE_PREFIX)
+
+/** Serves the stylesheet that maps Shiki token classes back to the theme colours. */
+function shikiThemeCss(): Plugin {
+  return {
+    name: 'shiki-theme-css',
+    resolveId(id) {
+      if (id === SHIKI_THEME_CSS_ID)
+        return RESOLVED_SHIKI_THEME_CSS_ID
+    },
+    async load(id) {
+      if (id === RESOLVED_SHIKI_THEME_CSS_ID)
+        return (await shikiClasses).css
+    },
+  }
+}
 
 // pnpm stores packages as node_modules/.pnpm/<name>@<version>/...
 const VENDOR_CHUNK_PATTERN = /node_modules\/\.pnpm\/(?:vue@|vue-router@|vue-demi@|@vue\+|@vueuse\+)/
@@ -56,6 +78,8 @@ export default defineConfig(({ mode }) => ({
     UnoCSS(),
 
     preconnectSupabase(loadEnv(mode, __dirname, 'VITE_').VITE_SUPABASE_URL),
+
+    shikiThemeCss(),
 
     Vue({
       include: [/\.vue$/, /\.md$/],
@@ -104,14 +128,11 @@ export default defineConfig(({ mode }) => ({
       },
       async markdownItSetup(md) {
         md.use(await Shiki({
-          themes: {
-            dark: 'vitesse-dark',
-            light: 'vitesse-light',
-          },
+          themes: SHIKI_THEMES,
           defaultColor: false,
-          cssVariablePrefix: '--s-',
+          cssVariablePrefix: SHIKI_CSS_VARIABLE_PREFIX,
           transformers: [
-            transformerRenderWhitespace(),
+            (await shikiClasses).transformer,
           ],
         }))
 
