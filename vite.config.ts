@@ -21,6 +21,9 @@ import { transformerRenderWhitespace } from '@shikijs/transformers'
 import TOC from 'markdown-it-table-of-contents'
 import { slugify } from './scripts/slugify'
 
+// pnpm stores packages as node_modules/.pnpm/<name>@<version>/...
+const VENDOR_CHUNK_PATTERN = /node_modules\/\.pnpm\/(?:vue@|vue-router@|vue-demi@|@vue\+|@vueuse\+)/
+
 export default defineConfig({
   resolve: {
     alias: [
@@ -159,19 +162,15 @@ export default defineConfig({
           next(warning)
       },
       output: {
-        // Better code splitting (only for client build, not SSR)
+        // One long-lived chunk for the framework so content deploys do not
+        // invalidate it in the browser cache
         manualChunks(id) {
-          // Skip manual chunking for SSR builds
-          if (id.includes('node_modules')) {
-            if (id.includes('vue') || id.includes('vue-router'))
-              return 'vue-vendor'
-            if (id.includes('@vueuse'))
-              return 'vueuse-vendor'
-          }
+          if (VENDOR_CHUNK_PATTERN.test(id))
+            return 'vue-vendor'
         },
       },
     },
-    // Enable minification
+    target: 'es2022',
     minify: 'terser',
     terserOptions: {
       compress: {
@@ -180,24 +179,11 @@ export default defineConfig({
         pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
-    // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Enable CSS code splitting
-    cssCodeSplit: true,
-    // Enable sourcemap only for debugging when needed
-    sourcemap: false,
   },
 
   ssgOptions: {
     formatting: 'minify',
     format: 'cjs',
-    // Add critical CSS inlining
-    includedRoutes: (paths) => {
-      // Pre-render only essential routes
-      return paths.filter(path =>
-        !path.includes('draft')
-        && !path.includes('temp'),
-      )
-    },
   },
 })
