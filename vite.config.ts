@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
+import type { Plugin } from 'vite'
 import fs from 'fs-extra'
 import Pages from 'vite-plugin-pages'
 import Inspect from 'vite-plugin-inspect'
@@ -24,7 +25,19 @@ import { slugify } from './scripts/slugify'
 // pnpm stores packages as node_modules/.pnpm/<name>@<version>/...
 const VENDOR_CHUNK_PATTERN = /node_modules\/\.pnpm\/(?:vue@|vue-router@|vue-demi@|@vue\+|@vueuse\+)/
 
-export default defineConfig({
+/** Opens the connection to the page view API early; the first request is sent once the page is idle. */
+function preconnectSupabase(supabaseUrl: string | undefined): Plugin {
+  return {
+    name: 'preconnect-supabase',
+    transformIndexHtml() {
+      if (!supabaseUrl)
+        return []
+      return [{ tag: 'link', attrs: { rel: 'preconnect', href: new URL(supabaseUrl).origin, crossorigin: '' }, injectTo: 'head' }]
+    },
+  }
+}
+
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: [
       { find: '~/', replacement: `${resolve(__dirname, 'src')}/` },
@@ -39,6 +52,8 @@ export default defineConfig({
   },
   plugins: [
     UnoCSS(),
+
+    preconnectSupabase(loadEnv(mode, __dirname, 'VITE_').VITE_SUPABASE_URL),
 
     Vue({
       include: [/\.vue$/, /\.md$/],
@@ -186,4 +201,4 @@ export default defineConfig({
     formatting: 'minify',
     format: 'cjs',
   },
-})
+}))

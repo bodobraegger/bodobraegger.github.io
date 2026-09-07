@@ -1,30 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { getUserId } from './page-views'
 
-// Generate or retrieve persistent user ID for RLS
-export function getUserId(): string {
-  // Check if we're in a browser environment
-  if (typeof window === 'undefined') {
-    // SSR/build time - return a placeholder
-    return 'ssr-placeholder'
-  }
-
-  const storageKey = 'drawable-pen-user-id'
-  try {
-    let userId = localStorage.getItem(storageKey)
-    if (!userId) {
-      userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem(storageKey, userId)
-    }
-    return userId
-  }
-  catch {
-    // Fallback to session-based ID if localStorage unavailable
-    if (!(window as any).__drawablePenUserId__) {
-      (window as any).__drawablePenUserId__ = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }
-    return (window as any).__drawablePenUserId__
-  }
-}
+export { getUserId }
 
 // Add your Supabase credentials to .env file:
 // VITE_SUPABASE_URL=your-project-url
@@ -32,12 +9,24 @@ export function getUserId(): string {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-export const supabase = supabaseUrl && supabaseKey
-  ? createClient(supabaseUrl, supabaseKey, {
-      global: {
-        headers: {
-          'x-user-id': getUserId(), // Send user ID with every request for RLS
-        },
-      },
-    })
-  : null
+let supabaseClientPromise: Promise<SupabaseClient | null> | null = null
+
+// Lazily loads @supabase/supabase-js so the drawing components (the only
+// consumers that need auth/realtime/storage) don't pull it into the entry
+// chunk. The client is created once and memoized across calls.
+export function getSupabase(): Promise<SupabaseClient | null> {
+  if (!supabaseClientPromise) {
+    supabaseClientPromise = !supabaseUrl || !supabaseKey
+      ? Promise.resolve(null)
+      : import('@supabase/supabase-js').then(({ createClient }) =>
+          createClient(supabaseUrl, supabaseKey, {
+            global: {
+              headers: {
+                'x-user-id': getUserId(), // Send user ID with every request for RLS
+              },
+            },
+          }),
+        )
+  }
+  return supabaseClientPromise
+}

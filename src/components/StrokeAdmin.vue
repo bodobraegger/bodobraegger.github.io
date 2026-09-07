@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '~/lib/supabase'
+import { getSupabase } from '~/lib/supabase'
 import type { Stroke as BaseStroke } from '~/types/strokes'
 import { drawStroke } from '~/utils/canvas'
 
@@ -46,17 +46,16 @@ let isDragging = false
 let dragStart = { x: 0, y: 0 }
 let dragEnd = { x: 0, y: 0 }
 
-if (!supabase) {
-  error.value = 'Supabase is not configured.'
-  loading.value = false
-}
-
 const canvases = computed(() => Array.from(canvasCounts.value.keys()).sort())
 const eraserCount = computed(() => strokes.value.filter(s => s.eraser).length)
 
 async function loadCanvases() {
-  if (!supabase)
+  const supabase = await getSupabase()
+  if (!supabase) {
+    error.value = 'Supabase is not configured.'
+    loading.value = false
     return
+  }
 
   const { data, error: err } = await supabase
     .from('strokes')
@@ -77,9 +76,6 @@ async function loadCanvases() {
 }
 
 async function loadStrokes() {
-  if (!supabase)
-    return
-
   if (!filterCanvas.value) {
     strokes.value = []
     return
@@ -89,6 +85,12 @@ async function loadStrokes() {
   error.value = ''
 
   try {
+    const supabase = await getSupabase()
+    if (!supabase) {
+      error.value = 'Supabase is not configured.'
+      return
+    }
+
     const { data, error: err } = await supabase
       .from('strokes')
       .select('*')
@@ -381,8 +383,12 @@ function bumpCanvasCount(canvasId: string, delta: number) {
   counts.set(canvasId, Math.max((counts.get(canvasId) ?? 0) + delta, 0))
 }
 
-function requestDelete() {
-  if (selectedIds.value.size === 0 || !supabase)
+async function requestDelete() {
+  if (selectedIds.value.size === 0)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   if (!user.value) {
@@ -395,7 +401,11 @@ function requestDelete() {
 }
 
 async function deleteBatch(batch: AdminStroke[]): Promise<boolean> {
-  const { error: err } = await supabase!
+  const supabase = await getSupabase()
+  if (!supabase)
+    return false
+
+  const { error: err } = await supabase
     .from('strokes')
     .delete()
     .eq('canvas_id', batch[0].canvas_id)
@@ -415,8 +425,6 @@ async function deleteBatch(batch: AdminStroke[]): Promise<boolean> {
 
 async function confirmDelete() {
   showConfirmDelete.value = false
-  if (!supabase)
-    return
 
   const batch = strokes.value.filter(s => selectedIds.value.has(s.stroke_id))
   if (batch.length === 0)
@@ -440,7 +448,11 @@ function cancelDelete() {
 }
 
 async function undoDelete() {
-  if (undoStack.value.length === 0 || !supabase || loading.value)
+  if (undoStack.value.length === 0 || loading.value)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   const batch = undoStack.value[undoStack.value.length - 1]
@@ -477,7 +489,7 @@ async function undoDelete() {
 }
 
 async function redoDelete() {
-  if (redoStack.value.length === 0 || !supabase || loading.value)
+  if (redoStack.value.length === 0 || loading.value)
     return
 
   const batch = redoStack.value[redoStack.value.length - 1]
@@ -527,7 +539,11 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 async function signIn() {
-  if (!supabase || !email.value || !password.value)
+  if (!email.value || !password.value)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   loading.value = true
@@ -556,6 +572,7 @@ async function signIn() {
 }
 
 async function signOut() {
+  const supabase = await getSupabase()
   if (!supabase)
     return
 
@@ -584,6 +601,7 @@ onMounted(async () => {
   window.addEventListener('mousemove', handleWindowMouseMove)
   window.addEventListener('mouseup', handleWindowMouseUp)
 
+  const supabase = await getSupabase()
   if (supabase) {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
     user.value = currentUser

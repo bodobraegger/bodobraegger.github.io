@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { getUserId, supabase } from '../lib/supabase'
+import { getSupabase, getUserId } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
@@ -92,13 +92,19 @@ let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
+let stopSupabaseSync: (() => void) | null = null
 
 const currentUserId = getUserId()
 
-// Global state to track which pen is currently picked up
-const globalPickedUpPen = ((window as any).__drawablePenPickedUp__ ||= { penId: null })
+// Global state to track which pen is currently picked up.
+// Server render has no window, so it gets a fresh local object per render.
+const globalPickedUpPen = typeof window === 'undefined'
+  ? { penId: null }
+  : ((window as any).__drawablePenPickedUp__ ||= { penId: null })
 
-const globalCanvases = ((window as any).__drawablePenCanvases__ ||= {})
+const globalCanvases = typeof window === 'undefined'
+  ? {}
+  : ((window as any).__drawablePenCanvases__ ||= {})
 const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as Stroke[],
   canvas: null as HTMLCanvasElement | null,
@@ -312,12 +318,18 @@ onMounted(() => {
   if (props.cloudStorage && effectiveCloudStorageId)
     loadFromSupabase()
 
-  const cleanup = setupSupabaseSync()
-  if (cleanup)
-    onUnmounted(cleanup)
+  // setupSupabaseSync is async (it awaits the lazily-loaded client), so its
+  // cleanup is stored for the plain onUnmounted below instead of being
+  // registered here: Vue only accepts lifecycle hook registration
+  // synchronously within a hook callback, not after an await.
+  void setupSupabaseSync().then((cleanup) => {
+    stopSupabaseSync = cleanup ?? null
+  })
 })
 
 onUnmounted(() => {
+  stopSupabaseSync?.()
+
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
@@ -449,7 +461,8 @@ async function undo() {
   const removedStrokeCopy = { ...removedStroke, points: [...removedStroke.points] }
 
   // Try to delete from Supabase FIRST before modifying local state
-  if (effectiveCloudStorageId && supabase && removedStroke.id) {
+  // (deleteStrokeFromSupabase no-ops when the client isn't configured)
+  if (effectiveCloudStorageId && removedStroke.id) {
     try {
       await deleteStrokeFromSupabase(removedStroke.id)
     }
@@ -488,7 +501,8 @@ async function redo() {
     return
 
   // Try to save to Supabase FIRST before modifying local state
-  if (effectiveCloudStorageId && supabase) {
+  // (saveStrokeToSupabase no-ops when the client isn't configured)
+  if (effectiveCloudStorageId) {
     try {
       await saveStrokeToSupabase(strokeToRestore)
     }
@@ -552,7 +566,11 @@ function loadFromHash() {
 
 // Save a single stroke to Supabase (new schema - one row per stroke)
 async function saveStrokeToSupabase(stroke: Stroke) {
-  if (!supabase || !effectiveCloudStorageId)
+  if (!effectiveCloudStorageId)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   try {
@@ -584,7 +602,11 @@ async function saveStrokeToSupabase(stroke: Stroke) {
 
 // Delete a stroke from Supabase (for undo)
 async function deleteStrokeFromSupabase(strokeId: string) {
-  if (!supabase || !effectiveCloudStorageId)
+  if (!effectiveCloudStorageId)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   try {
@@ -602,7 +624,11 @@ async function deleteStrokeFromSupabase(strokeId: string) {
 }
 
 async function loadFromSupabase() {
-  if (!supabase || !effectiveCloudStorageId)
+  if (!effectiveCloudStorageId)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   // Check if this canvas has already loaded from Supabase
@@ -642,8 +668,12 @@ async function loadFromSupabase() {
     canvasData.supabaseLoaded = false
   }
 }
-function setupSupabaseSync() {
-  if (!supabase || !effectiveCloudStorageId)
+async function setupSupabaseSync() {
+  if (!effectiveCloudStorageId)
+    return
+
+  const supabase = await getSupabase()
+  if (!supabase)
     return
 
   broadcastChannel = supabase
@@ -683,7 +713,7 @@ function setupSupabaseSync() {
     .subscribe()
 
   return () => {
-    if (broadcastChannel && supabase) {
+    if (broadcastChannel) {
       supabase.removeChannel(broadcastChannel)
       broadcastChannel = null
     }
@@ -1024,7 +1054,8 @@ async function saveStroke(stroke: Stroke) {
   canvasData.redoStack.length = 0
 
   // Save to Supabase FIRST if cloud storage is enabled
-  if (effectiveCloudStorageId && supabase) {
+  // (saveStrokeToSupabase no-ops when the client isn't configured)
+  if (effectiveCloudStorageId) {
     try {
       await saveStrokeToSupabase(stroke)
     }
