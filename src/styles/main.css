@@ -136,34 +136,6 @@ html {
   }
 }
 
-/* Overrides Floating Vue */
-.v-popper {
-  &--theme-dropdown,
-  &--theme-tooltip {
-    .v-popper__inner {
-      --at-apply: bg-base text-base rounded border border-base shadow;
-      box-shadow: 0 6px 30px #0000001a;
-    }
-
-    .v-popper__arrow-inner {
-      visibility: visible;
-      /* prettier-ignore */
-      --at-apply: border-white dark:border-black;
-    }
-
-    .v-popper__arrow-outer {
-      --at-apply: border-base;
-    }
-  }
-
-  &--theme-tooltip {
-    &.v-popper--shown,
-    &.v-popper--shown * {
-      transition: none !important;
-    }
-  }
-}
-
 /* Transitions */
 .fade {
   &-enter-active,
