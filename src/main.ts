@@ -9,6 +9,7 @@ import autoRoutes from 'pages-generated'
 import { ViteSSG } from 'vite-ssg'
 import { setupRouterScroller } from 'vue-router-better-scroller'
 import App from './App.vue'
+import { loadChatWidgetOnInteraction } from './lib/chat-widget'
 
 const routes = autoRoutes.map((i) => {
   return {
@@ -101,6 +102,8 @@ export const createApp = ViteSSG(
           }
         }
       })
+
+      loadChatWidgetOnInteraction()
     }
   },
 )
