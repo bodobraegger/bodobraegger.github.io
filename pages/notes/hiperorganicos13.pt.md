@@ -204,4 +204,4 @@ osc(10, 0, 3)
 
 ## Mais
 
-Mais esboços de Hydra, incluindo exemplos com câmera e reativos a áudio, estão na página de [exemplos de live coding](/notes/2025-04-26_livecoding_examples). A ferramenta de desenho compartilhado está documentada em [drawing board](/projects/drawing-board). As duas sessões que dei na disciplina de Arte Digital na EBA estão documentadas [aqui](/notes/2026-04-08_arte_digital_portfolio_talk) e [aqui](/notes/2026-05-14_arte_digital_canvas).
+Mais esboços de Hydra, incluindo exemplos com câmera e reativos a áudio, estão na página de [exemplos de live coding](/notes/2025-04-26_livecoding_examples). A ferramenta de desenho compartilhado está documentada em [drawing board](/projects/drawing-board). As duas sessões que dei na disciplina de Arte Digital de Cila MacDowell na EBA estão documentadas [aqui](/notes/2026-04-08_arte_digital_portfolio_talk) e [aqui](/notes/2026-05-14_arte_digital_canvas).

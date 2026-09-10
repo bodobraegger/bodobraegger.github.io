@@ -204,4 +204,4 @@ osc(10, 0, 3)
 
 ## More
 
-More Hydra sketches, including camera and audio-reactive examples, are on the [live coding examples](/notes/2025-04-26_livecoding_examples) page. The shared drawing tool is documented under [drawing board](/projects/drawing-board). The two sessions I gave in the Arte Digital class at EBA are documented [here](/notes/2026-04-08_arte_digital_portfolio_talk) and [here](/notes/2026-05-14_arte_digital_canvas).
+More Hydra sketches, including camera and audio-reactive examples, are on the [live coding examples](/notes/2025-04-26_livecoding_examples) page. The shared drawing tool is documented under [drawing board](/projects/drawing-board). The two sessions I gave in Cila MacDowell's Arte Digital class at EBA are documented [here](/notes/2026-04-08_arte_digital_portfolio_talk) and [here](/notes/2026-05-14_arte_digital_canvas).
