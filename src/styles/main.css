@@ -2,14 +2,12 @@
   /* light-dark() resolves via color-scheme, toggled by the .dark class below */
   color-scheme: light;
 
-  /* Values already carry the 110% contrast the root filter used to apply:
-     out = (in - 0.5) * 1.1 + 0.5 per sRGB channel */
-  --c-bg: light-dark(#fff, #000);
-  --c-scrollbar: light-dark(#f9f9f9, #060606);
-  --c-scrollbar-hover: light-dark(#e6e6e6, #191919);
-  --fg: light-dark(#2b2b2b, #d4d4d4);
-  --fg-deep: light-dark(#191919, #e6e6e6);
-  --fg-deeper: light-dark(#060606, #f9f9f9);
+  --c-bg: light-dark(#fefefe, #050505);
+  --c-scrollbar: light-dark(#eee, #111);
+  --c-scrollbar-hover: light-dark(#ddd, #222);
+  --fg: light-dark(#333, #ccc);
+  --fg-deep: light-dark(#222, #ddd);
+  --fg-deeper: light-dark(#111, #eee);
   --fg-muted: color-mix(in srgb, var(--fg) 60%, transparent);
   --c-border: color-mix(in srgb, var(--fg) 25%, transparent);
   --c-border-soft: color-mix(in srgb, var(--fg) 15%, transparent);
@@ -28,6 +26,7 @@
 
 html {
   background-color: var(--c-bg);
+  filter: contrast(110%) brightness(100%);
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-gutter: stable both-edges;
