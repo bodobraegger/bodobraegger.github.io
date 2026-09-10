@@ -1,0 +1,1 @@
+import{u as e}from"./app-CT7k014O.js";import{E as t,g as s,d as o}from"./vue-vendor-DQ5HJ7WG.js";const a={class:"prose m-auto"},i={__name:"404",setup:i=>(e({meta:[]}),(e,i)=>(t(),s("div",a,[...i[0]||(i[0]=[o("p",null,"this file is a placeholder for the file-based routing and will be overwritten in the build process with the content of […404.md].",-1)])])))};export{i as default};
