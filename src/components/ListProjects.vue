@@ -72,7 +72,18 @@ const displayItems = computed(() => {
   })
 })
 
+const fontsLoaded = ref(false)
+
 onBeforeMount(() => {
+  if (document.fonts) {
+    document.fonts.ready.then(() => {
+      fontsLoaded.value = true
+    })
+  }
+  else {
+    fontsLoaded.value = true
+  }
+
   const hasVisited = sessionStorage.getItem('visited-projects')
   if (hasVisited)
     document.documentElement.classList.add('no-sliding')
@@ -86,6 +97,7 @@ onBeforeMount(() => {
       <div
         v-if="showYearHeader"
         class="select-none relative h20 pointer-events-none slide-enter"
+        :class="{ 'op0!': !fontsLoaded }"
         :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
       >
         <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa">
