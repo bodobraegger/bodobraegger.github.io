@@ -45,7 +45,7 @@ Now You See Me is an open lab in the literal sense: a table in the museum where 
 
 The idea is for people to sit down with me, open their laptop, take out their phone, do some OSINT and archive some imagery. Find some live sensors, some camera feeds, some photo dumps. We can place it all here on my website, or on yours. You can annotate and draw if you don't want to code, you can code and push, you can do what you will.
 
-![AD Canvas Screenshot](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-42.png>)
+![Shared canvas during Cila MacDowell's Arte Digital class at EBA / UFRJ, May 2026](<../../src/assets/images/projects/Screenshot From 2026-09-05 16-10-42.png>)
 
 The lab asks three questions that follow the theme of this edition. Community: what can a group make when the tools of making are open and visible, instead of hidden in an app or a control room? Belonging: who gets to appear in the shared image, who gets to change it, and who decides? Memory: an image that feeds back on itself remembers its own past frames, a shared canvas remembers every stroke, a surveillance camera remembers us for someone else. Which of these memories do we want to keep, who holds them, and what can we do with them?
 
@@ -63,7 +63,7 @@ Live coding means writing the program while it runs, in front of the people who 
 
 ### Collaborative technologies
 
-I build small tools for people to do things together on the web. The drawing canvas at the top of this page is one of them: every stroke is shared with everyone who has the page open, in real time, without an account. [bidi](https://bbo.do/projects/bidi) was a translator where the translations come from the people who use it, jokes and mistakes included; support has expired sadly. [rj-bd](https://bbo.do/rj-bd) turned the weekly INEA water quality bulletins into a public map of 25 beaches of Rio, until it was blocked. For Rafa Mourão's exhibition [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) in Rio this year, I built the hidden electronics that let a butterfly and three fireflies, ancestral symbols of two women who made history in Brazil, respond to the visitor who approaches them.
+I build small tools for people to do things together on the web. The drawing canvas at the top of this page is one of them: every stroke is shared with everyone who has the page open, in real time, without an account. One of its first uses with a group was in the two sessions I gave in Cila MacDowell's Arte Digital class at EBA / UFRJ, where students drew, coded and broke it together. [bidi](https://bbo.do/projects/bidi) was a translator where the translations come from the people who use it, jokes and mistakes included; support has expired sadly. [rj-bd](https://bbo.do/rj-bd) turned the weekly INEA water quality bulletins into a public map of 25 beaches of Rio, until it was blocked. For Rafa Mourão's exhibition [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) in Rio this year, I built the hidden electronics that let a butterfly and three fireflies, ancestral symbols of two women who made history in Brazil, respond to the visitor who approaches them.
 
 ![Prototypes at FAU / EBA @ UFRJ](../../src/assets/images/projects/2026-06-24-resguardo-tecnologias-prototypes.png)
 
@@ -151,6 +151,7 @@ He is a student of the MA Transdisciplinary Studies at Zürich University of the
 - !Mediengruppe Bitnik, _CCTV, A Trail of Images_.
 - Roberta Carvalho, [robertacarvalho.art.br](https://www.robertacarvalho.art.br/).
 - Rafa Mourão, _RESGUARDO, Tecnologias de Continuidade_ (Rio de Janeiro, 2026).
+- Cila MacDowell, _Metaplasma, Lab 01_ (New Art City, 2025), a virtual exhibition made collectively with her students, and the Arte Digital class at EBA / UFRJ.
 
 ---
 
@@ -204,4 +205,4 @@ osc(10, 0, 3)
 
 ## More
 
-More Hydra sketches, including camera and audio-reactive examples, are on the [live coding examples](/notes/2025-04-26_livecoding_examples) page. The shared drawing tool is documented under [drawing board](/projects/drawing-board). The two sessions I gave in Cila MacDowell's Arte Digital class at EBA are documented [here](/notes/2026-04-08_arte_digital_portfolio_talk) and [here](/notes/2026-05-14_arte_digital_canvas).
+More Hydra sketches, including camera and audio-reactive examples, are on the [live coding examples](/notes/2025-04-26_livecoding_examples) page. The shared drawing tool is documented under [drawing board](/projects/drawing-board). The two sessions I gave in the Arte Digital class are documented [here](/notes/2026-04-08_arte_digital_portfolio_talk) and [here](/notes/2026-05-14_arte_digital_canvas).
