@@ -63,7 +63,7 @@ Live coding means writing the program while it runs, in front of the people who 
 
 ### Collaborative technologies
 
-I build small tools for people to do things together on the web. The drawing canvas at the top of this page is one of them: every stroke is shared with everyone who has the page open, in real time, without an account. One of its first uses with a group was in the two sessions I gave in Cila MacDowell's Arte Digital class at EBA / UFRJ, where students drew, coded and broke it together. [bidi](https://bbo.do/projects/bidi) was a translator where the translations come from the people who use it, jokes and mistakes included; support has expired sadly. [rj-bd](https://bbo.do/rj-bd) turned the weekly INEA water quality bulletins into a public map of 25 beaches of Rio, until it was blocked. For Rafa Mourão's exhibition [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) in Rio this year, I built the hidden electronics that let a butterfly and three fireflies, ancestral symbols of two women who made history in Brazil, respond to the visitor who approaches them.
+I build small tools for people to do things together on the web. The drawing canvas at the top of this page is one of them: every stroke is shared with everyone who has the page open, in real time, without an account. One of its first uses with a group was in the two sessions I gave in [Cila MacDowell](https://www.cilamcd.com/)'s Arte Digital class at EBA / UFRJ, where students drew, coded and broke it together. [bidi](https://bbo.do/projects/bidi) was a translator where the translations come from the people who use it, jokes and mistakes included; support has expired sadly. [rj-bd](https://bbo.do/rj-bd) turned the weekly INEA water quality bulletins into a public map of 25 beaches of Rio, until it was blocked. For Rafa Mourão's exhibition [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) in Rio this year, I built the hidden electronics that let a butterfly and three fireflies, ancestral symbols of two women who made history in Brazil, respond to the visitor who approaches them.
 
 ![Prototypes at FAU / EBA @ UFRJ](../../src/assets/images/projects/2026-06-24-resguardo-tecnologias-prototypes.png)
 
@@ -151,7 +151,6 @@ He is a student of the MA Transdisciplinary Studies at Zürich University of the
 - !Mediengruppe Bitnik, _CCTV, A Trail of Images_.
 - Roberta Carvalho, [robertacarvalho.art.br](https://www.robertacarvalho.art.br/).
 - Rafa Mourão, _RESGUARDO, Tecnologias de Continuidade_ (Rio de Janeiro, 2026).
-- Cila MacDowell, _Metaplasma, Lab 01_ (New Art City, 2025), a virtual exhibition made collectively with her students, and the Arte Digital class at EBA / UFRJ.
 
 ---
 

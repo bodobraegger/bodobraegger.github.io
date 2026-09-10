@@ -63,7 +63,7 @@ Live coding é escrever o programa enquanto ele roda, na frente de quem vê o re
 
 ### Tecnologias colaborativas
 
-Construo pequenas ferramentas para as pessoas fazerem coisas juntas na web. O canvas de desenho no topo desta página é uma delas: cada traço é compartilhado com todos que têm a página aberta, em tempo real, sem conta. Um dos primeiros usos em grupo foi nas duas sessões que dei na disciplina de Arte Digital de Cila MacDowell na EBA / UFRJ, onde os estudantes desenharam, codaram e quebraram o canvas juntos. O [bidi](https://bbo.do/projects/bidi) era um tradutor em que as traduções vêm de quem o usa, com piadas e erros incluídos; o suporte, infelizmente, expirou. O [rj-bd](https://bbo.do/rj-bd) transformou os boletins semanais de balneabilidade do INEA num mapa público de 25 praias do Rio, até ser bloqueado. Para a exposição [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) de Rafa Mourão no Rio este ano, construí a eletrônica escondida que faz uma borboleta e três vaga-lumes, símbolos ancestrais de duas mulheres que fizeram história no Brasil, responderem ao visitante que se aproxima.
+Construo pequenas ferramentas para as pessoas fazerem coisas juntas na web. O canvas de desenho no topo desta página é uma delas: cada traço é compartilhado com todos que têm a página aberta, em tempo real, sem conta. Um dos primeiros usos em grupo foi nas duas sessões que dei na disciplina de Arte Digital de [Cila MacDowell](https://www.cilamcd.com/) na EBA / UFRJ, onde os estudantes desenharam, codaram e quebraram o canvas juntos. O [bidi](https://bbo.do/projects/bidi) era um tradutor em que as traduções vêm de quem o usa, com piadas e erros incluídos; o suporte, infelizmente, expirou. O [rj-bd](https://bbo.do/rj-bd) transformou os boletins semanais de balneabilidade do INEA num mapa público de 25 praias do Rio, até ser bloqueado. Para a exposição [RESGUARDO, Tecnologias de Continuidade](https://bbo.do/projects/resguardo-tecnologias) de Rafa Mourão no Rio este ano, construí a eletrônica escondida que faz uma borboleta e três vaga-lumes, símbolos ancestrais de duas mulheres que fizeram história no Brasil, responderem ao visitante que se aproxima.
 
 ![Protótipos na FAU / EBA @ UFRJ](../../src/assets/images/projects/2026-06-24-resguardo-tecnologias-prototypes.png)
 
@@ -151,7 +151,6 @@ Ele é aluno do mestrado em Estudos Transdisciplinares na Zürich University of 
 - !Mediengruppe Bitnik, _CCTV, A Trail of Images_.
 - Roberta Carvalho, [robertacarvalho.art.br](https://www.robertacarvalho.art.br/).
 - Rafa Mourão, _RESGUARDO, Tecnologias de Continuidade_ (Rio de Janeiro, 2026).
-- Cila MacDowell, _Metaplasma, Lab 01_ (New Art City, 2025), exposição virtual feita coletivamente com seus estudantes, e a disciplina de Arte Digital na EBA / UFRJ.
 
 ---
 
