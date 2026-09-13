@@ -27,6 +27,12 @@ export interface PenRegistry {
 /** The character the drawn pencil stands in for: U+1F589, lower left pencil. */
 export const DRAWN_PENCIL = '\u{1F589}'
 
+/**
+ * The point of the drawn pencil, in the coordinates of its drawing. It must
+ * follow the first point of the body path in PenGlyph.vue.
+ */
+export const PEN_GLYPH_TIP = { x: 7.15, y: 92.85 }
+
 /** True for pens whose icon is drawn by the site instead of taken from a font. */
 export function usesPenGlyph(emoji: string) {
   return emoji === DRAWN_PENCIL

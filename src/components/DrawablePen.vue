@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
 import { getSupabase, getUserId } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
 import type { PenEntry } from '../logics/pens'
-import { getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
+import { PEN_GLYPH_TIP, getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
 import HoverTooltip from './HoverTooltip.vue'
 import PenGlyph from './PenGlyph.vue'
 import PenToolbar from './PenToolbar.vue'
@@ -60,6 +60,10 @@ const isDetached = ref(false)
 const moveOnly = ref(false)
 const isPickedUp = ref(false)
 const controlsVisible = ref(false)
+// Where the ink leaves a drawn pencil, measured from the pen's own corner. The
+// hand-set offsets stay in charge of the pens that are still emoji.
+const glyphTip = ref<{ x: number, y: number } | null>(null)
+
 const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 const effectivePenId = props.penId || autoPenId
 
@@ -101,12 +105,18 @@ const scaledTipOffsetY = computed(() => {
   return props.tipOffsetY * scale
 })
 
+// The drawn pencil reports its own point, the emoji pens keep the hand-set one.
+const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : scaledTipOffsetX.value)
+const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : scaledTipOffsetY.value)
+
 // Computed in onMounted to avoid accessing navigator at module-init time (SSR-safe)
 const flip = ref(false)
 
 let ctx: CanvasRenderingContext2D | null = null
 let lastX = 0
 let lastY = 0
+let strokeTipX = 0
+let strokeTipY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
 let stopSupabaseSync: (() => void) | null = null
@@ -389,6 +399,7 @@ onMounted(() => {
     registryId.value = registerPen(effectiveCanvasId, penEntry)
 
   loadPenPosition()
+  nextTick(measureGlyphTip)
   loadFromHash()
   // Only load from Supabase if cloudStorage is enabled
   if (props.cloudStorage && effectiveCloudStorageId)
@@ -428,6 +439,49 @@ onUnmounted(() => {
     canvasData.scrollHandlerRegistered = false
   }
 })
+
+/**
+ * Works out where the ink leaves a drawn pencil, as an offset from the place
+ * the pen is put at.
+ *
+ * The point is a known place in the drawing, and the drawing reports where that
+ * place has landed on the screen, tilt and size and all. Both the point and the
+ * place the pen sits at are read back from the page in the same breath, so the
+ * pair always belongs together, however far the pen has travelled since.
+ */
+function measureGlyphTip() {
+  const pen = penRef.value
+  const glyph = pen?.querySelector('svg') as SVGSVGElement | null
+  const matrix = glyph?.getScreenCTM?.()
+  if (!usesPenGlyph(props.penEmoji) || !pen || !glyph || !matrix) {
+    glyphTip.value = null
+    return
+  }
+
+  const point = glyph.createSVGPoint()
+  point.x = PEN_GLYPH_TIP.x
+  point.y = PEN_GLYPH_TIP.y
+  const tip = point.matrixTransform(matrix)
+
+  // A pen that was picked up is placed by its own left and top, one that still
+  // rests in the margin by the corner of its box.
+  const style = getComputedStyle(pen)
+  const left = Number.parseFloat(style.left)
+  const top = Number.parseFloat(style.top)
+  const placed = style.position === 'fixed' && !Number.isNaN(left) && !Number.isNaN(top)
+  const rect = placed ? null : pen.getBoundingClientRect()
+
+  glyphTip.value = {
+    x: tip.x - (rect ? rect.left : left),
+    y: tip.y - (rect ? rect.top : top),
+  }
+}
+
+// The pen eases into the hand, so the point is read again once it has settled.
+watch(
+  () => [isPickedUp.value, isDragging.value, isDetached.value, currentStrokeWidth.value],
+  () => nextTick(measureGlyphTip),
+)
 
 function handleStorageChange(e: StorageEvent) {
   if (e.key === storageKey && e.newValue && props.localStorage)
@@ -971,12 +1025,16 @@ function handleRightClick(e: MouseEvent) {
 }
 
 function startDrawing(e: MouseEvent) {
+  measureGlyphTip()
+  strokeTipX = tipOffsetX.value
+  strokeTipY = tipOffsetY.value
+
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
   // Use the pen's current position plus the tip offset
-  lastX = penPosition.value.x + scrollX + scaledTipOffsetX.value
-  lastY = penPosition.value.y + scrollY + scaledTipOffsetY.value
+  lastX = penPosition.value.x + scrollX + strokeTipX
+  lastY = penPosition.value.y + scrollY + strokeTipY
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
 
@@ -999,8 +1057,8 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
     return
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + scaledTipOffsetX.value - offsetX
-  const currentY = e.clientY + scrollY + scaledTipOffsetY.value - offsetY
+  const currentX = e.clientX + scrollX + strokeTipX - offsetX
+  const currentY = e.clientY + scrollY + strokeTipY - offsetY
 
   currentPath.push({ x: currentX, y: currentY })
 
@@ -1043,6 +1101,7 @@ function startDragLegacy(e: MouseEvent) {
     penPosition.value = { x: rect.left, y: rect.top }
   }
 
+  measureGlyphTip()
   isDragging.value = true
   moveOnly.value = e.shiftKey
   mousePosition.value = { x: e.clientX, y: e.clientY }
@@ -1050,8 +1109,10 @@ function startDragLegacy(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  lastX = rect.left + scrollX + scaledTipOffsetX.value
-  lastY = rect.top + scrollY + scaledTipOffsetY.value
+  strokeTipX = tipOffsetX.value
+  strokeTipY = tipOffsetY.value
+  lastX = rect.left + scrollX + strokeTipX
+  lastY = rect.top + scrollY + strokeTipY
 
   e.preventDefault()
 
@@ -1075,8 +1136,8 @@ function drag(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + scaledTipOffsetX.value - offsetX
-  const currentY = e.clientY + scrollY + scaledTipOffsetY.value - offsetY
+  const currentX = e.clientX + scrollX + strokeTipX - offsetX
+  const currentY = e.clientY + scrollY + strokeTipY - offsetY
 
   if (ctx && !moveOnly.value) {
     if (!isDrawing.value) {
@@ -1398,6 +1459,7 @@ defineExpose({
         fontSize: penFontSize,
       }"
       @mousedown="startDrag"
+      @transitionend="measureGlyphTip"
       @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
