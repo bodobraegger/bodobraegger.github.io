@@ -52,6 +52,9 @@ watch(() => props.activeId, () => {
 watch(() => props.open, (open) => {
   if (!open)
     settingsOpen.value = false
+  // The toolbar takes the corner of the chat, so the chat steps aside while
+  // the pens are out (see the iframe rule in styles/main.css).
+  document.documentElement.classList.toggle('pens-open', open)
 })
 
 function select(pen: PenEntry) {
@@ -71,7 +74,10 @@ onMounted(() => {
   window.addEventListener('resize', measure)
 })
 
-onUnmounted(() => window.removeEventListener('resize', measure))
+onUnmounted(() => {
+  window.removeEventListener('resize', measure)
+  document.documentElement.classList.remove('pens-open')
+})
 </script>
 
 <template>
