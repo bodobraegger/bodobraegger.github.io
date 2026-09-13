@@ -50,9 +50,16 @@ address, shared live with everybody else who has the page open.
 ## Pen icons
 
 The pencil `🖉` (`U+1F589`, lower left pencil) has no emoji form. A phone must
-find it in a text font, and iOS has none, so the icon stays empty there. Five
-replacements ride along at the end of the toolbar. Each one is a true emoji, so
-every system draws it, and each one keeps the tip offsets of `🖉`:
+find it in a text font, and iOS has none, so the icon stayed empty there.
+
+The site now draws that pencil itself, as a small picture in the page instead of
+a character from a font. It follows the stroke color like the character did, it
+keeps the same box and the same point in the lower left corner, so the tip
+offsets stay as they are, and every system shows it. The first two pens of this
+page use it.
+
+Five emoji replacements ride along at the end of the toolbar for comparison.
+Each one keeps the tip offsets of `🖉`:
 
 | Icon | Character | Name                             | Stroke |
 | ---- | --------- | -------------------------------- | ------ |

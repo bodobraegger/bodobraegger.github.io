@@ -24,6 +24,14 @@ export interface PenRegistry {
   ownerId: Ref<string | null>
 }
 
+/** The character the drawn pencil stands in for: U+1F589, lower left pencil. */
+export const DRAWN_PENCIL = '\u{1F589}'
+
+/** True for pens whose icon is drawn by the site instead of taken from a font. */
+export function usesPenGlyph(emoji: string) {
+  return emoji === DRAWN_PENCIL
+}
+
 const registries = new Map<string, PenRegistry>()
 
 export function getPenRegistry(canvasId: string): PenRegistry {

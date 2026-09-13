@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref, toRef } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
 import { getSupabase, getUserId } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
 import type { PenEntry } from '../logics/pens'
-import { getPenRegistry, registerPen, unregisterPen } from '../logics/pens'
+import { getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
 import HoverTooltip from './HoverTooltip.vue'
+import PenGlyph from './PenGlyph.vue'
 import PenToolbar from './PenToolbar.vue'
 
 interface Props {
@@ -126,18 +127,11 @@ const activePen = computed(() => registry.pens.find(pen => pen.id === registry.a
 const showTouchHint = ref(false)
 const touchHintKey = 'drawable-pen-touch-hint'
 
-const pointers = new Map<number, { x: number, y: number }>()
-let gestureMode: 'draw' | 'pan' | null = null
-let panPoint: { x: number, y: number } | null = null
+const touchLayer = ref<HTMLElement>()
+let drawingTouchId: number | null = null
+let gestureIsScroll = false
 let touchPen: PenEntry | null = null
 let hintTimeout: number | null = null
-// A pan gathers the movement of both fingers and applies it once per frame,
-// together with the repaint, so the drawing never lags a frame behind the text.
-let panX = 0
-let panY = 0
-let panFrame = 0
-let redrawFrame = 0
-let pendingResize = false
 
 // Global state to track which pen is currently picked up.
 // Server render has no window, so it gets a fresh local object per render.
@@ -154,6 +148,9 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   ctx: null as CanvasRenderingContext2D | null,
   undoStack: [] as Stroke[][], // Not used anymore but kept for compatibility
   redoStack: [] as Stroke[], // Stack of individual strokes that can be redone
+  top: 0, // Where the canvas band sits in the page
+  height: 0, // How tall that band is, in CSS pixels
+  docHeight: 0, // Page height without the canvas itself
   undoHandlerRegistered: false,
   scrollHandlerRegistered: false,
   supabaseLoaded: false, // Track if we've already loaded from Supabase for this canvas
@@ -224,17 +221,46 @@ function saveStrokes() {
   }
 }
 
+/** The page height, measured without the canvas, which sits in the page too. */
+function measureDocumentHeight() {
+  const canvas = canvasData.canvas
+  const display = canvas?.style.display
+  if (canvas)
+    canvas.style.display = 'none'
+  const height = document.documentElement.scrollHeight
+  if (canvas)
+    canvas.style.display = display ?? ''
+  return height
+}
+
+/** Where a band of the given height sits when the page is at this offset. */
+function bandTopFor(scrollY: number) {
+  const height = canvasData.height
+  const middle = Math.round(scrollY - (height - window.innerHeight) / 2)
+  const lowest = Math.max(0, canvasData.docHeight - height)
+  return Math.min(Math.max(middle, 0), lowest)
+}
+
 /**
- * Sizes the canvas to the viewport at the screen's pixel density and scales the
- * context back to CSS pixels, so strokes stay sharp on phone screens while all
- * drawing code keeps working in CSS pixels.
+ * The canvas covers a band of the page twice the height of the viewport, at the
+ * screen's pixel density, with the context scaled back to CSS pixels. The band
+ * belongs to the page, not to the viewport, so the browser carries it along
+ * while the page scrolls: no drawing code runs during a scroll, and the strokes
+ * cannot fall behind the text. Only a scroll that leaves the band moves it.
  */
 function sizeCanvas(canvas: HTMLCanvasElement) {
   const ratio = Math.min(window.devicePixelRatio || 1, 3)
-  canvas.width = Math.round(window.innerWidth * ratio)
-  canvas.height = Math.round(window.innerHeight * ratio)
-  canvas.style.width = `${window.innerWidth}px`
-  canvas.style.height = `${window.innerHeight}px`
+  const width = window.innerWidth
+
+  canvasData.docHeight = measureDocumentHeight()
+  const height = Math.min(window.innerHeight * 2, Math.max(window.innerHeight, canvasData.docHeight))
+
+  canvas.width = Math.round(width * ratio)
+  canvas.height = Math.round(height * ratio)
+  canvas.style.width = `${width}px`
+  canvas.style.height = `${height}px`
+  canvasData.height = height
+  canvasData.top = bandTopFor(window.pageYOffset || document.documentElement.scrollTop)
 
   const canvasCtx = canvas.getContext('2d')
   if (canvasCtx) {
@@ -252,46 +278,33 @@ function redrawAll() {
   if (!sharedCtx || !sharedCanvas)
     return
 
-  sharedCtx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+  const top = canvasData.top
+  const height = canvasData.height
 
-  // Get viewport bounds
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-  const buffer = 100 // Buffer to render slightly outside viewport
+  sharedCtx.clearRect(0, 0, window.innerWidth, height)
 
-  // Position canvas at current scroll position
-  if (sharedCanvas.style.transform !== `translate(${scrollX}px, ${scrollY}px)`) {
-    sharedCanvas.style.transform = `translate(${scrollX}px, ${scrollY}px)`
-  }
+  // Place the band in the page
+  const transform = `translateY(${top}px)`
+  if (sharedCanvas.style.transform !== transform)
+    sharedCanvas.style.transform = transform
 
-  // Only render strokes that are visible in viewport
+  // Only render strokes that reach into the band
   for (const stroke of allStrokes) {
     // Quick bounds check
-    let minX = Infinity
     let minY = Infinity
-    let maxX = -Infinity
     let maxY = -Infinity
     for (const p of stroke.points) {
-      if (p.x < minX)
-        minX = p.x
-      if (p.x > maxX)
-        maxX = p.x
       if (p.y < minY)
         minY = p.y
       if (p.y > maxY)
         maxY = p.y
     }
 
-    // Skip if stroke is completely outside viewport
-    if (maxX < scrollX - buffer || minX > scrollX + viewportWidth + buffer
-      || maxY < scrollY - buffer || minY > scrollY + viewportHeight + buffer) {
+    if (maxY < top || minY > top + height)
       continue
-    }
 
     // Use shared drawing utility
-    drawStroke(sharedCtx, stroke, { scrollX, scrollY })
+    drawStroke(sharedCtx, stroke, { scrollX: 0, scrollY: top })
   }
 
   sharedCtx.globalCompositeOperation = 'source-over'
@@ -393,12 +406,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopSupabaseSync?.()
 
-  endPan()
-  if (redrawFrame) {
-    cancelAnimationFrame(redrawFrame)
-    redrawFrame = 0
-  }
-
   if (props.mobile)
     unregisterPen(effectiveCanvasId, registryId.value)
   if (hintTimeout)
@@ -437,14 +444,11 @@ function handleResize() {
   if (!sharedCanvas)
     return
 
-  // A phone hides and shows its address bar while the page scrolls, which
-  // changes the viewport height alone. Rebuilding the canvas in the middle of
-  // a two-finger scroll makes the drawing jump, so it waits for the fingers
-  // to lift.
-  if (gestureMode === 'pan' && sharedCanvas.style.width === `${window.innerWidth}px`) {
-    pendingResize = true
+  // A phone hides and shows its address bar as the page scrolls, which changes
+  // the viewport height alone. The band is half a viewport taller than it needs
+  // to be, so it still covers the page and needs no rebuild.
+  if (sharedCanvas.style.width === `${window.innerWidth}px` && window.innerHeight <= canvasData.height)
     return
-  }
 
   // Resize canvas to match viewport
   canvasData.ctx = sizeCanvas(sharedCanvas)
@@ -453,18 +457,19 @@ function handleResize() {
 }
 
 function handleScroll() {
-  // Redraw when scrolling to show different parts of the infinite canvas,
-  // at most once per frame
-  scheduleRedraw()
-}
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
-function scheduleRedraw() {
-  if (redrawFrame)
+  // The browser carries the band along with the page, so a scroll inside the
+  // band costs nothing at all.
+  if (scrollY >= canvasData.top && scrollY + window.innerHeight <= canvasData.top + canvasData.height)
     return
-  redrawFrame = requestAnimationFrame(() => {
-    redrawFrame = 0
-    redrawAll()
-  })
+
+  // The page can have grown since the band was measured.
+  if (scrollY + window.innerHeight > canvasData.docHeight)
+    canvasData.docHeight = measureDocumentHeight()
+
+  canvasData.top = bandTopFor(scrollY)
+  redrawAll()
 }
 
 let typedChars = ''
@@ -977,13 +982,14 @@ function startDrawing(e: MouseEvent) {
 
   // Draw initial dot for single clicks
   if (ctx) {
+    const top = canvasData.top
     ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
     ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
     ctx.lineWidth = currentStrokeWidth.value
     ctx.lineCap = 'round'
     ctx.beginPath()
-    ctx.moveTo(lastX - scrollX, lastY - scrollY)
-    ctx.lineTo(lastX - scrollX + 0.1, lastY - scrollY + 0.1)
+    ctx.moveTo(lastX, lastY - top)
+    ctx.lineTo(lastX + 0.1, lastY - top + 0.1)
     ctx.stroke()
   }
 }
@@ -998,12 +1004,13 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
 
   currentPath.push({ x: currentX, y: currentY })
 
+  const top = canvasData.top
   ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
   ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
   ctx.lineWidth = currentStrokeWidth.value
   ctx.beginPath()
-  ctx.moveTo(lastX - scrollX, lastY - scrollY)
-  ctx.lineTo(currentX - scrollX, currentY - scrollY)
+  ctx.moveTo(lastX, lastY - top)
+  ctx.lineTo(currentX, currentY - top)
   ctx.stroke()
 
   lastX = currentX
@@ -1081,12 +1088,13 @@ function drag(e: MouseEvent) {
     else {
       currentPath.push({ x: currentX, y: currentY })
 
+      const top = canvasData.top
       ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
       ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
       ctx.lineWidth = currentStrokeWidth.value
       ctx.beginPath()
-      ctx.moveTo(lastX - scrollX, lastY - scrollY)
-      ctx.lineTo(currentX - scrollX, currentY - scrollY)
+      ctx.moveTo(lastX, lastY - top)
+      ctx.lineTo(currentX, currentY - top)
       ctx.stroke()
 
       lastX = currentX
@@ -1176,30 +1184,12 @@ async function saveStroke(stroke: Stroke) {
 
 // --- Touch drawing -------------------------------------------------------
 
-function documentPoint(e: { clientX: number, clientY: number }) {
-  return {
-    x: e.clientX + (window.pageXOffset || document.documentElement.scrollLeft),
-    y: e.clientY + (window.pageYOffset || document.documentElement.scrollTop),
-  }
-}
-
-function pointerCentroid() {
-  let x = 0
-  let y = 0
-  for (const point of pointers.values()) {
-    x += point.x
-    y += point.y
-  }
-  return { x: x / pointers.size, y: y / pointers.size }
-}
-
 function paintSegment(from: { x: number, y: number }, to: { x: number, y: number }, pen: PenEntry) {
   const sharedCtx = canvasData.ctx
   if (!sharedCtx)
     return
 
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const top = canvasData.top
 
   sharedCtx.globalCompositeOperation = pen.eraser ? 'destination-out' : 'source-over'
   sharedCtx.strokeStyle = pen.eraser ? 'rgba(0,0,0,1)' : pen.color
@@ -1207,12 +1197,19 @@ function paintSegment(from: { x: number, y: number }, to: { x: number, y: number
   sharedCtx.lineCap = 'round'
   sharedCtx.lineJoin = 'round'
   sharedCtx.beginPath()
-  sharedCtx.moveTo(from.x - scrollX, from.y - scrollY)
-  sharedCtx.lineTo(to.x - scrollX, to.y - scrollY)
+  sharedCtx.moveTo(from.x, from.y - top)
+  sharedCtx.lineTo(to.x, to.y - top)
   sharedCtx.stroke()
 }
 
-function startTouchStroke(e: PointerEvent) {
+function documentPoint(touch: Touch) {
+  return {
+    x: touch.clientX + (window.pageXOffset || document.documentElement.scrollLeft),
+    y: touch.clientY + (window.pageYOffset || document.documentElement.scrollTop),
+  }
+}
+
+function startTouchStroke(touch: Touch) {
   const pen = activePen.value
   if (!pen)
     return
@@ -1220,25 +1217,20 @@ function startTouchStroke(e: PointerEvent) {
   // A copy keeps the stroke on the settings it started with, even if the
   // toolbar changes color or width while the finger is down.
   touchPen = { ...pen }
-  const point = documentPoint(e)
+  const point = documentPoint(touch)
   currentPath = [point]
   isDrawing.value = true
   // A tap without movement still leaves a dot.
   paintSegment(point, { x: point.x + 0.1, y: point.y + 0.1 }, touchPen)
 }
 
-function extendTouchStroke(e: PointerEvent) {
+function extendTouchStroke(touch: Touch) {
   if (!isDrawing.value || !touchPen)
     return
 
-  // Coalesced events carry the points the browser held back between frames,
-  // which keeps fast strokes smooth.
-  const moves = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : []
-  for (const move of moves.length ? moves : [e]) {
-    const point = documentPoint(move)
-    paintSegment(currentPath[currentPath.length - 1], point, touchPen)
-    currentPath.push(point)
-  }
+  const point = documentPoint(touch)
+  paintSegment(currentPath[currentPath.length - 1], point, touchPen)
+  currentPath.push(point)
 }
 
 function finishTouchStroke() {
@@ -1268,119 +1260,90 @@ function cancelTouchStroke() {
   redrawAll()
 }
 
-function handleTouchDown(e: PointerEvent) {
-  if (!activePen.value)
-    return
-
-  e.preventDefault()
-  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-  if (pointers.size === 1) {
-    gestureMode = 'draw'
-    startTouchStroke(e)
+function findTouch(list: TouchList, id: number) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].identifier === id)
+      return list[i]
   }
-  else {
-    // A second finger means the page should scroll, not take a line.
-    gestureMode = 'pan'
-    cancelTouchStroke()
-    panPoint = pointerCentroid()
-  }
-}
-
-function handleTouchMove(e: PointerEvent) {
-  if (!pointers.has(e.pointerId))
-    return
-
-  e.preventDefault()
-  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
-
-  if (gestureMode === 'pan') {
-    const next = pointerCentroid()
-    if (panPoint)
-      queuePan(panPoint.x - next.x, panPoint.y - next.y)
-    panPoint = next
-  }
-  else if (gestureMode === 'draw') {
-    extendTouchStroke(e)
-  }
+  return null
 }
 
 /**
- * Both fingers report their moves in separate events, so the page is scrolled
- * once a frame with everything they gathered, and repainted in the same frame.
+ * One finger draws, and the page must hold still under it. Two fingers belong
+ * to the browser: the gesture is left alone, so the page scrolls, throws and
+ * pinches exactly as it does everywhere else.
  */
-function queuePan(dx: number, dy: number) {
-  panX += dx
-  panY += dy
-
-  if (panFrame)
+function handleTouchStart(e: TouchEvent) {
+  if (!activePen.value)
     return
 
-  panFrame = requestAnimationFrame(() => {
-    panFrame = 0
-    // Whole pixels only: a phone reports fractional scroll positions, and the
-    // leftover fraction rides along to the next frame instead of rounding
-    // back and forth.
-    const x = Math.round(panX)
-    const y = Math.round(panY)
-    panX -= x
-    panY -= y
-    window.scrollBy({ left: x, top: y, behavior: 'instant' })
-    if (redrawFrame) {
-      cancelAnimationFrame(redrawFrame)
-      redrawFrame = 0
-    }
-    redrawAll()
-  })
-}
-
-function endPan() {
-  if (panFrame) {
-    cancelAnimationFrame(panFrame)
-    panFrame = 0
-  }
-  panX = 0
-  panY = 0
-  panPoint = null
-
-  // A viewport change that waited for the gesture to end is applied now.
-  if (pendingResize) {
-    pendingResize = false
-    handleResize()
-  }
-}
-
-function handleTouchUp(e: PointerEvent) {
-  if (!pointers.has(e.pointerId))
-    return
-
-  pointers.delete(e.pointerId)
-
-  if (pointers.size === 0) {
-    if (gestureMode === 'draw')
-      finishTouchStroke()
-    gestureMode = null
-    endPan()
-  }
-  else if (gestureMode === 'pan') {
-    // The centroid moves when a finger lifts, so it is measured again.
-    panPoint = pointerCentroid()
-  }
-}
-
-function handleTouchCancel(e: PointerEvent) {
-  pointers.delete(e.pointerId)
-
-  if (pointers.size === 0) {
+  if (e.touches.length > 1) {
     cancelTouchStroke()
-    gestureMode = null
-    endPan()
+    drawingTouchId = null
+    gestureIsScroll = true
+    return
   }
-  else if (gestureMode === 'pan') {
-    // Same as a finger lifting: without a new centroid the page would jump.
-    panPoint = pointerCentroid()
-  }
+
+  gestureIsScroll = false
+  const touch = e.changedTouches[0]
+  drawingTouchId = touch.identifier
+  startTouchStroke(touch)
 }
+
+function handleTouchMove(e: TouchEvent) {
+  if (gestureIsScroll || drawingTouchId === null)
+    return
+
+  if (e.touches.length > 1) {
+    cancelTouchStroke()
+    drawingTouchId = null
+    gestureIsScroll = true
+    return
+  }
+
+  const touch = findTouch(e.changedTouches, drawingTouchId)
+  if (!touch)
+    return
+
+  // The line follows the finger, so the page must not scroll with it.
+  if (e.cancelable)
+    e.preventDefault()
+
+  extendTouchStroke(touch)
+}
+
+function handleTouchEnd(e: TouchEvent) {
+  if (drawingTouchId !== null && findTouch(e.changedTouches, drawingTouchId)) {
+    finishTouchStroke()
+    drawingTouchId = null
+  }
+
+  if (e.touches.length === 0)
+    gestureIsScroll = false
+}
+
+function handleTouchCancel() {
+  cancelTouchStroke()
+  drawingTouchId = null
+  gestureIsScroll = false
+}
+
+// Drawing needs touchmove to be cancelable, which Vue's template listeners are
+// not, so the layer takes its listeners directly.
+watch(touchLayer, (layer, previous) => {
+  if (previous) {
+    previous.removeEventListener('touchstart', handleTouchStart)
+    previous.removeEventListener('touchmove', handleTouchMove)
+    previous.removeEventListener('touchend', handleTouchEnd)
+    previous.removeEventListener('touchcancel', handleTouchCancel)
+  }
+  if (layer) {
+    layer.addEventListener('touchstart', handleTouchStart, { passive: false })
+    layer.addEventListener('touchmove', handleTouchMove, { passive: false })
+    layer.addEventListener('touchend', handleTouchEnd)
+    layer.addEventListener('touchcancel', handleTouchCancel)
+  }
+})
 
 function selectTouchPen(id: string) {
   registry.activeId.value = id
@@ -1389,9 +1352,8 @@ function selectTouchPen(id: string) {
 
 function putDownTouchPen() {
   cancelTouchStroke()
-  pointers.clear()
-  gestureMode = null
-  endPan()
+  drawingTouchId = null
+  gestureIsScroll = false
   registry.activeId.value = null
   registry.open.value = false
 }
@@ -1440,7 +1402,8 @@ defineExpose({
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
-      {{ penEmoji }}
+      <PenGlyph v-if="usesPenGlyph(penEmoji)" />
+      <template v-else>{{ penEmoji }}</template>
     </span>
   </span>
 
@@ -1483,11 +1446,8 @@ defineExpose({
   <!-- Touch layer: catches the finger while a pen is in hand -->
   <div
     v-if="touchEnabled && isToolbarOwner && activePen"
+    ref="touchLayer"
     class="pen-touch-layer"
-    @pointerdown="handleTouchDown"
-    @pointermove="handleTouchMove"
-    @pointerup="handleTouchUp"
-    @pointercancel="handleTouchCancel"
     @contextmenu.prevent
   />
 
@@ -1530,11 +1490,8 @@ html.dark .drawing-canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
   pointer-events: none;
   z-index: 998;
-  will-change: transform;
 }
 .pen-inline-container {
   line-height: 0;
@@ -1601,9 +1558,9 @@ html.dark .drawing-canvas {
   position: fixed;
   inset: 0;
   z-index: 997;
-  /* The browser must not scroll or zoom here: one finger draws, two fingers
-     scroll through the handlers above. */
-  touch-action: none;
+  /* The browser keeps its own scrolling and pinching for two fingers. A single
+     finger is taken over by the drawing handlers. */
+  touch-action: pan-x pan-y pinch-zoom;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;

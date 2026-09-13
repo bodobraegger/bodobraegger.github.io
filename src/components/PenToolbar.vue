@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { PenEntry } from '../logics/pens'
+import { usesPenGlyph } from '../logics/pens'
+import PenGlyph from './PenGlyph.vue'
 
 const props = defineProps<{
   pens: PenEntry[]
@@ -36,8 +38,8 @@ const sliderValue = computed({
   },
 })
 
-// The settings dot previews the stroke, but stays inside the button.
-const dotSize = computed(() => `${Math.min(Math.max(activePen.value?.width ?? 3, 4), 22)}px`)
+// The swatch previews the stroke, but stays inside the button.
+const swatchSize = computed(() => `${Math.min(Math.max(activePen.value?.width ?? 3, 5), 22)}px`)
 
 watch(() => props.activeId, () => {
   settingsOpen.value = false
@@ -46,6 +48,7 @@ watch(() => props.activeId, () => {
     penRow.value?.querySelector('.active')?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   })
 })
+
 watch(() => props.open, (open) => {
   if (!open)
     settingsOpen.value = false
@@ -75,19 +78,22 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   <div class="pen-toolbar font-mono">
     <button
       v-if="!open"
-      class="pen-toolbar-fab"
+      class="pen-panel pen-toolbar-fab"
       aria-label="Open drawing tools"
       @click="emit('update:open', true)"
     >
-      {{ pens[0]?.emoji ?? '🖉' }}
+      <PenGlyph v-if="pens[0] && usesPenGlyph(pens[0].emoji)" :style="{ color: pens[0].color }" />
+      <template v-else>
+        {{ pens[0]?.emoji }}
+      </template>
     </button>
 
     <template v-else>
-      <p v-if="hint" class="pen-toolbar-hint">
+      <p v-if="hint" class="pen-panel pen-toolbar-hint">
         one finger draws · two fingers scroll
       </p>
 
-      <div v-if="settingsOpen && activePen" class="pen-toolbar-settings">
+      <div v-if="settingsOpen && activePen" class="pen-panel pen-toolbar-settings">
         <input
           v-model.number="sliderValue"
           type="range"
@@ -105,7 +111,7 @@ onUnmounted(() => window.removeEventListener('resize', measure))
         >
       </div>
 
-      <div class="pen-toolbar-bar">
+      <div class="pen-panel pen-toolbar-bar">
         <div ref="penRow" class="pen-toolbar-pens" :class="{ scrollable }">
           <button
             v-for="pen in drawingPens"
@@ -113,11 +119,13 @@ onUnmounted(() => window.removeEventListener('resize', measure))
             class="pen-toolbar-pen"
             :class="{ active: pen.id === activeId }"
             :aria-pressed="pen.id === activeId"
-            :aria-label="pen.eraser ? 'Eraser' : `Pen ${pen.emoji}`"
+            :aria-label="`Pen ${pen.emoji}`"
             @click="select(pen)"
           >
-            <span :style="{ color: pen.color }">{{ pen.emoji }}</span>
-            <i :style="{ background: pen.eraser ? 'transparent' : pen.color }" />
+            <PenGlyph v-if="usesPenGlyph(pen.emoji)" :style="{ color: pen.color }" />
+            <template v-else>
+              {{ pen.emoji }}
+            </template>
           </button>
         </div>
 
@@ -131,8 +139,7 @@ onUnmounted(() => window.removeEventListener('resize', measure))
             aria-label="Eraser"
             @click="select(pen)"
           >
-            <span>{{ pen.emoji }}</span>
-            <i />
+            {{ pen.emoji }}
           </button>
 
           <button
@@ -143,8 +150,8 @@ onUnmounted(() => window.removeEventListener('resize', measure))
             @click="settingsOpen = !settingsOpen"
           >
             <i
-              class="pen-toolbar-dot"
-              :style="{ width: dotSize, height: dotSize, background: activePen.eraser ? 'transparent' : activePen.color }"
+              class="pen-toolbar-swatch"
+              :style="{ width: swatchSize, height: swatchSize, background: activePen.eraser ? 'transparent' : activePen.color }"
             />
           </button>
           <button class="pen-toolbar-action" aria-label="Undo last stroke" @click="emit('undo')">
@@ -162,21 +169,29 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 <style scoped>
 .pen-toolbar {
   position: fixed;
-  left: 0.75rem;
-  right: 0.75rem;
-  /* Clears the chat widget that sits along the bottom edge. */
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 2.75rem);
+  /* The chat keeps a 1.75rem margin and stands about 23px tall (see the
+     iframe rule in styles/main.css). The toolbar takes the same margins and
+     stacks on top of it. */
+  left: 1.75rem;
+  right: 1.75rem;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem + 23px + 0.75rem);
   z-index: 1001;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 0.75rem;
   font-size: 0.85rem;
   pointer-events: none;
 }
 
 .pen-toolbar > * {
   pointer-events: auto;
+}
+
+/* Same surface as the chat: the page reads on through it. */
+.pen-panel {
+  backdrop-filter: blur(2px);
+  border: 1px dashed var(--fg);
 }
 
 .pen-toolbar button {
@@ -193,31 +208,17 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   user-select: none;
 }
 
-.pen-toolbar-fab,
-.pen-toolbar-bar,
-.pen-toolbar-settings {
-  /* See-through, like the chat bar: the page reads on through the blur. */
-  background: color-mix(in srgb, var(--c-bg) 40%, transparent);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px dashed var(--c-border);
-  border-radius: 999px;
-}
-
 .pen-toolbar-fab {
   min-width: 2.75rem;
   font-size: 1.5rem;
   line-height: 1;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 12%);
 }
 
 .pen-toolbar-bar {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
   max-width: 100%;
-  padding: 0 0.35rem;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 12%);
+  padding: 0 0.2rem;
 }
 
 /* One line, whatever number of pens a page carries: the row scrolls sideways
@@ -225,13 +226,10 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 .pen-toolbar-pens {
   display: flex;
   flex: 1 1 auto;
-  flex-wrap: nowrap;
   align-items: center;
   min-width: 0;
-  gap: 0.2rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 
@@ -250,39 +248,23 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   display: flex;
   flex: none;
   align-items: center;
-  gap: 0.2rem;
-  border-left: 1px solid var(--c-border-soft);
+  border-left: 1px dashed var(--fg);
   margin-left: 0.2rem;
   padding-left: 0.2rem;
 }
 
 .pen-toolbar-pen {
-  position: relative;
   flex: none;
   min-width: 2.5rem;
   font-size: 1.4rem;
   line-height: 1;
-  opacity: 0.55;
-  transition: opacity 0.15s ease;
+  opacity: 0.5;
 }
 
+/* The pen in hand is boxed, as the current page is in the navigation. */
 .pen-toolbar-pen.active {
   opacity: 1;
-}
-
-.pen-toolbar-pen i {
-  position: absolute;
-  bottom: 0.35rem;
-  width: 1.1rem;
-  height: 2px;
-  /* The erasers carry no color, so they fall back to the text color. */
-  background: var(--fg);
-  border-radius: 2px;
-  opacity: 0;
-}
-
-.pen-toolbar-pen.active i {
-  opacity: 1;
+  border: 1px dashed var(--fg);
 }
 
 .pen-toolbar-action {
@@ -291,17 +273,15 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   font-size: 1.1rem;
 }
 
-.pen-toolbar-dot {
+.pen-toolbar-swatch {
   display: block;
-  border: 1px solid var(--c-border);
-  border-radius: 50%;
+  border: 1px dashed var(--fg);
 }
 
-/* The canvas is inverted in the dark theme, so the pens and their color marks
-   are inverted with it and keep showing what a stroke looks like. */
-html.dark .pen-toolbar-pen span,
-html.dark .pen-toolbar-pen i,
-html.dark .pen-toolbar-dot {
+/* The canvas is inverted in the dark theme, so the pens are inverted with it
+   and keep showing what a stroke looks like. */
+html.dark .pen-toolbar-pen > *,
+html.dark .pen-toolbar-swatch {
   filter: invert(1);
 }
 
@@ -309,7 +289,7 @@ html.dark .pen-toolbar-dot {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   max-width: 100%;
 }
 
@@ -330,12 +310,6 @@ html.dark .pen-toolbar-dot {
 .pen-toolbar-hint {
   margin: 0;
   padding: 0.35rem 0.6rem;
-  /* Text on text: the hint holds a little more ground than the bar. */
-  background: color-mix(in srgb, var(--c-bg) 75%, transparent);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px dashed var(--c-border-soft);
-  border-radius: 999px;
   color: var(--fg-muted);
   font-size: 0.75rem;
 }
