@@ -164,7 +164,9 @@ onUnmounted(() => {
             ↶
           </button>
           <button class="pen-toolbar-action" aria-label="Put the pen down" @click="emit('putDown')">
-            <i class="pen-toolbar-stop" />
+            <svg class="pen-toolbar-cross" viewBox="0 0 10 10" aria-hidden="true" focusable="false">
+              <path d="M1 1 L9 9 M9 1 L1 9" fill="none" stroke="currentColor" stroke-width="1" />
+            </svg>
           </button>
         </div>
       </div>
@@ -291,13 +293,12 @@ onUnmounted(() => {
   border: 1px dashed var(--fg);
 }
 
-/* A drawn square, so the mark that puts the pen down keeps its shape on every
-   system instead of taking whatever a font has. */
-.pen-toolbar-stop {
+/* A drawn cross on a square box, so the mark that puts the pen down keeps its
+   shape on every system instead of taking whatever a font has. */
+.pen-toolbar-cross {
   display: block;
-  width: 9px;
-  height: 9px;
-  border: 1px solid var(--fg);
+  width: 11px;
+  height: 11px;
 }
 
 /* The canvas is inverted in the dark theme, so the pens are inverted with it
