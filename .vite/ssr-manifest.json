@@ -64,24 +64,25 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "2023-12-16_web-DAj_97dQ.js": [],
-  "2024-01-17_front_end_optimization-CzC_ILpk.js": [],
-  "2024-02-27_livecoding_docs-BXiZWqYp.js": [],
-  "2024-03-27_transdisciplinarity_arts-BXkZM0lX.js": [],
-  "2024-04-14_photography-DDKzw_W3.js": [],
-  "2024-04-24_images-DEf6CW3q.js": [],
-  "2024-04-25_chess-D6LQMU52.js": [
+  "2023-12-16_web-QPIf_bHV.js": [],
+  "2024-01-17_front_end_optimization-PXQb5GuU.js": [],
+  "2024-02-27_livecoding_docs-BT66SKqQ.js": [],
+  "2024-03-27_transdisciplinarity_arts-B_bIa7C0.js": [],
+  "2024-04-14_photography-BcesGlxz.js": [],
+  "2024-04-24_images-Bsx6nJF_.js": [],
+  "2024-04-25_chess-CJFXuojK.js": [
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
-  "2025-04-26_livecoding_examples-DaS9PWlr.js": [],
-  "2025-05-08_producing_composing_advanced-C-tFhbLL.js": [],
-  "2025-05-08_transcultural_collaboration-CYSKYP8W.js": [],
-  "2026-04-08_arte_digital_portfolio_talk-CvTaOS0m.js": [],
-  "2026-05-03_canvas-CSZH4Zly.js": [],
-  "2026-05-14_arte_digital_canvas-CP8c1dyD.js": [],
-  "404-DYuN3c2F.js": [],
-  "AGENTS-CVM7xiD1.js": [],
-  "_...404_-CApHXveh.js": [],
+  "2025-04-26_livecoding_examples-Dvdxe9i_.js": [],
+  "2025-05-08_producing_composing_advanced-CEYbN781.js": [],
+  "2025-05-08_transcultural_collaboration-DNDKMBq7.js": [],
+  "2026-04-08_arte_digital_portfolio_talk-BSlzXdGD.js": [],
+  "2026-05-03_canvas-B9_N7bku.js": [],
+  "2026-05-14_arte_digital_canvas-B8aNzzB0.js": [],
+  "2026-09-13_mobile_pens-R_I1VYUN.js": [],
+  "404-T3my50Cr.js": [],
+  "AGENTS-Bl-3wog6.js": [],
+  "_...404_-C1gXNulr.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -95,20 +96,20 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "bidi-oLc9O_jM.js": [
+  "bidi-CvJzBT3o.js": [
     "/assets/bidi-8LdXYwfk.css"
   ],
-  "bills-DjH72d2y.js": [],
-  "drawing-board-CpDRjZ33.js": [],
-  "frach-Dfx0_UG0.js": [],
-  "gleis161-CWsXpT42.js": [],
-  "hiperorganicos13-DqNKZdUn.js": [],
-  "hiperorganicos13.pt-CVeK9EJk.js": [],
-  "index-B1NRQB8l.js": [],
-  "index-BeBl6G_6.js": [],
-  "index-BxtERa6H.js": [],
-  "index-CbW-_Wkn.js": [],
+  "bills-DjfSanAi.js": [],
+  "drawing-board-3OaKLMzi.js": [],
+  "frach-DqqiR44P.js": [],
+  "gleis161-CXCh-oxV.js": [],
+  "hiperorganicos13-DlyL-ARu.js": [],
+  "hiperorganicos13.pt-B7xW6b88.js": [],
+  "index-Bd41t2K3.js": [],
+  "index-CueZ67Uf.js": [],
   "index-Cw67P_vQ.js": [],
+  "index-DellayJ4.js": [],
+  "index-vi24ASqm.js": [],
   "index.html": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -122,7 +123,7 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "janislabhart-VHW97nmk.js": [],
+  "janislabhart-BxuzpQmF.js": [],
   "node_modules/.pnpm/@supabase+auth-js@2.106.2/node_modules/@supabase/auth-js/dist/module/AuthClient.js": [
     "/assets/index-Cw67P_vQ.js"
   ],
@@ -294,61 +295,61 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/api.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/app.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/component.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/context.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/hooks.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/index.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/api/util.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/const.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/env.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/index.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/plugin.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/proxy.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+devtools-api@6.6.4/node_modules/@vue/devtools-api/lib/esm/time.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+reactivity@3.5.35/node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+runtime-core@3.5.35/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+runtime-dom@3.5.35/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vue+shared@3.5.35/node_modules/@vue/shared/dist/shared.esm-bundler.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vueuse+core@10.11.1_vue@3.5.35_typescript@5.9.3_/node_modules/@vueuse/core/index.mjs": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/@vueuse+shared@10.11.1_vue@3.5.35_typescript@5.9.3_/node_modules/@vueuse/shared/index.mjs": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/hookable@5.5.3/node_modules/hookable/dist/index.mjs": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -422,7 +423,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "node_modules/.pnpm/vue-demi@0.14.10_vue@3.5.35_typescript@5.9.3_/node_modules/vue-demi/lib/index.mjs": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/vue-router-better-scroller@0.0.0_vue-router@4.2.5_vue@3.5.35_typescript@5.9.3___vue@3.5.35_typescript@5.9.3_/node_modules/vue-router-better-scroller/dist/index.mjs": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -438,19 +439,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "node_modules/.pnpm/vue-router@4.2.5_vue@3.5.35_typescript@5.9.3_/node_modules/vue-router/dist/vue-router.mjs": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "node_modules/.pnpm/vue@3.5.35_typescript@5.9.3/node_modules/vue/dist/vue.runtime.esm-bundler.js": [
-    "/assets/vue-vendor-DQ5HJ7WG.js"
+    "/assets/vue-vendor-CIJkFFhw.js"
   ],
   "pages/404.md": [
-    "/assets/404-DYuN3c2F.js"
+    "/assets/404-T3my50Cr.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-CApHXveh.js"
+    "/assets/_...404_-C1gXNulr.js"
   ],
   "pages/admin/strokes.md": [
-    "/assets/strokes-CcIB4GYD.js",
+    "/assets/strokes-DVQ_kSoo.js",
     "/assets/strokes-DOjONxdI.css"
   ],
   "pages/index.md": [
@@ -467,79 +468,82 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-DAj_97dQ.js"
+    "/assets/2023-12-16_web-QPIf_bHV.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-CzC_ILpk.js"
+    "/assets/2024-01-17_front_end_optimization-PXQb5GuU.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-BXiZWqYp.js"
+    "/assets/2024-02-27_livecoding_docs-BT66SKqQ.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-BXkZM0lX.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-B_bIa7C0.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-DDKzw_W3.js"
+    "/assets/2024-04-14_photography-BcesGlxz.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-DEf6CW3q.js"
+    "/assets/2024-04-24_images-Bsx6nJF_.js"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-D6LQMU52.js",
+    "/assets/2024-04-25_chess-CJFXuojK.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=06957a2a&lang.css": [
-    "/assets/2024-04-25_chess-D6LQMU52.js",
+    "/assets/2024-04-25_chess-CJFXuojK.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-DaS9PWlr.js"
+    "/assets/2025-04-26_livecoding_examples-Dvdxe9i_.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-C-tFhbLL.js"
+    "/assets/2025-05-08_producing_composing_advanced-CEYbN781.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-CYSKYP8W.js"
+    "/assets/2025-05-08_transcultural_collaboration-DNDKMBq7.js"
   ],
   "pages/notes/2026-04-08_arte_digital_portfolio_talk.md": [
-    "/assets/2026-04-08_arte_digital_portfolio_talk-CvTaOS0m.js"
+    "/assets/2026-04-08_arte_digital_portfolio_talk-BSlzXdGD.js"
   ],
   "pages/notes/2026-05-03_canvas.md": [
-    "/assets/2026-05-03_canvas-CSZH4Zly.js"
+    "/assets/2026-05-03_canvas-B9_N7bku.js"
   ],
   "pages/notes/2026-05-14_arte_digital_canvas.md": [
-    "/assets/2026-05-14_arte_digital_canvas-CP8c1dyD.js"
+    "/assets/2026-05-14_arte_digital_canvas-B8aNzzB0.js"
+  ],
+  "pages/notes/2026-09-13_mobile_pens.md": [
+    "/assets/2026-09-13_mobile_pens-R_I1VYUN.js"
   ],
   "pages/notes/hiperorganicos13.md": [
-    "/assets/hiperorganicos13-DqNKZdUn.js"
+    "/assets/hiperorganicos13-DlyL-ARu.js"
   ],
   "pages/notes/hiperorganicos13.pt.md": [
-    "/assets/hiperorganicos13.pt-CVeK9EJk.js"
+    "/assets/hiperorganicos13.pt-B7xW6b88.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-B1NRQB8l.js"
+    "/assets/index-CueZ67Uf.js"
   ],
   "pages/notes/misc/AGENTS.md": [
-    "/assets/AGENTS-CVM7xiD1.js"
+    "/assets/AGENTS-Bl-3wog6.js"
   ],
   "pages/notes/misc/index.md": [
-    "/assets/index-BeBl6G_6.js"
+    "/assets/index-vi24ASqm.js"
   ],
   "pages/notes/scripts.md": [
-    "/assets/scripts-3OsP2613.js"
+    "/assets/scripts-WEM25_tV.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-BxtERa6H.js"
+    "/assets/index-Bd41t2K3.js"
   ],
   "pages/projects/bidi.md": [
-    "/assets/bidi-oLc9O_jM.js",
+    "/assets/bidi-CvJzBT3o.js",
     "/assets/bidi-8LdXYwfk.css"
   ],
   "pages/projects/bills.md": [
-    "/assets/bills-DjH72d2y.js"
+    "/assets/bills-DjfSanAi.js"
   ],
   "pages/projects/drawing-board.md": [
-    "/assets/drawing-board-CpDRjZ33.js",
+    "/assets/drawing-board-3OaKLMzi.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -548,16 +552,16 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "pages/projects/frach.md": [
-    "/assets/frach-Dfx0_UG0.js"
+    "/assets/frach-DqqiR44P.js"
   ],
   "pages/projects/gleis161.md": [
-    "/assets/gleis161-CWsXpT42.js"
+    "/assets/gleis161-CXCh-oxV.js"
   ],
   "pages/projects/index.md": [
-    "/assets/index-CbW-_Wkn.js"
+    "/assets/index-DellayJ4.js"
   ],
   "pages/projects/janislabhart.md": [
-    "/assets/janislabhart-VHW97nmk.js",
+    "/assets/janislabhart-BxuzpQmF.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -566,7 +570,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "pages/projects/resguardo-tecnologias.md": [
-    "/assets/resguardo-tecnologias-DQ6s34hr.js",
+    "/assets/resguardo-tecnologias-BLBjH4AU.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -575,24 +579,24 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "pages/projects/rj-bd.md": [
-    "/assets/rj-bd-BTyOECKy.js"
+    "/assets/rj-bd-BS0j78US.js"
   ],
   "pages/projects/self.md": [
-    "/assets/self-Uq90LJkX.js"
+    "/assets/self-THtMLjc_.js"
   ],
   "pages/projects/thilo.md": [
-    "/assets/thilo-Go-tFo6U.js"
+    "/assets/thilo-BDLIYiUD.js"
   ],
   "pages/projects/walter.md": [
-    "/assets/walter-QgWK1kBu.js"
+    "/assets/walter-DANN6Vim.js"
   ],
   "pages/template.md": [
-    "/assets/template-BykPF9YQ.js"
+    "/assets/template-BC74q0UB.js"
   ],
-  "resguardo-tecnologias-DQ6s34hr.js": [],
-  "rj-bd-BTyOECKy.js": [],
-  "scripts-3OsP2613.js": [],
-  "self-Uq90LJkX.js": [],
+  "resguardo-tecnologias-BLBjH4AU.js": [],
+  "rj-bd-BS0j78US.js": [],
+  "scripts-WEM25_tV.js": [],
+  "self-THtMLjc_.js": [],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -607,7 +611,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=avif": [
-    "/assets/resguardo-tecnologias-DQ6s34hr.js",
+    "/assets/resguardo-tecnologias-BLBjH4AU.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -616,7 +620,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=webp": [
-    "/assets/resguardo-tecnologias-DQ6s34hr.js",
+    "/assets/resguardo-tecnologias-BLBjH4AU.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -625,7 +629,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/resguardo-tecnologias-DQ6s34hr.js",
+    "/assets/resguardo-tecnologias-BLBjH4AU.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -634,7 +638,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/resguardo-tecnologias-DQ6s34hr.js",
+    "/assets/resguardo-tecnologias-BLBjH4AU.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -839,7 +843,7 @@
     "/assets/2026-09-05-canvas-screenshot-3-CA9Q_jHG.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=avif": [
-    "/assets/drawing-board-CpDRjZ33.js",
+    "/assets/drawing-board-3OaKLMzi.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -848,7 +852,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=webp": [
-    "/assets/drawing-board-CpDRjZ33.js",
+    "/assets/drawing-board-3OaKLMzi.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -857,7 +861,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/drawing-board-CpDRjZ33.js",
+    "/assets/drawing-board-3OaKLMzi.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -866,7 +870,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/drawing-board-CpDRjZ33.js",
+    "/assets/drawing-board-3OaKLMzi.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1031,7 +1035,7 @@
     "/assets/bbo.do_rj-bd-2026-05-21-CoHZNfgK.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=avif": [
-    "/assets/janislabhart-VHW97nmk.js",
+    "/assets/janislabhart-BxuzpQmF.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1040,7 +1044,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=webp": [
-    "/assets/janislabhart-VHW97nmk.js",
+    "/assets/janislabhart-BxuzpQmF.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1049,7 +1053,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/janislabhart-VHW97nmk.js",
+    "/assets/janislabhart-BxuzpQmF.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1058,7 +1062,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/janislabhart-VHW97nmk.js",
+    "/assets/janislabhart-BxuzpQmF.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1067,11 +1071,11 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/components/BidiTranslator.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/bidi-oLc9O_jM.js",
+    "/assets/bidi-CvJzBT3o.js",
     "/assets/bidi-8LdXYwfk.css"
   ],
   "src/components/BidiTranslator.vue?vue&type=style&index=0&lang.css": [
-    "/assets/bidi-oLc9O_jM.js",
+    "/assets/bidi-CvJzBT3o.js",
     "/assets/bidi-8LdXYwfk.css"
   ],
   "src/components/DrawablePen.vue": [
@@ -1113,7 +1117,7 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "src/components/DrawablePen.vue?vue&type=style&index=1&scoped=0ac2752b&lang.css": [
+  "src/components/DrawablePen.vue?vue&type=style&index=1&scoped=dc481aea&lang.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
     "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
@@ -1231,19 +1235,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/ListFiles.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BeBl6G_6.js"
+    "/assets/index-vi24ASqm.js"
   ],
   "src/components/ListPostItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CvK0wMC5.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-C8zubfbC.js"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CvK0wMC5.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-C8zubfbC.js"
   ],
   "src/components/ListProjectItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-CbW-_Wkn.js"
+    "/assets/index-DellayJ4.js"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-CbW-_Wkn.js"
+    "/assets/index-DellayJ4.js"
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1271,6 +1275,45 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
+  "src/components/PenToolbar.vue": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
+  "src/components/PenToolbar.vue?vue&type=script&setup=true&lang.ts": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
+  "src/components/PenToolbar.vue?vue&type=style&index=0&scoped=277b529f&lang.css": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
   "src/components/Plum.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -1285,23 +1328,23 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/StrokeAdmin.vue": [
-    "/assets/strokes-CcIB4GYD.js",
+    "/assets/strokes-DVQ_kSoo.js",
     "/assets/strokes-DOjONxdI.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/strokes-CcIB4GYD.js",
+    "/assets/strokes-DVQ_kSoo.js",
     "/assets/strokes-DOjONxdI.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=style&index=0&lang.css": [
-    "/assets/strokes-CcIB4GYD.js",
+    "/assets/strokes-DVQ_kSoo.js",
     "/assets/strokes-DOjONxdI.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=style&index=1&scoped=aabd00ef&lang.css": [
-    "/assets/strokes-CcIB4GYD.js",
+    "/assets/strokes-DVQ_kSoo.js",
     "/assets/strokes-DOjONxdI.css"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BxtERa6H.js"
+    "/assets/index-Bd41t2K3.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1420,6 +1463,19 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
+  "src/logics/pens.ts": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
   "src/main.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -1485,11 +1541,11 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "strokes-CcIB4GYD.js": [
+  "strokes-DVQ_kSoo.js": [
     "/assets/strokes-DOjONxdI.css"
   ],
-  "template-BykPF9YQ.js": [],
-  "thilo-Go-tFo6U.js": [],
+  "template-BC74q0UB.js": [],
+  "thilo-BDLIYiUD.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -1503,5 +1559,5 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "walter-QgWK1kBu.js": []
+  "walter-DANN6Vim.js": []
 }
