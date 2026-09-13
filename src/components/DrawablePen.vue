@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, toRef } from 'vue'
 import { getSupabase, getUserId } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
+import type { PenEntry } from '../logics/pens'
+import { getPenRegistry, registerPen, unregisterPen } from '../logics/pens'
 import HoverTooltip from './HoverTooltip.vue'
+import PenToolbar from './PenToolbar.vue'
 
 interface Props {
   penEmoji?: string
@@ -22,6 +25,8 @@ interface Props {
   cloudStorageId?: string
   maxCanvasHeight?: number
   dragAndDraw?: boolean
+  /** Offer this pen in the touch toolbar on phones and tablets. */
+  mobile?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -35,6 +40,7 @@ const props = withDefaults(defineProps<Props>(), {
   cloudStorageId: '',
   maxCanvasHeight: 10000,
   dragAndDraw: false,
+  mobile: false,
 })
 
 // Translations of a page share one canvas, so the default id drops the language suffix.
@@ -53,8 +59,20 @@ const isDetached = ref(false)
 const moveOnly = ref(false)
 const isPickedUp = ref(false)
 const controlsVisible = ref(false)
-const currentStrokeColor = ref(props.strokeColor)
-const currentStrokeWidth = ref(props.strokeWidth)
+const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
+const effectivePenId = props.penId || autoPenId
+
+// Color and width live in one shared entry, so the pen's own controls and the
+// touch toolbar always write to the same values.
+const penEntry = reactive<PenEntry>({
+  color: props.strokeColor,
+  emoji: props.penEmoji,
+  eraser: !!props.eraserMode,
+  id: effectivePenId,
+  width: props.strokeWidth,
+})
+const currentStrokeColor = toRef(penEntry, 'color')
+const currentStrokeWidth = toRef(penEntry, 'width')
 const sliderValue = ref(Math.log2(props.strokeWidth)) // Linear slider value that maps to exponential width
 
 // Computed pen size based on stroke width with offset
@@ -82,8 +100,6 @@ const scaledTipOffsetY = computed(() => {
   return props.tipOffsetY * scale
 })
 
-const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
-const effectivePenId = props.penId || autoPenId
 // Computed in onMounted to avoid accessing navigator at module-init time (SSR-safe)
 const flip = ref(false)
 
@@ -95,6 +111,26 @@ let broadcastChannel: any = null
 let stopSupabaseSync: (() => void) | null = null
 
 const currentUserId = getUserId()
+
+// --- Touch support -------------------------------------------------------
+// On a phone there is no cursor to carry a pen around, so all pens of a canvas
+// share one toolbar: tap a pen to take it in hand, then draw with one finger
+// and scroll with two. One instance (the first one mounted) renders that
+// toolbar and owns the touch layer for the whole page.
+const registry = getPenRegistry(effectiveCanvasId)
+const registryId = ref(effectivePenId)
+const isTouch = ref(false)
+const touchEnabled = computed(() => props.mobile && isTouch.value)
+const isToolbarOwner = computed(() => registry.ownerId.value === registryId.value)
+const activePen = computed(() => registry.pens.find(pen => pen.id === registry.activeId.value) ?? null)
+const showTouchHint = ref(false)
+const touchHintKey = 'drawable-pen-touch-hint'
+
+const pointers = new Map<number, { x: number, y: number }>()
+let gestureMode: 'draw' | 'pan' | null = null
+let panPoint: { x: number, y: number } | null = null
+let touchPen: PenEntry | null = null
+let hintTimeout: number | null = null
 
 // Global state to track which pen is currently picked up.
 // Server render has no window, so it gets a fresh local object per render.
@@ -181,12 +217,35 @@ function saveStrokes() {
   }
 }
 
+/**
+ * Sizes the canvas to the viewport at the screen's pixel density and scales the
+ * context back to CSS pixels, so strokes stay sharp on phone screens while all
+ * drawing code keeps working in CSS pixels.
+ */
+function sizeCanvas(canvas: HTMLCanvasElement) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 3)
+  canvas.width = Math.round(window.innerWidth * ratio)
+  canvas.height = Math.round(window.innerHeight * ratio)
+  canvas.style.width = `${window.innerWidth}px`
+  canvas.style.height = `${window.innerHeight}px`
+
+  const canvasCtx = canvas.getContext('2d')
+  if (canvasCtx) {
+    // Resizing the bitmap resets the context, so the scale and the line style
+    // are applied again here.
+    canvasCtx.setTransform(ratio, 0, 0, ratio, 0, 0)
+    canvasCtx.lineCap = 'round'
+    canvasCtx.lineJoin = 'round'
+  }
+  return canvasCtx
+}
+
 function redrawAll() {
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (!sharedCtx || !sharedCanvas)
     return
 
-  sharedCtx.clearRect(0, 0, sharedCanvas.width, sharedCanvas.height)
+  sharedCtx.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
   // Get viewport bounds
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
@@ -272,15 +331,8 @@ onMounted(() => {
   if (!canvasData.canvas && canvasRef.value) {
     canvasData.canvas = canvasRef.value
     // Canvas is viewport-sized, not document-sized
-    canvasData.canvas.width = window.innerWidth
-    canvasData.canvas.height = window.innerHeight
-    canvasData.ctx = canvasData.canvas.getContext('2d')
+    canvasData.ctx = sizeCanvas(canvasData.canvas)
     ctx = canvasData.ctx
-
-    if (ctx) {
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-    }
 
     loadStrokes()
     if (allStrokes.length > 0)
@@ -312,6 +364,10 @@ onMounted(() => {
   // All pen instances need to listen for reset events
   window.addEventListener('toolsReset', handleToolsReset)
 
+  isTouch.value = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
+  if (props.mobile)
+    registryId.value = registerPen(effectiveCanvasId, penEntry)
+
   loadPenPosition()
   loadFromHash()
   // Only load from Supabase if cloudStorage is enabled
@@ -329,6 +385,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   stopSupabaseSync?.()
+
+  if (props.mobile)
+    unregisterPen(effectiveCanvasId, registryId.value)
+  if (hintTimeout)
+    clearTimeout(hintTimeout)
 
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
@@ -364,8 +425,8 @@ function handleResize() {
     return
 
   // Resize canvas to match viewport
-  sharedCanvas.width = window.innerWidth
-  sharedCanvas.height = window.innerHeight
+  canvasData.ctx = sizeCanvas(sharedCanvas)
+  ctx = canvasData.ctx
   redrawAll()
 }
 
@@ -1081,6 +1142,195 @@ async function saveStroke(stroke: Stroke) {
   }
 }
 
+// --- Touch drawing -------------------------------------------------------
+
+function documentPoint(e: { clientX: number, clientY: number }) {
+  return {
+    x: e.clientX + (window.pageXOffset || document.documentElement.scrollLeft),
+    y: e.clientY + (window.pageYOffset || document.documentElement.scrollTop),
+  }
+}
+
+function pointerCentroid() {
+  let x = 0
+  let y = 0
+  for (const point of pointers.values()) {
+    x += point.x
+    y += point.y
+  }
+  return { x: x / pointers.size, y: y / pointers.size }
+}
+
+function paintSegment(from: { x: number, y: number }, to: { x: number, y: number }, pen: PenEntry) {
+  const sharedCtx = canvasData.ctx
+  if (!sharedCtx)
+    return
+
+  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+
+  sharedCtx.globalCompositeOperation = pen.eraser ? 'destination-out' : 'source-over'
+  sharedCtx.strokeStyle = pen.eraser ? 'rgba(0,0,0,1)' : pen.color
+  sharedCtx.lineWidth = pen.width
+  sharedCtx.lineCap = 'round'
+  sharedCtx.lineJoin = 'round'
+  sharedCtx.beginPath()
+  sharedCtx.moveTo(from.x - scrollX, from.y - scrollY)
+  sharedCtx.lineTo(to.x - scrollX, to.y - scrollY)
+  sharedCtx.stroke()
+}
+
+function startTouchStroke(e: PointerEvent) {
+  const pen = activePen.value
+  if (!pen)
+    return
+
+  // A copy keeps the stroke on the settings it started with, even if the
+  // toolbar changes color or width while the finger is down.
+  touchPen = { ...pen }
+  const point = documentPoint(e)
+  currentPath = [point]
+  isDrawing.value = true
+  // A tap without movement still leaves a dot.
+  paintSegment(point, { x: point.x + 0.1, y: point.y + 0.1 }, touchPen)
+}
+
+function extendTouchStroke(e: PointerEvent) {
+  if (!isDrawing.value || !touchPen)
+    return
+
+  // Coalesced events carry the points the browser held back between frames,
+  // which keeps fast strokes smooth.
+  const moves = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : []
+  for (const move of moves.length ? moves : [e]) {
+    const point = documentPoint(move)
+    paintSegment(currentPath[currentPath.length - 1], point, touchPen)
+    currentPath.push(point)
+  }
+}
+
+function finishTouchStroke() {
+  if (isDrawing.value && touchPen && currentPath.length > 0) {
+    saveStroke({
+      points: [...currentPath],
+      color: touchPen.color,
+      width: touchPen.width,
+      isEraser: touchPen.eraser,
+      userId: currentUserId,
+      timestamp: Date.now(),
+    })
+  }
+  isDrawing.value = false
+  currentPath = []
+  touchPen = null
+}
+
+function cancelTouchStroke() {
+  if (!isDrawing.value)
+    return
+
+  isDrawing.value = false
+  currentPath = []
+  touchPen = null
+  // Repaints the saved strokes, which drops the line that was abandoned.
+  redrawAll()
+}
+
+function handleTouchDown(e: PointerEvent) {
+  if (!activePen.value)
+    return
+
+  e.preventDefault()
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+  if (pointers.size === 1) {
+    gestureMode = 'draw'
+    startTouchStroke(e)
+  }
+  else {
+    // A second finger means the page should scroll, not take a line.
+    gestureMode = 'pan'
+    cancelTouchStroke()
+    panPoint = pointerCentroid()
+  }
+}
+
+function handleTouchMove(e: PointerEvent) {
+  if (!pointers.has(e.pointerId))
+    return
+
+  e.preventDefault()
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+  if (gestureMode === 'pan') {
+    const next = pointerCentroid()
+    if (panPoint)
+      window.scrollBy(panPoint.x - next.x, panPoint.y - next.y)
+    panPoint = next
+  }
+  else if (gestureMode === 'draw') {
+    extendTouchStroke(e)
+  }
+}
+
+function handleTouchUp(e: PointerEvent) {
+  if (!pointers.has(e.pointerId))
+    return
+
+  pointers.delete(e.pointerId)
+
+  if (pointers.size === 0) {
+    if (gestureMode === 'draw')
+      finishTouchStroke()
+    gestureMode = null
+    panPoint = null
+  }
+  else if (gestureMode === 'pan') {
+    // The centroid moves when a finger lifts, so it is measured again.
+    panPoint = pointerCentroid()
+  }
+}
+
+function handleTouchCancel(e: PointerEvent) {
+  pointers.delete(e.pointerId)
+  if (pointers.size === 0) {
+    cancelTouchStroke()
+    gestureMode = null
+    panPoint = null
+  }
+}
+
+function selectTouchPen(id: string) {
+  registry.activeId.value = id
+  showHintOnce()
+}
+
+function putDownTouchPen() {
+  cancelTouchStroke()
+  pointers.clear()
+  gestureMode = null
+  panPoint = null
+  registry.activeId.value = null
+  registry.open.value = false
+}
+
+/** Explains the two-finger gesture the first time a pen is taken in hand. */
+function showHintOnce() {
+  try {
+    if (localStorage.getItem(touchHintKey))
+      return
+    localStorage.setItem(touchHintKey, '1')
+  }
+  catch {
+    // A browser that blocks storage shows the hint every time, which is fine.
+  }
+
+  showTouchHint.value = true
+  if (hintTimeout)
+    clearTimeout(hintTimeout)
+  hintTimeout = window.setTimeout(() => showTouchHint.value = false, 5000)
+}
+
 defineExpose({
   saveDrawing: saveStrokes,
   loadDrawing: loadStrokes,
@@ -1147,6 +1397,30 @@ defineExpose({
       >
     </div>
   </div>
+
+  <!-- Touch layer: catches the finger while a pen is in hand -->
+  <div
+    v-if="touchEnabled && isToolbarOwner && activePen"
+    class="pen-touch-layer"
+    @pointerdown="handleTouchDown"
+    @pointermove="handleTouchMove"
+    @pointerup="handleTouchUp"
+    @pointercancel="handleTouchCancel"
+    @contextmenu.prevent
+  />
+
+  <!-- One shared toolbar for every pen of this canvas -->
+  <PenToolbar
+    v-if="touchEnabled && isToolbarOwner && registry.pens.length"
+    :pens="registry.pens"
+    :active-id="registry.activeId.value"
+    :open="registry.open.value"
+    :hint="showTouchHint && !!activePen"
+    @update:open="registry.open.value = $event"
+    @select="selectTouchPen"
+    @put-down="putDownTouchPen"
+    @undo="undo"
+  />
 
   <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging && !isPickedUp" />
 </template>
@@ -1232,12 +1506,25 @@ html.dark .drawing-canvas {
   display: inline-block;
 }
 
-/* Disable on mobile/touch devices */
+/* The cursor-driven pen and its panel have no meaning without a pointer;
+   touch devices get the toolbar below instead. */
 @media (hover: none) and (pointer: coarse) {
   .pen-emoji,
   .pen-controls-container {
     display: none !important;
   }
+}
+
+.pen-touch-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 997;
+  /* The browser must not scroll or zoom here: one finger draws, two fingers
+     scroll through the handlers above. */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .pen-emoji {
