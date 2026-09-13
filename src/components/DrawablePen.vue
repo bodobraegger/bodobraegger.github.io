@@ -131,6 +131,13 @@ let gestureMode: 'draw' | 'pan' | null = null
 let panPoint: { x: number, y: number } | null = null
 let touchPen: PenEntry | null = null
 let hintTimeout: number | null = null
+// A pan gathers the movement of both fingers and applies it once per frame,
+// together with the repaint, so the drawing never lags a frame behind the text.
+let panX = 0
+let panY = 0
+let panFrame = 0
+let redrawFrame = 0
+let pendingResize = false
 
 // Global state to track which pen is currently picked up.
 // Server render has no window, so it gets a fresh local object per render.
@@ -386,6 +393,12 @@ onMounted(() => {
 onUnmounted(() => {
   stopSupabaseSync?.()
 
+  endPan()
+  if (redrawFrame) {
+    cancelAnimationFrame(redrawFrame)
+    redrawFrame = 0
+  }
+
   if (props.mobile)
     unregisterPen(effectiveCanvasId, registryId.value)
   if (hintTimeout)
@@ -424,6 +437,15 @@ function handleResize() {
   if (!sharedCanvas)
     return
 
+  // A phone hides and shows its address bar while the page scrolls, which
+  // changes the viewport height alone. Rebuilding the canvas in the middle of
+  // a two-finger scroll makes the drawing jump, so it waits for the fingers
+  // to lift.
+  if (gestureMode === 'pan' && sharedCanvas.style.width === `${window.innerWidth}px`) {
+    pendingResize = true
+    return
+  }
+
   // Resize canvas to match viewport
   canvasData.ctx = sizeCanvas(sharedCanvas)
   ctx = canvasData.ctx
@@ -431,8 +453,18 @@ function handleResize() {
 }
 
 function handleScroll() {
-  // Redraw when scrolling to show different parts of the infinite canvas
-  redrawAll()
+  // Redraw when scrolling to show different parts of the infinite canvas,
+  // at most once per frame
+  scheduleRedraw()
+}
+
+function scheduleRedraw() {
+  if (redrawFrame)
+    return
+  redrawFrame = requestAnimationFrame(() => {
+    redrawFrame = 0
+    redrawAll()
+  })
 }
 
 let typedChars = ''
@@ -1265,11 +1297,56 @@ function handleTouchMove(e: PointerEvent) {
   if (gestureMode === 'pan') {
     const next = pointerCentroid()
     if (panPoint)
-      window.scrollBy(panPoint.x - next.x, panPoint.y - next.y)
+      queuePan(panPoint.x - next.x, panPoint.y - next.y)
     panPoint = next
   }
   else if (gestureMode === 'draw') {
     extendTouchStroke(e)
+  }
+}
+
+/**
+ * Both fingers report their moves in separate events, so the page is scrolled
+ * once a frame with everything they gathered, and repainted in the same frame.
+ */
+function queuePan(dx: number, dy: number) {
+  panX += dx
+  panY += dy
+
+  if (panFrame)
+    return
+
+  panFrame = requestAnimationFrame(() => {
+    panFrame = 0
+    // Whole pixels only: a phone reports fractional scroll positions, and the
+    // leftover fraction rides along to the next frame instead of rounding
+    // back and forth.
+    const x = Math.round(panX)
+    const y = Math.round(panY)
+    panX -= x
+    panY -= y
+    window.scrollBy({ left: x, top: y, behavior: 'instant' })
+    if (redrawFrame) {
+      cancelAnimationFrame(redrawFrame)
+      redrawFrame = 0
+    }
+    redrawAll()
+  })
+}
+
+function endPan() {
+  if (panFrame) {
+    cancelAnimationFrame(panFrame)
+    panFrame = 0
+  }
+  panX = 0
+  panY = 0
+  panPoint = null
+
+  // A viewport change that waited for the gesture to end is applied now.
+  if (pendingResize) {
+    pendingResize = false
+    handleResize()
   }
 }
 
@@ -1283,7 +1360,7 @@ function handleTouchUp(e: PointerEvent) {
     if (gestureMode === 'draw')
       finishTouchStroke()
     gestureMode = null
-    panPoint = null
+    endPan()
   }
   else if (gestureMode === 'pan') {
     // The centroid moves when a finger lifts, so it is measured again.
@@ -1293,10 +1370,15 @@ function handleTouchUp(e: PointerEvent) {
 
 function handleTouchCancel(e: PointerEvent) {
   pointers.delete(e.pointerId)
+
   if (pointers.size === 0) {
     cancelTouchStroke()
     gestureMode = null
-    panPoint = null
+    endPan()
+  }
+  else if (gestureMode === 'pan') {
+    // Same as a finger lifting: without a new centroid the page would jump.
+    panPoint = pointerCentroid()
   }
 }
 
@@ -1309,7 +1391,7 @@ function putDownTouchPen() {
   cancelTouchStroke()
   pointers.clear()
   gestureMode = null
-  panPoint = null
+  endPan()
   registry.activeId.value = null
   registry.open.value = false
 }
