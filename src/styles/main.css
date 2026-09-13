@@ -175,6 +175,14 @@ h5 {
   font-weight: 300;
 }
 
+/* The pen toolbar stands where the chat stands, so the chat steps aside while
+   the pens are out. Written flat, not nested: a nested selector that starts
+   with an element is dropped by older mobile browsers. */
+html.pens-open iframe[src*='chatango'],
+html.pens-open [id^='cid'] {
+  display: none !important;
+}
+
 iframe[src*='chatango'] {
   backdrop-filter: blur(2px);
   border: 1px dashed var(--fg);
@@ -183,12 +191,6 @@ iframe[src*='chatango'] {
   /* The widget carries a z-index of its own; this holds it below the pen
      toolbar, which takes the same corner. */
   z-index: 1000 !important;
-
-  /* The pen toolbar stands where the chat stands, so the chat steps aside
-     while the pens are out. */
-  html.pens-open & {
-    display: none !important;
-  }
 
   &:hover {
     border: 1px solid var(--fg);

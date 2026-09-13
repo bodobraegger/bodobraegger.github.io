@@ -164,7 +164,7 @@ onUnmounted(() => {
             ↶
           </button>
           <button class="pen-toolbar-action" aria-label="Put the pen down" @click="emit('putDown')">
-            ✕
+            <i class="pen-toolbar-stop" />
           </button>
         </div>
       </div>
@@ -289,6 +289,15 @@ onUnmounted(() => {
 .pen-toolbar-swatch {
   display: block;
   border: 1px dashed var(--fg);
+}
+
+/* A drawn square, so the mark that puts the pen down keeps its shape on every
+   system instead of taking whatever a font has. */
+.pen-toolbar-stop {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--fg);
 }
 
 /* The canvas is inverted in the dark theme, so the pens are inverted with it
