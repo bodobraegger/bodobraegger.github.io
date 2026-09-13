@@ -28,10 +28,11 @@ export interface PenRegistry {
 export const DRAWN_PENCIL = '\u{1F589}'
 
 /**
- * The point of the drawn pencil, in the coordinates of its drawing. It must
- * follow the first point of the body path in PenGlyph.vue.
+ * The point of the drawn pencil, in the coordinates of its drawing: the corner
+ * of the body path in PenGlyph.vue, carried out to the edge of the ink by half
+ * the width of the line that draws it. Both files must be changed together.
  */
-export const PEN_GLYPH_TIP = { x: 7.15, y: 92.85 }
+export const PEN_GLYPH_TIP = { x: 4.96, y: 95.04 }
 
 /** True for pens whose icon is drawn by the site instead of taken from a font. */
 export function usesPenGlyph(emoji: string) {

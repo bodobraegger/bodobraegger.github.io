@@ -441,19 +441,22 @@ onUnmounted(() => {
 })
 
 /**
- * Works out where the ink leaves a drawn pencil, as an offset from the place
- * the pen is put at.
+ * Works out where the ink leaves a drawn pencil, as an offset from the corner
+ * of the pen.
  *
- * The point is a known place in the drawing, and the drawing reports where that
- * place has landed on the screen, tilt and size and all. Both the point and the
- * place the pen sits at are read back from the page in the same breath, so the
- * pair always belongs together, however far the pen has travelled since.
+ * Both the point and that corner are taken on the screen, and only the distance
+ * between them is kept. An offset inside the pen holds in the page as well,
+ * while a position on the screen would not: the page itself is shifted against
+ * the screen here, because the root carries a filter.
+ *
+ * The corner is worked out from the middle of the pen, since a tilt turns the
+ * pen about its middle and leaves that point where it is.
  */
 function measureGlyphTip() {
   const pen = penRef.value
   const glyph = pen?.querySelector('svg') as SVGSVGElement | null
-  const matrix = glyph?.getScreenCTM?.()
-  if (!usesPenGlyph(props.penEmoji) || !pen || !glyph || !matrix) {
+  const screen = glyph?.getScreenCTM?.()
+  if (!usesPenGlyph(props.penEmoji) || !pen || !glyph || !screen) {
     glyphTip.value = null
     return
   }
@@ -461,19 +464,19 @@ function measureGlyphTip() {
   const point = glyph.createSVGPoint()
   point.x = PEN_GLYPH_TIP.x
   point.y = PEN_GLYPH_TIP.y
-  const tip = point.matrixTransform(matrix)
+  const tip = point.matrixTransform(screen)
 
-  // A pen that was picked up is placed by its own left and top, one that still
-  // rests in the margin by the corner of its box.
   const style = getComputedStyle(pen)
-  const left = Number.parseFloat(style.left)
-  const top = Number.parseFloat(style.top)
-  const placed = style.position === 'fixed' && !Number.isNaN(left) && !Number.isNaN(top)
-  const rect = placed ? null : pen.getBoundingClientRect()
+  const rect = pen.getBoundingClientRect()
+  const width = Number.parseFloat(style.width) || rect.width
+  const height = Number.parseFloat(style.height) || rect.height
+  const transform = style.transform === 'none' ? null : new DOMMatrixReadOnly(style.transform)
+  const middleX = rect.left + rect.width / 2 - (transform?.e ?? 0)
+  const middleY = rect.top + rect.height / 2 - (transform?.f ?? 0)
 
   glyphTip.value = {
-    x: tip.x - (rect ? rect.left : left),
-    y: tip.y - (rect ? rect.top : top),
+    x: tip.x - (middleX - width / 2),
+    y: tip.y - (middleY - height / 2),
   }
 }
 

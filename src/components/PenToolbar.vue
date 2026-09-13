@@ -169,17 +169,16 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 <style scoped>
 .pen-toolbar {
   position: fixed;
-  /* The chat keeps a 1.75rem margin and stands about 23px tall (see the
-     iframe rule in styles/main.css). The toolbar takes the same margins and
-     stacks on top of it. */
+  /* The same corner and the same margins as the chat (see the iframe rule in
+     styles/main.css). The toolbar unfolds over the chat, not above it. */
   left: 1.75rem;
   right: 1.75rem;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem + 23px + 0.75rem);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem);
   z-index: 1001;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.4rem;
   font-size: 0.85rem;
   pointer-events: none;
 }
@@ -188,14 +187,17 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   pointer-events: auto;
 }
 
-/* Same surface as the chat: the page reads on through it. */
-.pen-panel {
+/* Same surface as the chat: the page reads on through it. The button rule
+   below clears borders, so the panel is named twice to stay ahead of it. */
+.pen-toolbar .pen-panel {
   backdrop-filter: blur(2px);
   border: 1px dashed var(--fg);
 }
 
+/* One line of text tall, like the chat. */
 .pen-toolbar button {
-  min-height: 2.75rem;
+  min-height: 1.55rem;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -209,16 +211,17 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 }
 
 .pen-toolbar-fab {
-  min-width: 2.75rem;
-  font-size: 1.5rem;
+  min-width: 1.55rem;
+  font-size: 1.15rem;
   line-height: 1;
 }
 
+/* The rows stretch, so the pen in hand is boxed over the full height of the
+   bar and its border falls on the border of the bar. */
 .pen-toolbar-bar {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   max-width: 100%;
-  padding: 0 0.2rem;
 }
 
 /* One line, whatever number of pens a page carries: the row scrolls sideways
@@ -226,7 +229,7 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 .pen-toolbar-pens {
   display: flex;
   flex: 1 1 auto;
-  align-items: center;
+  align-items: stretch;
   min-width: 0;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -247,30 +250,30 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 .pen-toolbar-actions {
   display: flex;
   flex: none;
-  align-items: center;
+  align-items: stretch;
   border-left: 1px dashed var(--fg);
-  margin-left: 0.2rem;
-  padding-left: 0.2rem;
 }
 
 .pen-toolbar-pen {
   flex: none;
-  min-width: 2.5rem;
-  font-size: 1.4rem;
+  min-width: 1.7rem;
+  font-size: 1.05rem;
   line-height: 1;
   opacity: 0.5;
 }
 
-/* The pen in hand is boxed, as the current page is in the navigation. */
+/* The pen in hand is boxed, as the current page is in the navigation. The
+   negative margin lays its border over the border of the bar. */
 .pen-toolbar-pen.active {
   opacity: 1;
   border: 1px dashed var(--fg);
+  margin-block: -1px;
 }
 
 .pen-toolbar-action {
   flex: none;
-  min-width: 2.5rem;
-  font-size: 1.1rem;
+  min-width: 1.6rem;
+  font-size: 0.95rem;
 }
 
 .pen-toolbar-swatch {
@@ -288,8 +291,8 @@ html.dark .pen-toolbar-swatch {
 .pen-toolbar-settings {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
+  gap: 0.5rem;
+  padding: 0 0.4rem;
   max-width: 100%;
 }
 
@@ -300,8 +303,8 @@ html.dark .pen-toolbar-swatch {
 
 .pen-toolbar-settings input[type='color'] {
   flex: none;
-  width: 2rem;
-  height: 2rem;
+  width: 1.4rem;
+  height: 1.4rem;
   padding: 0;
   background: transparent;
   border: 0;
@@ -309,7 +312,7 @@ html.dark .pen-toolbar-swatch {
 
 .pen-toolbar-hint {
   margin: 0;
-  padding: 0.35rem 0.6rem;
+  padding: 0.1rem 0.4rem;
   color: var(--fg-muted);
   font-size: 0.75rem;
 }
