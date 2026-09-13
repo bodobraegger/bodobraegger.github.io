@@ -22,7 +22,7 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 ---
 
-This canvas is only useable on your computer, not on mobile.
+On a phone the pens sit in one small toolbar in the bottom left corner: tap it, tap a pen, then one finger draws and two fingers scroll.
 The broom is used to erase drawings, and you can use ctrl + z and ctrl + y as well. If you need anything else, or new pens, leave a message in the chat, draw a note here, do whatever.
 
 ---

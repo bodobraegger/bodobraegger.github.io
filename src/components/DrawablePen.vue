@@ -26,7 +26,10 @@ interface Props {
   cloudStorageId?: string
   maxCanvasHeight?: number
   dragAndDraw?: boolean
-  /** Offer this pen in the touch toolbar on phones and tablets. */
+  /**
+   * Offer this pen in the touch toolbar on phones and tablets. Pass false to
+   * leave the page without a toolbar.
+   */
   mobile?: boolean
 }
 
@@ -41,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   cloudStorageId: '',
   maxCanvasHeight: 10000,
   dragAndDraw: false,
-  mobile: false,
+  mobile: true,
 })
 
 // Translations of a page share one canvas, so the default id drops the language suffix.

@@ -9,19 +9,21 @@ place: Rio de Janeiro, BR
 
 ![Canvas Screenshot 1](../../src/assets/images/projects/2026-09-05-canvas-screenshot-1.png)
 
-A draggable pen component built in Vue that lets visitors draw directly on any page. Strokes are stored in [Supabase](https://supabase.com/) and synced across all visitors in real time via a broadcast channel, so drawings are shared and persistent.
+A draggable pen component built in Vue that lets visitors draw directly on any page, on a computer and on a phone alike. Strokes are stored in [Supabase](https://supabase.com/) and synced across all visitors in real time via a broadcast channel, so drawings are shared and persistent.
 
 Try it on the dedicated [canvas](/notes/2026-05-03_canvas), or the [home page](/) for a non persistent, local variant.
 
 ## Features
 
 - Drag and pick up the pen, then draw freely on the page
+- On a touch screen, the pens of a page collect in one small toolbar in the bottom left corner: tap a pen to take it in hand, then one finger draws and two fingers scroll
 - Multiple pen types: pencil, crayon, brush, eraser
+- The pencil is drawn by the site, not taken from a font, so it shows everywhere and follows the stroke color
 - Configurable stroke color, width, and tip offsets per instance
-- Undo / redo with `Ctrl+Z` / `Ctrl+Y`
+- Undo / redo with `Ctrl+Z` / `Ctrl+Y`, or the undo button on a touch screen
 - Local storage mode for single-device persistence
 - Cloud storage mode via Supabase realtime broadcast — strokes are shared across all open sessions on the same canvas ID
-- Scales to page height, with a configurable `maxCanvasHeight`
+- The canvas covers a band of the page twice the height of the viewport, which the browser carries along, so scrolling stays native
 - `dragAndDraw` mode for a fixed pen that draws while scrolling
 
 ![AD Canvas Screenshot](../../src/assets/images/projects/2026-09-05-ad-canvas-screenshot.png)
@@ -52,6 +54,12 @@ Multiple pens can be placed on the same page and will share the same canvas:
 ```
 
 The canvas ID defaults to the current page path, so each page gets its own shared drawing by default. Pass `canvasId` to override.
+
+The touch toolbar is on by default. A page that should stay without one passes `:mobile="false"` to its pens:
+
+```vue
+<DrawablePen :cloudStorage="true" :mobile="false" penEmoji="🖉" />
+```
 
 ![Canvas Screenshot 2](../../src/assets/images/projects/2026-09-05-canvas-screenshot-2.png)
 
