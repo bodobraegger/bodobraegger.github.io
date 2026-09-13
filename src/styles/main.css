@@ -180,6 +180,9 @@ iframe[src*='chatango'] {
   border: 1px dashed var(--fg);
   margin: calc(1.75rem - 2px) 1.75rem;
   user-select: none;
+  /* The widget carries a z-index of its own; this holds it below the pen
+     toolbar, which unfolds over it from the other corner. */
+  z-index: 1000 !important;
 
   &:hover {
     border: 1px solid var(--fg);

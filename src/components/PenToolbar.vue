@@ -169,11 +169,12 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 <style scoped>
 .pen-toolbar {
   position: fixed;
-  /* The same corner and the same margins as the chat (see the iframe rule in
-     styles/main.css). The toolbar unfolds over the chat, not above it. */
+  /* The margins of the chat, to the pixel (see the iframe rule in
+     styles/main.css), and a place above it, so the toolbar unfolds over the
+     chat instead of behind it. */
   left: 1.75rem;
   right: 1.75rem;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem - 2px);
   z-index: 1001;
   display: flex;
   flex-direction: column;
@@ -194,10 +195,12 @@ onUnmounted(() => window.removeEventListener('resize', measure))
   border: 1px dashed var(--fg);
 }
 
-/* One line of text tall, like the chat. */
+/* Every part of the toolbar stands 21px tall, exactly as the chat does, so the
+   buttons take their height from the bar and the line height of the page is
+   kept out of it. */
 .pen-toolbar button {
-  min-height: 1.55rem;
   padding: 0;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,9 +214,9 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 }
 
 .pen-toolbar-fab {
-  min-width: 1.55rem;
-  font-size: 1.15rem;
-  line-height: 1;
+  height: 21px;
+  min-width: 21px;
+  font-size: 1.05rem;
 }
 
 /* The rows stretch, so the pen in hand is boxed over the full height of the
@@ -221,6 +224,7 @@ onUnmounted(() => window.removeEventListener('resize', measure))
 .pen-toolbar-bar {
   display: flex;
   align-items: stretch;
+  height: 21px;
   max-width: 100%;
 }
 
@@ -292,27 +296,32 @@ html.dark .pen-toolbar-swatch {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  height: 21px;
   padding: 0 0.4rem;
   max-width: 100%;
 }
 
 .pen-toolbar-settings input[type='range'] {
   flex: 1;
-  min-width: 8rem;
+  min-width: 7rem;
+  height: 15px;
 }
 
 .pen-toolbar-settings input[type='color'] {
   flex: none;
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 15px;
+  height: 15px;
   padding: 0;
   background: transparent;
   border: 0;
 }
 
 .pen-toolbar-hint {
+  display: flex;
+  align-items: center;
+  height: 21px;
   margin: 0;
-  padding: 0.1rem 0.4rem;
+  padding: 0 0.4rem;
   color: var(--fg-muted);
   font-size: 0.75rem;
 }
