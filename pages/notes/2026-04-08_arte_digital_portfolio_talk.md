@@ -34,7 +34,7 @@ The portfolio functions as both documentation and artwork. It's not a static CV 
 
 ### Chatango Live Chat
 
-On most pages of bbo.do, there's a small live chat widget in the corner powered by [Chatango](https://chatango.com/). This creates an always-on, (anonymous) communication channel between anyone browsing the site. It's a nod to guestbooks, shoutboxes, IRC, graffiti.
+On most pages of bbo.do, there's a small live chat widget in the corner, the site's own, built on Supabase. This creates an always-on, (anonymous) communication channel between anyone browsing the site. It's a nod to guestbooks, shoutboxes, IRC, graffiti.
 
 The chat collapses into a minimal ticker by default, scrolling recent messages. Visitors can expand it to participate. There's no login required, no data collection beyond the conversation itself. It's a way to maintain presence and availability without the mediation of corporate social platforms.
 

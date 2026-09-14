@@ -53,7 +53,7 @@ watch(() => props.open, (open) => {
   if (!open)
     settingsOpen.value = false
   // The toolbar takes the corner of the chat, so the chat steps aside while
-  // the pens are out (see the iframe rule in styles/main.css).
+  // the pens are out (see .chat-widget in ChatWidget.vue).
   document.documentElement.classList.toggle('pens-open', open)
 })
 
@@ -177,8 +177,8 @@ onUnmounted(() => {
 <style scoped>
 .pen-toolbar {
   position: fixed;
-  /* The margins of the chat, to the pixel (see the iframe rule in
-     styles/main.css), and a place above it, so the toolbar unfolds over the
+  /* The margins of the chat, to the pixel (see .chat-widget in
+     ChatWidget.vue), and a place above it, so the toolbar unfolds over the
      chat instead of behind it. */
   left: 1.75rem;
   right: 1.75rem;

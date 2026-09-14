@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
+import { defineAsyncComponent } from 'vue'
+import { chatWanted } from '~/lib/chat-widget'
+
+const ChatWidget = defineAsyncComponent(() => import('./components/ChatWidget.vue'))
 
 const route = useRoute()
 
@@ -46,4 +50,7 @@ useHead({
     <Footer />
   </div>
   <Lightbox />
+  <ClientOnly>
+    <ChatWidget v-if="chatWanted" />
+  </ClientOnly>
 </template>

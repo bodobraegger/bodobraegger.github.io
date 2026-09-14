@@ -391,8 +391,8 @@ onUnmounted(() => {
     min-height: 20vh;
   }
 
-  /* Hide Chatango on mobile */
-  iframe,
+  /* Hide chat on mobile */
+  .chat-widget,
   footer {
     display: none !important;
   }
