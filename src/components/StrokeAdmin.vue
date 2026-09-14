@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { User } from '@supabase/supabase-js'
+import { useSupabaseAuth } from '~/composables/useSupabaseAuth'
 import { getSupabase } from '~/lib/supabase'
 import { drawStroke } from '~/utils/canvas'
 
@@ -27,10 +27,7 @@ const error = ref('')
 const undoStack = ref<StrokeRow[][]>([])
 const redoStack = ref<StrokeRow[][]>([])
 
-const user = ref<User | null>(null)
-const email = ref('')
-const password = ref('')
-const showAuth = ref(false)
+const { user, email, password, showAuth, signIn, signOut } = useSupabaseAuth(error, loading)
 const showConfirmDelete = ref(false)
 
 const viewportRef = ref<HTMLDivElement | null>(null)
@@ -539,54 +536,6 @@ function handleKeyDown(e: KeyboardEvent) {
   }
 }
 
-async function signIn() {
-  if (!email.value || !password.value)
-    return
-
-  const supabase = await getSupabase()
-  if (!supabase)
-    return
-
-  loading.value = true
-  error.value = ''
-
-  try {
-    const { data, error: err } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    })
-
-    if (err)
-      throw err
-
-    user.value = data.user
-    showAuth.value = false
-    password.value = ''
-  }
-  catch (e: any) {
-    error.value = e.message || 'Failed to sign in'
-    console.error('Sign in error:', e)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-async function signOut() {
-  const supabase = await getSupabase()
-  if (!supabase)
-    return
-
-  try {
-    await supabase.auth.signOut()
-    user.value = null
-  }
-  catch (e: any) {
-    error.value = e.message || 'Failed to sign out'
-    console.error('Sign out error:', e)
-  }
-}
-
 watch(filterCanvas, () => {
   selectedIds.value.clear()
   undoStack.value = []
@@ -594,24 +543,11 @@ watch(filterCanvas, () => {
   loadStrokes()
 })
 
-let authSubscription: { unsubscribe: () => void } | null = null
-
 onMounted(async () => {
   window.addEventListener('resize', setupCanvas)
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('mousemove', handleWindowMouseMove)
   window.addEventListener('mouseup', handleWindowMouseUp)
-
-  const supabase = await getSupabase()
-  if (supabase) {
-    const { data: { user: currentUser } } = await supabase.auth.getUser()
-    user.value = currentUser
-
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      user.value = session?.user ?? null
-    })
-    authSubscription = data.subscription
-  }
 
   await loadCanvases()
   // No canvases means the filterCanvas watch never fires to clear the flag
@@ -624,7 +560,6 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('mousemove', handleWindowMouseMove)
   window.removeEventListener('mouseup', handleWindowMouseUp)
-  authSubscription?.unsubscribe()
 })
 </script>
 
