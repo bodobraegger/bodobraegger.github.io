@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { getUserId } from '../lib/page-views'
 import { getSupabase } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
@@ -93,7 +94,6 @@ let currentPath: { x: number, y: number }[] = []
 let gripRatio = { x: 0.5, y: 0.5 }
 let dragGrip = { x: 20, y: 20 }
 let pickUpListeners: AbortController | null = null
-let broadcastChannel: any = null
 let stopSupabaseSync: (() => void) | null = null
 
 const currentUserId = getUserId()
@@ -141,6 +141,7 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   undoHandlerRegistered: false,
   scrollHandlerRegistered: false,
   supabaseLoaded: false, // Track if we've already loaded from Supabase for this canvas
+  channel: null as RealtimeChannel | null, // One realtime channel per canvas, opened by the first pen
 })
 const allStrokes = canvasData.strokes
 // Whether this instance registered the shared window handlers for its canvas
@@ -551,15 +552,7 @@ async function undo() {
   notifyUpdate()
 
   // Broadcast for real-time collaboration (only after successful backend delete)
-  if (broadcastChannel) {
-    broadcastChannel.send({
-      type: 'broadcast',
-      event: 'stroke_removed',
-      payload: {
-        stroke: removedStroke,
-      },
-    })
-  }
+  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_removed', payload: { stroke: removedStroke } })
 }
 
 async function redo() {
@@ -590,15 +583,7 @@ async function redo() {
   notifyUpdate()
 
   // Broadcast for real-time collaboration (only after successful backend save)
-  if (broadcastChannel) {
-    broadcastChannel.send({
-      type: 'broadcast',
-      event: 'stroke_added',
-      payload: {
-        stroke: strokeToRestore,
-      },
-    })
-  }
+  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: strokeToRestore } })
 }
 
 // The drawing travels in the URL as URL-encoded JSON. Typing "share" copies
@@ -720,15 +705,21 @@ async function loadFromSupabase() {
     canvasData.supabaseLoaded = false
   }
 }
+/**
+ * Opens the canvas's realtime channel, once per canvas. supabase-js hands the
+ * same channel back for the same topic, so a second pen would only add a
+ * second copy of every handler and each remote stroke would land twice.
+ */
 async function setupSupabaseSync() {
-  if (!effectiveCloudStorageId)
+  if (!effectiveCloudStorageId || canvasData.channel)
     return
 
   const supabase = await getSupabase()
-  if (!supabase)
+  // Another pen of this canvas may have opened the channel during the await
+  if (!supabase || canvasData.channel)
     return
 
-  broadcastChannel = supabase
+  canvasData.channel = supabase
     .channel(`drawing:${effectiveCloudStorageId}:strokes`, { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'stroke_added' }, ({ payload }) => {
       if (payload.stroke) {
@@ -743,19 +734,12 @@ async function setupSupabaseSync() {
         redrawAll()
       }
     })
-    .on('broadcast', { event: 'clear' }, () => {
-      allStrokes.length = 0
-      redrawAll()
-      // Also reset pen position on clear
-      isDetached.value = false
-      penPosition.value = { x: 0, y: 0 }
-    })
     .subscribe()
 
   return () => {
-    if (broadcastChannel) {
-      supabase.removeChannel(broadcastChannel)
-      broadcastChannel = null
+    if (canvasData.channel) {
+      supabase.removeChannel(canvasData.channel)
+      canvasData.channel = null
     }
   }
 }
@@ -1018,9 +1002,7 @@ async function saveStroke(stroke: Stroke) {
     redrawAll()
 
   // Broadcast for real-time collaboration (only after successful save)
-  if (broadcastChannel) {
-    broadcastChannel.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
-  }
+  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
 }
 
 // --- Painting ------------------------------------------------------------
