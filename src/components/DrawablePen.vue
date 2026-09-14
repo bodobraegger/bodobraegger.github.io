@@ -70,39 +70,20 @@ const currentStrokeColor = toRef(penEntry, 'color')
 const currentStrokeWidth = toRef(penEntry, 'width')
 const sliderValue = ref(Math.log2(props.strokeWidth)) // Linear slider value that maps to exponential width
 
-// Computed pen size based on stroke width with offset
-const penFontSize = computed(() => {
-  // Base size with subtle correlation to stroke width
-  // Offset of 2.3rem + stroke width mapped to rems (divided by 40 for subtle scaling)
-  const baseSize = 2.3 // Base offset in rem
-  const widthContribution = currentStrokeWidth.value / 40 // Scale stroke width to rem (more subtle)
-  return `${baseSize + widthContribution}rem`
-})
-
-// Computed tip offsets that scale with the dynamic pen size
-// The base offsets (3.6, 37) were for a 2.3rem pen, so we scale proportionally
-const scaledTipOffsetX = computed(() => {
-  const baseSize = 2.3
-  const currentSize = 2.3 + currentStrokeWidth.value / 40
-  const scale = currentSize / baseSize
-  return props.tipOffsetX * scale
-})
-
-const scaledTipOffsetY = computed(() => {
-  const baseSize = 2.3
-  const currentSize = 2.3 + currentStrokeWidth.value / 40
-  const scale = currentSize / baseSize
-  return props.tipOffsetY * scale
-})
+// The pen grows a little with its stroke width. The hand-set tip offsets were
+// measured on a pen of the base size, so they grow by the same factor.
+const PEN_BASE_REM = 2.3
+const penSizeRem = computed(() => PEN_BASE_REM + currentStrokeWidth.value / 40)
+const penFontSize = computed(() => `${penSizeRem.value}rem`)
+const penScale = computed(() => penSizeRem.value / PEN_BASE_REM)
 
 // The drawn pencil reports its own point, the emoji pens keep the hand-set one.
-const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : scaledTipOffsetX.value)
-const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : scaledTipOffsetY.value)
+const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : props.tipOffsetX * penScale.value)
+const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : props.tipOffsetY * penScale.value)
 
 /** One frame at 60 Hz, the grace the tip loop keeps past the declared ease. */
 const ONE_FRAME_MS = 16
 
-let ctx: CanvasRenderingContext2D | null = null
 let tipFrame: number | null = null
 let lastX = 0
 let lastY = 0
@@ -288,7 +269,6 @@ onMounted(() => {
     canvasData.canvas = canvasRef.value
     // Canvas is viewport-sized, not document-sized
     canvasData.ctx = sizeCanvas(canvasData.canvas)
-    ctx = canvasData.ctx
 
     if (allStrokes.length > 0)
       redrawAll()
@@ -309,10 +289,8 @@ onMounted(() => {
       ownsScrollHandler = true
     }
   }
-  else {
-    ctx = canvasData.ctx
-    if (canvasRef.value)
-      canvasRef.value.style.display = 'none'
+  else if (canvasRef.value) {
+    canvasRef.value.style.display = 'none'
   }
 
   // All pen instances need to listen for reset events
@@ -467,7 +445,6 @@ function handleResize() {
 
   // Resize canvas to match viewport
   canvasData.ctx = sizeCanvas(sharedCanvas)
-  ctx = canvasData.ctx
   redrawAll()
 }
 
@@ -913,7 +890,7 @@ function handlePenMove(e: MouseEvent) {
 function handlePenMouseDown(e: MouseEvent) {
   if (e.button === 0 && isPickedUp.value && !e.defaultPrevented) { // Left click while picked up
     e.preventDefault()
-    startDrawing(e)
+    startDrawing()
   }
 }
 
@@ -931,48 +908,25 @@ function handleRightClick(e: MouseEvent) {
   }
 }
 
-function startDrawing(e: MouseEvent) {
+function startDrawing() {
   measureGlyphTip()
 
-  const { scrollX, scrollY } = window
-
   // Use the pen's current position plus the tip offset
-  lastX = penPosition.value.x + scrollX + tipOffsetX.value
-  lastY = penPosition.value.y + scrollY + tipOffsetY.value
+  lastX = penPosition.value.x + window.scrollX + tipOffsetX.value
+  lastY = penPosition.value.y + window.scrollY + tipOffsetY.value
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
-
-  // Draw initial dot for single clicks
-  if (ctx) {
-    const top = canvasData.top
-    ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
-    ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
-    ctx.lineWidth = currentStrokeWidth.value
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(lastX, lastY - top)
-    ctx.lineTo(lastX + 0.1, lastY - top + 0.1)
-    ctx.stroke()
-  }
+  paintDot({ x: lastX, y: lastY }, penEntry)
 }
 
 function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
-  if (!ctx || !isDrawing.value)
+  if (!isDrawing.value)
     return
-  const { scrollX, scrollY } = window
-  const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
-  const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
+  const currentX = e.clientX + window.scrollX + tipOffsetX.value - offsetX
+  const currentY = e.clientY + window.scrollY + tipOffsetY.value - offsetY
 
   currentPath.push({ x: currentX, y: currentY })
-
-  const top = canvasData.top
-  ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
-  ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
-  ctx.lineWidth = currentStrokeWidth.value
-  ctx.beginPath()
-  ctx.moveTo(lastX, lastY - top)
-  ctx.lineTo(currentX, currentY - top)
-  ctx.stroke()
+  paintSegment({ x: lastX, y: lastY }, { x: currentX, y: currentY }, penEntry)
 
   lastX = currentX
   lastY = currentY
@@ -1001,9 +955,8 @@ function startDragLegacy(e: MouseEvent) {
   moveOnly.value = e.shiftKey
   currentPath = []
 
-  const { scrollX, scrollY } = window
-  lastX = rect.left + scrollX + tipOffsetX.value
-  lastY = rect.top + scrollY + tipOffsetY.value
+  lastX = rect.left + window.scrollX + tipOffsetX.value
+  lastY = rect.top + window.scrollY + tipOffsetY.value
 
   e.preventDefault()
 
@@ -1024,37 +977,23 @@ function drag(e: MouseEvent) {
   const offsetY = (drag as any).offsetY || 20
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
-  const { scrollX, scrollY } = window
-  const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
-  const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
+  const currentX = e.clientX + window.scrollX + tipOffsetX.value - offsetX
+  const currentY = e.clientY + window.scrollY + tipOffsetY.value - offsetY
 
-  if (ctx && !moveOnly.value) {
-    if (!isDrawing.value) {
-      isDrawing.value = true
-      currentPath = [{ x: currentX, y: currentY }]
-      lastX = currentX
-      lastY = currentY
-    }
-    else {
-      currentPath.push({ x: currentX, y: currentY })
-
-      const top = canvasData.top
-      ctx.globalCompositeOperation = props.eraserMode ? 'destination-out' : 'source-over'
-      ctx.strokeStyle = props.eraserMode ? 'rgba(0,0,0,1)' : currentStrokeColor.value
-      ctx.lineWidth = currentStrokeWidth.value
-      ctx.beginPath()
-      ctx.moveTo(lastX, lastY - top)
-      ctx.lineTo(currentX, currentY - top)
-      ctx.stroke()
-
-      lastX = currentX
-      lastY = currentY
-    }
+  if (moveOnly.value) {
+    // The pen is carried without drawing; the next line starts where it lands
   }
-  else if (moveOnly.value) {
-    lastX = currentX
-    lastY = currentY
+  else if (!isDrawing.value) {
+    isDrawing.value = true
+    currentPath = [{ x: currentX, y: currentY }]
   }
+  else {
+    currentPath.push({ x: currentX, y: currentY })
+    paintSegment({ x: lastX, y: lastY }, { x: currentX, y: currentY }, penEntry)
+  }
+
+  lastX = currentX
+  lastY = currentY
 }
 
 function endDrag() {
@@ -1077,7 +1016,7 @@ function handleWidthChange(e: Event) {
   currentStrokeWidth.value = 2 ** linearValue
 }
 
-function makeStroke(points: { x: number, y: number }[], pen: Pick<PenEntry, 'color' | 'width' | 'eraser'>): Stroke {
+function makeStroke(points: Point[], pen: PenInk): Stroke {
   return {
     id: crypto.randomUUID(),
     points: [...points],
@@ -1118,9 +1057,15 @@ async function saveStroke(stroke: Stroke) {
   }
 }
 
-// --- Touch drawing -------------------------------------------------------
+// --- Painting ------------------------------------------------------------
+// Every way of drawing, by cursor, by drag or by finger, paints through these
+// two. The saved strokes are repainted by drawStroke; these only put the ink
+// down while the stroke is still being drawn.
 
-function paintSegment(from: { x: number, y: number }, to: { x: number, y: number }, pen: PenEntry) {
+interface Point { x: number, y: number }
+type PenInk = Pick<PenEntry, 'color' | 'width' | 'eraser'>
+
+function paintSegment(from: Point, to: Point, pen: PenInk) {
   const sharedCtx = canvasData.ctx
   if (!sharedCtx)
     return
@@ -1137,6 +1082,13 @@ function paintSegment(from: { x: number, y: number }, to: { x: number, y: number
   sharedCtx.lineTo(to.x, to.y - top)
   sharedCtx.stroke()
 }
+
+/** A click or tap without movement still leaves a dot. */
+function paintDot(point: Point, pen: PenInk) {
+  paintSegment(point, { x: point.x + 0.1, y: point.y + 0.1 }, pen)
+}
+
+// --- Touch drawing -------------------------------------------------------
 
 function documentPoint(touch: Touch) {
   return {
@@ -1156,8 +1108,7 @@ function startTouchStroke(touch: Touch) {
   const point = documentPoint(touch)
   currentPath = [point]
   isDrawing.value = true
-  // A tap without movement still leaves a dot.
-  paintSegment(point, { x: point.x + 0.1, y: point.y + 0.1 }, touchPen)
+  paintDot(point, touchPen)
 }
 
 function extendTouchStroke(touch: Touch) {
