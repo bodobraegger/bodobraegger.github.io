@@ -53,7 +53,7 @@ Multiple pens can be placed on the same page and will share the same canvas:
 <DrawablePen :cloudStorage="true" penEmoji="🧹" :eraserMode="true" :strokeWidth="80" />
 ```
 
-The canvas ID defaults to the current page path, so each page gets its own shared drawing by default. Pass `canvasId` to override.
+The canvas ID is the page path, so each page gets its own shared drawing.
 
 The touch toolbar is on by default. A page that should stay without one passes `:mobile="false"` to its pens:
 

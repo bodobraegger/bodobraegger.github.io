@@ -8,7 +8,6 @@ import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
 import type { PenEntry } from '../logics/pens'
 import { PEN_GLYPH_TIP, TOUCH_POINTER_QUERY, getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
-import HoverTooltip from './HoverTooltip.vue'
 import PenGlyph from './PenGlyph.vue'
 import PenToolbar from './PenToolbar.vue'
 
@@ -16,16 +15,10 @@ interface Props {
   penEmoji?: string
   strokeColor?: string
   strokeWidth?: number
-  hoverText?: string
   tipOffsetX?: number
   tipOffsetY?: number
-  flip?: boolean
-  canvasId?: string
   eraserMode?: boolean
-  penId?: string
   cloudStorage?: boolean
-  cloudStorageId?: string
-  maxCanvasHeight?: number
   dragAndDraw?: boolean
   /**
    * Offer this pen in the touch toolbar on phones and tablets. Pass false to
@@ -40,26 +33,20 @@ const props = withDefaults(defineProps<Props>(), {
   strokeWidth: 3,
   tipOffsetX: 3.6,
   tipOffsetY: 37,
-  canvasId: '',
   cloudStorage: false,
-  cloudStorageId: '',
-  maxCanvasHeight: 10000,
   dragAndDraw: false,
   mobile: true,
 })
 
-// Translations of a page share one canvas, so the default id drops the language suffix.
-const pageBasePath = typeof window !== 'undefined' ? splitLanguageSuffix(window.location.pathname).basePath : ''
-const effectiveCanvasId = props.canvasId || pageBasePath
-const effectiveCloudStorageId = props.cloudStorageId || (props.cloudStorage ? pageBasePath : '')
+// Translations of a page share one canvas, so the id drops the language suffix.
+const effectiveCanvasId = typeof window !== 'undefined' ? splitLanguageSuffix(window.location.pathname).basePath : ''
+const effectiveCloudStorageId = props.cloudStorage ? effectiveCanvasId : ''
 
 const penRef = ref<HTMLElement>()
 const canvasRef = ref<HTMLCanvasElement>()
 const isDragging = ref(false)
 const isDrawing = ref(false)
-const isHovered = ref(false)
 const penPosition = ref({ x: 0, y: 0 })
-const mousePosition = ref({ x: 0, y: 0 })
 const isDetached = ref(false)
 const moveOnly = ref(false)
 const isPickedUp = ref(false)
@@ -68,8 +55,7 @@ const controlsVisible = ref(false)
 // hand-set offsets stay in charge of the pens that are still emoji.
 const glyphTip = ref<{ x: number, y: number } | null>(null)
 
-const autoPenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
-const effectivePenId = props.penId || autoPenId
+const effectivePenId = `${props.penEmoji}-${props.strokeColor}-${props.strokeWidth}-${props.eraserMode}`
 
 // Color and width live in one shared entry, so the pen's own controls and the
 // touch toolbar always write to the same values.
@@ -112,9 +98,6 @@ const scaledTipOffsetY = computed(() => {
 // The drawn pencil reports its own point, the emoji pens keep the hand-set one.
 const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : scaledTipOffsetX.value)
 const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : scaledTipOffsetY.value)
-
-// Computed in onMounted to avoid accessing navigator at module-init time (SSR-safe)
-const flip = ref(false)
 
 /** One frame at 60 Hz, the grace the tip loop keeps past the declared ease. */
 const ONE_FRAME_MS = 16
@@ -296,10 +279,6 @@ function handleToolsReset(e: Event) {
 }
 
 onMounted(() => {
-  // Safe to access navigator here (client-only, no SSR risk)
-  const notWindows = !navigator.userAgent.includes('Win')
-  flip.value = (props.penEmoji === '✏️' && notWindows) || !!props.flip
-
   // Check if stored canvas still exists in DOM, if not reset it
   if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
     canvasData.canvas = null
@@ -909,7 +888,6 @@ function pickUpPen(e: MouseEvent) {
   ;(handlePenMove as any).offsetRatioY = offsetY / rect.height
 
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
-  mousePosition.value = { x: e.clientX, y: e.clientY }
 
   window.addEventListener('mousemove', handlePenMove)
   window.addEventListener('mousedown', handlePenMouseDown)
@@ -961,7 +939,6 @@ function handlePenMove(e: MouseEvent) {
   const offsetY = rect ? rect.height * offsetRatioY : 20
 
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
-  mousePosition.value = { x: e.clientX, y: e.clientY }
 
   // Draw if mouse is down
   if (isDrawing.value) {
@@ -1068,7 +1045,6 @@ function startDragLegacy(e: MouseEvent) {
   measureGlyphTip()
   isDragging.value = true
   moveOnly.value = e.shiftKey
-  mousePosition.value = { x: e.clientX, y: e.clientY }
   currentPath = []
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
@@ -1094,7 +1070,6 @@ function drag(e: MouseEvent) {
   const offsetX = (drag as any).offsetX || 20
   const offsetY = (drag as any).offsetY || 20
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
-  mousePosition.value = { x: e.clientX, y: e.clientY }
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
@@ -1149,21 +1124,6 @@ function endDrag() {
 
   window.removeEventListener('mousemove', drag)
   window.removeEventListener('mouseup', endDrag)
-}
-
-function handleMouseMove(e: MouseEvent) {
-  if (isHovered.value && !isDragging.value) {
-    mousePosition.value = { x: e.clientX, y: e.clientY }
-  }
-}
-
-function handleMouseEnter(e: MouseEvent) {
-  isHovered.value = true
-  mousePosition.value = { x: e.clientX, y: e.clientY }
-}
-
-function handleMouseLeave() {
-  isHovered.value = false
 }
 
 function handleWidthChange(e: Event) {
@@ -1404,7 +1364,7 @@ function showHintOnce() {
     <span
       ref="penRef"
       class="pen-emoji"
-      :class="{ 'dragging': isDragging, 'flipped': flip, 'picked-up': isPickedUp, 'drawing': isDrawing }"
+      :class="{ 'dragging': isDragging, 'picked-up': isPickedUp, 'drawing': isDrawing }"
       :style="{
         ...(isDetached ? { position: 'fixed', left: `${penPosition.x}px`, top: `${penPosition.y}px` } : {}),
         color: currentStrokeColor,
@@ -1412,9 +1372,6 @@ function showHintOnce() {
       }"
       @mousedown="startDrag"
       @transitionend="settleGlyphTip"
-      @mouseenter="handleMouseEnter"
-      @mousemove="handleMouseMove"
-      @mouseleave="handleMouseLeave"
     >
       <PenGlyph v-if="usesPenGlyph(penEmoji)" />
       <template v-else>{{ penEmoji }}</template>
@@ -1477,8 +1434,6 @@ function showHintOnce() {
     @put-down="putDownTouchPen"
     @undo="undo"
   />
-
-  <HoverTooltip :text="hoverText || ''" :x="mousePosition.x" :y="mousePosition.y" :show="isHovered && !isDragging && !isPickedUp" />
 </template>
 
 <style>
@@ -1489,9 +1444,6 @@ function showHintOnce() {
 
 html.dark {
   --pen-filter: invert(1) drop-shadow(0 2px 4px rgba(255, 127, 255, 0.5));
-}
-.flipped {
-  --pen-transform: scaleX(-1) scale(1.15) rotate(-8deg);
 }
 </style>
 
