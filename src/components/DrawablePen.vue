@@ -88,6 +88,11 @@ let tipFrame: number | null = null
 let lastX = 0
 let lastY = 0
 let currentPath: { x: number, y: number }[] = []
+// Where the cursor holds the pen: a fraction of the pen while it is picked up,
+// pixels while it is dragged
+let gripRatio = { x: 0.5, y: 0.5 }
+let dragGrip = { x: 20, y: 20 }
+let pickUpListeners: AbortController | null = null
 let broadcastChannel: any = null
 let stopSupabaseSync: (() => void) | null = null
 
@@ -242,19 +247,10 @@ function notifyReset() {
 function handleToolsReset(e: Event) {
   // Reset this pen instance when the local reset event is triggered
   if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId) {
-    isDetached.value = false
-    penPosition.value = { x: 0, y: 0 }
+    returnPen()
     moveOnly.value = false
     isDragging.value = false
     isDrawing.value = false
-    isPickedUp.value = false
-    hideControls()
-
-    // Clean up event listeners if pen was picked up
-    window.removeEventListener('mousemove', handlePenMove)
-    window.removeEventListener('mousedown', handlePenMouseDown)
-    window.removeEventListener('mouseup', handlePenMouseUp)
-    window.removeEventListener('contextmenu', handleRightClick)
   }
 }
 
@@ -820,64 +816,47 @@ function pickUpPen(e: MouseEvent) {
   isDetached.value = true
   showControls()
 
-  // Store offset as percentages of the pen's size to handle dynamic sizing
+  // The grip is kept as a fraction of the pen, so it holds when the pen grows
   const offsetX = e.clientX - rect.left
   const offsetY = e.clientY - rect.top
-
-  // Store as ratio of the pen's dimensions for dynamic resizing
-  ;(handlePenMove as any).offsetRatioX = offsetX / rect.width
-  ;(handlePenMove as any).offsetRatioY = offsetY / rect.height
+  gripRatio = { x: offsetX / rect.width, y: offsetY / rect.height }
 
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
-  window.addEventListener('mousemove', handlePenMove)
-  window.addEventListener('mousedown', handlePenMouseDown)
-  window.addEventListener('mouseup', handlePenMouseUp)
-  window.addEventListener('contextmenu', handleRightClick)
+  pickUpListeners = new AbortController()
+  const { signal } = pickUpListeners
+  window.addEventListener('mousemove', handlePenMove, { signal })
+  window.addEventListener('mousedown', handlePenMouseDown, { signal })
+  window.addEventListener('mouseup', handlePenMouseUp, { signal })
+  window.addEventListener('contextmenu', handleRightClick, { signal })
 }
 
+/** Leaves the pen where it is; a right click does this. */
 function putDownPen() {
   isPickedUp.value = false
   hideControls()
 
-  // Clear global picked up state
   if (globalPickedUpPen.penId === effectivePenId)
     globalPickedUpPen.penId = null
 
-  window.removeEventListener('mousemove', handlePenMove)
-  window.removeEventListener('mousedown', handlePenMouseDown)
-  window.removeEventListener('mouseup', handlePenMouseUp)
-  window.removeEventListener('contextmenu', handleRightClick)
+  pickUpListeners?.abort()
+  pickUpListeners = null
 }
 
+/** Puts the pen down and sends it back to its place in the margin. */
 function returnPen() {
-  isPickedUp.value = false
-  hideControls()
+  putDownPen()
   isDetached.value = false
   penPosition.value = { x: 0, y: 0 }
-
-  // Clear global picked up state
-  if (globalPickedUpPen.penId === effectivePenId)
-    globalPickedUpPen.penId = null
-
-  window.removeEventListener('mousemove', handlePenMove)
-  window.removeEventListener('mousedown', handlePenMouseDown)
-  window.removeEventListener('mouseup', handlePenMouseUp)
-  window.removeEventListener('contextmenu', handleRightClick)
 }
 
 function handlePenMove(e: MouseEvent) {
   if (!isPickedUp.value)
     return
 
-  // Get current pen dimensions to calculate offset based on stored ratios
   const rect = penRef.value?.getBoundingClientRect()
-  const offsetRatioX = (handlePenMove as any).offsetRatioX || 0.5
-  const offsetRatioY = (handlePenMove as any).offsetRatioY || 0.5
-
-  // Calculate actual offset based on current pen size
-  const offsetX = rect ? rect.width * offsetRatioX : 20
-  const offsetY = rect ? rect.height * offsetRatioY : 20
+  const offsetX = rect ? rect.width * gripRatio.x : 20
+  const offsetY = rect ? rect.height * gripRatio.y : 20
 
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
@@ -960,10 +939,7 @@ function startDragLegacy(e: MouseEvent) {
 
   e.preventDefault()
 
-  const offsetX = e.clientX - rect.left
-  const offsetY = e.clientY - rect.top
-  ;(drag as any).offsetX = offsetX
-  ;(drag as any).offsetY = offsetY
+  dragGrip = { x: e.clientX - rect.left, y: e.clientY - rect.top }
 
   window.addEventListener('mousemove', drag)
   window.addEventListener('mouseup', endDrag)
@@ -973,8 +949,7 @@ function drag(e: MouseEvent) {
   if (!isDragging.value)
     return
 
-  const offsetX = (drag as any).offsetX || 20
-  const offsetY = (drag as any).offsetY || 20
+  const { x: offsetX, y: offsetY } = dragGrip
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
   const currentX = e.clientX + window.scrollX + tipOffsetX.value - offsetX
