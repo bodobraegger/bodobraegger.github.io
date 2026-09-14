@@ -61,12 +61,10 @@ function routeLanguage(route: RouteLike): Language {
 
 /**
  * Returns the other language versions of the page at `path`, derived from
- * sibling routes with the same base path. `override` is the optional
- * frontmatter `translations` map (language code to path) for exceptions.
+ * sibling routes with the same base path.
  */
-export function findTranslations(routes: RouteLike[], path: string, override?: Record<string, string>): Translation[] {
-  const { basePath } = splitLanguageSuffix(path)
-  const currentLanguage = resolveLanguage(undefined, path)
+export function findTranslations(routes: RouteLike[], path: string): Translation[] {
+  const { basePath, lang: currentLanguage = DEFAULT_LANGUAGE } = splitLanguageSuffix(path)
   const byLanguage = new Map<Language, string>()
 
   for (const route of routes) {
@@ -74,11 +72,6 @@ export function findTranslations(routes: RouteLike[], path: string, override?: R
       continue
     if (splitLanguageSuffix(route.path).basePath === basePath)
       byLanguage.set(routeLanguage(route), route.path)
-  }
-
-  for (const [lang, translationPath] of Object.entries(override ?? {})) {
-    if (isLanguage(lang))
-      byLanguage.set(lang, translationPath)
   }
 
   byLanguage.delete(currentLanguage)

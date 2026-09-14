@@ -25,7 +25,7 @@ const ORNAMENT_REPEAT = 40
 const ornamentFiller = ORNAMENT_UNIT.repeat(ORNAMENT_REPEAT) + ORNAMENT_END
 
 const language = resolveLanguage(frontmatter.lang, route.path)
-const translations = findTranslations(router.getRoutes(), route.path, frontmatter.translations)
+const translations = findTranslations(router.getRoutes(), route.path)
 
 useHead({
   htmlAttrs: { lang: language },
@@ -35,16 +35,7 @@ onMounted(() => {
   // Track view on mount
   trackView()
 
-  // Check if font is already loaded or wait for it
-  if (document.fonts) {
-    document.fonts.ready.then(() => {
-      fontsLoaded.value = true
-    })
-  }
-  else {
-    // Fallback for browsers without Font Loading API
-    fontsLoaded.value = true
-  }
+  document.fonts.ready.then(() => fontsLoaded.value = true)
 
   // Scroll to the hash target; nav link highlighting lives in NavBar
   const navigate = () => {
@@ -216,7 +207,6 @@ if (frontmatter.hydra) {
   <div
     v-if="frontmatter.display ?? frontmatter.title"
     class="prose m-auto mb-8"
-    :class="[frontmatter.wrapperClass]"
   >
     <h1 class="font-mono mb-0">
       {{ frontmatter.display ?? frontmatter.title }}
@@ -236,10 +226,7 @@ if (frontmatter.hydra) {
       </span>
       <span v-if="frontmatter.place">
         <span class="op50">✬ </span>
-        <a v-if="frontmatter.placeLink" :href="frontmatter.placeLink" target="_blank">
-          {{ frontmatter.place }}
-        </a>
-        <span v-else class="op-75 font-light">
+        <span class="op-75 font-light">
           <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
         </span>
       </span>
@@ -263,19 +250,13 @@ if (frontmatter.hydra) {
       </span>
     </p>
     <p
-      v-if="frontmatter.subtitle"
-      class="opacity-50 !-mt-6 italic"
-    >
-      {{ frontmatter.subtitle }}
-    </p>
-    <p
       v-if="frontmatter.draft"
       bg-orange-4:10 text-orange-4 border="l-3 orange-4" px4 py2
     >
       This is a draft, the content may be incomplete. Please check back later.
     </p>
   </div>
-  <article ref="content" :class="[frontmatter.tocAlwaysOn ? 'toc-always-on' : '', frontmatter.class]">
+  <article ref="content">
     <slot />
   </article>
   <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden font-mono op50">
