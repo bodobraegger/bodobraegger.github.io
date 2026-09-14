@@ -28,6 +28,14 @@ export interface PenRegistry {
 export const DRAWN_PENCIL = '\u{1F589}'
 
 /**
+ * The pointer that draws through the touch toolbar instead of through a pen
+ * that a cursor carries. The stylesheet of DrawablePen hides those pens behind
+ * the same query, so exactly one of the two ways to draw is on a page. Change
+ * the two together.
+ */
+export const TOUCH_POINTER_QUERY = '(hover: none) and (pointer: coarse)'
+
+/**
  * The point of the drawn pencil, in the coordinates of its drawing: the corner
  * of the body path in PenGlyph.vue, carried out to the edge of the ink by half
  * the width of the line that draws it. Both files must be changed together.

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { getSupabase, getUserId } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
 import type { PenEntry } from '../logics/pens'
-import { PEN_GLYPH_TIP, getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
+import { PEN_GLYPH_TIP, TOUCH_POINTER_QUERY, getPenRegistry, registerPen, unregisterPen, usesPenGlyph } from '../logics/pens'
 import HoverTooltip from './HoverTooltip.vue'
 import PenGlyph from './PenGlyph.vue'
 import PenToolbar from './PenToolbar.vue'
@@ -115,11 +116,13 @@ const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : scaledTipO
 // Computed in onMounted to avoid accessing navigator at module-init time (SSR-safe)
 const flip = ref(false)
 
+/** One frame at 60 Hz, the grace the tip loop keeps past the declared ease. */
+const ONE_FRAME_MS = 16
+
 let ctx: CanvasRenderingContext2D | null = null
+let tipFrame: number | null = null
 let lastX = 0
 let lastY = 0
-let strokeTipX = 0
-let strokeTipY = 0
 let currentPath: { x: number, y: number }[] = []
 let broadcastChannel: any = null
 let stopSupabaseSync: (() => void) | null = null
@@ -133,7 +136,10 @@ const currentUserId = getUserId()
 // toolbar and owns the touch layer for the whole page.
 const registry = getPenRegistry(effectiveCanvasId)
 const registryId = ref(effectivePenId)
-const isTouch = ref(false)
+// The pointer can change under a page that is already open: a browser that
+// turns its device toolbar on, or a tablet that gains a mouse. The query is
+// followed rather than read once, so the toolbar arrives without a reload.
+const isTouch = useMediaQuery(TOUCH_POINTER_QUERY)
 const touchEnabled = computed(() => props.mobile && isTouch.value)
 const isToolbarOwner = computed(() => registry.ownerId.value === registryId.value)
 const activePen = computed(() => registry.pens.find(pen => pen.id === registry.activeId.value) ?? null)
@@ -397,7 +403,6 @@ onMounted(() => {
   // All pen instances need to listen for reset events
   window.addEventListener('toolsReset', handleToolsReset)
 
-  isTouch.value = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches
   if (props.mobile)
     registryId.value = registerPen(effectiveCanvasId, penEntry)
 
@@ -424,6 +429,8 @@ onUnmounted(() => {
     unregisterPen(effectiveCanvasId, registryId.value)
   if (hintTimeout)
     clearTimeout(hintTimeout)
+  if (tipFrame !== null)
+    cancelAnimationFrame(tipFrame)
 
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('storage', handleStorageChange)
@@ -483,10 +490,50 @@ function measureGlyphTip() {
   }
 }
 
-// The pen eases into the hand, so the point is read again once it has settled.
+/**
+ * Follows the point through the ease that tilts and grows the pen in the hand.
+ * One reading taken as the pen is taken up holds the point of the pen still
+ * standing upright, and the ink then leaves the paper beside the drawn point
+ * for as long as the pen is held.
+ *
+ * The loop ends on the transition of the pen, and at the latest when the
+ * duration the pen declares has run out. A transform that never changes fires
+ * no transition, and that deadline is what stops the loop then.
+ */
+function trackGlyphTip() {
+  const pen = penRef.value
+  if (!pen || !usesPenGlyph(props.penEmoji))
+    return
+
+  // The pen may declare a duration per transitioned property. The point is
+  // settled only once the slowest of them has run out.
+  const seconds = getComputedStyle(pen).transitionDuration
+    .split(',')
+    .reduce((slowest, each) => Math.max(slowest, Number.parseFloat(each) || 0), 0)
+  const deadline = performance.now() + seconds * 1000 + ONE_FRAME_MS
+  if (tipFrame !== null)
+    cancelAnimationFrame(tipFrame)
+
+  const step = () => {
+    measureGlyphTip()
+    tipFrame = performance.now() < deadline ? requestAnimationFrame(step) : null
+  }
+  step()
+}
+
+/** Ends the loop early, once the pen reports that it has settled. */
+function settleGlyphTip() {
+  if (tipFrame !== null) {
+    cancelAnimationFrame(tipFrame)
+    tipFrame = null
+  }
+  measureGlyphTip()
+}
+
+// The pen eases into the hand, so the point is followed until it has settled.
 watch(
   () => [isPickedUp.value, isDragging.value, isDetached.value, currentStrokeWidth.value],
-  () => nextTick(measureGlyphTip),
+  () => nextTick(trackGlyphTip),
 )
 
 function handleStorageChange(e: StorageEvent) {
@@ -1032,15 +1079,13 @@ function handleRightClick(e: MouseEvent) {
 
 function startDrawing(e: MouseEvent) {
   measureGlyphTip()
-  strokeTipX = tipOffsetX.value
-  strokeTipY = tipOffsetY.value
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
 
   // Use the pen's current position plus the tip offset
-  lastX = penPosition.value.x + scrollX + strokeTipX
-  lastY = penPosition.value.y + scrollY + strokeTipY
+  lastX = penPosition.value.x + scrollX + tipOffsetX.value
+  lastY = penPosition.value.y + scrollY + tipOffsetY.value
   isDrawing.value = true
   currentPath = [{ x: lastX, y: lastY }]
 
@@ -1063,8 +1108,8 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
     return
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + strokeTipX - offsetX
-  const currentY = e.clientY + scrollY + strokeTipY - offsetY
+  const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
+  const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
 
   currentPath.push({ x: currentX, y: currentY })
 
@@ -1115,10 +1160,8 @@ function startDragLegacy(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  strokeTipX = tipOffsetX.value
-  strokeTipY = tipOffsetY.value
-  lastX = rect.left + scrollX + strokeTipX
-  lastY = rect.top + scrollY + strokeTipY
+  lastX = rect.left + scrollX + tipOffsetX.value
+  lastY = rect.top + scrollY + tipOffsetY.value
 
   e.preventDefault()
 
@@ -1142,8 +1185,8 @@ function drag(e: MouseEvent) {
 
   const scrollX = window.pageXOffset || document.documentElement.scrollLeft
   const scrollY = window.pageYOffset || document.documentElement.scrollTop
-  const currentX = e.clientX + scrollX + strokeTipX - offsetX
-  const currentY = e.clientY + scrollY + strokeTipY - offsetY
+  const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
+  const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
 
   if (ctx && !moveOnly.value) {
     if (!isDrawing.value) {
@@ -1465,7 +1508,7 @@ defineExpose({
         fontSize: penFontSize,
       }"
       @mousedown="startDrag"
-      @transitionend="measureGlyphTip"
+      @transitionend="settleGlyphTip"
       @mouseenter="handleMouseEnter"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
@@ -1614,7 +1657,9 @@ html.dark .drawing-canvas {
 }
 
 /* The cursor-driven pen and its panel have no meaning without a pointer;
-   touch devices get the toolbar below instead. */
+   touch devices get the toolbar below instead. The query hides the pens before
+   the first paint, so it repeats TOUCH_POINTER_QUERY of logics/pens.ts, which
+   is what brings the toolbar in. Change the two together. */
 @media (hover: none) and (pointer: coarse) {
   .pen-emoji,
   .pen-controls-container {

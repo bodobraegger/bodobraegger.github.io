@@ -182,7 +182,7 @@ onUnmounted(() => {
      chat instead of behind it. */
   left: 1.75rem;
   right: 1.75rem;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.75rem - 2px);
+  bottom: calc(1.75rem - 2px);
   z-index: 1001;
   display: flex;
   flex-direction: column;
