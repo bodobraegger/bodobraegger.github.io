@@ -11,23 +11,16 @@ const folder = props.folder || currentFolder
 // Non-eager on purpose: only the file paths are needed, not the contents
 const files = import.meta.glob('../../pages/notes/**')
 
-const fileList = Object.keys(files)
-  .filter((path) => { return path.includes(`/notes/${folder}/`) && !path.includes('index.md') })
-  .filter((path) => {
-    const name = path.split('/').pop() || ''
-    return name !== 'index.md'
-  })
-  .map((path) => {
-    const name = path.split('/').pop() || ''
-    return { name }
-  })
+const fileNames = Object.keys(files)
+  .filter(path => path.includes(`/notes/${folder}/`) && !path.endsWith('/index.md'))
+  .map(path => path.split('/').pop()!)
 </script>
 
 <template>
   <div class="font-mono text-sm">
-    <div v-for="file in fileList" :key="file.name">
-      <RouterLink :to="`${folder}/${file.name.replace('.md', '')}`">
-        {{ file.name }}
+    <div v-for="name in fileNames" :key="name">
+      <RouterLink :to="`${folder}/${name.replace('.md', '')}`">
+        {{ name }}
       </RouterLink>
     </div>
   </div>
