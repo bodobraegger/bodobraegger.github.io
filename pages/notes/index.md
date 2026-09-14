@@ -6,4 +6,4 @@ display: 'Notes'
 
 <!-- <SubNav /> -->
 
-<ListPosts only-date type="note" />
+<ListPosts type="note" />

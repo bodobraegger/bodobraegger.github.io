@@ -38,23 +38,12 @@ onMounted(fetchViewCount)
           title="External"
         />
         <span
-          v-if="post.inperson"
-          class="i-ri:group-2-line align-middle op50 flex-none"
-          title="In person"
-        />
-        <span
-          v-if="post.recording || post.video"
+          v-if="post.recording"
           class="i-ri:film-line align-middle op50 flex-none"
           title="Provided in video"
         />
-        <span
-          v-if="post.radio"
-          class="i-ri:radio-line align-middle op50 flex-none"
-          title="Provided in radio"
-        />
         <span v-if="post.date" class="ws-nowrap">✹ {{ formatDate(post.date, true) }}</span>
         <span v-if="post.duration" class="op80 ws-nowrap">· {{ post.duration }}</span>
-        <span v-if="post.platform" class="op80 ws-nowrap">· {{ post.platform }}</span>
         <span v-if="post.place" class="op80 ws-nowrap">✬ {{ post.place }}</span>
         <div class="ml-auto flex gap-2 items-center">
           <span class="op80 ws-nowrap transition-opacity duration-500 tabular-nums min-w-[4ch] text-right" :class="viewCount === null ? 'opacity-0' : 'opacity-100'">✶ {{ viewCount }}</span>

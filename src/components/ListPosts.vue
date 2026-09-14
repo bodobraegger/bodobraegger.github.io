@@ -5,12 +5,10 @@ import type { Post } from '~/types'
 
 const props = defineProps<{
   type?: string
-  posts?: Post[]
-  extra?: Post[]
 }>()
 
 const router = useRouter()
-const routes: Post[] = groupTranslations(router.getRoutes()
+const posts: Post[] = groupTranslations(router.getRoutes()
   .filter(i => (i.name?.toString().startsWith('posts-') || i.name?.toString().startsWith('notes-')) && i.meta.frontmatter.date && !i.meta.frontmatter.draft)
   .filter(i => !i.path.includes('.html') && (i.meta.frontmatter.type || 'blog').split('+').includes(props.type))
   .map(i => ({
@@ -20,15 +18,10 @@ const routes: Post[] = groupTranslations(router.getRoutes()
     lang: resolveLanguage(i.meta.frontmatter.lang, i.path),
     duration: i.meta.frontmatter.duration,
     recording: i.meta.frontmatter.recording,
-    upcoming: i.meta.frontmatter.upcoming,
     redirect: i.meta.frontmatter.redirect,
     place: i.meta.frontmatter.place,
   })))
-
-const posts = computed(() =>
-  [...(props.posts || routes), ...props.extra || []]
-    .sort((a, b) => +new Date(b.date) - +new Date(a.date)),
-)
+  .sort((a, b) => +new Date(b.date) - +new Date(a.date))
 
 const getYear = (a: Date | string | number) => new Date(a).getFullYear()
 const isFuture = (a?: Date | string | number) => a && new Date(a) > new Date()
@@ -46,15 +39,7 @@ function getGroupName(p: Post) {
 const fontsLoaded = ref(false)
 
 onBeforeMount(() => {
-  // Wait for fonts to load
-  if (document.fonts) {
-    document.fonts.ready.then(() => {
-      fontsLoaded.value = true
-    })
-  }
-  else {
-    fontsLoaded.value = true
-  }
+  document.fonts.ready.then(() => fontsLoaded.value = true)
 
   const hasVisited = sessionStorage.getItem('visited-notes')
   if (hasVisited)

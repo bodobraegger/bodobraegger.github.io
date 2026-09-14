@@ -6,13 +6,7 @@ export interface Post {
   place?: string
   date: string
   lang?: Language
-  desc?: string
-  platform?: string
   duration?: string
   recording?: string
-  radio?: boolean
-  video?: boolean
-  inperson?: boolean
   redirect?: string
-  upcoming?: boolean
 }
