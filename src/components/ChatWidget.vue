@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   CHAT_BODY_MAX_LENGTH,
   CHAT_NAME_MAX_LENGTH,
@@ -114,6 +114,10 @@ function closeBox() {
   open.value = false
 }
 
+// The pen toolbar takes the same corner, so it steps aside while the chat is
+// open, as the chat does while the pens are out (see pens-open in main.css).
+watch(open, isOpen => document.documentElement.classList.toggle('chat-open', isOpen))
+
 async function loadEarlier() {
   const oldest = messages.value[0]
   if (!oldest)
@@ -207,11 +211,12 @@ onMounted(async () => {
 onUnmounted(() => {
   clearInterval(tickerTimer)
   unsubscribe?.()
+  document.documentElement.classList.remove('chat-open')
 })
 </script>
 
 <template>
-  <div v-if="configured" class="chat-widget font-mono">
+  <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
     <div class="chat-widget-panel">
       <div v-if="open" class="chat-widget-box">
         <button v-if="canLoadEarlier" class="chat-widget-earlier" @click="loadEarlier">
@@ -274,8 +279,10 @@ onUnmounted(() => {
   font-size: 0.85rem;
 }
 
+/* The closed bar keeps its width on a phone, so the pen button at the left
+   keeps its place. Only the open box takes the whole width. */
 @media (max-width: 640px) {
-  .chat-widget {
+  .chat-widget.open {
     left: 1.75rem;
     width: auto;
   }

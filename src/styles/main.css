@@ -175,8 +175,9 @@ h5 {
   font-weight: 300;
 }
 
-/* The pen toolbar stands where the chat stands, so the chat steps aside while
-   the pens are out. */
-html.pens-open .chat-widget {
+/* The pen toolbar and the chat take the same corner: the chat steps aside while
+   the pens are out, and the pens while the chat is open. */
+html.pens-open .chat-widget,
+html.chat-open .pen-toolbar {
   display: none !important;
 }
