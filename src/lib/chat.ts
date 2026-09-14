@@ -11,6 +11,8 @@ export const CHAT_PAGE_SIZE = 50
 export const CHAT_TICKER_SIZE = 20
 /** The bucket's file_size_limit; the upload is refused above it, so the client checks first. */
 export const CHAT_IMAGE_MAX_BYTES = 65536
+/** How long a message stays editable and deletable by its sender; the functions enforce the same. */
+export const CHAT_EDIT_WINDOW_MS = 15 * 60 * 1000
 
 const CHAT_IMAGE_BUCKET = 'chat-images'
 
@@ -141,6 +143,30 @@ export async function postMessage(name: string, body: string, image?: string): P
     throw new Error(error?.message ?? 'chat is not configured')
 
   return rowToMessage(data as ChatMessageRow)
+}
+
+/** Changes the body of one of this user's messages sent in the last 15 minutes. */
+export async function editMessage(id: string, body: string): Promise<ChatMessage> {
+  const supabase = await getSupabase()
+  if (!supabase)
+    throw new Error('chat is not configured')
+
+  const { data, error } = await supabase.rpc('edit_chat_message', { message_id: id, new_body: body })
+  if (error || !data)
+    throw new Error(error?.message ?? 'chat is not configured')
+
+  return rowToMessage(data as ChatMessageRow)
+}
+
+/** Deletes one of this user's messages sent in the last 15 minutes. */
+export async function deleteMessage(id: string): Promise<void> {
+  const supabase = await getSupabase()
+  if (!supabase)
+    throw new Error('chat is not configured')
+
+  const { error } = await supabase.rpc('delete_chat_message', { message_id: id })
+  if (error)
+    throw new Error(error.message)
 }
 
 export interface ChatSubscription { unsubscribe: () => void }

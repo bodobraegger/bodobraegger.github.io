@@ -128,6 +128,15 @@ input held. The list shows the image under the body, inverted in dark mode
 like the rest of the ink; the ticker shows `[image]`. No picker button, no
 preview, no paste, one image per message.
 
+### Your own messages, for 15 minutes
+
+A message of this browser's user id younger than 15 minutes shows two muted
+links after its body: `edit` puts the text in the bottom input (Enter saves,
+Escape cancels), `delete` removes it at once, no confirm. Both go through
+`edit_chat_message` and `delete_chat_message` (`src/db/chat-edit.sql`), which
+check the user id and the window on the server; the links are the client's
+view of the same rule. A deleted message's image stays in the bucket.
+
 ### Not done on purpose
 
 - No unread badge, no emoji picker, no links parsed in bodies. Bodies render

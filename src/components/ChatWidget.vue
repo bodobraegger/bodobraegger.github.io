@@ -2,10 +2,13 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   CHAT_BODY_MAX_LENGTH,
+  CHAT_EDIT_WINDOW_MS,
   CHAT_NAME_MAX_LENGTH,
   CHAT_PAGE_SIZE,
   CHAT_TICKER_SIZE,
   chatImageUrl,
+  deleteMessage,
+  editMessage,
   fetchMessages,
   getChatName,
   hasChosenChatName,
@@ -37,7 +40,12 @@ const onlineCount = ref(0)
 const canLoadEarlier = ref(false)
 
 const draftBody = ref('')
+const editing = ref<ChatMessage | null>(null)
 const sending = ref(false)
+// Ticks once a minute, so the edit links go away when the window closes
+const now = ref(Date.now())
+const EDIT_CLOCK_MS = 60_000
+let clock: ReturnType<typeof setInterval> | undefined
 const sendError = ref<string | null>(null)
 
 const showNameOffer = ref(false)
@@ -213,15 +221,49 @@ function dismissNameOffer() {
   showNameOffer.value = false
 }
 
+function canEdit(message: ChatMessage) {
+  return message.userId === userId && now.value - Date.parse(message.createdAt) < CHAT_EDIT_WINDOW_MS
+}
+
+function startEdit(message: ChatMessage) {
+  editing.value = message
+  draftBody.value = message.body
+  inputEl.value?.focus()
+}
+
+function cancelEdit() {
+  if (!editing.value)
+    return
+  editing.value = null
+  draftBody.value = ''
+}
+
+async function remove(message: ChatMessage) {
+  try {
+    await deleteMessage(message.id)
+    onDelete(message.id)
+  }
+  catch (error) {
+    showSendError(error)
+  }
+}
+
 async function send(image?: string) {
   const body = draftBody.value.trim()
-  if ((!body && !image) || sending.value)
+  const target = editing.value
+  if ((!body && !image && !target?.image) || sending.value)
     return
   sending.value = true
   try {
-    await postMessage(getChatName(), body, image)
+    if (target) {
+      onUpdate(await editMessage(target.id, body))
+      editing.value = null
+    }
+    else {
+      await postMessage(getChatName(), body, image)
+    }
     draftBody.value = ''
-    if (!hasChosenChatName())
+    if (!target && !hasChosenChatName())
       offerName('')
   }
   catch (error) {
@@ -268,9 +310,11 @@ onMounted(async () => {
   messages.value = initial
   canLoadEarlier.value = initial.length >= CHAT_TICKER_SIZE
   configured.value = true
+  clock = setInterval(() => (now.value = Date.now()), EDIT_CLOCK_MS)
 })
 
 onUnmounted(() => {
+  clearInterval(clock)
   unsubscribe?.()
   document.documentElement.classList.remove('chat-open')
 })
@@ -290,6 +334,10 @@ onUnmounted(() => {
               :title="new Date(message.createdAt).toLocaleString()"
               @click="message.userId === userId && offerName(message.name)"
             >{{ message.name }}</span>: <span class="chat-widget-body">{{ message.body }}</span>
+            <span v-if="canEdit(message)" class="chat-widget-actions">
+              <button @click="startEdit(message)">edit</button>
+              <button @click="remove(message)">delete</button>
+            </span>
             <img v-if="message.image" class="chat-widget-image" :src="chatImageUrl(message.image)" alt="" loading="lazy">
           </p>
         </div>
@@ -325,8 +373,9 @@ onUnmounted(() => {
           class="chat-widget-input"
           :maxlength="CHAT_BODY_MAX_LENGTH"
           :disabled="sending"
-          placeholder="say something"
+          :placeholder="editing ? 'edit, enter saves, escape cancels' : 'say something'"
           @keydown.enter="send()"
+          @keydown.esc="cancelEdit"
         >
         <span class="chat-widget-count">{{ onlineCount }}</span>
       </div>
@@ -409,6 +458,25 @@ onUnmounted(() => {
 
 .chat-widget-message.mine .chat-widget-name {
   cursor: pointer;
+}
+
+/* Your own message, while it can still be changed. */
+.chat-widget-actions {
+  color: var(--fg-muted);
+  font-size: 0.75em;
+}
+
+.chat-widget-actions button {
+  padding: 0 0.2em;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chat-widget-actions button:hover {
+  color: var(--fg);
 }
 
 /* Black and white at 320px; inverted with the rest of the ink in dark mode. */
