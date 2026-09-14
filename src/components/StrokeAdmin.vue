@@ -290,9 +290,10 @@ function handleWindowMouseUp(e: MouseEvent) {
 }
 
 function strokeTouchesRect(stroke: AdminStroke, minX: number, minY: number, maxX: number, maxY: number): boolean {
-  for (const point of stroke.points) {
-    if (point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY)
-      return true
+  // A single dot has no segment to test
+  if (stroke.points.length === 1) {
+    const [point] = stroke.points
+    return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY
   }
 
   for (let i = 0; i < stroke.points.length - 1; i++) {
@@ -329,11 +330,8 @@ function lineSegmentsIntersect(x1: number, y1: number, x2: number, y2: number, x
 function isPointNearStroke(x: number, y: number, stroke: AdminStroke): boolean {
   const threshold = Math.max(stroke.width / 2 + 5, 10)
 
-  for (const point of stroke.points) {
-    const dist = Math.hypot(x - point.x, y - point.y)
-    if (dist <= threshold)
-      return true
-  }
+  if (stroke.points.length === 1)
+    return Math.hypot(x - stroke.points[0].x, y - stroke.points[0].y) <= threshold
 
   for (let i = 0; i < stroke.points.length - 1; i++) {
     const p1 = stroke.points[i]
