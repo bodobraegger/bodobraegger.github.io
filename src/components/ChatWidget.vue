@@ -29,7 +29,6 @@ const ALERT_MS = 1000
 const BLEEP_HZ = 880
 const BLEEP_SECONDS = 0.08
 const BLEEP_GAIN = 0.05
-const SCROLL_BOTTOM_SLACK = 4
 
 const userId = getUserId()
 
@@ -55,7 +54,6 @@ let audio: AudioContext | null = null
 
 const listEl = ref<HTMLElement>()
 const inputEl = ref<HTMLInputElement>()
-let stickToBottom = true
 let unsubscribe: (() => void) | null = null
 
 // The newest messages as one line that scrolls through the bar. The line is
@@ -70,13 +68,6 @@ function scrollListToBottom() {
   const el = listEl.value
   if (el)
     el.scrollTop = el.scrollHeight
-}
-
-function onListScroll() {
-  const el = listEl.value
-  if (!el)
-    return
-  stickToBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_BOTTOM_SLACK
 }
 
 /**
@@ -115,8 +106,7 @@ function onInsert(message: ChatMessage) {
   messages.value.push(message)
   if (message.userId !== userId)
     notify()
-  if (stickToBottom)
-    nextTick(scrollListToBottom)
+  nextTick(scrollListToBottom)
 }
 
 function onUpdate(message: ChatMessage) {
@@ -147,7 +137,6 @@ async function openBox() {
       // Keep whatever the ticker already loaded.
     }
   }
-  stickToBottom = true
   await nextTick()
   scrollListToBottom()
   inputEl.value?.focus()
@@ -331,7 +320,7 @@ onUnmounted(() => {
       @paste="sendImage($event.clipboardData?.files)"
     >
       <div v-if="open" class="chat-widget-box">
-        <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite" @scroll="onListScroll">
+        <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite">
           <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
             ↑ earlier messages
           </button>
@@ -409,6 +398,15 @@ onUnmounted(() => {
   font-size: 0.85rem;
   /* Mounts once the messages are in, and fades in as the view counts do */
   animation: chat-fade-in 0.5s;
+  /* No double-tap zoom on the bar and its buttons */
+  touch-action: manipulation;
+}
+
+/* A phone zooms into any input smaller than 16px; the rows are tall enough for it. */
+@media (hover: none) and (pointer: coarse) {
+  .chat-widget input {
+    font-size: 16px;
+  }
 }
 
 @keyframes chat-fade-in {

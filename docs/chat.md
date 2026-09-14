@@ -53,8 +53,7 @@ Top to bottom:
 2. The list itself. `role="log"`, `aria-live="polite"`. Each message is one
    block: `name` in `--fg-deep`, then the body. Messages from this browser's
    user id carry class `mine`. Time on hover (`title`), not in the flow.
-   Scrolled to the bottom on open and on every new message while the reader is
-   at the bottom; a reader who scrolled up is not moved.
+   Scrolled to the bottom on open and on every new message, own or not.
 3. The bottom row, 21px, the bar itself: the arrow now points down and closes
    the box; the ticker's place holds the input; the online count stays right.
 
