@@ -33,10 +33,9 @@ on every device, and nothing leaves the page.
 - Same size, place and margins as today. A `<button>` with `aria-expanded`.
 - Left: an arrow glyph pointing up (the box opens upward). Middle: the ticker.
   Right: the online count.
-- The ticker shows one message at a time as `name: body`, one line, cut with an
-  ellipsis. It cycles through the newest 10 messages, oldest first, 4 seconds
-  each, and loops. A message that arrives live is shown at once; the cycle
-  continues from it. No marquee scrolling.
+- The ticker is one line of the newest 10 messages as `name: body`, joined
+  by `·`, that scrolls through the bar by a CSS animation at about 6
+  characters per second and loops without a seam. Reduced motion stops it.
 - Clicking or tapping anywhere on the bar opens the box.
 
 ### Expanded box
@@ -48,8 +47,10 @@ tall and at least 200px.
 
 Top to bottom:
 
-1. An `earlier` link, shown while older messages exist. Loads 50 more above.
-2. The message list. `role="log"`, `aria-live="polite"`. Each message is one
+1. The message list. While older messages exist, its first line is a muted
+   `↑ earlier messages` link that loads 50 more above and keeps the scroll
+   position.
+2. The list itself. `role="log"`, `aria-live="polite"`. Each message is one
    block: `name` in `--fg-deep`, then the body. Messages from this browser's
    user id carry class `mine`. Time on hover (`title`), not in the flow.
    Scrolled to the bottom on open and on every new message while the reader is
@@ -109,10 +110,27 @@ One realtime channel named `chat`, opened once per page:
 - The translator page's mobile rule hides `.chat-widget` where it hid `iframe`.
 - `@media print` hides it.
 
+### New message from someone else
+
+A short bleep (an 80ms oscillator tone at low gain, no sound file) and the
+panel border turns red for one second. Own messages stay quiet.
+
+### Images
+
+Dropping an image file on the box sends it: the file is shrunk to at most
+320px a side, reduced to black and white with an ordered Bayer dither, and
+encoded as PNG in the browser (`src/lib/dither.ts`), which also drops its
+metadata. The PNG is uploaded to the public bucket `chat-images` under
+`chat/<uuid>.png` (`src/db/chat-images.sql`: 64 KB cap, PNG only), then the
+message is posted with the path in its `image` column and whatever text the
+input held. The list shows the image under the body, inverted in dark mode
+like the rest of the ink; the ticker shows `[image]`. No picker button, no
+preview, no paste, one image per message.
+
 ### Not done on purpose
 
-- No marquee, no sounds, no unread badge, no emoji picker, no links parsed in
-  bodies. Bodies render as text.
+- No unread badge, no emoji picker, no links parsed in bodies. Bodies render
+  as text.
 - No moderator badge on the site. Deleting is an admin page action.
 - No profanity or spam filter beyond the rate limit below.
 

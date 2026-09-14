@@ -9,12 +9,17 @@ export const CHAT_NAME_MAX_LENGTH = 24
 export const CHAT_BODY_MAX_LENGTH = 500
 export const CHAT_PAGE_SIZE = 50
 export const CHAT_TICKER_SIZE = 20
+/** The bucket's file_size_limit; the upload is refused above it, so the client checks first. */
+export const CHAT_IMAGE_MAX_BYTES = 65536
+
+const CHAT_IMAGE_BUCKET = 'chat-images'
 
 interface ChatMessageRow {
   id: string
   user_id: string
   name: string
   body: string
+  image: string | null
   created_at: string
 }
 
@@ -25,8 +30,29 @@ export function rowToMessage(row: ChatMessageRow): ChatMessage {
     userId: row.user_id,
     name: row.name,
     body: row.body,
+    image: row.image ?? null,
     createdAt: row.created_at,
   }
+}
+
+/** Public URL of an uploaded chat image. */
+export function chatImageUrl(path: string): string {
+  return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/${CHAT_IMAGE_BUCKET}/${path}`
+}
+
+/** Uploads a PNG and returns its storage path, the shape the bucket policy and post_chat_message accept. */
+export async function uploadImage(png: Blob): Promise<string> {
+  if (png.size > CHAT_IMAGE_MAX_BYTES)
+    throw new Error('image_too_large')
+  const supabase = await getSupabase()
+  if (!supabase)
+    throw new Error('chat is not configured')
+
+  const path = `chat/${crypto.randomUUID()}.png`
+  const { error } = await supabase.storage.from(CHAT_IMAGE_BUCKET).upload(path, png, { contentType: 'image/png' })
+  if (error)
+    throw new Error(error.message)
+  return path
 }
 
 /** The chosen name from localStorage, or the auto name: anon plus the last 4 characters of the user id. */
@@ -94,12 +120,12 @@ export async function fetchMessages(limit: number, before?: string): Promise<Cha
 }
 
 /** Sends through post_chat_message. Rejects with the database error message. */
-export async function postMessage(name: string, body: string): Promise<ChatMessage> {
+export async function postMessage(name: string, body: string, image?: string): Promise<ChatMessage> {
   const supabase = await getSupabase()
   if (!supabase)
     throw new Error('chat is not configured')
 
-  const { data, error } = await supabase.rpc('post_chat_message', { name, body })
+  const { data, error } = await supabase.rpc('post_chat_message', { name, body, image: image ?? null })
   if (error || !data)
     throw new Error(error?.message ?? 'chat is not configured')
 

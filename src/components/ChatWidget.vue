@@ -5,13 +5,16 @@ import {
   CHAT_NAME_MAX_LENGTH,
   CHAT_PAGE_SIZE,
   CHAT_TICKER_SIZE,
+  chatImageUrl,
   fetchMessages,
   getChatName,
   hasChosenChatName,
   postMessage,
   setChatName,
   subscribeChat,
+  uploadImage,
 } from '../lib/chat'
+import { ditherToPng } from '../lib/dither'
 import { getUserId } from '../lib/page-views'
 import type { ChatMessage } from '../types/chat'
 
@@ -51,7 +54,7 @@ let unsubscribe: (() => void) | null = null
 // laid out twice, so the loop rejoins itself without a gap.
 const tickerLine = computed(() => messages.value
   .slice(-TICKER_MESSAGE_COUNT)
-  .map(message => `${message.name}: ${message.body}`)
+  .map(message => `${message.name}: ${message.body || '[image]'}`)
   .join(' · '))
 const tickerDuration = computed(() => `${Math.max(tickerLine.value.length / TICKER_SPEED, 4)}s`)
 
@@ -210,16 +213,37 @@ function dismissNameOffer() {
   showNameOffer.value = false
 }
 
-async function send() {
+async function send(image?: string) {
   const body = draftBody.value.trim()
-  if (!body || sending.value)
+  if ((!body && !image) || sending.value)
     return
   sending.value = true
   try {
-    await postMessage(getChatName(), body)
+    await postMessage(getChatName(), body, image)
     draftBody.value = ''
     if (!hasChosenChatName())
       offerName('')
+  }
+  catch (error) {
+    showSendError(error)
+  }
+  finally {
+    sending.value = false
+  }
+}
+
+/** An image dropped on the box is dithered, uploaded and sent with whatever is in the input. */
+async function onDrop(event: DragEvent) {
+  const file = [...(event.dataTransfer?.files ?? [])].find(f => f.type.startsWith('image/'))
+  if (!file || sending.value)
+    return
+  if (!open.value)
+    await openBox()
+  sending.value = true
+  try {
+    const path = await uploadImage(await ditherToPng(file))
+    sending.value = false
+    await send(path)
   }
   catch (error) {
     showSendError(error)
@@ -254,7 +278,7 @@ onUnmounted(() => {
 
 <template>
   <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
-    <div class="chat-widget-panel" :class="{ alert }" @click="open && focusInput($event)">
+    <div class="chat-widget-panel" :class="{ alert }" @click="open && focusInput($event)" @dragover.prevent @drop.prevent="onDrop">
       <div v-if="open" class="chat-widget-box">
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite" @scroll="onListScroll">
           <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
@@ -266,6 +290,7 @@ onUnmounted(() => {
               :title="new Date(message.createdAt).toLocaleString()"
               @click="message.userId === userId && offerName(message.name)"
             >{{ message.name }}</span>: <span class="chat-widget-body">{{ message.body }}</span>
+            <img v-if="message.image" class="chat-widget-image" :src="chatImageUrl(message.image)" alt="" loading="lazy">
           </p>
         </div>
         <div v-if="showNameOffer" class="chat-widget-name-offer">
@@ -301,7 +326,7 @@ onUnmounted(() => {
           :maxlength="CHAT_BODY_MAX_LENGTH"
           :disabled="sending"
           placeholder="say something"
-          @keydown.enter="send"
+          @keydown.enter="send()"
         >
         <span class="chat-widget-count">{{ onlineCount }}</span>
       </div>
@@ -386,6 +411,18 @@ onUnmounted(() => {
 
 .chat-widget-message.mine .chat-widget-name {
   cursor: pointer;
+}
+
+/* Black and white at 320px; inverted with the rest of the ink in dark mode. */
+.chat-widget-image {
+  display: block;
+  max-width: 100%;
+  margin: 0.2rem 0;
+  image-rendering: pixelated;
+}
+
+html.dark .chat-widget-image {
+  filter: invert(1);
 }
 
 /* The bottom row is the bar itself: box and bar share one border, so this
