@@ -21,7 +21,6 @@ interface Props {
   tipOffsetY?: number
   flip?: boolean
   canvasId?: string
-  localStorage?: boolean
   eraserMode?: boolean
   penId?: string
   cloudStorage?: boolean
@@ -179,67 +178,6 @@ const allStrokes = canvasData.strokes
 // Whether this instance registered the shared window handlers for its canvas
 let ownsUndoHandler = false
 let ownsScrollHandler = false
-const storageKey = `drawable-pen-${effectiveCanvasId}`
-const penStorageKey = `drawable-pen-position-${effectiveCanvasId}-${effectivePenId}`
-
-function loadPenPosition() {
-  if (!props.localStorage)
-    return
-  try {
-    const saved = localStorage.getItem(penStorageKey)
-    if (saved) {
-      const position = JSON.parse(saved)
-      isDetached.value = position.isDetached
-      if (position.isDetached) {
-        penPosition.value = position.position
-      }
-    }
-  }
-  catch (e) {
-    console.warn('Failed to load pen position:', e)
-  }
-}
-
-function savePenPosition() {
-  if (!props.localStorage)
-    return
-  try {
-    localStorage.setItem(penStorageKey, JSON.stringify({
-      isDetached: isDetached.value,
-      position: penPosition.value,
-    }))
-  }
-  catch (e) {
-    console.warn('Failed to save pen position:', e)
-  }
-}
-
-function loadStrokes() {
-  if (!props.localStorage)
-    return
-  try {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) {
-      allStrokes.length = 0
-      allStrokes.push(...JSON.parse(saved))
-      redrawAll()
-    }
-  }
-  catch (e) {
-    console.warn('Failed to load strokes:', e)
-  }
-}
-
-function saveStrokes() {
-  if (!props.localStorage)
-    return
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(allStrokes))
-  }
-  catch (e) {
-    console.warn('Failed to save strokes:', e)
-  }
-}
 
 /** The page height, measured without the canvas, which sits in the page too. */
 function measureDocumentHeight() {
@@ -374,12 +312,10 @@ onMounted(() => {
     canvasData.ctx = sizeCanvas(canvasData.canvas)
     ctx = canvasData.ctx
 
-    loadStrokes()
     if (allStrokes.length > 0)
       redrawAll()
 
     window.addEventListener('resize', handleResize)
-    window.addEventListener('storage', handleStorageChange)
     window.addEventListener('drawingUpdated', handleDrawingUpdate)
     window.addEventListener('keydown', handleClearCommand)
 
@@ -407,7 +343,6 @@ onMounted(() => {
   if (props.mobile)
     registryId.value = registerPen(effectiveCanvasId, penEntry)
 
-  loadPenPosition()
   nextTick(measureGlyphTip)
   loadFromHash()
   // Only load from Supabase if cloudStorage is enabled
@@ -434,7 +369,6 @@ onUnmounted(() => {
     cancelAnimationFrame(tipFrame)
 
   window.removeEventListener('resize', handleResize)
-  window.removeEventListener('storage', handleStorageChange)
   window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('toolsReset', handleToolsReset)
   window.removeEventListener('keydown', handleClearCommand)
@@ -536,11 +470,6 @@ watch(
   () => [isPickedUp.value, isDragging.value, isDetached.value, currentStrokeWidth.value],
   () => nextTick(trackGlyphTip),
 )
-
-function handleStorageChange(e: StorageEvent) {
-  if (e.key === storageKey && e.newValue && props.localStorage)
-    loadStrokes()
-}
 
 function handleDrawingUpdate(e: Event) {
   if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId)
@@ -683,7 +612,6 @@ async function undo() {
   allStrokes.splice(lastUserStrokeIndex, 1)
 
   redrawAll()
-  saveStrokes()
   notifyUpdate()
 
   // Broadcast for real-time collaboration (only after successful backend delete)
@@ -723,7 +651,6 @@ async function redo() {
   allStrokes.push(strokeToRestore)
 
   redrawAll()
-  saveStrokes()
   notifyUpdate()
 
   // Broadcast for real-time collaboration (only after successful backend save)
@@ -765,7 +692,6 @@ function loadFromHash() {
       allStrokes.length = 0
       allStrokes.push(...data)
       redrawAll()
-      saveStrokes()
     }
   }
 }
@@ -865,7 +791,6 @@ async function loadFromSupabase() {
         timestamp: new Date(row.created_at).getTime(),
       })))
       redrawAll()
-      saveStrokes() // Save to localStorage
     }
   }
   catch (e) {
@@ -888,7 +813,6 @@ async function setupSupabaseSync() {
       if (payload.stroke) {
         allStrokes.push(payload.stroke)
         redrawAll()
-        saveStrokes()
       }
     })
     .on('broadcast', { event: 'stroke_removed' }, ({ payload }) => {
@@ -904,14 +828,12 @@ async function setupSupabaseSync() {
           console.info(`Removing stroke from user ${payload.stroke.userId}`)
           allStrokes.splice(index, 1)
           redrawAll()
-          saveStrokes()
         }
       }
     })
     .on('broadcast', { event: 'clear' }, () => {
       allStrokes.length = 0
       redrawAll()
-      saveStrokes()
       // Also reset pen position on clear
       isDetached.value = false
       penPosition.value = { x: 0, y: 0 }
@@ -929,14 +851,6 @@ async function setupSupabaseSync() {
 function resetTools() {
   // Notify all local pen instances (on this browser) to reset
   notifyReset()
-
-  // Clear all pen positions from localStorage
-  if (props.localStorage) {
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(`drawable-pen-position-${effectiveCanvasId}-`))
-        localStorage.removeItem(key)
-    })
-  }
 }
 
 function startDrag(e: MouseEvent) {
@@ -1006,7 +920,6 @@ function pickUpPen(e: MouseEvent) {
 function putDownPen() {
   isPickedUp.value = false
   hideControls()
-  savePenPosition()
 
   // Clear global picked up state
   if (globalPickedUpPen.penId === effectivePenId)
@@ -1023,7 +936,6 @@ function returnPen() {
   hideControls()
   isDetached.value = false
   penPosition.value = { x: 0, y: 0 }
-  savePenPosition()
 
   // Clear global picked up state
   if (globalPickedUpPen.penId === effectivePenId)
@@ -1234,7 +1146,6 @@ function endDrag() {
   isDrawing.value = false
   moveOnly.value = false
   currentPath = []
-  savePenPosition()
 
   window.removeEventListener('mousemove', drag)
   window.removeEventListener('mouseup', endDrag)
@@ -1279,7 +1190,6 @@ async function saveStroke(stroke: Stroke) {
 
   // Only save locally after successful backend save (or if no backend)
   allStrokes.push(stroke)
-  saveStrokes()
   notifyUpdate()
 
   // If it's an eraser stroke, redraw the entire canvas to properly apply the eraser
@@ -1485,14 +1395,6 @@ function showHintOnce() {
     clearTimeout(hintTimeout)
   hintTimeout = window.setTimeout(() => showTouchHint.value = false, 5000)
 }
-
-defineExpose({
-  saveDrawing: saveStrokes,
-  loadDrawing: loadStrokes,
-  exportToHash,
-  loadFromHash,
-  loadFromSupabase,
-})
 </script>
 
 <template>
