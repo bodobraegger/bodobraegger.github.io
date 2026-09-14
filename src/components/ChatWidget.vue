@@ -138,13 +138,24 @@ function offerName(prefill: string) {
   showNameOffer.value = true
 }
 
+function showSendError(error: unknown) {
+  sendError.value = error instanceof Error ? error.message : String(error)
+  setTimeout(() => (sendError.value = null), SEND_ERROR_DISPLAY_MS)
+}
+
 async function confirmName() {
   const name = nameDraft.value.trim()
   if (!name) {
     showNameOffer.value = false
     return
   }
-  await setChatName(name)
+  try {
+    await setChatName(name)
+  }
+  catch (error) {
+    showSendError(error)
+    return
+  }
   for (const message of messages.value) {
     if (message.userId === userId)
       message.name = name
@@ -168,8 +179,7 @@ async function send() {
       offerName('')
   }
   catch (error) {
-    sendError.value = error instanceof Error ? error.message : String(error)
-    setTimeout(() => (sendError.value = null), SEND_ERROR_DISPLAY_MS)
+    showSendError(error)
   }
   finally {
     sending.value = false
