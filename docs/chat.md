@@ -63,11 +63,22 @@ the database. While a send is in flight the input is disabled.
 
 ### Name
 
-No accounts. Before the first message from this browser, the bottom row holds a
-name input instead of the message input, placeholder `name`, limit 24
-characters. Enter or blur stores it under localStorage key `chat-name` and
-swaps in the message input. The name is sent with every message. Clicking your
-own name in the list lets you change it (the name input comes back).
+No accounts, and no question before the first message. A browser that has not
+chosen a name sends as its auto name: `anon` followed by the last four
+characters of its user id (`anon3f9c`). The name is sent with every message.
+
+After the first send from a browser without a chosen name, a one-line offer
+appears directly above the bottom row: `sent as anon3f9c · ` followed by a
+name input, placeholder `set a name`, limit 24 characters. Enter stores the
+name under localStorage key `chat-name`, calls `setChatName`, and the offer
+goes away. The rename applies to every message this user id has sent, the one
+just sent included: the database function renames the rows, the widget renames
+them in its list at once, and the UPDATE events rename them for everyone else.
+Escape or an empty Enter dismisses the offer for this page view; it returns
+after the next send while no name is chosen.
+
+Clicking your own name in the list brings the same name input back, prefilled,
+for changing a chosen name.
 
 ### Loading and mounting
 
@@ -86,6 +97,7 @@ own name in the list lets you change it (the name input comes back).
 One realtime channel named `chat`, opened once per page:
 
 - `postgres_changes` INSERT on `public.chat_messages` appends the message.
+- `postgres_changes` UPDATE replaces the message with that id (a rename).
 - `postgres_changes` DELETE removes the message with that id from the list.
 - Presence, keyed by the browser's user id (`getUserId()` from
   `src/lib/page-views.ts`), tracking `{}`. The online count is the number of
@@ -106,7 +118,7 @@ One realtime channel named `chat`, opened once per page:
 
 ## Data
 
-One table, one function. File: `src/db/chat-schema.sql`, run once in the
+One table, two functions. File: `src/db/chat-schema.sql`, run once in the
 Supabase SQL editor. It is idempotent (`IF NOT EXISTS`, `DROP POLICY IF
 EXISTS`), like the other schema files.
 
@@ -127,7 +139,7 @@ Access:
 - `SELECT`: everyone.
 - `INSERT`: nobody directly. `REVOKE INSERT ON public.chat_messages FROM anon,
 authenticated`. The only way in is the function below.
-- `UPDATE`: nobody.
+- `UPDATE`: nobody directly. Only `set_chat_name` below.
 - `DELETE`: `authenticated` only (your Supabase login, as for strokes).
 
 Function `post_chat_message(name TEXT, body TEXT) RETURNS public.chat_messages`,
@@ -142,9 +154,18 @@ Function `post_chat_message(name TEXT, body TEXT) RETURNS public.chat_messages`,
   10 minutes.
 - Inserts and returns the row.
 
+Function `set_chat_name(name TEXT) RETURNS INTEGER`, `SECURITY DEFINER`,
+`search_path = public`:
+
+- Reads the user id from the same header. Raises if missing.
+- Trims `name`. Raises on empty or over 24 characters.
+- `UPDATE public.chat_messages SET name = ... WHERE user_id = ...` and returns
+  the number of rows renamed.
+
 Realtime: `ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages`
 in the same guarded `DO` block the strokes file uses. Default replica identity
-is enough: a DELETE event carries the primary key.
+is enough: an UPDATE event carries the whole new row and a DELETE event carries
+the primary key.
 
 ## Client contract
 
@@ -172,8 +193,12 @@ export const CHAT_BODY_MAX_LENGTH = 500
 export const CHAT_PAGE_SIZE = 50
 export const CHAT_TICKER_SIZE = 20
 
+/** The chosen name from localStorage, or the auto name: anon plus the last 4 characters of the user id. */
 export function getChatName(): string
-export function setChatName(name: string): void
+/** True once a name was chosen in this browser. */
+export function hasChosenChatName(): boolean
+/** Stores the name and renames every message of this user id through set_chat_name. */
+export function setChatName(name: string): Promise<void>
 
 /** Newest `limit` messages, oldest first. `before` pages backwards from a createdAt. */
 export function fetchMessages(limit: number, before?: string): Promise<ChatMessage[]>
@@ -184,6 +209,7 @@ export function postMessage(name: string, body: string): Promise<ChatMessage>
 export interface ChatSubscription { unsubscribe: () => void }
 export function subscribeChat(handlers: {
   onInsert: (message: ChatMessage) => void
+  onUpdate: (message: ChatMessage) => void
   onDelete: (id: string) => void
   onPresence: (onlineCount: number) => void
 }): Promise<ChatSubscription | null>
