@@ -601,34 +601,25 @@ async function redo() {
   }
 }
 
-function compressData(strokes: any[]) {
-  return btoa(unescape(encodeURIComponent(JSON.stringify(strokes))))
-}
-
-function decompressData(compressed: string) {
-  try {
-    return JSON.parse(decodeURIComponent(escape(atob(compressed))))
-  }
-  catch {
-    return null
-  }
-}
-
+// The drawing travels in the URL as URL-encoded JSON. Typing "share" copies
+// such a link; opening one replaces the strokes on the page.
 function exportToHash() {
-  console.info('Exporting drawing to URL hash...', { strokeCount: allStrokes.length })
-  const url = `${window.location.origin}${window.location.pathname}#draw=${compressData(allStrokes)}`
+  const url = `${location.origin}${location.pathname}#draw=${encodeURIComponent(JSON.stringify(allStrokes))}`
   navigator.clipboard.writeText(url)
 }
 
 function loadFromHash() {
-  const match = window.location.hash.match(/#draw=(.+)/)
-  if (match) {
-    const data = decompressData(match[1])
-    if (data) {
-      allStrokes.length = 0
-      allStrokes.push(...data)
-      redrawAll()
-    }
+  const match = location.hash.match(/#draw=(.+)/)
+  if (!match)
+    return
+  try {
+    const data: Stroke[] = JSON.parse(decodeURIComponent(match[1]))
+    allStrokes.length = 0
+    allStrokes.push(...data)
+    redrawAll()
+  }
+  catch {
+    // Not a drawing this build can read; the page keeps its own strokes.
   }
 }
 
