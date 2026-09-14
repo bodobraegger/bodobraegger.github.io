@@ -407,6 +407,14 @@ onUnmounted(() => {
   z-index: 1000;
   width: 280px;
   font-size: 0.85rem;
+  /* Mounts once the messages are in, and fades in as the view counts do */
+  animation: chat-fade-in 0.5s;
+}
+
+@keyframes chat-fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* The closed bar keeps its width on a phone, so the pen button at the left

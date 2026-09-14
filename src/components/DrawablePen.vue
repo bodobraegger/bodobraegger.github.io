@@ -675,6 +675,7 @@ async function loadFromSupabase() {
 
   // Mark as loading immediately to prevent duplicate fetches from other pen instances
   canvasData.supabaseLoaded = true
+  canvasData.canvas?.classList.add('loading')
 
   try {
     // New schema: load all strokes for this canvas
@@ -703,6 +704,9 @@ async function loadFromSupabase() {
     console.error('Supabase load failed:', e)
     // Reset flag on error so it can be retried
     canvasData.supabaseLoaded = false
+  }
+  finally {
+    canvasData.canvas?.classList.remove('loading')
   }
 }
 /**
@@ -1300,6 +1304,12 @@ html.dark .drawing-canvas {
   left: 0;
   pointer-events: none;
   z-index: 998;
+  transition: opacity 0.5s;
+}
+
+/* Held back while the strokes load, so the ink fades in as the view counts do. */
+.drawing-canvas.loading {
+  opacity: 0;
 }
 .pen-inline-container {
   line-height: 0;
