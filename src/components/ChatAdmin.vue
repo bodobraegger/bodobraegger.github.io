@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useSupabaseAuth } from '~/composables/useSupabaseAuth'
 import { getSupabase } from '~/lib/supabase'
+import '~/styles/admin.css'
 
 /** A row of public.chat_messages, as the admin reads and deletes it. */
 interface ChatRow {
@@ -277,131 +278,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style>
-/* Hide the page footer and page scrollbar behind the fullscreen admin view */
-main > div:last-child {
-  display: none;
-}
-
-html:has(.admin-container) {
-  overflow: hidden;
-  scrollbar-gutter: unset;
-}
-</style>
-
 <style scoped>
-.admin-container {
-  position: fixed;
-  inset: 0;
-  z-index: 39;
-  /* clear the site header and footer chrome */
-  padding: 3.5rem 0;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--fonts-mono);
-}
-
-header {
-  border-bottom: 1px dashed var(--fg-deep);
-  padding: 1rem 1.75rem;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.admin-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.admin-controls {
-  display: flex;
-  gap: 1.2rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.admin-stats {
-  display: flex;
-  gap: 1.5rem;
-  font-size: 0.75rem;
-  opacity: 0.6;
-}
-
-.auth-status {
-  display: flex;
-  gap: 0.8rem;
-  justify-self: end;
-}
-
-/* Reuse site button styles */
-button {
-  background: var(--c-bg);
-  color: var(--fg);
-  border: 1px dashed var(--fg-deep);
-  padding: 0 4px;
-  opacity: 0.7;
-}
-
-button:hover:not(:disabled) {
-  opacity: 1;
-}
-
-button:disabled {
-  opacity: 0.35;
-}
-
-.error-message {
-  color: #f44;
-  margin: 0;
-  padding: 0.5rem 1.75rem;
-}
-
-.auth-form,
-.confirm-dialog {
-  background: var(--c-bg);
-  border: 1px dashed var(--fg-deep);
-  padding: 1rem;
-  min-width: 300px;
-}
-
-.auth-form {
-  position: absolute;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-}
-
-.auth-form form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.confirm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 200;
-  display: grid;
-  place-items: center;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: end;
-}
-
-.delete-btn {
-  color: #f44;
-  border-color: #f44;
-}
-
 .table-viewport {
   flex: 1;
   min-height: 0;
@@ -446,13 +323,5 @@ tbody tr.selected {
 .body-cell {
   white-space: pre-wrap;
   word-break: break-word;
-}
-
-.empty-state,
-.loading-state {
-  display: grid;
-  place-items: center;
-  height: 100%;
-  opacity: 0.6;
 }
 </style>
