@@ -19,6 +19,10 @@ const TICKER_MESSAGE_COUNT = 10
 /** How fast the ticker line passes, in characters per second. */
 const TICKER_SPEED = 6
 const SEND_ERROR_DISPLAY_MS = 3000
+const ALERT_MS = 1000
+const BLEEP_HZ = 880
+const BLEEP_SECONDS = 0.08
+const BLEEP_GAIN = 0.05
 const SCROLL_BOTTOM_SLACK = 4
 
 const userId = getUserId()
@@ -35,6 +39,8 @@ const sendError = ref<string | null>(null)
 
 const showNameOffer = ref(false)
 const nameDraft = ref('')
+const alert = ref(false)
+let audio: AudioContext | null = null
 
 const listEl = ref<HTMLElement>()
 const inputEl = ref<HTMLInputElement>()
@@ -62,8 +68,33 @@ function onListScroll() {
   stickToBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_BOTTOM_SLACK
 }
 
+/** One short tone from an oscillator; no sound file, and the widget mounts after a gesture, so audio is allowed. */
+function bleep() {
+  try {
+    audio ??= new AudioContext()
+    const oscillator = audio.createOscillator()
+    const gain = audio.createGain()
+    oscillator.frequency.value = BLEEP_HZ
+    gain.gain.value = BLEEP_GAIN
+    oscillator.connect(gain).connect(audio.destination)
+    oscillator.start()
+    oscillator.stop(audio.currentTime + BLEEP_SECONDS)
+  }
+  catch {
+    // No audio on this device; the red border still shows.
+  }
+}
+
+function notify() {
+  bleep()
+  alert.value = true
+  setTimeout(() => (alert.value = false), ALERT_MS)
+}
+
 function onInsert(message: ChatMessage) {
   messages.value.push(message)
+  if (message.userId !== userId)
+    notify()
   if (stickToBottom)
     nextTick(scrollListToBottom)
 }
@@ -214,7 +245,7 @@ onUnmounted(() => {
 
 <template>
   <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
-    <div class="chat-widget-panel" @click="open && focusInput($event)">
+    <div class="chat-widget-panel" :class="{ alert }" @click="open && focusInput($event)">
       <div v-if="open" class="chat-widget-box">
         <button v-if="canLoadEarlier" class="chat-widget-earlier" @click="loadEarlier">
           earlier
@@ -297,6 +328,15 @@ onUnmounted(() => {
 
 .chat-widget-panel:hover {
   border-style: solid;
+}
+
+/* A message from someone else: the border flashes the site's error red. */
+.chat-widget-panel {
+  transition: border-color 0.3s;
+}
+
+.chat-widget-panel.alert {
+  border-color: #f44;
 }
 
 .chat-widget-box {
