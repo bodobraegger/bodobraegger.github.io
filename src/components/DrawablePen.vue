@@ -148,7 +148,6 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   strokes: [] as Stroke[],
   canvas: null as HTMLCanvasElement | null,
   ctx: null as CanvasRenderingContext2D | null,
-  undoStack: [] as Stroke[][], // Not used anymore but kept for compatibility
   redoStack: [] as Stroke[], // Stack of individual strokes that can be redone
   top: 0, // Where the canvas band sits in the page
   height: 0, // How tall that band is, in CSS pixels
@@ -509,19 +508,9 @@ function handleClearCommand(e: KeyboardEvent) {
 
   const lowerChars = typedChars.toLowerCase()
 
-  // if (lowerChars.includes('delete')) {
-  //   typedChars = ''
-  //   if (supabase && effectiveShareId) {
-  //     clearAllData()
-  //     deleteFromSupabase()
-  //   }
-  // }
-  // else if (lowerChars.includes('clear')) {
-  //   clearAllData()
-  // }
   if (lowerChars.includes('reset')) {
     typedChars = ''
-    resetTools()
+    notifyReset()
   }
   else if (lowerChars.includes('share')) {
     typedChars = ''
@@ -533,9 +522,6 @@ function handleUndoRedo(e: KeyboardEvent) {
   // Don't interfere with typing in input fields
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
     return
-
-  // Check if target is inside pen controls - still allow undo/redo
-  const isControlPanel = (e.target as HTMLElement)?.closest?.('.pen-controls-container')
 
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
     if (e.key === 'z' || e.key === 'Z') {
@@ -825,11 +811,6 @@ async function setupSupabaseSync() {
       broadcastChannel = null
     }
   }
-}
-
-function resetTools() {
-  // Notify all local pen instances (on this browser) to reset
-  notifyReset()
 }
 
 function startDrag(e: MouseEvent) {
