@@ -386,7 +386,11 @@ onUnmounted(() => {
         >
         <!-- The picker is for phones, where nothing can be dropped; it steps away while text is typed -->
         <label v-if="!draftBody && !sending" class="chat-widget-pick" aria-label="Send an image">
-          <span class="i-ri:image-line" aria-hidden="true" />
+          <svg class="chat-widget-pick-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+            <rect x="1" y="1" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1" />
+            <path d="M1 9 L4 6 L6 8 L8 5 L11 9" fill="none" stroke="currentColor" stroke-width="1" />
+            <circle cx="8" cy="3.5" r="0.8" fill="currentColor" />
+          </svg>
           <input type="file" accept="image/*" hidden @change="sendImage(($event.target as HTMLInputElement).files ?? undefined); ($event.target as HTMLInputElement).value = ''">
         </label>
         <span class="chat-widget-count">{{ onlineCount }}</span>
@@ -623,6 +627,13 @@ html.dark .chat-widget-image {
 
 .chat-widget-pick:hover {
   color: var(--fg);
+}
+
+/* Drawn, not from a font: no icon set is installed and the glyph must match everywhere. */
+.chat-widget-pick-icon {
+  display: block;
+  width: 13px;
+  height: 13px;
 }
 
 @media print {
