@@ -64,26 +64,26 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "2023-12-16_web-coht8erM.js": [],
-  "2024-01-17_front_end_optimization-BCrTgbuJ.js": [],
-  "2024-02-27_livecoding_docs-SpSW1zFQ.js": [],
-  "2024-03-27_transdisciplinarity_arts-CFo4kTf1.js": [],
-  "2024-04-14_photography-C0qeKeHF.js": [],
-  "2024-04-24_images-C0f956iY.js": [],
-  "2024-04-25_chess-DxCQvbWT.js": [
+  "2023-12-16_web-CiV9S_jM.js": [],
+  "2024-01-17_front_end_optimization-BfV1b9AE.js": [],
+  "2024-02-27_livecoding_docs-C_YtzlYA.js": [],
+  "2024-03-27_transdisciplinarity_arts-BT0HZe3O.js": [],
+  "2024-04-14_photography-B2a49hgh.js": [],
+  "2024-04-24_images-PZPdXSw9.js": [],
+  "2024-04-25_chess-ilihr2oI.js": [
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
-  "2025-04-26_livecoding_examples-2pQmYQnt.js": [],
-  "2025-05-08_producing_composing_advanced-U569S4iv.js": [],
-  "2025-05-08_transcultural_collaboration-CiClRRYs.js": [],
-  "2026-04-08_arte_digital_portfolio_talk-DyjsPeXP.js": [],
-  "2026-05-03_canvas-Cp7aNqfR.js": [],
-  "2026-05-14_arte_digital_canvas-ClHEhUvs.js": [],
-  "AGENTS-D6VAWCs1.js": [],
-  "ChatWidget-Zf-G-PCV.js": [
-    "/assets/ChatWidget-CDU-7Jvs.css"
+  "2025-04-26_livecoding_examples-CvsGFtU1.js": [],
+  "2025-05-08_producing_composing_advanced-FKv9SfXV.js": [],
+  "2025-05-08_transcultural_collaboration-b_RPNO19.js": [],
+  "2026-04-08_arte_digital_portfolio_talk-DNbEYmUf.js": [],
+  "2026-05-03_canvas-DSiKXCnP.js": [],
+  "2026-05-14_arte_digital_canvas-chbEGQz9.js": [],
+  "AGENTS-Bw9s0APf.js": [],
+  "ChatWidget-C8UcMhpV.js": [
+    "/assets/ChatWidget-DDtc7a8X.css"
   ],
-  "_...404_-CxiUuhR0.js": [],
+  "_...404_-BvxpRHFa.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -97,24 +97,24 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "bidi-C1ZypHNh.js": [
+  "bidi-47iclCxK.js": [
     "/assets/bidi-Dn-PDzfi.css"
   ],
-  "bills-Bg0swb0K.js": [],
-  "chat-CppNjiWF.js": [
+  "bills-BOVsPzVV.js": [],
+  "chat-C3XKCXP9.js": [
     "/assets/chat-CEZWWPar.css",
     "/assets/admin-DMWvL0UI.css"
   ],
-  "drawing-board-D-yskZKS.js": [],
-  "frach-_wYntRxH.js": [],
-  "gleis161-DwuVrrhO.js": [],
-  "hiperorganicos13-BmzIX6MC.js": [],
-  "hiperorganicos13.pt-lNvYt1ZE.js": [],
-  "index-5pkFGq5O.js": [],
-  "index-BPs_JwfL.js": [],
-  "index-BqiY9cOh.js": [],
+  "drawing-board-C9a5RToy.js": [],
+  "frach-DKBv7KGt.js": [],
+  "gleis161-BHITjt60.js": [],
+  "hiperorganicos13-CTMLUpH4.js": [],
+  "hiperorganicos13.pt-CT4EopmH.js": [],
+  "index-5RIBvQas.js": [],
+  "index-BVAbGa23.js": [],
+  "index-Bvs4iKav.js": [],
   "index-Cw67P_vQ.js": [],
-  "index-DIH9uo3h.js": [],
+  "index-DEqXyZ9l.js": [],
   "index.html": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -128,7 +128,7 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "janislabhart-Be1rIuGF.js": [],
+  "janislabhart-DlApEfPk.js": [],
   "node_modules/.pnpm/@supabase+auth-js@2.106.2/node_modules/@supabase/auth-js/dist/module/AuthClient.js": [
     "/assets/index-Cw67P_vQ.js"
   ],
@@ -450,14 +450,14 @@
     "/assets/vue-vendor-owAXO5xd.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-CxiUuhR0.js"
+    "/assets/_...404_-BvxpRHFa.js"
   ],
   "pages/admin/chat.md": [
-    "/assets/chat-CppNjiWF.js",
+    "/assets/chat-C3XKCXP9.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "pages/admin/strokes.md": [
-    "/assets/strokes-Cg9aLFPh.js",
+    "/assets/strokes-CmvHxhLv.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "pages/index.md": [
@@ -474,79 +474,79 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-coht8erM.js"
+    "/assets/2023-12-16_web-CiV9S_jM.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-BCrTgbuJ.js"
+    "/assets/2024-01-17_front_end_optimization-BfV1b9AE.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-SpSW1zFQ.js"
+    "/assets/2024-02-27_livecoding_docs-C_YtzlYA.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-CFo4kTf1.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-BT0HZe3O.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-C0qeKeHF.js"
+    "/assets/2024-04-14_photography-B2a49hgh.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-C0f956iY.js"
+    "/assets/2024-04-24_images-PZPdXSw9.js"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-DxCQvbWT.js",
+    "/assets/2024-04-25_chess-ilihr2oI.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=06957a2a&lang.css": [
-    "/assets/2024-04-25_chess-DxCQvbWT.js",
+    "/assets/2024-04-25_chess-ilihr2oI.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-2pQmYQnt.js"
+    "/assets/2025-04-26_livecoding_examples-CvsGFtU1.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-U569S4iv.js"
+    "/assets/2025-05-08_producing_composing_advanced-FKv9SfXV.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-CiClRRYs.js"
+    "/assets/2025-05-08_transcultural_collaboration-b_RPNO19.js"
   ],
   "pages/notes/2026-04-08_arte_digital_portfolio_talk.md": [
-    "/assets/2026-04-08_arte_digital_portfolio_talk-DyjsPeXP.js"
+    "/assets/2026-04-08_arte_digital_portfolio_talk-DNbEYmUf.js"
   ],
   "pages/notes/2026-05-03_canvas.md": [
-    "/assets/2026-05-03_canvas-Cp7aNqfR.js"
+    "/assets/2026-05-03_canvas-DSiKXCnP.js"
   ],
   "pages/notes/2026-05-14_arte_digital_canvas.md": [
-    "/assets/2026-05-14_arte_digital_canvas-ClHEhUvs.js"
+    "/assets/2026-05-14_arte_digital_canvas-chbEGQz9.js"
   ],
   "pages/notes/hiperorganicos13.md": [
-    "/assets/hiperorganicos13-BmzIX6MC.js"
+    "/assets/hiperorganicos13-CTMLUpH4.js"
   ],
   "pages/notes/hiperorganicos13.pt.md": [
-    "/assets/hiperorganicos13.pt-lNvYt1ZE.js"
+    "/assets/hiperorganicos13.pt-CT4EopmH.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-BqiY9cOh.js"
+    "/assets/index-Bvs4iKav.js"
   ],
   "pages/notes/misc/AGENTS.md": [
-    "/assets/AGENTS-D6VAWCs1.js"
+    "/assets/AGENTS-Bw9s0APf.js"
   ],
   "pages/notes/misc/index.md": [
-    "/assets/index-5pkFGq5O.js"
+    "/assets/index-DEqXyZ9l.js"
   ],
   "pages/notes/scripts.md": [
-    "/assets/scripts-BS5BM3XK.js"
+    "/assets/scripts-na8zL8tM.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-DIH9uo3h.js"
+    "/assets/index-5RIBvQas.js"
   ],
   "pages/projects/bidi.md": [
-    "/assets/bidi-C1ZypHNh.js",
+    "/assets/bidi-47iclCxK.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "pages/projects/bills.md": [
-    "/assets/bills-Bg0swb0K.js"
+    "/assets/bills-BOVsPzVV.js"
   ],
   "pages/projects/drawing-board.md": [
-    "/assets/drawing-board-D-yskZKS.js",
+    "/assets/drawing-board-C9a5RToy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -555,16 +555,16 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "pages/projects/frach.md": [
-    "/assets/frach-_wYntRxH.js"
+    "/assets/frach-DKBv7KGt.js"
   ],
   "pages/projects/gleis161.md": [
-    "/assets/gleis161-DwuVrrhO.js"
+    "/assets/gleis161-BHITjt60.js"
   ],
   "pages/projects/index.md": [
-    "/assets/index-BPs_JwfL.js"
+    "/assets/index-BVAbGa23.js"
   ],
   "pages/projects/janislabhart.md": [
-    "/assets/janislabhart-Be1rIuGF.js",
+    "/assets/janislabhart-DlApEfPk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -573,7 +573,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "pages/projects/resguardo-tecnologias.md": [
-    "/assets/resguardo-tecnologias-BMFd1w_e.js",
+    "/assets/resguardo-tecnologias-DEu8LIfb.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -582,24 +582,24 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "pages/projects/rj-bd.md": [
-    "/assets/rj-bd-DlptZB58.js"
+    "/assets/rj-bd-DTF0wt3X.js"
   ],
   "pages/projects/self.md": [
-    "/assets/self-Bng4iGJd.js"
+    "/assets/self-qw9s915f.js"
   ],
   "pages/projects/thilo.md": [
-    "/assets/thilo-EukBBQUz.js"
+    "/assets/thilo-CcfWFT0u.js"
   ],
   "pages/projects/walter.md": [
-    "/assets/walter-BNp_X97m.js"
+    "/assets/walter-DcUcggx6.js"
   ],
   "pages/template.md": [
-    "/assets/template-D4wFImL_.js"
+    "/assets/template-DUyCGuzq.js"
   ],
-  "resguardo-tecnologias-BMFd1w_e.js": [],
-  "rj-bd-DlptZB58.js": [],
-  "scripts-BS5BM3XK.js": [],
-  "self-Bng4iGJd.js": [],
+  "resguardo-tecnologias-DEu8LIfb.js": [],
+  "rj-bd-DTF0wt3X.js": [],
+  "scripts-na8zL8tM.js": [],
+  "self-qw9s915f.js": [],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -614,7 +614,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=avif": [
-    "/assets/resguardo-tecnologias-BMFd1w_e.js",
+    "/assets/resguardo-tecnologias-DEu8LIfb.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -623,7 +623,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=webp": [
-    "/assets/resguardo-tecnologias-BMFd1w_e.js",
+    "/assets/resguardo-tecnologias-DEu8LIfb.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -632,7 +632,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/resguardo-tecnologias-BMFd1w_e.js",
+    "/assets/resguardo-tecnologias-DEu8LIfb.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -641,7 +641,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/resguardo-tecnologias-BMFd1w_e.js",
+    "/assets/resguardo-tecnologias-DEu8LIfb.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -846,7 +846,7 @@
     "/assets/2026-09-05-canvas-screenshot-3-CA9Q_jHG.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=avif": [
-    "/assets/drawing-board-D-yskZKS.js",
+    "/assets/drawing-board-C9a5RToy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -855,7 +855,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=webp": [
-    "/assets/drawing-board-D-yskZKS.js",
+    "/assets/drawing-board-C9a5RToy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -864,7 +864,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/drawing-board-D-yskZKS.js",
+    "/assets/drawing-board-C9a5RToy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -873,7 +873,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/drawing-board-D-yskZKS.js",
+    "/assets/drawing-board-C9a5RToy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1038,7 +1038,7 @@
     "/assets/bbo.do_rj-bd-2026-05-21-CoHZNfgK.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=avif": [
-    "/assets/janislabhart-Be1rIuGF.js",
+    "/assets/janislabhart-DlApEfPk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1047,7 +1047,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=webp": [
-    "/assets/janislabhart-Be1rIuGF.js",
+    "/assets/janislabhart-DlApEfPk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1056,7 +1056,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/janislabhart-Be1rIuGF.js",
+    "/assets/janislabhart-DlApEfPk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1065,7 +1065,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/janislabhart-Be1rIuGF.js",
+    "/assets/janislabhart-DlApEfPk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -1074,36 +1074,36 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/components/BidiTranslator.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/bidi-C1ZypHNh.js",
+    "/assets/bidi-47iclCxK.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/BidiTranslator.vue?vue&type=style&index=0&lang.css": [
-    "/assets/bidi-C1ZypHNh.js",
+    "/assets/bidi-47iclCxK.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/ChatAdmin.vue": [
-    "/assets/chat-CppNjiWF.js",
+    "/assets/chat-C3XKCXP9.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/chat-CppNjiWF.js",
+    "/assets/chat-C3XKCXP9.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=style&index=0&scoped=01c6169b&lang.css": [
-    "/assets/chat-CppNjiWF.js",
+    "/assets/chat-C3XKCXP9.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatWidget.vue": [
-    "/assets/ChatWidget-Zf-G-PCV.js",
-    "/assets/ChatWidget-CDU-7Jvs.css"
+    "/assets/ChatWidget-C8UcMhpV.js",
+    "/assets/ChatWidget-DDtc7a8X.css"
   ],
   "src/components/ChatWidget.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ChatWidget-Zf-G-PCV.js",
-    "/assets/ChatWidget-CDU-7Jvs.css"
+    "/assets/ChatWidget-C8UcMhpV.js",
+    "/assets/ChatWidget-DDtc7a8X.css"
   ],
-  "src/components/ChatWidget.vue?vue&type=style&index=0&scoped=83186ec0&lang.css": [
-    "/assets/ChatWidget-Zf-G-PCV.js",
-    "/assets/ChatWidget-CDU-7Jvs.css"
+  "src/components/ChatWidget.vue?vue&type=style&index=0&scoped=0828fe7e&lang.css": [
+    "/assets/ChatWidget-C8UcMhpV.js",
+    "/assets/ChatWidget-DDtc7a8X.css"
   ],
   "src/components/DrawablePen.vue": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1144,7 +1144,7 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "src/components/DrawablePen.vue?vue&type=style&index=1&scoped=1cab6b31&lang.css": [
+  "src/components/DrawablePen.vue?vue&type=style&index=1&scoped=d3e095ff&lang.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
     "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
@@ -1223,19 +1223,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/ListFiles.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-5pkFGq5O.js"
+    "/assets/index-DEqXyZ9l.js"
   ],
   "src/components/ListPostItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-AGP5kydC.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-0YT9qoT1.js"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-AGP5kydC.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-0YT9qoT1.js"
   ],
   "src/components/ListProjectItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BPs_JwfL.js"
+    "/assets/index-BVAbGa23.js"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BPs_JwfL.js"
+    "/assets/index-BVAbGa23.js"
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1355,19 +1355,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/StrokeAdmin.vue": [
-    "/assets/strokes-Cg9aLFPh.js",
+    "/assets/strokes-CmvHxhLv.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/strokes-Cg9aLFPh.js",
+    "/assets/strokes-CmvHxhLv.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=style&index=0&scoped=ffca3539&lang.css": [
-    "/assets/strokes-Cg9aLFPh.js",
+    "/assets/strokes-CmvHxhLv.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-DIH9uo3h.js"
+    "/assets/index-5RIBvQas.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1409,7 +1409,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/composables/useSupabaseAuth.ts": [
-    "/assets/admin-a6qgFAVm.js",
+    "/assets/admin-OmyNpPov.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/lib/chat-widget.ts": [
@@ -1426,11 +1426,11 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/lib/chat.ts": [
-    "/assets/chat-IquCf6lb.js"
+    "/assets/chat-BbLMl43H.js"
   ],
   "src/lib/dither.ts": [
-    "/assets/ChatWidget-Zf-G-PCV.js",
-    "/assets/ChatWidget-CDU-7Jvs.css"
+    "/assets/ChatWidget-C8UcMhpV.js",
+    "/assets/ChatWidget-DDtc7a8X.css"
   ],
   "src/lib/page-views.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -1524,7 +1524,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/styles/admin.css": [
-    "/assets/admin-a6qgFAVm.js",
+    "/assets/admin-OmyNpPov.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/styles/fonts.css": [
@@ -1579,12 +1579,12 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "strokes-Cg9aLFPh.js": [
+  "strokes-CmvHxhLv.js": [
     "/assets/strokes-b8fmRj85.css",
     "/assets/admin-DMWvL0UI.css"
   ],
-  "template-D4wFImL_.js": [],
-  "thilo-EukBBQUz.js": [],
+  "template-DUyCGuzq.js": [],
+  "thilo-CcfWFT0u.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -1598,5 +1598,5 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "walter-BNp_X97m.js": []
+  "walter-DcUcggx6.js": []
 }
