@@ -3,9 +3,9 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const MAX_CHARS = 500
 const DEBOUNCE_DELAY = 500
+const COPIED_FEEDBACK_MS = 1500
 
 const languages = [
-  // { code: 'auto', name: 'Detect Language' },
   { code: 'en', name: 'English' },
   { code: 'pt-BR', name: 'Portuguese (Brazilian)' },
   { code: 'de', name: 'German' },
@@ -22,37 +22,9 @@ const langRight = ref('en')
 const textLeft = ref('')
 const textRight = ref('')
 const isTranslating = ref(false)
-const lastActiveField = ref<'left' | 'right'>('left')
 const lastTypedField = ref<'left' | 'right' | null>(null)
-const copiedLeft = ref(false)
-const copiedRight = ref(false)
-const panelLeft = ref<HTMLElement | null>(null)
-const panelRight = ref<HTMLElement | null>(null)
-
-let debounceTimer: NodeJS.Timeout | null = null
-
-async function copyToClipboard(text: string, side: 'left' | 'right', event?: MouseEvent) {
-  if (!text.trim())
-    return
-
-  try {
-    await navigator.clipboard.writeText(text)
-    if (side === 'left')
-      copiedLeft.value = true
-    else
-      copiedRight.value = true
-
-    setTimeout(() => {
-      if (side === 'left')
-        copiedLeft.value = false
-      else
-        copiedRight.value = false
-    }, 1500)
-  }
-  catch (error) {
-    console.error('Failed to copy:', error)
-  }
-}
+const clipboardLeft = useClipboard({ copiedDuring: COPIED_FEEDBACK_MS })
+const clipboardRight = useClipboard({ copiedDuring: COPIED_FEEDBACK_MS })
 
 async function translate(text: string, sourceLang: string, targetLang: string): Promise<string> {
   if (!text.trim())
@@ -80,12 +52,22 @@ async function translate(text: string, sourceLang: string, targetLang: string): 
   }
 }
 
+const translateLater = useDebounceFn(async (text: string, source: string, target: string, sourceField: 'left' | 'right') => {
+  if (isTranslating.value)
+    return
+  isTranslating.value = true
+
+  const translatedText = await translate(text, source, target)
+
+  if (sourceField === 'left')
+    textRight.value = translatedText
+  else
+    textLeft.value = translatedText
+
+  isTranslating.value = false
+}, DEBOUNCE_DELAY)
+
 function handleTranslation(source: string, target: string, sourceField: 'left' | 'right') {
-  if (debounceTimer)
-    clearTimeout(debounceTimer)
-
-  lastActiveField.value = sourceField
-
   const text = sourceField === 'left' ? textLeft.value : textRight.value
 
   if (!text.trim()) {
@@ -96,9 +78,8 @@ function handleTranslation(source: string, target: string, sourceField: 'left' |
     return
   }
 
-  // Don't translate if source and target are the same language (except auto)
-  if (source !== 'auto' && target !== 'auto' && source === target) {
-    // Just copy the text to the other side
+  // Same language on both sides: just copy the text over
+  if (source === target) {
     if (sourceField === 'left')
       textRight.value = text
     else
@@ -106,21 +87,7 @@ function handleTranslation(source: string, target: string, sourceField: 'left' |
     return
   }
 
-  debounceTimer = setTimeout(async () => {
-    if (isTranslating.value)
-      return
-    isTranslating.value = true
-
-    const sourceLangValue = source === 'auto' ? 'auto' : source
-    const translatedText = await translate(text, sourceLangValue, target)
-
-    if (sourceField === 'left')
-      textRight.value = translatedText
-    else
-      textLeft.value = translatedText
-
-    isTranslating.value = false
-  }, DEBOUNCE_DELAY)
+  translateLater(text, source, target, sourceField)
 }
 
 function handleLeftInput() {
@@ -130,8 +97,7 @@ function handleLeftInput() {
 
 function handleRightInput() {
   lastTypedField.value = 'right'
-  const targetLang = langLeft.value === 'auto' ? 'en' : langLeft.value
-  handleTranslation(langRight.value, targetLang, 'right')
+  handleTranslation(langRight.value, langLeft.value, 'right')
 }
 
 function clearLeft() {
@@ -140,11 +106,6 @@ function clearLeft() {
 
 function clearRight() {
   textRight.value = ''
-}
-
-function preventAutoDetectRight() {
-  if (langRight.value === 'auto')
-    langRight.value = 'en'
 }
 
 // Watch for language changes
@@ -162,40 +123,21 @@ watch(langRight, () => {
   }
 })
 
-// Handle Ctrl+C when nothing is selected - auto-copy the last translated text
+// Ctrl+C with nothing selected copies the translation, which sits opposite
+// the side last typed in
 function handleKeyDown(event: KeyboardEvent) {
-  // Check if Ctrl+C (or Cmd+C on Mac)
-  if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-    // Check if there's any text selected
-    const selection = window.getSelection()
-    if (!selection || selection.toString().length === 0) {
-      // Nothing is selected, determine which side was last translated to
-      let textToCopy = ''
-      let sideToCopy: 'left' | 'right' = 'right'
+  if (!(event.ctrlKey || event.metaKey) || event.key !== 'c')
+    return
+  if (window.getSelection()?.toString())
+    return
 
-      // The target side is opposite to the last typed field
-      if (lastTypedField.value === 'left') {
-        // User typed on left, so right is the translation
-        textToCopy = textRight.value
-        sideToCopy = 'right'
-      }
-      else if (lastTypedField.value === 'right') {
-        // User typed on right, so left is the translation
-        textToCopy = textLeft.value
-        sideToCopy = 'left'
-      }
-      else {
-        // No typing yet, default to right side
-        textToCopy = textRight.value
-        sideToCopy = 'right'
-      }
+  const translationIsLeft = lastTypedField.value === 'right'
+  const text = translationIsLeft ? textLeft.value : textRight.value
+  if (!text.trim())
+    return
 
-      if (textToCopy.trim()) {
-        event.preventDefault()
-        copyToClipboard(textToCopy, sideToCopy)
-      }
-    }
-  }
+  event.preventDefault()
+  ;(translationIsLeft ? clipboardLeft : clipboardRight).copy(text)
 }
 
 onMounted(() => {
@@ -204,8 +146,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
-  if (debounceTimer)
-    clearTimeout(debounceTimer)
 })
 </script>
 
@@ -221,15 +161,15 @@ onUnmounted(() => {
         <span class="bidi-indicator" aria-label="Bidirectional translation">
           ↔
         </span>
-        <select id="selectl2" v-model="langRight" class="lang-select" @change="preventAutoDetectRight">
-          <option v-for="lang in languages.filter(l => l.code !== 'auto')" :key="lang.code" :value="lang.code">
+        <select id="selectl2" v-model="langRight" class="lang-select">
+          <option v-for="lang in languages" :key="lang.code" :value="lang.code">
             {{ lang.name }}
           </option>
         </select>
       </div>
 
       <div class="text-panels">
-        <div ref="panelLeft" class="text-panel" :class="{ copied: copiedLeft }">
+        <div class="text-panel" :class="{ copied: clipboardLeft.copied.value }">
           <button
             v-if="textLeft"
             class="clear-btn"
@@ -252,15 +192,15 @@ onUnmounted(() => {
             <button
               v-if="textLeft"
               class="copy-btn"
-              :aria-label="copiedLeft ? 'Copied!' : 'Copy to clipboard'"
+              :aria-label="clipboardLeft.copied.value ? 'Copied!' : 'Copy to clipboard'"
               title="copy to clipboard"
-              @click.stop="copyToClipboard(textLeft, 'left', $event)"
+              @click.stop="clipboardLeft.copy(textLeft)"
             >
-              {{ copiedLeft ? 'copied' : '⎘' }}
+              {{ clipboardLeft.copied.value ? 'copied' : '⎘' }}
             </button>
           </div>
         </div>
-        <div ref="panelRight" class="text-panel" :class="{ copied: copiedRight }">
+        <div class="text-panel" :class="{ copied: clipboardRight.copied.value }">
           <button
             v-if="textRight"
             class="clear-btn"
@@ -283,11 +223,11 @@ onUnmounted(() => {
             <button
               v-if="textRight"
               class="copy-btn"
-              :aria-label="copiedRight ? 'Copied!' : 'Copy to clipboard'"
+              :aria-label="clipboardRight.copied.value ? 'Copied!' : 'Copy to clipboard'"
               title="Copy to clipboard"
-              @click.stop="copyToClipboard(textRight, 'right', $event)"
+              @click.stop="clipboardRight.copy(textRight)"
             >
-              {{ copiedRight ? 'copied' : '⎘' }}
+              {{ clipboardRight.copied.value ? 'copied' : '⎘' }}
             </button>
           </div>
         </div>
@@ -452,11 +392,9 @@ onUnmounted(() => {
   }
 
   /* Hide Chatango on mobile */
-  @media (max-width: 768px) {
-    iframe,
-    footer {
-      display: none !important;
-    }
+  iframe,
+  footer {
+    display: none !important;
   }
 }
 </style>
