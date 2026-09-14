@@ -1,7 +1,7 @@
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import type { Plugin } from 'vite'
-import fs from 'fs-extra'
 import Pages from 'vite-plugin-pages'
 import Inspect from 'vite-plugin-inspect'
 import Icons from 'unplugin-icons/vite'
@@ -105,7 +105,7 @@ export default defineConfig(({ mode }) => ({
         const path = resolve(__dirname, route.component.slice(1))
 
         if (path.endsWith('.md')) {
-          const md = fs.readFileSync(path, 'utf-8')
+          const md = readFileSync(path, 'utf-8')
           const { data } = matter(md)
           route.meta = Object.assign(route.meta || {}, { frontmatter: data })
         }
