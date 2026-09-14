@@ -1,15 +1,16 @@
-// Shared Stroke interface for DrawablePen and StrokeAdmin
+/**
+ * A stroke as the client holds it. The database row names the same fields in
+ * snake case; DrawablePen maps between the two where it reads and writes rows.
+ */
 export interface Stroke {
-  id?: string // UUID from database
-  stroke_id?: string // Client-generated unique ID (admin view)
-  canvas_id?: string // Canvas identifier (admin view)
-  user_id?: string // User identifier (admin view)
+  id: string
   points: { x: number, y: number }[]
   color: string
   width: number
-  isEraser?: boolean // DrawablePen uses this
-  eraser?: boolean // Database uses this
-  userId?: string // DrawablePen uses this
-  timestamp?: number
-  created_at?: string // Database timestamp
+  eraser: boolean
+  userId: string
+  timestamp: number
 }
+
+/** What drawStroke needs of a stroke; a database row satisfies it as well. */
+export type DrawableStroke = Pick<Stroke, 'points' | 'color' | 'width' | 'eraser'>

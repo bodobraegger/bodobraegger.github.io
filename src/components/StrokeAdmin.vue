@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import type { User } from '@supabase/supabase-js'
 import { getSupabase } from '~/lib/supabase'
-import type { Stroke as BaseStroke } from '~/types/strokes'
 import { drawStroke } from '~/utils/canvas'
 
-// Admin-specific stroke type with required fields
-interface AdminStroke extends BaseStroke {
+/** A row of public.strokes, as the admin reads and restores it. */
+interface StrokeRow {
   id: string
   stroke_id: string
   canvas_id: string
   user_id: string
+  points: { x: number, y: number }[]
+  color: string
+  width: number
+  eraser: boolean
   created_at: string
 }
 
 const canvasCounts = ref(new Map<string, number>())
-const strokes = ref<AdminStroke[]>([])
+const strokes = ref<StrokeRow[]>([])
 const selectedIds = ref(new Set<string>())
 const filterCanvas = ref('')
 const loading = ref(true)
 const error = ref('')
 
 // Stacks hold deleted batches; undo re-inserts the rows, redo deletes them again
-const undoStack = ref<AdminStroke[][]>([])
-const redoStack = ref<AdminStroke[][]>([])
+const undoStack = ref<StrokeRow[][]>([])
+const redoStack = ref<StrokeRow[][]>([])
 
 const user = ref<User | null>(null)
 const email = ref('')
@@ -289,7 +292,7 @@ function handleWindowMouseUp(e: MouseEvent) {
   drawOverlay()
 }
 
-function strokeTouchesRect(stroke: AdminStroke, minX: number, minY: number, maxX: number, maxY: number): boolean {
+function strokeTouchesRect(stroke: StrokeRow, minX: number, minY: number, maxX: number, maxY: number): boolean {
   // A single dot has no segment to test
   if (stroke.points.length === 1) {
     const [point] = stroke.points
@@ -327,7 +330,7 @@ function lineSegmentsIntersect(x1: number, y1: number, x2: number, y2: number, x
   return t >= 0 && t <= 1 && u >= 0 && u <= 1
 }
 
-function isPointNearStroke(x: number, y: number, stroke: AdminStroke): boolean {
+function isPointNearStroke(x: number, y: number, stroke: StrokeRow): boolean {
   const threshold = Math.max(stroke.width / 2 + 5, 10)
 
   if (stroke.points.length === 1)
@@ -398,7 +401,7 @@ async function requestDelete() {
   showConfirmDelete.value = true
 }
 
-async function deleteBatch(batch: AdminStroke[]): Promise<boolean> {
+async function deleteBatch(batch: StrokeRow[]): Promise<boolean> {
   const supabase = await getSupabase()
   if (!supabase)
     return false
@@ -466,7 +469,7 @@ async function undoDelete() {
     points: s.points,
     color: s.color,
     width: s.width,
-    eraser: s.eraser ?? false,
+    eraser: s.eraser,
     created_at: s.created_at,
   })))
 

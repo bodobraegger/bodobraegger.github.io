@@ -1,8 +1,8 @@
-import type { Stroke } from '../types/strokes'
+import type { DrawableStroke } from '../types/strokes'
 
 export function drawStroke(
   ctx: CanvasRenderingContext2D,
-  stroke: Stroke,
+  stroke: DrawableStroke,
   options: {
     isSelected?: boolean
     showAsEraser?: boolean
@@ -11,7 +11,7 @@ export function drawStroke(
   } = {},
 ) {
   const { isSelected, showAsEraser, scrollX = 0, scrollY = 0 } = options
-  const isEraser = stroke.isEraser || stroke.eraser
+  const isEraser = stroke.eraser
 
   ctx.save()
   ctx.lineCap = 'round'

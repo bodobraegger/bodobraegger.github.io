@@ -562,7 +562,7 @@ async function undo() {
 
   // Try to delete from Supabase FIRST before modifying local state
   // (deleteStrokeFromSupabase no-ops when the client isn't configured)
-  if (effectiveCloudStorageId && removedStroke.id) {
+  if (effectiveCloudStorageId) {
     try {
       await deleteStrokeFromSupabase(removedStroke.id)
     }
@@ -671,22 +671,16 @@ async function saveStrokeToSupabase(stroke: Stroke) {
     return
 
   try {
-    // Generate a unique ID for the stroke if it doesn't have one
-    if (!stroke.id)
-      stroke.id = `${currentUserId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    // Insert without 'id' field - let database generate it
-    const insertData: any = {
+    // The row id is left to the database
+    const { error } = await supabase.from('strokes').insert({
       canvas_id: effectiveCloudStorageId,
       stroke_id: stroke.id,
-      user_id: stroke.userId || currentUserId,
+      user_id: stroke.userId,
       points: stroke.points,
       color: stroke.color,
       width: stroke.width,
-      eraser: stroke.isEraser || false,
-    }
-
-    const { error } = await supabase.from('strokes').insert(insertData)
+      eraser: stroke.eraser,
+    })
 
     if (error) {
       console.error('Supabase stroke save error:', error)
@@ -746,12 +740,12 @@ async function loadFromSupabase() {
     if (!error && data) {
       allStrokes.length = 0
       // Convert database rows to Stroke format
-      allStrokes.push(...data.map(row => ({
+      allStrokes.push(...data.map((row): Stroke => ({
         id: row.stroke_id,
         points: row.points,
         color: row.color,
         width: row.width,
-        isEraser: row.eraser,
+        eraser: row.eraser,
         userId: row.user_id,
         timestamp: new Date(row.created_at).getTime(),
       })))
@@ -781,19 +775,10 @@ async function setupSupabaseSync() {
       }
     })
     .on('broadcast', { event: 'stroke_removed' }, ({ payload }) => {
-      // Find and remove the stroke by matching userId and timestamp
-      // This is more reliable than using index which can change
-      if (payload.stroke) {
-        const index = allStrokes.findIndex((s: Stroke) =>
-          s.userId === payload.stroke.userId
-          && s.timestamp === payload.stroke.timestamp
-          && JSON.stringify(s.points) === JSON.stringify(payload.stroke.points),
-        )
-        if (index !== -1) {
-          console.info(`Removing stroke from user ${payload.stroke.userId}`)
-          allStrokes.splice(index, 1)
-          redrawAll()
-        }
+      const index = allStrokes.findIndex(s => s.id === payload.stroke?.id)
+      if (index !== -1) {
+        allStrokes.splice(index, 1)
+        redrawAll()
       }
     })
     .on('broadcast', { event: 'clear' }, () => {
@@ -998,16 +983,8 @@ function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
 }
 
 function endDrawing() {
-  if (isDrawing.value && currentPath.length > 0) {
-    saveStroke({
-      points: [...currentPath],
-      color: currentStrokeColor.value,
-      width: currentStrokeWidth.value,
-      isEraser: props.eraserMode,
-      userId: currentUserId,
-      timestamp: Date.now(),
-    })
-  }
+  if (isDrawing.value && currentPath.length > 0)
+    saveStroke(makeStroke(currentPath, penEntry))
   isDrawing.value = false
   currentPath = []
 }
@@ -1087,16 +1064,8 @@ function drag(e: MouseEvent) {
 }
 
 function endDrag() {
-  if (isDrawing.value && currentPath.length > 0) {
-    saveStroke({
-      points: [...currentPath],
-      color: currentStrokeColor.value,
-      width: currentStrokeWidth.value,
-      isEraser: props.eraserMode,
-      userId: currentUserId,
-      timestamp: Date.now(),
-    })
-  }
+  if (isDrawing.value && currentPath.length > 0)
+    saveStroke(makeStroke(currentPath, penEntry))
 
   isDragging.value = false
   isDrawing.value = false
@@ -1112,6 +1081,18 @@ function handleWidthChange(e: Event) {
   const linearValue = Number(target.value)
   sliderValue.value = linearValue
   currentStrokeWidth.value = 2 ** linearValue
+}
+
+function makeStroke(points: { x: number, y: number }[], pen: Pick<PenEntry, 'color' | 'width' | 'eraser'>): Stroke {
+  return {
+    id: crypto.randomUUID(),
+    points: [...points],
+    color: pen.color,
+    width: pen.width,
+    eraser: pen.eraser,
+    userId: currentUserId,
+    timestamp: Date.now(),
+  }
 }
 
 async function saveStroke(stroke: Stroke) {
@@ -1134,9 +1115,8 @@ async function saveStroke(stroke: Stroke) {
   notifyUpdate()
 
   // If it's an eraser stroke, redraw the entire canvas to properly apply the eraser
-  if (stroke.isEraser) {
+  if (stroke.eraser)
     redrawAll()
-  }
 
   // Broadcast for real-time collaboration (only after successful save)
   if (broadcastChannel) {
@@ -1196,16 +1176,8 @@ function extendTouchStroke(touch: Touch) {
 }
 
 function finishTouchStroke() {
-  if (isDrawing.value && touchPen && currentPath.length > 0) {
-    saveStroke({
-      points: [...currentPath],
-      color: touchPen.color,
-      width: touchPen.width,
-      isEraser: touchPen.eraser,
-      userId: currentUserId,
-      timestamp: Date.now(),
-    })
-  }
+  if (isDrawing.value && touchPen && currentPath.length > 0)
+    saveStroke(makeStroke(currentPath, touchPen))
   isDrawing.value = false
   currentPath = []
   touchPen = null
