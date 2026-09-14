@@ -159,14 +159,8 @@ export default defineConfig(({ mode }) => ({
         })
 
         // Wrap tables in a scrollable container
-        const defaultTableOpen = md.renderer.rules.table_open || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
-        md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
-          return `<div class="table-wrapper">${defaultTableOpen(tokens, idx, options, env, self)}`
-        }
-        const defaultTableClose = md.renderer.rules.table_close || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
-        md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
-          return `${defaultTableClose(tokens, idx, options, env, self)}</div>`
-        }
+        md.renderer.rules.table_open = (tokens, idx, options, _env, self) => `<div class="table-wrapper">${self.renderToken(tokens, idx, options)}`
+        md.renderer.rules.table_close = (tokens, idx, options, _env, self) => `${self.renderToken(tokens, idx, options)}</div>`
       },
       frontmatterPreprocess(frontmatter, options, id, defaults) {
         const head = defaults(frontmatter, options)
@@ -220,9 +214,8 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.logs in production
+        drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
     chunkSizeWarningLimit: 1000,
