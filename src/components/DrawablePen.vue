@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, toRef, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
-import { getSupabase, getUserId } from '../lib/supabase'
+import { getUserId } from '../lib/page-views'
+import { getSupabase } from '../lib/supabase'
 import type { Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'

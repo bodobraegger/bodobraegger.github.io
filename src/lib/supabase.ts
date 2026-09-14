@@ -1,8 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getUserId } from './page-views'
 
-export { getUserId }
-
 // Add your Supabase credentials to .env file:
 // VITE_SUPABASE_URL=your-project-url
 // VITE_SUPABASE_ANON_KEY=your-anon-key
