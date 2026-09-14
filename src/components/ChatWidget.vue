@@ -16,7 +16,8 @@ import { getUserId } from '../lib/page-views'
 import type { ChatMessage } from '../types/chat'
 
 const TICKER_MESSAGE_COUNT = 10
-const TICKER_INTERVAL_MS = 4000
+/** How fast the ticker line passes, in characters per second. */
+const TICKER_SPEED = 6
 const SEND_ERROR_DISPLAY_MS = 3000
 const SCROLL_BOTTOM_SLACK = 4
 
@@ -35,27 +36,18 @@ const sendError = ref<string | null>(null)
 const showNameOffer = ref(false)
 const nameDraft = ref('')
 
-const tickerIndex = ref(0)
-let tickerTimer: ReturnType<typeof setInterval> | undefined
-
 const listEl = ref<HTMLElement>()
+const inputEl = ref<HTMLInputElement>()
 let stickToBottom = true
 let unsubscribe: (() => void) | null = null
 
-const tickerList = computed(() => messages.value.slice(-TICKER_MESSAGE_COUNT))
-const tickerText = computed(() => {
-  const message = tickerList.value[tickerIndex.value]
-  return message ? `${message.name}: ${message.body}` : ''
-})
-
-function startTicker() {
-  tickerTimer = setInterval(() => {
-    const list = tickerList.value
-    if (list.length === 0)
-      return
-    tickerIndex.value = (tickerIndex.value + 1) % list.length
-  }, TICKER_INTERVAL_MS)
-}
+// The newest messages as one line that scrolls through the bar. The line is
+// laid out twice, so the loop rejoins itself without a gap.
+const tickerLine = computed(() => messages.value
+  .slice(-TICKER_MESSAGE_COUNT)
+  .map(message => `${message.name}: ${message.body}`)
+  .join(' · '))
+const tickerDuration = computed(() => `${Math.max(tickerLine.value.length / TICKER_SPEED, 4)}s`)
 
 function scrollListToBottom() {
   const el = listEl.value
@@ -72,7 +64,6 @@ function onListScroll() {
 
 function onInsert(message: ChatMessage) {
   messages.value.push(message)
-  tickerIndex.value = tickerList.value.length - 1
   if (stickToBottom)
     nextTick(scrollListToBottom)
 }
@@ -108,10 +99,18 @@ async function openBox() {
   stickToBottom = true
   await nextTick()
   scrollListToBottom()
+  inputEl.value?.focus()
 }
 
 function closeBox() {
   open.value = false
+}
+
+/** A click on the box that hits nothing else lands in the input. */
+function focusInput(event: MouseEvent) {
+  const target = event.target as HTMLElement
+  if (!target.closest('button, input, .chat-widget-name'))
+    inputEl.value?.focus()
 }
 
 // The pen toolbar takes the same corner, so it steps aside while the chat is
@@ -205,11 +204,9 @@ onMounted(async () => {
   messages.value = initial
   canLoadEarlier.value = initial.length >= CHAT_TICKER_SIZE
   configured.value = true
-  startTicker()
 })
 
 onUnmounted(() => {
-  clearInterval(tickerTimer)
   unsubscribe?.()
   document.documentElement.classList.remove('chat-open')
 })
@@ -217,7 +214,7 @@ onUnmounted(() => {
 
 <template>
   <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
-    <div class="chat-widget-panel">
+    <div class="chat-widget-panel" @click="open && focusInput($event)">
       <div v-if="open" class="chat-widget-box">
         <button v-if="canLoadEarlier" class="chat-widget-earlier" @click="loadEarlier">
           earlier
@@ -246,7 +243,9 @@ onUnmounted(() => {
       <button v-if="!open" class="chat-widget-bar" aria-expanded="false" aria-label="Open chat" @click="openBox">
         <span class="chat-widget-arrow" aria-hidden="true">▲</span>
         <span v-if="sendError" class="chat-widget-ticker chat-widget-error">{{ sendError }}</span>
-        <span v-else class="chat-widget-ticker">{{ tickerText }}</span>
+        <span v-else class="chat-widget-ticker">
+          <span v-if="tickerLine" class="chat-widget-ticker-track" :style="{ animationDuration: tickerDuration }">{{ tickerLine }} · {{ tickerLine }} · </span>
+        </span>
         <span class="chat-widget-count">{{ onlineCount }}</span>
       </button>
       <div v-else class="chat-widget-bar">
@@ -256,6 +255,7 @@ onUnmounted(() => {
         <span v-if="sendError" class="chat-widget-ticker chat-widget-error">{{ sendError }}</span>
         <input
           v-else
+          ref="inputEl"
           v-model="draftBody"
           class="chat-widget-input"
           :maxlength="CHAT_BODY_MAX_LENGTH"
@@ -412,6 +412,28 @@ onUnmounted(() => {
   background: transparent;
   color: var(--fg);
   font: inherit;
+}
+
+.chat-widget-ticker-track {
+  display: inline-block;
+  animation: chat-ticker linear infinite;
+}
+
+/* The track holds the line twice; moving it by half its width brings the
+   second copy exactly where the first began. */
+@keyframes chat-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-widget-ticker-track {
+    animation: none;
+  }
 }
 
 .chat-widget-error {
