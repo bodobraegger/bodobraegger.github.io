@@ -68,10 +68,19 @@ function onListScroll() {
   stickToBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_BOTTOM_SLACK
 }
 
-/** One short tone from an oscillator; no sound file, and the widget mounts after a gesture, so audio is allowed. */
-function bleep() {
+/**
+ * One short tone from an oscillator, no sound file. The context starts
+ * suspended until the page has seen a gesture (a scroll is not one), and a
+ * tone started on a suspended context would queue up and play later, so the
+ * tone is only started once the context runs.
+ */
+async function bleep() {
   try {
     audio ??= new AudioContext()
+    if (audio.state !== 'running')
+      await audio.resume()
+    if (audio.state !== 'running')
+      return
     const oscillator = audio.createOscillator()
     const gain = audio.createGain()
     oscillator.frequency.value = BLEEP_HZ
@@ -86,7 +95,7 @@ function bleep() {
 }
 
 function notify() {
-  bleep()
+  void bleep()
   alert.value = true
   setTimeout(() => (alert.value = false), ALERT_MS)
 }
@@ -247,10 +256,10 @@ onUnmounted(() => {
   <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
     <div class="chat-widget-panel" :class="{ alert }" @click="open && focusInput($event)">
       <div v-if="open" class="chat-widget-box">
-        <button v-if="canLoadEarlier" class="chat-widget-earlier" @click="loadEarlier">
-          earlier
-        </button>
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite" @scroll="onListScroll">
+          <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
+            ↑ earlier messages
+          </button>
           <p v-for="message in messages" :key="message.id" class="chat-widget-message" :class="{ mine: message.userId === userId }">
             <span
               class="chat-widget-name"
@@ -346,11 +355,11 @@ onUnmounted(() => {
   min-height: 200px;
 }
 
+/* Sits in the list like a message, above the oldest one loaded. */
 .chat-widget-earlier {
-  flex: none;
-  padding: 0.2rem 0;
+  display: block;
+  padding: 0;
   border: 0;
-  border-bottom: 1px dashed var(--fg);
   background: transparent;
   color: var(--fg-muted);
   font: inherit;
