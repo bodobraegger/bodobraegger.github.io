@@ -274,9 +274,9 @@ async function send(image?: string) {
   }
 }
 
-/** An image dropped on the box is dithered, uploaded and sent with whatever is in the input. */
-async function onDrop(event: DragEvent) {
-  const file = [...(event.dataTransfer?.files ?? [])].find(f => f.type.startsWith('image/'))
+/** An image dropped, pasted or picked is dithered, uploaded and sent with whatever is in the input. */
+async function sendImage(files: FileList | File[] | undefined) {
+  const file = [...(files ?? [])].find(f => f.type.startsWith('image/'))
   if (!file || sending.value)
     return
   if (!open.value)
@@ -322,7 +322,14 @@ onUnmounted(() => {
 
 <template>
   <div v-if="configured" class="chat-widget font-mono" :class="{ open }">
-    <div class="chat-widget-panel" :class="{ alert }" @click="open && focusInput($event)" @dragover.prevent @drop.prevent="onDrop">
+    <div
+      class="chat-widget-panel"
+      :class="{ alert }"
+      @click="open && focusInput($event)"
+      @dragover.prevent
+      @drop.prevent="sendImage($event.dataTransfer?.files)"
+      @paste="sendImage($event.clipboardData?.files)"
+    >
       <div v-if="open" class="chat-widget-box">
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite" @scroll="onListScroll">
           <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
@@ -377,6 +384,11 @@ onUnmounted(() => {
           @keydown.enter="send()"
           @keydown.esc="cancelEdit"
         >
+        <!-- The picker is for phones, where nothing can be dropped; it steps away while text is typed -->
+        <label v-if="!draftBody && !sending" class="chat-widget-pick" aria-label="Send an image">
+          <span class="i-ri:image-line" aria-hidden="true" />
+          <input type="file" accept="image/*" hidden @change="sendImage(($event.target as HTMLInputElement).files ?? undefined); ($event.target as HTMLInputElement).value = ''">
+        </label>
         <span class="chat-widget-count">{{ onlineCount }}</span>
       </div>
     </div>
@@ -598,6 +610,19 @@ html.dark .chat-widget-image {
   align-items: center;
   padding: 0 0.4rem;
   color: var(--fg-muted);
+}
+
+.chat-widget-pick {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding: 0 0.2rem;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.chat-widget-pick:hover {
+  color: var(--fg);
 }
 
 @media print {

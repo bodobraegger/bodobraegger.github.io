@@ -118,15 +118,17 @@ panel border turns red for one second. Own messages stay quiet.
 
 ### Images
 
-Dropping an image file on the box sends it: the file is shrunk to at most
+Dropping an image file on the box, pasting one, or picking one with the
+image button at the right of the bottom row (there for phones; it hides while
+the input holds text) sends it: the file is shrunk to at most
 320px a side, reduced to black and white with an ordered Bayer dither, and
 encoded as PNG in the browser (`src/lib/dither.ts`), which also drops its
 metadata. The PNG is uploaded to the public bucket `chat-images` under
 `chat/<uuid>.png` (`src/db/chat-images.sql`: 64 KB cap, PNG only), then the
 message is posted with the path in its `image` column and whatever text the
 input held. The list shows the image under the body, inverted in dark mode
-like the rest of the ink; the ticker shows `[image]`. No picker button, no
-preview, no paste, one image per message.
+like the rest of the ink; the ticker shows `[image]`, and the admin table a
+thumbnail. No preview before sending, one image per message.
 
 ### Your own messages, for 15 minutes
 

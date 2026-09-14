@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSupabaseAuth } from '~/composables/useSupabaseAuth'
+import { chatImageUrl } from '~/lib/chat'
 import { getSupabase } from '~/lib/supabase'
 import '~/styles/admin.css'
 
@@ -9,6 +10,7 @@ interface ChatRow {
   user_id: string
   name: string
   body: string
+  image: string | null
   created_at: string
 }
 
@@ -262,6 +264,7 @@ onUnmounted(() => {
             </td>
             <td class="body-cell">
               {{ message.body }}
+              <img v-if="message.image" class="image-cell" :src="chatImageUrl(message.image)" alt="" loading="lazy">
             </td>
           </tr>
         </tbody>
@@ -318,6 +321,17 @@ tbody tr:hover {
 tbody tr.selected {
   background: var(--fg-deep);
   color: var(--c-bg);
+}
+
+.image-cell {
+  display: block;
+  max-height: 80px;
+  margin-top: 0.2rem;
+  image-rendering: pixelated;
+}
+
+html.dark .image-cell {
+  filter: invert(1);
 }
 
 .body-cell {
