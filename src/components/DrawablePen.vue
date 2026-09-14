@@ -200,7 +200,7 @@ function sizeCanvas(canvas: HTMLCanvasElement) {
   canvas.style.width = `${width}px`
   canvas.style.height = `${height}px`
   canvasData.height = height
-  canvasData.top = bandTopFor(window.pageYOffset || document.documentElement.scrollTop)
+  canvasData.top = bandTopFor(window.scrollY)
 
   const canvasCtx = canvas.getContext('2d')
   if (canvasCtx) {
@@ -472,8 +472,6 @@ function handleResize() {
 }
 
 function handleScroll() {
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
-
   // The browser carries the band along with the page, so a scroll inside the
   // band costs nothing at all.
   if (scrollY >= canvasData.top && scrollY + window.innerHeight <= canvasData.top + canvasData.height)
@@ -936,8 +934,7 @@ function handleRightClick(e: MouseEvent) {
 function startDrawing(e: MouseEvent) {
   measureGlyphTip()
 
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const { scrollX, scrollY } = window
 
   // Use the pen's current position plus the tip offset
   lastX = penPosition.value.x + scrollX + tipOffsetX.value
@@ -962,8 +959,7 @@ function startDrawing(e: MouseEvent) {
 function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
   if (!ctx || !isDrawing.value)
     return
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const { scrollX, scrollY } = window
   const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
   const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
 
@@ -1005,8 +1001,7 @@ function startDragLegacy(e: MouseEvent) {
   moveOnly.value = e.shiftKey
   currentPath = []
 
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const { scrollX, scrollY } = window
   lastX = rect.left + scrollX + tipOffsetX.value
   lastY = rect.top + scrollY + tipOffsetY.value
 
@@ -1029,8 +1024,7 @@ function drag(e: MouseEvent) {
   const offsetY = (drag as any).offsetY || 20
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
-  const scrollX = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop
+  const { scrollX, scrollY } = window
   const currentX = e.clientX + scrollX + tipOffsetX.value - offsetX
   const currentY = e.clientY + scrollY + tipOffsetY.value - offsetY
 
@@ -1146,8 +1140,8 @@ function paintSegment(from: { x: number, y: number }, to: { x: number, y: number
 
 function documentPoint(touch: Touch) {
   return {
-    x: touch.clientX + (window.pageXOffset || document.documentElement.scrollLeft),
-    y: touch.clientY + (window.pageYOffset || document.documentElement.scrollTop),
+    x: touch.clientX + window.scrollX,
+    y: touch.clientY + window.scrollY,
   }
 }
 
@@ -1195,11 +1189,7 @@ function cancelTouchStroke() {
 }
 
 function findTouch(list: TouchList, id: number) {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].identifier === id)
-      return list[i]
-  }
-  return null
+  return [...list].find(touch => touch.identifier === id)
 }
 
 /**
