@@ -399,8 +399,6 @@ onUnmounted(() => {
 }
 
 .chat-widget-message {
-  margin: 0 0 0.3rem;
-  color: var(--fg);
   overflow-wrap: break-word;
 }
 

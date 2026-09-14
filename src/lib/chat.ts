@@ -55,7 +55,18 @@ export async function uploadImage(png: Blob): Promise<string> {
   return path
 }
 
-/** The chosen name from localStorage, or the auto name: anon plus the last 4 characters of the user id. */
+const ADJECTIVES = ['amber', 'brisk', 'calm', 'dusty', 'eager', 'faint', 'giddy', 'hazy', 'idle', 'jolly', 'keen', 'loud', 'mossy', 'nimble', 'odd', 'pale', 'quiet', 'rusty', 'shy', 'tidy', 'umber', 'vivid', 'warm', 'young', 'zesty', 'bold', 'cosy', 'damp', 'early', 'fuzzy', 'grand', 'humble']
+const NOUNS = ['otter', 'heron', 'pebble', 'comet', 'fern', 'kettle', 'lantern', 'marble', 'newt', 'orchid', 'pigeon', 'quill', 'raven', 'saddle', 'thistle', 'urchin', 'violin', 'walnut', 'yarrow', 'zephyr', 'badger', 'cloud', 'dune', 'ember', 'goose', 'harbor', 'iris', 'jasper', 'kite', 'lemon', 'meadow', 'needle']
+
+/** Two words picked by the user id, so a browser keeps its name without storing it. */
+function autoName(userId: string): string {
+  let hash = 0
+  for (const char of userId)
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0
+  return `${ADJECTIVES[hash % ADJECTIVES.length]} ${NOUNS[Math.floor(hash / ADJECTIVES.length) % NOUNS.length]}`
+}
+
+/** The chosen name from localStorage, or the auto name. */
 export function getChatName(): string {
   try {
     const stored = localStorage.getItem(CHAT_NAME_STORAGE_KEY)
@@ -65,7 +76,7 @@ export function getChatName(): string {
   catch {
     // Storage unavailable: fall through to the auto name.
   }
-  return `anon${getUserId().slice(-4)}`
+  return autoName(getUserId())
 }
 
 /** True once a name was chosen in this browser. */

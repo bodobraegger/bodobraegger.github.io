@@ -65,11 +65,12 @@ the database. While a send is in flight the input is disabled.
 ### Name
 
 No accounts, and no question before the first message. A browser that has not
-chosen a name sends as its auto name: `anon` followed by the last four
-characters of its user id (`anon3f9c`). The name is sent with every message.
+chosen a name sends as its auto name: two dictionary words picked by a hash
+of its user id (`mossy otter`), so the same browser keeps the same name
+without storing anything. The name is sent with every message.
 
 After the first send from a browser without a chosen name, a one-line offer
-appears directly above the bottom row: `sent as anon3f9c · ` followed by a
+appears directly above the bottom row: `sent as mossy otter · ` followed by a
 name input, placeholder `set a name`, limit 24 characters. Enter stores the
 name under localStorage key `chat-name`, calls `setChatName`, and the offer
 goes away. The rename applies to every message this user id has sent, the one
@@ -211,7 +212,7 @@ export const CHAT_BODY_MAX_LENGTH = 500
 export const CHAT_PAGE_SIZE = 50
 export const CHAT_TICKER_SIZE = 20
 
-/** The chosen name from localStorage, or the auto name: anon plus the last 4 characters of the user id. */
+/** The chosen name from localStorage, or the auto name: two words picked by the user id. */
 export function getChatName(): string
 /** True once a name was chosen in this browser. */
 export function hasChosenChatName(): boolean
