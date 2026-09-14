@@ -15,7 +15,7 @@ export function getUserId(): string {
   try {
     let userId = localStorage.getItem(USER_ID_STORAGE_KEY)
     if (!userId) {
-      userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      userId = `user-${crypto.randomUUID()}`
       localStorage.setItem(USER_ID_STORAGE_KEY, userId)
     }
     return userId
@@ -23,7 +23,7 @@ export function getUserId(): string {
   catch {
     // Fallback to session-based ID if localStorage unavailable
     if (!(window as any).__drawablePenUserId__) {
-      (window as any).__drawablePenUserId__ = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      (window as any).__drawablePenUserId__ = `session-${crypto.randomUUID()}`
     }
     return (window as any).__drawablePenUserId__
   }
