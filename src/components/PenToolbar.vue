@@ -203,7 +203,7 @@ onUnmounted(() => {
   border: 1px dashed var(--fg);
 }
 
-/* Every part of the toolbar stands 21px tall, exactly as the chat does, so the
+/* Every part of the toolbar stands 23px tall, the outer height of the chat bar, so the
    buttons take their height from the bar and the line height of the page is
    kept out of it. */
 .pen-toolbar button {
@@ -222,7 +222,7 @@ onUnmounted(() => {
 }
 
 .pen-toolbar-fab {
-  height: 21px;
+  height: 23px;
   min-width: 21px;
   font-size: 1.05rem;
 }
@@ -232,7 +232,7 @@ onUnmounted(() => {
 .pen-toolbar-bar {
   display: flex;
   align-items: stretch;
-  height: 21px;
+  height: 23px;
   max-width: 100%;
 }
 
@@ -312,7 +312,7 @@ html.dark .pen-toolbar-swatch {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  height: 21px;
+  height: 23px;
   padding: 0 0.4rem;
   max-width: 100%;
 }
@@ -335,7 +335,7 @@ html.dark .pen-toolbar-swatch {
 .pen-toolbar-hint {
   display: flex;
   align-items: center;
-  height: 21px;
+  height: 23px;
   margin: 0;
   padding: 0 0.4rem;
   color: var(--fg-muted);
