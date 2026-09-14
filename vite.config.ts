@@ -14,7 +14,6 @@ import AutoImport from 'unplugin-auto-import/vite'
 import anchor from 'markdown-it-anchor'
 import LinkAttributes from 'markdown-it-link-attributes'
 import UnoCSS from 'unocss/vite'
-import SVG from 'vite-svg-loader'
 import Shiki from '@shikijs/markdown-it'
 
 // @ts-expect-error missing types
@@ -199,11 +198,6 @@ export default defineConfig(({ mode }) => ({
     Icons({
       defaultClass: 'inline',
       defaultStyle: 'vertical-align: sub;',
-    }),
-
-    SVG({
-      svgo: false,
-      defaultImport: 'component',
     }),
   ],
 
