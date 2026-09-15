@@ -64,27 +64,27 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "2023-12-16_web-D_5sdJNV.js": [],
-  "2024-01-17_front_end_optimization-BUFBHims.js": [],
-  "2024-02-27_livecoding_docs-YWj9lzAh.js": [],
-  "2024-03-27_transdisciplinarity_arts-Kz8eIjXy.js": [],
-  "2024-04-14_photography-B2hkYgk0.js": [],
-  "2024-04-24_images-BqgWL8N3.js": [],
-  "2024-04-25_chess-wAAJCEXX.js": [
+  "2023-12-16_web-B4_B1KOo.js": [],
+  "2024-01-17_front_end_optimization-DzWRNS2J.js": [],
+  "2024-02-27_livecoding_docs-B-h37KIz.js": [],
+  "2024-03-27_transdisciplinarity_arts-BC1PEnYr.js": [],
+  "2024-04-14_photography-CN8_9KZ4.js": [],
+  "2024-04-24_images-h4xdLA97.js": [],
+  "2024-04-25_chess-hxB1qaDf.js": [
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
-  "2025-04-26_livecoding_examples-DCT0ALVg.js": [],
-  "2025-05-08_producing_composing_advanced-CQiqHS5u.js": [],
-  "2025-05-08_transcultural_collaboration-Da6zBVV0.js": [],
-  "2026-04-08_arte_digital_portfolio_talk-4-dYad2e.js": [],
-  "2026-05-03_canvas-CaltGts9.js": [],
-  "2026-05-14_arte_digital_canvas-D0FKirUQ.js": [],
-  "2026-09-15_t14_backlight_repair-CUpG0ok7.js": [],
-  "AGENTS-Ckz6sQ2T.js": [],
-  "ChatWidget-D7up4mXH.js": [
+  "2025-04-26_livecoding_examples-BNAp0if_.js": [],
+  "2025-05-08_producing_composing_advanced-BE4aZeba.js": [],
+  "2025-05-08_transcultural_collaboration-DaZYMTY0.js": [],
+  "2026-04-08_arte_digital_portfolio_talk-6Sx3BwwJ.js": [],
+  "2026-05-03_canvas-BGoQ4t1h.js": [],
+  "2026-05-14_arte_digital_canvas-BU2XT6Zt.js": [],
+  "2026-09-15_t14_backlight_repair-CaLxXITq.js": [],
+  "AGENTS-DDhkJScQ.js": [],
+  "ChatWidget-KClFruw9.js": [
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
-  "_...404_-CxSXRyH0.js": [],
+  "_...404_-C4k7TG7y.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -98,24 +98,24 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "bidi-Dx-KYZIt.js": [
+  "bidi-BApUZtqr.js": [
     "/assets/bidi-Dn-PDzfi.css"
   ],
-  "bills-oNmALwcr.js": [],
-  "chat-AtukaY3r.js": [
+  "bills-z-npVM7g.js": [],
+  "chat-DCG4UVJ1.js": [
     "/assets/chat-CEZWWPar.css",
     "/assets/admin-DMWvL0UI.css"
   ],
-  "drawing-board-Ds_Li8TN.js": [],
-  "frach-BvCFfvr0.js": [],
-  "gleis161-CpGH_-NM.js": [],
-  "hiperorganicos13-zlvJ4_5z.js": [],
-  "hiperorganicos13.pt-f-m3Q0VV.js": [],
-  "index-3hIj_iRu.js": [],
+  "drawing-board-DSrgl_eW.js": [],
+  "frach-CnPGv7dJ.js": [],
+  "gleis161-6DGwzn2w.js": [],
+  "hiperorganicos13-fAQMSbfa.js": [],
+  "hiperorganicos13.pt-BP6vFNUt.js": [],
+  "index-7IaWNVeQ.js": [],
+  "index-BKWxYi6k.js": [],
+  "index-C5zGeZfd.js": [],
   "index-Cw67P_vQ.js": [],
-  "index-D3RpoT4u.js": [],
-  "index-DUZF1Xhh.js": [],
-  "index-McXsyoiV.js": [],
+  "index-DlUr9-h_.js": [],
   "index.html": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -129,7 +129,7 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "janislabhart-mMW_PWXq.js": [],
+  "janislabhart-D_ysI7hg.js": [],
   "node_modules/.pnpm/@supabase+auth-js@2.106.2/node_modules/@supabase/auth-js/dist/module/AuthClient.js": [
     "/assets/index-Cw67P_vQ.js"
   ],
@@ -451,14 +451,14 @@
     "/assets/vue-vendor-owAXO5xd.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_-CxSXRyH0.js"
+    "/assets/_...404_-C4k7TG7y.js"
   ],
   "pages/admin/chat.md": [
-    "/assets/chat-AtukaY3r.js",
+    "/assets/chat-DCG4UVJ1.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "pages/admin/strokes.md": [
-    "/assets/strokes-DlabUI1t.js",
+    "/assets/strokes-BJWuMSiT.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "pages/index.md": [
@@ -475,51 +475,51 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-D_5sdJNV.js"
+    "/assets/2023-12-16_web-B4_B1KOo.js"
   ],
   "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-BUFBHims.js"
+    "/assets/2024-01-17_front_end_optimization-DzWRNS2J.js"
   ],
   "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-YWj9lzAh.js"
+    "/assets/2024-02-27_livecoding_docs-B-h37KIz.js"
   ],
   "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-Kz8eIjXy.js"
+    "/assets/2024-03-27_transdisciplinarity_arts-BC1PEnYr.js"
   ],
   "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-B2hkYgk0.js"
+    "/assets/2024-04-14_photography-CN8_9KZ4.js"
   ],
   "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-BqgWL8N3.js"
+    "/assets/2024-04-24_images-h4xdLA97.js"
   ],
   "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-wAAJCEXX.js",
+    "/assets/2024-04-25_chess-hxB1qaDf.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=06957a2a&lang.css": [
-    "/assets/2024-04-25_chess-wAAJCEXX.js",
+    "/assets/2024-04-25_chess-hxB1qaDf.js",
     "/assets/2024-04-25_chess-zecYN0E3.css"
   ],
   "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-DCT0ALVg.js"
+    "/assets/2025-04-26_livecoding_examples-BNAp0if_.js"
   ],
   "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-CQiqHS5u.js"
+    "/assets/2025-05-08_producing_composing_advanced-BE4aZeba.js"
   ],
   "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-Da6zBVV0.js"
+    "/assets/2025-05-08_transcultural_collaboration-DaZYMTY0.js"
   ],
   "pages/notes/2026-04-08_arte_digital_portfolio_talk.md": [
-    "/assets/2026-04-08_arte_digital_portfolio_talk-4-dYad2e.js"
+    "/assets/2026-04-08_arte_digital_portfolio_talk-6Sx3BwwJ.js"
   ],
   "pages/notes/2026-05-03_canvas.md": [
-    "/assets/2026-05-03_canvas-CaltGts9.js"
+    "/assets/2026-05-03_canvas-BGoQ4t1h.js"
   ],
   "pages/notes/2026-05-14_arte_digital_canvas.md": [
-    "/assets/2026-05-14_arte_digital_canvas-D0FKirUQ.js"
+    "/assets/2026-05-14_arte_digital_canvas-BU2XT6Zt.js"
   ],
   "pages/notes/2026-09-15_t14_backlight_repair.md": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -552,35 +552,35 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "pages/notes/hiperorganicos13.md": [
-    "/assets/hiperorganicos13-zlvJ4_5z.js"
+    "/assets/hiperorganicos13-fAQMSbfa.js"
   ],
   "pages/notes/hiperorganicos13.pt.md": [
-    "/assets/hiperorganicos13.pt-f-m3Q0VV.js"
+    "/assets/hiperorganicos13.pt-BP6vFNUt.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-DUZF1Xhh.js"
+    "/assets/index-DlUr9-h_.js"
   ],
   "pages/notes/misc/AGENTS.md": [
-    "/assets/AGENTS-Ckz6sQ2T.js"
+    "/assets/AGENTS-DDhkJScQ.js"
   ],
   "pages/notes/misc/index.md": [
-    "/assets/index-McXsyoiV.js"
+    "/assets/index-BKWxYi6k.js"
   ],
   "pages/notes/scripts.md": [
-    "/assets/scripts-BWsYVsOB.js"
+    "/assets/scripts-BYjBEYPE.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-3hIj_iRu.js"
+    "/assets/index-7IaWNVeQ.js"
   ],
   "pages/projects/bidi.md": [
-    "/assets/bidi-Dx-KYZIt.js",
+    "/assets/bidi-BApUZtqr.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "pages/projects/bills.md": [
-    "/assets/bills-oNmALwcr.js"
+    "/assets/bills-z-npVM7g.js"
   ],
   "pages/projects/drawing-board.md": [
-    "/assets/drawing-board-Ds_Li8TN.js",
+    "/assets/drawing-board-DSrgl_eW.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -589,16 +589,16 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "pages/projects/frach.md": [
-    "/assets/frach-BvCFfvr0.js"
+    "/assets/frach-CnPGv7dJ.js"
   ],
   "pages/projects/gleis161.md": [
-    "/assets/gleis161-CpGH_-NM.js"
+    "/assets/gleis161-6DGwzn2w.js"
   ],
   "pages/projects/index.md": [
-    "/assets/index-D3RpoT4u.js"
+    "/assets/index-C5zGeZfd.js"
   ],
   "pages/projects/janislabhart.md": [
-    "/assets/janislabhart-mMW_PWXq.js",
+    "/assets/janislabhart-D_ysI7hg.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -607,7 +607,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "pages/projects/resguardo-tecnologias.md": [
-    "/assets/resguardo-tecnologias-CsmWNySD.js",
+    "/assets/resguardo-tecnologias-C45A6rRx.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -616,24 +616,24 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "pages/projects/rj-bd.md": [
-    "/assets/rj-bd-CyCceVJF.js"
+    "/assets/rj-bd-DbinXv7B.js"
   ],
   "pages/projects/self.md": [
-    "/assets/self-CVin1EP7.js"
+    "/assets/self-uRV0x_tp.js"
   ],
   "pages/projects/thilo.md": [
-    "/assets/thilo-Cz5IWgOD.js"
+    "/assets/thilo-CinwQviL.js"
   ],
   "pages/projects/walter.md": [
-    "/assets/walter-Bphjp-X3.js"
+    "/assets/walter-BMq5WnSj.js"
   ],
   "pages/template.md": [
-    "/assets/template-Bnj-zWml.js"
+    "/assets/template-B2yndj2S.js"
   ],
-  "resguardo-tecnologias-CsmWNySD.js": [],
-  "rj-bd-CyCceVJF.js": [],
-  "scripts-BWsYVsOB.js": [],
-  "self-CVin1EP7.js": [],
+  "resguardo-tecnologias-C45A6rRx.js": [],
+  "rj-bd-DbinXv7B.js": [],
+  "scripts-BYjBEYPE.js": [],
+  "self-uRV0x_tp.js": [],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -648,7 +648,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -681,7 +681,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -714,7 +714,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -747,7 +747,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -780,7 +780,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -813,7 +813,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -846,7 +846,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -879,7 +879,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -912,7 +912,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p105.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -945,7 +945,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p105.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -978,7 +978,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p105.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1011,7 +1011,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p105.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1044,7 +1044,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p106.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1077,7 +1077,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p106.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1110,7 +1110,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p106.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1143,7 +1143,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p106.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1176,7 +1176,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p108.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1209,7 +1209,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p108.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1242,7 +1242,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p108.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1275,7 +1275,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p108.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1308,7 +1308,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p109.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1341,7 +1341,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p109.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1374,7 +1374,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p109.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1407,7 +1407,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p109.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1440,7 +1440,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p122.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1473,7 +1473,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p122.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1506,7 +1506,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p122.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1539,7 +1539,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/notes/t14/hmm-p122.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-CUpG0ok7.js",
+    "/assets/2026-09-15_t14_backlight_repair-CaLxXITq.js",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1572,7 +1572,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=avif": [
-    "/assets/resguardo-tecnologias-CsmWNySD.js",
+    "/assets/resguardo-tecnologias-C45A6rRx.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1581,7 +1581,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=webp": [
-    "/assets/resguardo-tecnologias-CsmWNySD.js",
+    "/assets/resguardo-tecnologias-C45A6rRx.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1590,7 +1590,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/resguardo-tecnologias-CsmWNySD.js",
+    "/assets/resguardo-tecnologias-C45A6rRx.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1599,7 +1599,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/resguardo-tecnologias-CsmWNySD.js",
+    "/assets/resguardo-tecnologias-C45A6rRx.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1804,7 +1804,7 @@
     "/assets/2026-09-05-canvas-screenshot-3-CA9Q_jHG.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=avif": [
-    "/assets/drawing-board-Ds_Li8TN.js",
+    "/assets/drawing-board-DSrgl_eW.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1813,7 +1813,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=webp": [
-    "/assets/drawing-board-Ds_Li8TN.js",
+    "/assets/drawing-board-DSrgl_eW.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1822,7 +1822,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/drawing-board-Ds_Li8TN.js",
+    "/assets/drawing-board-DSrgl_eW.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1831,7 +1831,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/drawing-board-Ds_Li8TN.js",
+    "/assets/drawing-board-DSrgl_eW.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1996,7 +1996,7 @@
     "/assets/bbo.do_rj-bd-2026-05-21-CoHZNfgK.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=avif": [
-    "/assets/janislabhart-mMW_PWXq.js",
+    "/assets/janislabhart-D_ysI7hg.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2005,7 +2005,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=webp": [
-    "/assets/janislabhart-mMW_PWXq.js",
+    "/assets/janislabhart-D_ysI7hg.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2014,7 +2014,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/janislabhart-mMW_PWXq.js",
+    "/assets/janislabhart-D_ysI7hg.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2023,7 +2023,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/janislabhart-mMW_PWXq.js",
+    "/assets/janislabhart-D_ysI7hg.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2032,35 +2032,35 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/components/BidiTranslator.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/bidi-Dx-KYZIt.js",
+    "/assets/bidi-BApUZtqr.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/BidiTranslator.vue?vue&type=style&index=0&lang.css": [
-    "/assets/bidi-Dx-KYZIt.js",
+    "/assets/bidi-BApUZtqr.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/ChatAdmin.vue": [
-    "/assets/chat-AtukaY3r.js",
+    "/assets/chat-DCG4UVJ1.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/chat-AtukaY3r.js",
+    "/assets/chat-DCG4UVJ1.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=style&index=0&scoped=01c6169b&lang.css": [
-    "/assets/chat-AtukaY3r.js",
+    "/assets/chat-DCG4UVJ1.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatWidget.vue": [
-    "/assets/ChatWidget-D7up4mXH.js",
+    "/assets/ChatWidget-KClFruw9.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/ChatWidget.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ChatWidget-D7up4mXH.js",
+    "/assets/ChatWidget-KClFruw9.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/ChatWidget.vue?vue&type=style&index=0&scoped=1c347b6c&lang.css": [
-    "/assets/ChatWidget-D7up4mXH.js",
+    "/assets/ChatWidget-KClFruw9.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/DrawablePen.vue": [
@@ -2181,19 +2181,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/ListFiles.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-McXsyoiV.js"
+    "/assets/index-BKWxYi6k.js"
   ],
   "src/components/ListPostItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-BX26xYit.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-DqTg4GY9.js"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-BX26xYit.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-DqTg4GY9.js"
   ],
   "src/components/ListProjectItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-D3RpoT4u.js"
+    "/assets/index-C5zGeZfd.js"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-D3RpoT4u.js"
+    "/assets/index-C5zGeZfd.js"
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -2313,19 +2313,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/StrokeAdmin.vue": [
-    "/assets/strokes-DlabUI1t.js",
+    "/assets/strokes-BJWuMSiT.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/strokes-DlabUI1t.js",
+    "/assets/strokes-BJWuMSiT.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=style&index=0&scoped=ffca3539&lang.css": [
-    "/assets/strokes-DlabUI1t.js",
+    "/assets/strokes-BJWuMSiT.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-3hIj_iRu.js"
+    "/assets/index-7IaWNVeQ.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -2367,7 +2367,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/composables/useSupabaseAuth.ts": [
-    "/assets/admin-C08HWR0l.js",
+    "/assets/admin-B3Iwur--.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/lib/chat-widget.ts": [
@@ -2384,10 +2384,10 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/lib/chat.ts": [
-    "/assets/chat-B5wczLln.js"
+    "/assets/chat-BICGZzAd.js"
   ],
   "src/lib/dither.ts": [
-    "/assets/ChatWidget-D7up4mXH.js",
+    "/assets/ChatWidget-KClFruw9.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/lib/page-views.ts": [
@@ -2482,7 +2482,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/styles/admin.css": [
-    "/assets/admin-C08HWR0l.js",
+    "/assets/admin-B3Iwur--.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/styles/fonts.css": [
@@ -2537,12 +2537,12 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "strokes-DlabUI1t.js": [
+  "strokes-BJWuMSiT.js": [
     "/assets/strokes-b8fmRj85.css",
     "/assets/admin-DMWvL0UI.css"
   ],
-  "template-Bnj-zWml.js": [],
-  "thilo-Cz5IWgOD.js": [],
+  "template-B2yndj2S.js": [],
+  "thilo-CinwQviL.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -2556,5 +2556,5 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "walter-Bphjp-X3.js": []
+  "walter-BMq5WnSj.js": []
 }
