@@ -176,6 +176,16 @@ measure voltage with the cable connected at both ends.
 - Digital multimeter, DT-830 type.
 - Two sewing needles for the probe tips.
 
+## Video: the same fault on a Lenovo E14
+
+South London Repair, "Lenovo E14 Display Repair No Backlight Engineer mistake,
+sparks". A no-backlight case on a related Lenovo, with the board-side probing
+shown on camera.
+
+<iframe class="aspect-video" title="Lenovo E14 Display Repair No Backlight Engineer mistake, sparks | South London Repair" width="945" height="531" src="https://www.youtube.com/embed/I5T9uOPX6kQ?rel=0" allowfullscreen></iframe>
+
+Link: [youtube.com/watch?v=I5T9uOPX6kQ](https://www.youtube.com/watch?v=I5T9uOPX6kQ)
+
 ## Sources
 
 - Lenovo, T14 Gen 2 and P14s Gen 2 Hardware Maintenance Manual, printed pages
