@@ -274,7 +274,7 @@ shown on camera.
 
 <iframe class="aspect-video" title="Lenovo E14 Display Repair No Backlight Engineer mistake, sparks | South London Repair" width="945" height="531" src="https://www.youtube.com/embed/I5T9uOPX6kQ?rel=0" allowfullscreen></iframe>
 
-Link: [youtube.com/watch?v=I5T9uOPX6kQ](https://www.youtube.com/watch?v=I5T9uOPX6kQ)
+Link: <https://www.youtube.com/watch?v=I5T9uOPX6kQ>
 
 ## Sources
 
@@ -282,5 +282,4 @@ Link: [youtube.com/watch?v=I5T9uOPX6kQ](https://www.youtube.com/watch?v=I5T9uOPX
   39 (error 0288), 41 (LCD symptoms), 103, 105 to 109, 122.
 - Panel and cable part numbers, board name, fuse threads and laptop prices:
   web search on 2026-09-15, links inline above.
-- The full investigation log lives in my private `t14` repository,
-  `debugging.md`, appendix A15.
+- The full investigation log is not publised, `debugging.md`, appendix A15.
