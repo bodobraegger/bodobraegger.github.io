@@ -171,7 +171,11 @@ if (frontmatter.hydra) {
         // @ts-ignore - hydra global
         hush()
         setTimeout(() => {
-          eval(codeEl.textContent!)
+          // Indirect eval runs the sketch in global, non-strict scope. A direct eval
+          // would inherit this module's strict mode, where a Hydra sketch that opens
+          // with a bare assignment such as `bpm = 120` throws instead of running.
+          const runSketch = eval
+          runSketch(codeEl.textContent!)
         }, 20)
         placeholder.appendChild(hydraCanvas)
         // make text semi transparent
