@@ -64,27 +64,6 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "2023-12-16_web-D_bv6nBt.js": [],
-  "2024-01-17_front_end_optimization-Dsgeo0qp.js": [],
-  "2024-02-27_livecoding_docs-bWxwRSW5.js": [],
-  "2024-03-27_transdisciplinarity_arts-DydaFdfc.js": [],
-  "2024-04-14_photography-CgCAiM-s.js": [],
-  "2024-04-24_images-B9V8N2Ra.js": [],
-  "2024-04-25_chess-CuEpFF6A.js": [
-    "/assets/2024-04-25_chess-zecYN0E3.css"
-  ],
-  "2025-04-26_livecoding_examples-c19g6pjf.js": [],
-  "2025-05-08_producing_composing_advanced-WZh3nZXN.js": [],
-  "2025-05-08_transcultural_collaboration-DRxkHRDW.js": [],
-  "2026-04-08_arte_digital_portfolio_talk-BXUg9TrW.js": [],
-  "2026-05-03_canvas-C31j1Z98.js": [],
-  "2026-05-14_arte_digital_canvas-Cxd6b3Ro.js": [],
-  "2026-09-15_t14_backlight_repair-BMEfGcEA.js": [],
-  "AGENTS-Cxhl2ctH.js": [],
-  "ChatWidget-DwwpkRGo.js": [
-    "/assets/ChatWidget-DTIuTwC3.css"
-  ],
-  "_...404_--Ae7seII.js": [],
   "assets/app-!~{001}~.js-unocss-hash.css": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -98,24 +77,6 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "bidi-Cbs7YL8_.js": [
-    "/assets/bidi-Dn-PDzfi.css"
-  ],
-  "bills-BYRhu678.js": [],
-  "chat-Oy3-RMek.js": [
-    "/assets/chat-CEZWWPar.css",
-    "/assets/admin-DMWvL0UI.css"
-  ],
-  "drawing-board-2PW4KL0U.js": [],
-  "frach-CjWIdJQ_.js": [],
-  "gleis161-CLs1R734.js": [],
-  "hiperorganicos13-B_tVNlIK.js": [],
-  "hiperorganicos13.pt-Yrqi8Joi.js": [],
-  "index-BHKpU-e_.js": [],
-  "index-BIVbErXB.js": [],
-  "index-ChHS5UtH.js": [],
-  "index-Ckl9S5O2.js": [],
-  "index-Cw67P_vQ.js": [],
   "index.html": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -129,7 +90,6 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "janislabhart-dFemLqro.js": [],
   "node_modules/.pnpm/@supabase+auth-js@2.106.2/node_modules/@supabase/auth-js/dist/module/AuthClient.js": [
     "/assets/index-Cw67P_vQ.js"
   ],
@@ -451,14 +411,14 @@
     "/assets/vue-vendor-owAXO5xd.js"
   ],
   "pages/[...404].md": [
-    "/assets/_...404_--Ae7seII.js"
+    "/assets/_...404_-CT18kctN.js"
   ],
   "pages/admin/chat.md": [
-    "/assets/chat-Oy3-RMek.js",
+    "/assets/chat-BjGZ4OXB.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "pages/admin/strokes.md": [
-    "/assets/strokes-DX_m0nqy.js",
+    "/assets/strokes-CN4SSbgr.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "pages/index.md": [
@@ -474,52 +434,58 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "pages/notes/2023-12-16_web.md": [
-    "/assets/2023-12-16_web-D_bv6nBt.js"
+  "pages/notes/2312-web.md": [
+    "/assets/2312-web-BxzvaFDd.js"
   ],
-  "pages/notes/2024-01-17_front_end_optimization.md": [
-    "/assets/2024-01-17_front_end_optimization-Dsgeo0qp.js"
+  "pages/notes/2401-front-end-optimization.md": [
+    "/assets/2401-front-end-optimization-BeRnLXo0.js"
   ],
-  "pages/notes/2024-02-27_livecoding_docs.md": [
-    "/assets/2024-02-27_livecoding_docs-bWxwRSW5.js"
+  "pages/notes/2402-livecoding-docs.md": [
+    "/assets/2402-livecoding-docs-BQF5hT-9.js"
   ],
-  "pages/notes/2024-03-27_transdisciplinarity_arts.md": [
-    "/assets/2024-03-27_transdisciplinarity_arts-DydaFdfc.js"
+  "pages/notes/2403-transdisciplinarity-arts.md": [
+    "/assets/2403-transdisciplinarity-arts-Cy2rL-9d.js"
   ],
-  "pages/notes/2024-04-14_photography.md": [
-    "/assets/2024-04-14_photography-CgCAiM-s.js"
+  "pages/notes/2404-chess.md": [
+    "/assets/2404-chess-qYaxSd0c.js",
+    "/assets/2404-chess-mDqWErSU.css"
   ],
-  "pages/notes/2024-04-24_images.md": [
-    "/assets/2024-04-24_images-B9V8N2Ra.js"
+  "pages/notes/2404-chess.md?vue&type=style&index=0&scoped=3b4d760e&lang.css": [
+    "/assets/2404-chess-qYaxSd0c.js",
+    "/assets/2404-chess-mDqWErSU.css"
   ],
-  "pages/notes/2024-04-25_chess.md": [
-    "/assets/2024-04-25_chess-CuEpFF6A.js",
-    "/assets/2024-04-25_chess-zecYN0E3.css"
+  "pages/notes/2404-images.md": [
+    "/assets/2404-images-C61Sg6pf.js"
   ],
-  "pages/notes/2024-04-25_chess.md?vue&type=style&index=0&scoped=06957a2a&lang.css": [
-    "/assets/2024-04-25_chess-CuEpFF6A.js",
-    "/assets/2024-04-25_chess-zecYN0E3.css"
+  "pages/notes/2404-photography.md": [
+    "/assets/2404-photography-e5iAxIPX.js"
   ],
-  "pages/notes/2025-04-26_livecoding_examples.md": [
-    "/assets/2025-04-26_livecoding_examples-c19g6pjf.js"
+  "pages/notes/2504-livecoding-examples.md": [
+    "/assets/2504-livecoding-examples-DAMoKkBb.js"
   ],
-  "pages/notes/2025-05-08_producing_composing_advanced.md": [
-    "/assets/2025-05-08_producing_composing_advanced-WZh3nZXN.js"
+  "pages/notes/2505-producing-composing-advanced.md": [
+    "/assets/2505-producing-composing-advanced-kNWiuule.js"
   ],
-  "pages/notes/2025-05-08_transcultural_collaboration.md": [
-    "/assets/2025-05-08_transcultural_collaboration-DRxkHRDW.js"
+  "pages/notes/2505-transcultural-collaboration.md": [
+    "/assets/2505-transcultural-collaboration-DlPm7zgh.js"
   ],
-  "pages/notes/2026-04-08_arte_digital_portfolio_talk.md": [
-    "/assets/2026-04-08_arte_digital_portfolio_talk-BXUg9TrW.js"
+  "pages/notes/2604-arte-digital-portfolio-talk.md": [
+    "/assets/2604-arte-digital-portfolio-talk-BzfUvb-F.js"
   ],
-  "pages/notes/2026-05-03_canvas.md": [
-    "/assets/2026-05-03_canvas-C31j1Z98.js"
+  "pages/notes/2605-arte-digital-canvas.md": [
+    "/assets/2605-arte-digital-canvas-t5Uw8myn.js"
   ],
-  "pages/notes/2026-05-14_arte_digital_canvas.md": [
-    "/assets/2026-05-14_arte_digital_canvas-Cxd6b3Ro.js"
+  "pages/notes/2605-canvas.md": [
+    "/assets/2605-canvas-BkzPFAma.js"
   ],
-  "pages/notes/2026-09-15_t14_backlight_repair.md": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "pages/notes/2609-t14-backlight-repair.md": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -552,35 +518,35 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "pages/notes/hiperorganicos13.md": [
-    "/assets/hiperorganicos13-B_tVNlIK.js"
+    "/assets/hiperorganicos13-BbeQnjue.js"
   ],
   "pages/notes/hiperorganicos13.pt.md": [
-    "/assets/hiperorganicos13.pt-Yrqi8Joi.js"
+    "/assets/hiperorganicos13.pt-BxfwMd5j.js"
   ],
   "pages/notes/index.md": [
-    "/assets/index-Ckl9S5O2.js"
+    "/assets/index-_7PwlH0P.js"
   ],
   "pages/notes/misc/AGENTS.md": [
-    "/assets/AGENTS-Cxhl2ctH.js"
+    "/assets/AGENTS-a17DYAjw.js"
   ],
   "pages/notes/misc/index.md": [
-    "/assets/index-ChHS5UtH.js"
+    "/assets/index-BF7V4cXP.js"
   ],
   "pages/notes/scripts.md": [
-    "/assets/scripts-C4lsFf22.js"
+    "/assets/scripts-D-7I7UsZ.js"
   ],
   "pages/posts/index.md": [
-    "/assets/index-BHKpU-e_.js"
+    "/assets/index-B8dCVqZG.js"
   ],
   "pages/projects/bidi.md": [
-    "/assets/bidi-Cbs7YL8_.js",
+    "/assets/bidi-CvZx3BeV.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "pages/projects/bills.md": [
-    "/assets/bills-BYRhu678.js"
+    "/assets/bills-CAUFI6GJ.js"
   ],
   "pages/projects/drawing-board.md": [
-    "/assets/drawing-board-2PW4KL0U.js",
+    "/assets/drawing-board-DIsbzpAy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -589,16 +555,16 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "pages/projects/frach.md": [
-    "/assets/frach-CjWIdJQ_.js"
+    "/assets/frach-DZZi0KOk.js"
   ],
   "pages/projects/gleis161.md": [
-    "/assets/gleis161-CLs1R734.js"
+    "/assets/gleis161-B6WTFhJV.js"
   ],
   "pages/projects/index.md": [
-    "/assets/index-BIVbErXB.js"
+    "/assets/index-Dq_njUHs.js"
   ],
   "pages/projects/janislabhart.md": [
-    "/assets/janislabhart-dFemLqro.js",
+    "/assets/janislabhart-C1736Ngk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -607,7 +573,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "pages/projects/resguardo-tecnologias.md": [
-    "/assets/resguardo-tecnologias-CpQ-JFnY.js",
+    "/assets/resguardo-tecnologias-whVwH451.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -616,24 +582,20 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "pages/projects/rj-bd.md": [
-    "/assets/rj-bd-KewPsYCR.js"
+    "/assets/rj-bd-upfjQTHF.js"
   ],
   "pages/projects/self.md": [
-    "/assets/self-7d9yo77D.js"
+    "/assets/self-qY5T4tbm.js"
   ],
   "pages/projects/thilo.md": [
-    "/assets/thilo-Di1htO75.js"
+    "/assets/thilo-DYOdhs8D.js"
   ],
   "pages/projects/walter.md": [
-    "/assets/walter-9PW0VRd7.js"
+    "/assets/walter-DQK2KIxu.js"
   ],
   "pages/template.md": [
-    "/assets/template-CeaNZXJX.js"
+    "/assets/template-BAd7LCQR.js"
   ],
-  "resguardo-tecnologias-CpQ-JFnY.js": [],
-  "rj-bd-KewPsYCR.js": [],
-  "scripts-C4lsFf22.js": [],
-  "self-7d9yo77D.js": [],
   "src/App.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -647,8 +609,14 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-connectors-crop.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -680,8 +648,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-connectors-crop.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -713,8 +687,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -746,8 +726,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-connectors-crop.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -779,8 +765,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-lcd-unit-amd.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -812,8 +804,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-lcd-unit-amd.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -845,8 +843,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -878,8 +882,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-lcd-unit-amd.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -911,8 +921,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p105.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p105.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -944,8 +960,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p105.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p105.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -977,8 +999,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p105.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p105.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1010,8 +1038,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p105.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p105.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1043,8 +1077,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p106.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p106.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1076,8 +1116,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p106.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p106.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1109,8 +1155,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p106.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p106.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1142,8 +1194,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p106.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p106.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1175,8 +1233,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p108.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p108.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1208,8 +1272,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p108.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p108.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1241,8 +1311,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p108.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p108.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1274,8 +1350,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p108.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p108.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1307,8 +1389,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p109.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p109.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1340,8 +1428,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p109.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p109.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1373,8 +1467,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p109.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p109.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1406,8 +1506,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p109.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p109.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1439,8 +1545,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p122.png?w=1320&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p122.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1472,8 +1584,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p122.png?w=1320&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p122.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1505,8 +1623,14 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p122.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p122.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1538,8 +1662,170 @@
     "/assets/hmm-p122-DMUf0Ala.webp",
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
-  "src/assets/images/notes/t14/hmm-p122.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/2026-09-15_t14_backlight_repair-BMEfGcEA.js",
+  "src/assets/images/notes/2609-t14-backlight-repair/hmm-p122.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
+    "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
+    "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
+    "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
+    "/assets/hmm-p103-lcd-unit-amd-tLqF-K-v.webp",
+    "/assets/hmm-p103-connectors-crop-GSokNxgL.avif",
+    "/assets/hmm-p103-connectors-crop-DDb9TNdt.avif",
+    "/assets/hmm-p103-connectors-crop-9j6TYU4V.avif",
+    "/assets/hmm-p103-connectors-crop-BYLqXcd8.webp",
+    "/assets/hmm-p103-connectors-crop-DCkf7m_i.webp",
+    "/assets/hmm-p103-connectors-crop-DACMxv9c.webp",
+    "/assets/hmm-p105-DEW_XHgN.avif",
+    "/assets/hmm-p105-BXZeRlyx.avif",
+    "/assets/hmm-p105-CO4MdeEo.webp",
+    "/assets/hmm-p105-DrEsvNj2.webp",
+    "/assets/hmm-p106-DuHSxrpA.avif",
+    "/assets/hmm-p106--qx3RB5v.avif",
+    "/assets/hmm-p106-6XGfU0MK.webp",
+    "/assets/hmm-p106-E5Pq8vTv.webp",
+    "/assets/hmm-p108-DibgWpcR.avif",
+    "/assets/hmm-p108-CwyxqMGO.avif",
+    "/assets/hmm-p108-CIv1tUZ9.webp",
+    "/assets/hmm-p108-DPwg7_5-.webp",
+    "/assets/hmm-p109-lrDJIS-L.avif",
+    "/assets/hmm-p109-BuukCzRD.avif",
+    "/assets/hmm-p109-DVslzM1H.webp",
+    "/assets/hmm-p109-vs-5JPWQ.webp",
+    "/assets/hmm-p122-Cf94vHwQ.avif",
+    "/assets/hmm-p122-CW7QQUYM.avif",
+    "/assets/hmm-p122-DMUf0Ala.webp",
+    "/assets/hmm-p122-D-4mBSMO.webp"
+  ],
+  "src/assets/images/notes/2609-t14-backlight-repair/the-work-continues.png?w=1320&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
+    "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
+    "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
+    "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
+    "/assets/hmm-p103-lcd-unit-amd-tLqF-K-v.webp",
+    "/assets/hmm-p103-connectors-crop-GSokNxgL.avif",
+    "/assets/hmm-p103-connectors-crop-DDb9TNdt.avif",
+    "/assets/hmm-p103-connectors-crop-9j6TYU4V.avif",
+    "/assets/hmm-p103-connectors-crop-BYLqXcd8.webp",
+    "/assets/hmm-p103-connectors-crop-DCkf7m_i.webp",
+    "/assets/hmm-p103-connectors-crop-DACMxv9c.webp",
+    "/assets/hmm-p105-DEW_XHgN.avif",
+    "/assets/hmm-p105-BXZeRlyx.avif",
+    "/assets/hmm-p105-CO4MdeEo.webp",
+    "/assets/hmm-p105-DrEsvNj2.webp",
+    "/assets/hmm-p106-DuHSxrpA.avif",
+    "/assets/hmm-p106--qx3RB5v.avif",
+    "/assets/hmm-p106-6XGfU0MK.webp",
+    "/assets/hmm-p106-E5Pq8vTv.webp",
+    "/assets/hmm-p108-DibgWpcR.avif",
+    "/assets/hmm-p108-CwyxqMGO.avif",
+    "/assets/hmm-p108-CIv1tUZ9.webp",
+    "/assets/hmm-p108-DPwg7_5-.webp",
+    "/assets/hmm-p109-lrDJIS-L.avif",
+    "/assets/hmm-p109-BuukCzRD.avif",
+    "/assets/hmm-p109-DVslzM1H.webp",
+    "/assets/hmm-p109-vs-5JPWQ.webp",
+    "/assets/hmm-p122-Cf94vHwQ.avif",
+    "/assets/hmm-p122-CW7QQUYM.avif",
+    "/assets/hmm-p122-DMUf0Ala.webp",
+    "/assets/hmm-p122-D-4mBSMO.webp"
+  ],
+  "src/assets/images/notes/2609-t14-backlight-repair/the-work-continues.png?w=1320&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
+    "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
+    "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
+    "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
+    "/assets/hmm-p103-lcd-unit-amd-tLqF-K-v.webp",
+    "/assets/hmm-p103-connectors-crop-GSokNxgL.avif",
+    "/assets/hmm-p103-connectors-crop-DDb9TNdt.avif",
+    "/assets/hmm-p103-connectors-crop-9j6TYU4V.avif",
+    "/assets/hmm-p103-connectors-crop-BYLqXcd8.webp",
+    "/assets/hmm-p103-connectors-crop-DCkf7m_i.webp",
+    "/assets/hmm-p103-connectors-crop-DACMxv9c.webp",
+    "/assets/hmm-p105-DEW_XHgN.avif",
+    "/assets/hmm-p105-BXZeRlyx.avif",
+    "/assets/hmm-p105-CO4MdeEo.webp",
+    "/assets/hmm-p105-DrEsvNj2.webp",
+    "/assets/hmm-p106-DuHSxrpA.avif",
+    "/assets/hmm-p106--qx3RB5v.avif",
+    "/assets/hmm-p106-6XGfU0MK.webp",
+    "/assets/hmm-p106-E5Pq8vTv.webp",
+    "/assets/hmm-p108-DibgWpcR.avif",
+    "/assets/hmm-p108-CwyxqMGO.avif",
+    "/assets/hmm-p108-CIv1tUZ9.webp",
+    "/assets/hmm-p108-DPwg7_5-.webp",
+    "/assets/hmm-p109-lrDJIS-L.avif",
+    "/assets/hmm-p109-BuukCzRD.avif",
+    "/assets/hmm-p109-DVslzM1H.webp",
+    "/assets/hmm-p109-vs-5JPWQ.webp",
+    "/assets/hmm-p122-Cf94vHwQ.avif",
+    "/assets/hmm-p122-CW7QQUYM.avif",
+    "/assets/hmm-p122-DMUf0Ala.webp",
+    "/assets/hmm-p122-D-4mBSMO.webp"
+  ],
+  "src/assets/images/notes/2609-t14-backlight-repair/the-work-continues.png?w=660;990;1320&as=srcset&format=avif": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
+    "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
+    "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
+    "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
+    "/assets/hmm-p103-lcd-unit-amd-tLqF-K-v.webp",
+    "/assets/hmm-p103-connectors-crop-GSokNxgL.avif",
+    "/assets/hmm-p103-connectors-crop-DDb9TNdt.avif",
+    "/assets/hmm-p103-connectors-crop-9j6TYU4V.avif",
+    "/assets/hmm-p103-connectors-crop-BYLqXcd8.webp",
+    "/assets/hmm-p103-connectors-crop-DCkf7m_i.webp",
+    "/assets/hmm-p103-connectors-crop-DACMxv9c.webp",
+    "/assets/hmm-p105-DEW_XHgN.avif",
+    "/assets/hmm-p105-BXZeRlyx.avif",
+    "/assets/hmm-p105-CO4MdeEo.webp",
+    "/assets/hmm-p105-DrEsvNj2.webp",
+    "/assets/hmm-p106-DuHSxrpA.avif",
+    "/assets/hmm-p106--qx3RB5v.avif",
+    "/assets/hmm-p106-6XGfU0MK.webp",
+    "/assets/hmm-p106-E5Pq8vTv.webp",
+    "/assets/hmm-p108-DibgWpcR.avif",
+    "/assets/hmm-p108-CwyxqMGO.avif",
+    "/assets/hmm-p108-CIv1tUZ9.webp",
+    "/assets/hmm-p108-DPwg7_5-.webp",
+    "/assets/hmm-p109-lrDJIS-L.avif",
+    "/assets/hmm-p109-BuukCzRD.avif",
+    "/assets/hmm-p109-DVslzM1H.webp",
+    "/assets/hmm-p109-vs-5JPWQ.webp",
+    "/assets/hmm-p122-Cf94vHwQ.avif",
+    "/assets/hmm-p122-CW7QQUYM.avif",
+    "/assets/hmm-p122-DMUf0Ala.webp",
+    "/assets/hmm-p122-D-4mBSMO.webp"
+  ],
+  "src/assets/images/notes/2609-t14-backlight-repair/the-work-continues.png?w=660;990;1320&as=srcset&format=webp": [
+    "/assets/2609-t14-backlight-repair-Dh8VUIiv.js",
+    "/assets/the-work-continues-CJp0QrMe.avif",
+    "/assets/the-work-continues-CHxLy3k8.avif",
+    "/assets/the-work-continues-CJANKbAv.avif",
+    "/assets/the-work-continues-CG9O_GoK.webp",
+    "/assets/the-work-continues-C-SFN05Y.webp",
+    "/assets/the-work-continues-BTXGhWHT.webp",
     "/assets/hmm-p103-lcd-unit-amd-TQK8V97z.avif",
     "/assets/hmm-p103-lcd-unit-amd-C_WvOxKX.avif",
     "/assets/hmm-p103-lcd-unit-amd-ve3-KD1P.webp",
@@ -1572,7 +1858,7 @@
     "/assets/hmm-p122-D-4mBSMO.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=avif": [
-    "/assets/resguardo-tecnologias-CpQ-JFnY.js",
+    "/assets/resguardo-tecnologias-whVwH451.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1581,7 +1867,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=1320&format=webp": [
-    "/assets/resguardo-tecnologias-CpQ-JFnY.js",
+    "/assets/resguardo-tecnologias-whVwH451.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1590,7 +1876,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/resguardo-tecnologias-CpQ-JFnY.js",
+    "/assets/resguardo-tecnologias-whVwH451.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1599,7 +1885,7 @@
     "/assets/2026-06-24-resguardo-tecnologias-flyer-CCZZVM-M.webp"
   ],
   "src/assets/images/projects/2026-06-24-resguardo-tecnologias-flyer.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/resguardo-tecnologias-CpQ-JFnY.js",
+    "/assets/resguardo-tecnologias-whVwH451.js",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B45Zlhig.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-B9DQilmt.avif",
     "/assets/2026-06-24-resguardo-tecnologias-flyer-ByUjOH3A.avif",
@@ -1804,7 +2090,7 @@
     "/assets/2026-09-05-canvas-screenshot-3-CA9Q_jHG.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=avif": [
-    "/assets/drawing-board-2PW4KL0U.js",
+    "/assets/drawing-board-DIsbzpAy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1813,7 +2099,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=1320&format=webp": [
-    "/assets/drawing-board-2PW4KL0U.js",
+    "/assets/drawing-board-DIsbzpAy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1822,7 +2108,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/drawing-board-2PW4KL0U.js",
+    "/assets/drawing-board-DIsbzpAy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1831,7 +2117,7 @@
     "/assets/2026-09-05-canvas-screenshot-2-DBjdI_lW.webp"
   ],
   "src/assets/images/projects/2026-09-05-canvas-screenshot-2.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/drawing-board-2PW4KL0U.js",
+    "/assets/drawing-board-DIsbzpAy.js",
     "/assets/2026-09-05-canvas-screenshot-2-GClYkjd7.avif",
     "/assets/2026-09-05-canvas-screenshot-2-BlY8Kw7c.avif",
     "/assets/2026-09-05-canvas-screenshot-2-xaFGYWLc.avif",
@@ -1996,7 +2282,7 @@
     "/assets/bbo.do_rj-bd-2026-05-21-CoHZNfgK.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=avif": [
-    "/assets/janislabhart-dFemLqro.js",
+    "/assets/janislabhart-C1736Ngk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2005,7 +2291,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=1320&format=webp": [
-    "/assets/janislabhart-dFemLqro.js",
+    "/assets/janislabhart-C1736Ngk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2014,7 +2300,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=avif": [
-    "/assets/janislabhart-dFemLqro.js",
+    "/assets/janislabhart-C1736Ngk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2023,7 +2309,7 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/assets/images/projects/janislabhart.ch-2026-05-21.png?w=660;990;1320&as=srcset&format=webp": [
-    "/assets/janislabhart-dFemLqro.js",
+    "/assets/janislabhart-C1736Ngk.js",
     "/assets/janislabhart.ch-2026-05-21-DQc339oa.avif",
     "/assets/janislabhart.ch-2026-05-21-CJrpjG-6.avif",
     "/assets/janislabhart.ch-2026-05-21-C2kEYD8J.avif",
@@ -2032,35 +2318,35 @@
     "/assets/janislabhart.ch-2026-05-21-mZNIzZq6.webp"
   ],
   "src/components/BidiTranslator.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/bidi-Cbs7YL8_.js",
+    "/assets/bidi-CvZx3BeV.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/BidiTranslator.vue?vue&type=style&index=0&lang.css": [
-    "/assets/bidi-Cbs7YL8_.js",
+    "/assets/bidi-CvZx3BeV.js",
     "/assets/bidi-Dn-PDzfi.css"
   ],
   "src/components/ChatAdmin.vue": [
-    "/assets/chat-Oy3-RMek.js",
+    "/assets/chat-BjGZ4OXB.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/chat-Oy3-RMek.js",
+    "/assets/chat-BjGZ4OXB.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatAdmin.vue?vue&type=style&index=0&scoped=01c6169b&lang.css": [
-    "/assets/chat-Oy3-RMek.js",
+    "/assets/chat-BjGZ4OXB.js",
     "/assets/chat-CEZWWPar.css"
   ],
   "src/components/ChatWidget.vue": [
-    "/assets/ChatWidget-DwwpkRGo.js",
+    "/assets/ChatWidget-DKpZfjzn.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/ChatWidget.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ChatWidget-DwwpkRGo.js",
+    "/assets/ChatWidget-DKpZfjzn.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/ChatWidget.vue?vue&type=style&index=0&scoped=1c347b6c&lang.css": [
-    "/assets/ChatWidget-DwwpkRGo.js",
+    "/assets/ChatWidget-DKpZfjzn.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/components/DrawablePen.vue": [
@@ -2141,6 +2427,19 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
+  "src/components/HydraBackground.vue?vue&type=script&setup=true&lang.ts": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
   "src/components/Lightbox.vue": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -2181,19 +2480,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/ListFiles.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-ChHS5UtH.js"
+    "/assets/index-BF7V4cXP.js"
   ],
   "src/components/ListPostItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-fKfBdnxx.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CSNJqj6c.js"
   ],
   "src/components/ListPosts.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-fKfBdnxx.js"
+    "/assets/ListPosts.vue_vue_type_script_setup_true_lang-CSNJqj6c.js"
   ],
   "src/components/ListProjectItem.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BIVbErXB.js"
+    "/assets/index-Dq_njUHs.js"
   ],
   "src/components/ListProjects.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BIVbErXB.js"
+    "/assets/index-Dq_njUHs.js"
   ],
   "src/components/NavBar.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -2313,19 +2612,19 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/components/StrokeAdmin.vue": [
-    "/assets/strokes-DX_m0nqy.js",
+    "/assets/strokes-CN4SSbgr.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/strokes-DX_m0nqy.js",
+    "/assets/strokes-CN4SSbgr.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/StrokeAdmin.vue?vue&type=style&index=0&scoped=ffca3539&lang.css": [
-    "/assets/strokes-DX_m0nqy.js",
+    "/assets/strokes-CN4SSbgr.js",
     "/assets/strokes-b8fmRj85.css"
   ],
   "src/components/SubNav.vue?vue&type=script&setup=true&lang.ts": [
-    "/assets/index-BHKpU-e_.js"
+    "/assets/index-B8dCVqZG.js"
   ],
   "src/components/ToggleTheme.vue?vue&type=script&setup=true&lang.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
@@ -2367,7 +2666,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/composables/useSupabaseAuth.ts": [
-    "/assets/admin-fXNmxp-w.js",
+    "/assets/admin-DJ9bRj2n.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/lib/chat-widget.ts": [
@@ -2384,10 +2683,10 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/lib/chat.ts": [
-    "/assets/chat-DhwMKknB.js"
+    "/assets/chat-BD0Rrbki.js"
   ],
   "src/lib/dither.ts": [
-    "/assets/ChatWidget-DwwpkRGo.js",
+    "/assets/ChatWidget-DKpZfjzn.js",
     "/assets/ChatWidget-DTIuTwC3.css"
   ],
   "src/lib/page-views.ts": [
@@ -2442,6 +2741,19 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
+  "src/logics/interaction.ts": [
+    "/assets/BradfordLL-Regular-qtvxrICA.woff2",
+    "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
+    "/assets/BradfordLL-Medium-DhKtgOkT.woff2",
+    "/assets/BradfordLL-MediumItalic-D9ouOIvQ.woff2",
+    "/assets/BradfordLL-Light-CPIqq9W0.woff2",
+    "/assets/BradfordLL-LightItalic-CI45DSTj.woff2",
+    "/assets/BradfordLL-Bold-CeF-u_Qr.woff2",
+    "/assets/BradfordLL-BoldItalic-zSkPOkTg.woff2",
+    "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
+    "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
+    "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
+  ],
   "src/logics/languages.ts": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -2482,7 +2794,7 @@
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
   "src/styles/admin.css": [
-    "/assets/admin-fXNmxp-w.js",
+    "/assets/admin-DJ9bRj2n.js",
     "/assets/admin-DMWvL0UI.css"
   ],
   "src/styles/fonts.css": [
@@ -2537,12 +2849,6 @@
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
   ],
-  "strokes-DX_m0nqy.js": [
-    "/assets/strokes-b8fmRj85.css",
-    "/assets/admin-DMWvL0UI.css"
-  ],
-  "template-CeaNZXJX.js": [],
-  "thilo-Di1htO75.js": [],
   "virtual:vite-plugin-pages/generated-pages?id=pages-generated": [
     "/assets/BradfordLL-Regular-qtvxrICA.woff2",
     "/assets/BradfordLL-RegularItalic-BK__m_l1.woff2",
@@ -2555,6 +2861,5 @@
     "/assets/BradfordMonoLL-Regular-3SzAysEy.woff2",
     "/assets/Ogg-RegularItalic-DsBrU7HN.woff2",
     "/assets/Ogg-LightItalic-CVBfGXC8.woff2"
-  ],
-  "walter-9PW0VRd7.js": []
+  ]
 }
