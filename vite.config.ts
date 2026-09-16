@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { rename, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import type { Plugin } from 'vite'
@@ -29,6 +30,8 @@ const SHIKI_THEME_CSS_ID = 'virtual:shiki-theme.css'
 const RESOLVED_SHIKI_THEME_CSS_ID = `\0${SHIKI_THEME_CSS_ID}`
 
 const shikiClasses = buildShikiClasses(SHIKI_THEMES, SHIKI_CSS_VARIABLE_PREFIX)
+
+const DIST_DIR = resolve(__dirname, 'dist')
 
 /** Serves the stylesheet that maps Shiki token classes back to the theme colours. */
 function shikiThemeCss(): Plugin {
@@ -224,9 +227,17 @@ export default defineConfig(({ mode }) => ({
   ssgOptions: {
     formatting: 'minify',
     format: 'cjs',
-    // GitHub Pages serves 404.html for every path it has no file for, so this
-    // renders the catch-all page to dist/404.html. It is also the fallback that
-    // lets the router resolve paths with no prerendered file, such as /notes/.
+    // Write /notes as notes/index.html, so GitHub Pages answers both /notes and
+    // /notes/, the second one through a redirect to the first.
+    dirStyle: 'nested',
+    // Renders the catch-all page as well. GitHub Pages serves it for every path
+    // it has no file for.
     includedRoutes: paths => [...paths.filter(path => !path.includes(':')), '/404'],
+    async onFinished() {
+      // GitHub Pages reads the missing page from 404.html in the site root, and
+      // never from the 404/index.html that the nested style writes.
+      await rename(resolve(DIST_DIR, '404/index.html'), resolve(DIST_DIR, '404.html'))
+      await rm(resolve(DIST_DIR, '404'), { recursive: true })
+    },
   },
 }))

@@ -25,7 +25,7 @@ const routes = autoRoutes.map((i) => {
 // @ts-ignore
 routes.push({
   path: '/walter',
-  redirect: '/der-wahre-walter/',
+  redirect: '/der-wahre-walter',
 })
 
 const SECTION_INDEX_PATHS = ['/projects', '/notes']
@@ -41,6 +41,14 @@ export const createApp = ViteSSG(
     routes,
   },
   ({ router, isClient }) => {
+    // GitHub Pages redirects /notes to /notes/, so the browser can start on a
+    // path that ends with a slash. Strip it, because the page view key, the
+    // navigation highlight and the translation links all compare the path.
+    router.beforeEach((to) => {
+      if (to.path.length > 1 && to.path.endsWith('/'))
+        return { path: to.path.slice(0, -1), query: to.query, hash: to.hash, replace: true }
+    })
+
     if (isClient) {
       const html = document.querySelector('html')!
       setupRouterScroller(router, {
