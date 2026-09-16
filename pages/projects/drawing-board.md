@@ -67,7 +67,7 @@ The touch toolbar is on by default. A page that should stay without one passes `
 
 - [bbo.do/](/): the home page has a drag-and-draw pen embedded in the background
 - [/notes/2026-05-03_canvas](/notes/2026-05-03_canvas): a dedicated multi-pen canvas session
-- [/notes/2026-05-14_arte_digital_canvas](notes/2026-05-14_arte_digital_canvas): used during an Arte Digital session at EBA / UFRJ
+- [/notes/2026-05-14_arte_digital_canvas](/notes/2026-05-14_arte_digital_canvas): used during an Arte Digital session at EBA / UFRJ
 
 ![Canvas Screenshot 3](../../src/assets/images/projects/2026-09-05-canvas-screenshot-3.png)
 
