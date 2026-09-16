@@ -4,6 +4,7 @@ import { useHead } from '@unhead/vue'
 import { formatDate } from '~/logics'
 import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage } from '~/logics/languages'
 import { usePageViews } from '~/composables/usePageViews'
+import { shareOneScreen } from '~/logics/screen-share'
 
 const { frontmatter } = defineProps<{
   frontmatter: Record<string, any>
@@ -133,61 +134,28 @@ function loadSketchScripts(source: string) {
   return Promise.all(urls.map(loadScriptOnce)).catch(() => [])
 }
 
+// One screen choice serves every hydra instance on the page, so this is set up
+// for the code blocks and for the background alike. A reader who refuses the
+// screen gets the first picture of the page in its place, which keeps the
+// sketch fed with something that belongs to what they are reading.
+if (frontmatter.hydra || frontmatter.hydraBackground) {
+  let stopSharingScreen: (() => void) | null = null
+  onMounted(() => {
+    const firstImage = content.value?.querySelector('img')
+    stopSharingScreen = shareOneScreen(firstImage?.currentSrc || firstImage?.src)
+  })
+  onUnmounted(() => stopSharingScreen?.())
+}
+
 if (frontmatter.hydra) {
   useScriptTag(HYDRA_ARRAYS_URL, () => {}, { async: true })
 
   const hydraObservers: IntersectionObserver[] = []
   const hydraListeners: [Element, string, EventListener][] = []
 
-  // A browser never remembers a screen choice: getDisplayMedia opens the picker
-  // on every call, and a sketch calls it again on every restart. Holding on to
-  // the first stream means the reader picks a screen once per visit.
-  let screenStream: MediaStream | null = null
-  let screenRequest: Promise<MediaStream> | null = null
-  let originalGetDisplayMedia: MediaDevices['getDisplayMedia'] | null = null
-
-  onMounted(() => {
-    if (!navigator.mediaDevices?.getDisplayMedia)
-      return
-
-    originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices)
-
-    navigator.mediaDevices.getDisplayMedia = (options) => {
-      if (screenStream?.active)
-        return Promise.resolve(screenStream)
-
-      // Two starts a moment apart both arrive before the first picker closes,
-      // so they share the one request rather than opening a second picker.
-      if (!screenRequest) {
-        screenRequest = originalGetDisplayMedia!(options)
-          .then((stream) => {
-            // The reader can end the share from the browser's own bar. Then the
-            // picker has to open again for the next sketch.
-            stream.getTracks().forEach(track => track.addEventListener('ended', () => {
-              if (screenStream === stream)
-                screenStream = null
-            }))
-            screenStream = stream
-            return stream
-          })
-          .finally(() => {
-            screenRequest = null
-          })
-      }
-      return screenRequest
-    }
-  })
-
   onUnmounted(() => {
     hydraObservers.forEach(observer => observer.disconnect())
     hydraListeners.forEach(([el, event, listener]) => el.removeEventListener(event, listener))
-
-    if (originalGetDisplayMedia)
-      navigator.mediaDevices.getDisplayMedia = originalGetDisplayMedia
-    // Leaving the page ends the share, so the browser stops saying this tab
-    // reads the screen.
-    screenStream?.getTracks().forEach(track => track.stop())
-    screenStream = null
   })
 
   useScriptTag('https://unpkg.com/hydra-synth', () => {
