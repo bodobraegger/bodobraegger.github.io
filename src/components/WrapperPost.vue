@@ -191,11 +191,20 @@ if (frontmatter.hydra) {
       preEl.addEventListener('focusout', handleFocusOut)
       hydraListeners.push([preEl, 'focus', handleFocus], [preEl, 'focusout', handleFocusOut])
 
+      // A sketch that captures the screen has to start from a real click. The
+      // event below is synthetic, it carries no user activation, and the
+      // browser rejects getDisplayMedia without one. Starting such a sketch
+      // here would only spend its first run on a rejection.
+      const needsUserGesture = codeEl.textContent!.includes('initScreen')
+
       const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting === true)
-          preEl.dispatchEvent(new Event('focus'))
-        else
+        if (entries[0].isIntersecting === true) {
+          if (!needsUserGesture)
+            preEl.dispatchEvent(new Event('focus'))
+        }
+        else {
           preEl.dispatchEvent(new Event('focusout'))
+        }
       }, { threshold: [1], rootMargin: '0% 100% 0% 100%' })
       observer.observe(preEl)
       hydraObservers.push(observer)
