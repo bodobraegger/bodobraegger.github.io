@@ -13,6 +13,7 @@ Here are some examples of Hydra sketches that I have created or modified. You ca
 If they are not immediately visible on scrolling, you can click on them.
 
 ## colors and feedback
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=J6yaJvJwVodpanT6
 osc(10,0,3)
@@ -39,6 +40,7 @@ osc(80, 0.03,2).kaleid(999).mask(shape(100).scale(3)).scale(1, innerHeight/inner
 .out()
 speed=.3
 ```
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=fYo8etVUjvyiyHBZ
 speed = 0.5
@@ -58,19 +60,20 @@ osc()
     .color([1,1.2,4,.8,.9].smooth(.5), [0,0,0,0,0,1,1.2,4,.8,.9].smooth(.5), 0)
     .modulate(noise(2.5))
     .modulate(o0, () => .1 + Math.sin(time) * .04)
-    .blend(src(o0).scrollY(() => Math.sin(time) * 1e-4), 
+    .blend(src(o0).scrollY(() => Math.sin(time) * 1e-4),
         () => .8 + Math.sin(time * .1) * .1)
     .modulate(o0)
     .blend(o0)
     .modulateScale(
         shape(4).scrollX(
-            [0,-.2,0,0,.3,-.1,0,0,0]), 
+            [0,-.2,0,0,.3,-.1,0,0,0]),
             [-.2, -.1, -.1, -.1, -.5, -.4 ].fast(.33)
         .smooth(1))
     .pixelate([20, width,width,width], [20, height,height,height])
     .blend(src(o0).scrollY(.1).blend(o0,.9).modulate(o0,.3),.1)
   .out()
 ```
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=B0xtXuXu1uJRfIEm
 loadScript("https://cdn.statically.io/gl/metagrowing/extra-shaders-for-hydra/main/lib/lib-color.js")
@@ -178,8 +181,8 @@ render(o3)
 speed = 0.7
 ```
 
-
 ## camera examples
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=dhNYYd9Mt654iheh
 s0.initCam()
@@ -229,6 +232,7 @@ render(o0)
 ## small mouse reactive example
 
 [The below example only works in the Hydra editor itself, please click here to view it.](https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF)
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=dmf3u8XQR8kfhxUF
 // licensed with CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -245,6 +249,7 @@ render(o0)
 ```
 
 ## black and white
+
 ```javascript
 // https://hydra.ojack.xyz/?sketch_id=8f8wqoqfQ67RW0Dz
 speed = 3

@@ -13,7 +13,7 @@ plum: true
 
 Please find a few recorded works [here](https://www.dropbox.com/scl/fo/p5vygqgq5qsfwwpfh2pqj/ACA2BkjYRDzF8yofAAANC6c?rlkey=1tm91vg4653v364ahislfbo6j&st=23qycqhj&dl=0).
 
-My previous production practice was mostly informed by certain conceptual contraints. In the uploaded files, I generally wanted to use as much sound material from an existing source. 
+My previous production practice was mostly informed by certain conceptual contraints. In the uploaded files, I generally wanted to use as much sound material from an existing source.
 
 I have been producing music since around 2012, where I started as a teenager with Cubase. I have moved across DAWs, from Sampling and producing hip hop, to more experimental electronic music, modular synthesizers, live-coding and live performances. Of later works I have very few recordings, so the works in the link above are mostly archival.
 
@@ -25,14 +25,13 @@ Finally, [`untitled_bottle_b.wav`](https://www.dropbox.com/scl/fo/p5vygqgq5qsfww
 
 My previous minor at ZHdK was _Storytelling with Sound Design_, where I was able to again brush up on recording techniques when working with artists in a more professional context.
 
-
 ### Project Outline
 
-Lately, I have been very inspired by artists such as [_Toxe_](https://www.toxe2.com/) and [_Fever Ray_](https://feverray.com/). I have also started DJing, and not just producing music, which has opened me up to a large array of new influences and new directions. 
+Lately, I have been very inspired by artists such as [_Toxe_](https://www.toxe2.com/) and [_Fever Ray_](https://feverray.com/). I have also started DJing, and not just producing music, which has opened me up to a large array of new influences and new directions.
 
-Whilst I can't really situate my previous production into Pop (or Jazz) as a genre, my newfound influences definitely point me in that direction and I would love to explore this further. 
+Whilst I can't really situate my previous production into Pop (or Jazz) as a genre, my newfound influences definitely point me in that direction and I would love to explore this further.
 
-I am familiar with the technical side of audio production, and would love the possiblity to collaborate with musicians who are also looking into more experimental electronic pop. 
+I am familiar with the technical side of audio production, and would love the possiblity to collaborate with musicians who are also looking into more experimental electronic pop.
 
 I don't have a concrete project idea, but would love to spend more time to focus on bringing in my different musical interests and produce a sketch for an album or collection of tracks that ties in my previous forays in sampling and my passion for synthesizers and electronic, in a collaborative frame. A possible outcome could also be a sketch for a score for a short film, already existing, or simply trying to capture a range of emotions and paces.
 

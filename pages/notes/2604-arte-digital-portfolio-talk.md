@@ -157,7 +157,7 @@ My production practice often works within conceptual constraints - limiting sour
 
 ### Live Coding Notes & Hydra Sketches
 
-- **Notes page**: [bbo.do/notes/2025-04-26_livecoding_examples](https://bbo.do/notes/2025-04-26_livecoding_examples)
+- **Notes page**: [bbo.do/notes/2504-livecoding-examples](https://bbo.do/notes/2504-livecoding-examples)
 - Collection of Hydra sketches with direct links to run in browser
 - Each sketch includes the code and a link to open it directly in the Hydra editor
 

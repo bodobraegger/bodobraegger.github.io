@@ -6,9 +6,11 @@ type: note+blog
 hydra: false
 draft: true
 ---
+
 <!-- @layout-full-width -->
 
 hello maxi!
+
 <div>
 <list-images />
 </div>

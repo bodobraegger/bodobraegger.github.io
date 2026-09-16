@@ -26,13 +26,13 @@ osc()
     .color([1,1.2,4,.8,.9].smooth(.5), 0, 0)
     .modulate(noise(2.5))
     .modulate(o0, () => .1 + Math.sin(time) * .04)
-    .blend(src(o0).scrollY(() => Math.sin(time) * 1e-4), 
+    .blend(src(o0).scrollY(() => Math.sin(time) * 1e-4),
         () => .8 + Math.sin(time * .1) * .1)
     .modulate(o0)
     .blend(o0)
     .modulateScale(
         shape(4).scrollX(
-            [0,-.2,0,0,.3,-.1,0,0,0]), 
+            [0,-.2,0,0,.3,-.1,0,0,0]),
             [-.2, -.1, -.1, -.1, -.5, -.4 ].fast(.33)
         .smooth(1))
     .pixelate([20, width,width,width], [20, height,height,height])
@@ -65,7 +65,6 @@ For an installation at Rote Fabrik, in April 2022, I collected a number of video
 
     /******************* DEAD *******************/
     // http://145.40.219.164/ - himmel
-
 
 As a quick demonstration, here is an extracted video feed of one of these insecure cameras, which was then processed an manipulated in real time. Whenever you reload this page, the newest image of the video feed will appear below. There is a small timestamp on the top left of the image to confirm this. And in general, if you are looking at this from a region with a time similar to the Central European Standard Time (UTC+1), the lighting should match your time of day.
 
@@ -100,11 +99,12 @@ img.onload = function() {
     .out();
 };
 ```
-When writing this documentation, the word-play "my play is my work" came to mind. This is a phrase that I have heard in the context of live coding, and it is a good summary of the practice. 
 
-It is not trivial to document this in a static, written form. Even with the help of these visualization examples, the actual experience of live coding and reactivity is not captured. This is a limitation of the medium, and it is a challenge to find ways to communicate the experience of live coding to a wider audience. I will try to periodically update this page with new examples and ideas, and references to other resources. 
+When writing this documentation, the word-play "my play is my work" came to mind. This is a phrase that I have heard in the context of live coding, and it is a good summary of the practice.
 
-The rest of this page will be filled with patterns I created for performances, installations and experiments. Replicating the live video feed manipulation is not feasible, but a lot of patterns work in a standalone context. 
+It is not trivial to document this in a static, written form. Even with the help of these visualization examples, the actual experience of live coding and reactivity is not captured. This is a limitation of the medium, and it is a challenge to find ways to communicate the experience of live coding to a wider audience. I will try to periodically update this page with new examples and ideas, and references to other resources.
+
+The rest of this page will be filled with patterns I created for performances, installations and experiments. Replicating the live video feed manipulation is not feasible, but a lot of patterns work in a standalone context.
 
 ```javascript
 speed=1

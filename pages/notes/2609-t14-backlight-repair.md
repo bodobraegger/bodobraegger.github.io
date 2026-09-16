@@ -7,6 +7,8 @@ type: note+blog
 plum: false
 ---
 
+![the-work-continues...T14 Gen2 AMD and brazilian multimeter](../../src/assets/images/notes/2609-t14-backlight-repair/20260915_the-work-continues.png)
+
 A step-by-step guide for finding why the internal panel of my ThinkPad T14 Gen 2a
 (20XLS0CK00, AMD) went dark after I reopened the case. The page exists so I can
 read it on my phone while the laptop is in pieces. The figures are from the
@@ -35,9 +37,9 @@ FHD panel, so the cable and the panel part numbers below are the UHD ones.
 
 ## The two connectors at the hinges
 
-![HMM p103, LCD unit removal, AMD models](../../src/assets/images/notes/t14/hmm-p103-lcd-unit-amd.png)
+![HMM p103, LCD unit removal, AMD models](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-lcd-unit-amd.png)
 
-![HMM p103 step 1, the two connectors](../../src/assets/images/notes/t14/hmm-p103-connectors-crop.png)
+![HMM p103 step 1, the two connectors](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p103-connectors-crop.png)
 
 The figure is a bottom view, so left and right are mirrored against normal use.
 
@@ -73,13 +75,19 @@ for it and read the pin table there before probing.
 
 ## Battery rule
 
-The battery must be disabled for every unplug, plug, or continuity check. It
-must be enabled, with the machine running, for every voltage check. Disabling is
-done in the BIOS, and plugging in the AC adapter re-enables it. The phases below
-alternate between the two.
+The internal battery must be disconnected for every unplug, plug, or continuity
+check. It must be connected, with the machine running, for every voltage check.
+The phases below alternate between the two.
 
-To disable: power on, press F1 at the logo (on the HDMI monitor), Config, Power,
-Disable Built-in Battery, Yes. The machine turns off. Then unplug the AC adapter.
+To disconnect: shut the machine down, unplug the AC adapter, then pull the
+internal battery plug straight off the system board. Pull on the plug, never on
+the wires. Then hold the power button for 10 seconds to drain the board.
+
+To connect: push the plug back on until it is flat and seated, then plug in the
+AC adapter.
+
+The base cover stays off from phase 1 to phase 5, so the connector is in reach
+at every step.
 
 ## Phase 0, prepare
 
@@ -88,29 +96,31 @@ Disable Built-in Battery, Yes. The machine turns off. Then unplug the AC adapter
 2. Tape a sewing needle to each probe tip. The pins are 0.5 mm apart.
 3. Shut the machine down.
 
-## Phase 1, open, battery disabled
+## Phase 1, open, battery disconnected
 
-4. Disable the battery (see above). Unplug the AC adapter.
+4. Unplug the AC adapter.
 5. Remove the base cover (HMM 1020, 5 captive screws, pry from the rear edge).
+   Disconnect the internal battery (see above).
 6. Remove the bezel. Lift at the four arrows. The bezel sheet is single use.
 
-![HMM p105, bezel sheet and bezel](../../src/assets/images/notes/t14/hmm-p105.png)
+![HMM p105, bezel sheet and bezel](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p105.png)
 
 7. Pull the three stretch tapes slowly (step 1). Lift the panel out (step 2) and
    turn it face down onto a cloth on the keyboard (step 3). Leave the LCD cable
    connected at both ends.
 
-![HMM p106, stretch tape locations, aluminum cover](../../src/assets/images/notes/t14/hmm-p106.png)
+![HMM p106, stretch tape locations, aluminum cover](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p106.png)
 
-![HMM p108, tapes out, lift the panel, turn it over](../../src/assets/images/notes/t14/hmm-p108.png)
+![HMM p108, tapes out, lift the panel, turn it over](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p108.png)
 
 8. On the back of the panel, find the 30-pin connector on the panel PCB and its
    pin 1 mark.
 
 ## Phase 2, voltage, machine on
 
-9. Plug in the AC adapter. This re-enables the battery. Power on and boot to the
-   desktop on the HDMI monitor. Press Fn+F6 until the brightness is at maximum.
+9. Connect the internal battery. Plug in the AC adapter. Power on and boot to
+   the desktop on the HDMI monitor. Press Fn+F6 until the brightness is at
+   maximum.
 10. Black needle on a BL_GND solder tail. Hold it there for every reading.
 11. Sanity check: red needle on an LCD_VCC pin. Expect about 3.3 V. No reading
     means wrong pins or wrong end. Fix that before going on.
@@ -125,14 +135,14 @@ Disable Built-in Battery, Yes. The machine turns off. Then unplug the AC adapter
 15. Shut down. Do not let the probes touch anything else while the machine is
     on. A slip across two pins can damage the panel.
 
-## Phase 3, cable continuity, battery disabled
+## Phase 3, cable continuity, battery disconnected
 
-16. Disable the battery. Unplug the AC adapter.
+16. Shut down. Unplug the AC adapter. Disconnect the internal battery.
 17. Unplug the cable at the panel: peel the tape, lift the latch, pull straight
     out (steps 4 to 6). Unplug it at the board: lift the bar latch, pull
     straight out.
 
-![HMM p109, detach the cable at the panel, and reinstall](../../src/assets/images/notes/t14/hmm-p109.png)
+![HMM p109, detach the cable at the panel, and reinstall](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p109.png)
 
 18. Meter on continuity. One needle on a BL_VCC pin at the panel-end plug.
     Sweep the other needle across every pin of the board-end plug until it
@@ -149,17 +159,17 @@ Disable Built-in Battery, Yes. The machine turns off. Then unplug the AC adapter
 
 Cable route inside the lid, for the visual check along the left hinge:
 
-![HMM p122, LCD cable](../../src/assets/images/notes/t14/hmm-p122.png)
+![HMM p122, LCD cable](../../src/assets/images/notes/2609-t14-backlight-repair/hmm-p122.png)
 
 ## Phase 4, fuse and board
 
-21. Still off, battery disabled. On the board next to the LCD connector, find
+21. Still off, battery disconnected. On the board next to the LCD connector, find
     the small rectangular part marked F and a number on the silkscreen.
     Continuity across its two ends.
     - No beep: the fuse is blown. Solder replacement on the board. Stop.
     - Beeps: the fuse is fine. Step 22.
-22. Plug the cable back in at both ends. Plug in the AC adapter, power on to the
-    desktop, brightness to maximum.
+22. Plug the cable back in at both ends. Connect the internal battery. Plug in
+    the AC adapter, power on to the desktop, brightness to maximum.
 23. On the board-side connector, measure the solder tail of the pin that mated
     with BL_VCC in step 18, against any ground.
     - 0 V: the board does not switch the backlight power on. Board-level fault.
@@ -172,12 +182,14 @@ measure voltage with the cable connected at both ends.
 
 ## Phase 5, close
 
-24. Shut down. Disable the battery before you plug and route the cable.
+24. Shut down. Unplug the AC adapter and disconnect the internal battery before
+    you plug and route the cable.
 25. Fit the panel with thin double-sided tissue tape (0.1 to 0.25 mm, 2 to 3 mm
     wide, the phone repair kind, not foam) at the same places as the original
     stretch tapes: both short sides and the short strip at the top. Short
     strips at the corners are enough while the panel may still come out again.
-26. Clip the bezel on. Fit the base cover. Plug in the AC adapter.
+26. Clip the bezel on. Connect the internal battery. Fit the base cover. Plug in
+    the AC adapter.
 
 ## Parts, by fault
 
@@ -245,26 +257,6 @@ the same family, 30-pin with 30-pin, 40-pin with 40-pin.
   celular", 2 to 3 mm wide. Reference: 3M 9448 or 300LSE. Not "espuma", not VHB.
 - Digital multimeter, DT-830 type.
 - Two sewing needles for the probe tips.
-
-## If it is not worth fixing: replacements
-
-Current models with soldered low-power memory and long battery claims, base
-prices from a web search on 2026-09-15, US store unless noted. The T14 Gen 2's
-fault is a SODIMM slot, so a machine with all memory soldered, LPDDR5X, removes
-that class of fault entirely.
-
-| Model                                              | Base price                                                                       | Memory                                              | Battery claim                            | Source                                                                                                                                                                                                                                                                  |
-| -------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Apple MacBook Pro 14" M5                           | $1,999 (M5 Pro from $2,499); about R$ 13,799 at a Brazilian reseller             | unified LPDDR5, soldered                            | up to 24 h                               | [apple.com](https://www.apple.com/shop/buy-mac/macbook-pro/14-inch-m5)                                                                                                                                                                                                  |
-| Apple MacBook Air 13" M5                           | $1,299 (raised from $1,099 at launch); R$ 13,999 at the March 2026 Brazil launch | unified LPDDR5, soldered                            | up to 18 h                               | [Engadget](https://www.engadget.com/computing/laptops/the-macbook-air-m5-starts-at-1099-up-100-from-the-m4-141612909.html), [TechTudo](https://www.techtudo.com.br/noticias/2026/03/apple-anuncia-novo-macbook-air-com-chip-m5-veja-preco-no-brasil-edinfoeletro.ghtml) |
-| Lenovo ThinkPad T14s Gen 6, AMD Ryzen AI 7 PRO 360 | about $1,500 with Lenovo's standing discount                                     | LPDDR5X-7500, soldered, 32 or 64 GB                 | 58 Wh, "most of the day"                 | [Thurrott review](https://www.thurrott.com/hardware/315343/lenovo-thinkpad-t14s-gen-6-amd-review)                                                                                                                                                                       |
-| Lenovo ThinkPad T14s Gen 6, Snapdragon X Elite     | $1,969 lowest listed, promo seen at $1,279                                       | LPDDR5X, soldered                                   | 21 h measured                            | [Tom's Hardware](https://www.tomshardware.com/laptops/ultrabooks-ultraportables/lenovo-thinkpad-t14s-gen-6-snapdragon-review)                                                                                                                                           |
-| Lenovo ThinkPad X1 Carbon Gen 14                   | not confirmed; Gen 13 was from about $1,870                                      | LPDDR5X, soldered, 16 to 64 GB                      | almost 24 h measured                     | [Notebookcheck](https://www.notebookcheck.net/Flagship-business-laptop-with-almost-24-hours-of-battery-life-Lenovo-ThinkPad-X1-Carbon-Gen-14-Review.1332558.0.html)                                                                                                     |
-| Dell XPS 13 (2026, DX13260)                        | $699.99 base with 8 GB; $899.99 with 16 GB/512 GB                                | LPDDR5X-7467, soldered, base is single channel 8 GB | up to 17 h claimed, 18 h 26 min measured | [Windows Central](https://www.windowscentral.com/hardware/dell/dell-xps-13-2026-returns-599-computex), [RTINGS](https://www.rtings.com/laptop/reviews/dell/xps-13-2026)                                                                                                 |
-| Framework Laptop 13 Pro, Intel, 2026               | $1,199 DIY, $1,499 prebuilt                                                      | LPCAMM2 LPDDR5X, replaceable module                 | 74 Wh, up to 20 h claimed                | [frame.work](https://frame.work/laptop13pro)                                                                                                                                                                                                                            |
-
-Brazil store prices for Lenovo, Dell and Framework were not found in the search.
-Check lenovo.com/br and dell.com/br directly.
 
 ## Video: the same fault on a Lenovo E14
 
