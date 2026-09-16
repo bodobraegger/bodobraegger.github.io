@@ -1,7 +1,7 @@
 ---
 title: life visuals
 place: Rio de Janeiro, Brasil
-date: 2026-09-26T20:00:00-03:00
+date: 2026-09-16T20:00:00-03:00
 lang: en
 type: note+blog
 hydra: true
@@ -9,7 +9,7 @@ plum: true
 # hydraBackground: true
 ---
 
-This page documents the set I play on 26 September 2026 in Rio de Janeiro. It
+This page documents the set I play on 16 September 2026 in Rio de Janeiro. It
 holds the text I wrote for the night, the code that makes the image, and
 screenshots of the same code running on public cameras. The code blocks below
 run in this page. Click one if it does not start on its own.

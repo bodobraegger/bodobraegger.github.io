@@ -1,7 +1,7 @@
 ---
 title: life visuals
 place: Rio de Janeiro, Brasil
-date: 2026-09-26T20:00:00-03:00
+date: 2026-09-16T20:00:00-03:00
 lang: pt
 type: note+blog
 # hydra: true
@@ -9,7 +9,7 @@ plum: true
 hydraBackground: true
 ---
 
-Esta página documenta o set que toco em 26 de setembro de 2026 no Rio de
+Esta página documenta o set que toco em 16 de setembro de 2026 no Rio de
 Janeiro. Ela guarda o texto que escrevi para a noite, o código que faz a
 imagem, e capturas de tela do mesmo código rodando em câmeras públicas. Os
 blocos de código abaixo rodam nesta página. Clique num bloco se ele não iniciar
