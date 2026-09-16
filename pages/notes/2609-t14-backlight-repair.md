@@ -7,7 +7,12 @@ type: note+blog
 plum: false
 ---
 
-![the-work-continues...T14 Gen2 AMD and brazilian multimeter](../../src/assets/images/notes/2609-t14-backlight-repair/20260915_the-work-continues.png)
+![the-work-continues...T14 Gen2 AMD and brazilian multimeter](../../src/assets/images/notes/2609-t14-backlight-repair/the-work-continues.png)
+
+<script setup>
+import DrawablePen from '../../src/components/DrawablePen.vue'
+</script>
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="blue" />
 
 A step-by-step guide for finding why the internal panel of my ThinkPad T14 Gen 2a
 (20XLS0CK00, AMD) went dark after I reopened the case. The page exists so I can
