@@ -1,4 +1,16 @@
 {
+  // Where an image goes when it is pasted or dropped into a page. Without this
+  // the editor writes it beside the markdown file, which is how a stray
+  // pages/notes/image.png appeared. A note keeps its pictures in a folder named
+  // after the note; a project keeps them in one shared folder.
+  "markdown.copyFiles.destination": {
+    "/pages/notes/**/*.md": "${documentWorkspaceFolder}/src/assets/images/notes/${documentBaseName}/${fileName}",
+    "/pages/projects/**/*.md": "${documentWorkspaceFolder}/src/assets/images/projects/${fileName}",
+    "/pages/**/*.md": "${documentWorkspaceFolder}/src/assets/images/${fileName}"
+  },
+  "markdown.editor.filePaste.copyIntoWorkspace": "mediaFiles",
+  "markdown.editor.drop.copyIntoWorkspace": "mediaFiles",
+
   // Enable the flat config support
   "eslint.experimental.useFlatConfig": true,
 
