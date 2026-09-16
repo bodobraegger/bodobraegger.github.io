@@ -11,7 +11,7 @@ place: Rio de Janeiro, BR
 
 A draggable pen component built in Vue that lets visitors draw directly on any page, on a computer and on a phone alike. Strokes are stored in [Supabase](https://supabase.com/) and synced across all visitors in real time via a broadcast channel, so drawings are shared and persistent.
 
-Try it on the dedicated [canvas](/notes/2026-05-03_canvas), or the [home page](/) for a non persistent, local variant.
+Try it on the dedicated [canvas](/notes/2605-canvas), or the [home page](/) for a non persistent, local variant.
 
 ## Features
 
@@ -66,8 +66,8 @@ The touch toolbar is on by default. A page that should stay without one passes `
 ## Pages using it
 
 - [bbo.do/](/): the home page has a drag-and-draw pen embedded in the background
-- [/notes/2026-05-03_canvas](/notes/2026-05-03_canvas): a dedicated multi-pen canvas session
-- [/notes/2026-05-14_arte_digital_canvas](/notes/2026-05-14_arte_digital_canvas): used during an Arte Digital session at EBA / UFRJ
+- [/notes/2605-canvas](/notes/2605-canvas): a dedicated multi-pen canvas session
+- [/notes/2605-arte-digital-canvas](/notes/2605-arte-digital-canvas): used during an Arte Digital session at EBA / UFRJ
 
 ![Canvas Screenshot 3](../../src/assets/images/projects/2026-09-05-canvas-screenshot-3.png)
 
