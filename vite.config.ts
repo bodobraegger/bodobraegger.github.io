@@ -224,5 +224,9 @@ export default defineConfig(({ mode }) => ({
   ssgOptions: {
     formatting: 'minify',
     format: 'cjs',
+    // GitHub Pages serves 404.html for every path it has no file for, so this
+    // renders the catch-all page to dist/404.html. It is also the fallback that
+    // lets the router resolve paths with no prerendered file, such as /notes/.
+    includedRoutes: paths => [...paths.filter(path => !path.includes(':')), '/404'],
   },
 }))
