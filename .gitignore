@@ -16,6 +16,8 @@ public/og
 *.log
 .obsidian
 # blog template
-pages/notes/2023-12-28_.md
+pages/notes/2312-untitled.md
 # symlink
 mtr
+.venv
+.claude
