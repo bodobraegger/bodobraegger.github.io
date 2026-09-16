@@ -7,13 +7,13 @@ export default antfu(
     formatters: true,
   },
   {
-    // The code in a note is content, not source. A live coding sketch is
+    // The code in a document is content, not source. A live coding sketch is
     // written dense on purpose, it is copied out to the hydra editor, and the
     // page runs the text as it stands. No rule may rewrite it.
-    ignores: ['pages/**/*.md/**'],
+    ignores: ['**/*.md/**'],
   },
   {
-    files: ['pages/**/*.md'],
+    files: ['**/*.md'],
     rules: {
       // Reaches inside a fenced sketch and takes the blank lines out of it.
       'style/no-multiple-empty-lines': 'off',
