@@ -143,6 +143,7 @@ if (frontmatter.hydra) {
   // on every call, and a sketch calls it again on every restart. Holding on to
   // the first stream means the reader picks a screen once per visit.
   let screenStream: MediaStream | null = null
+  let screenRequest: Promise<MediaStream> | null = null
   let originalGetDisplayMedia: MediaDevices['getDisplayMedia'] | null = null
 
   onMounted(() => {
@@ -151,19 +152,29 @@ if (frontmatter.hydra) {
 
     originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices)
 
-    navigator.mediaDevices.getDisplayMedia = async (options) => {
+    navigator.mediaDevices.getDisplayMedia = (options) => {
       if (screenStream?.active)
-        return screenStream
+        return Promise.resolve(screenStream)
 
-      const stream = await originalGetDisplayMedia!(options)
-      // The reader can end the share from the browser's own bar. Then the
-      // picker has to open again for the next sketch.
-      stream.getTracks().forEach(track => track.addEventListener('ended', () => {
-        if (screenStream === stream)
-          screenStream = null
-      }))
-      screenStream = stream
-      return stream
+      // Two starts a moment apart both arrive before the first picker closes,
+      // so they share the one request rather than opening a second picker.
+      if (!screenRequest) {
+        screenRequest = originalGetDisplayMedia!(options)
+          .then((stream) => {
+            // The reader can end the share from the browser's own bar. Then the
+            // picker has to open again for the next sketch.
+            stream.getTracks().forEach(track => track.addEventListener('ended', () => {
+              if (screenStream === stream)
+                screenStream = null
+            }))
+            screenStream = stream
+            return stream
+          })
+          .finally(() => {
+            screenRequest = null
+          })
+      }
+      return screenRequest
     }
   })
 
@@ -205,6 +216,13 @@ if (frontmatter.hydra) {
     // sketch here needs it, so a page without one never asks for a microphone.
     const pageNeedsAudio = [...codeBlocks].some(preEl => AUDIO_PATTERN.test(preEl.textContent!))
 
+    // Scrolling a block into view starts it, and so does clicking it. Both
+    // arrive together when the reader clicks a block that has just come into
+    // view, which started the sketch twice and asked for the screen twice. One
+    // sketch runs at a time on the one canvas, so the block that holds it is
+    // the whole state needed to tell a restart from a repeat.
+    let runningBlock: Element | null = null
+
     codeBlocks.forEach((preEl) => {
       // const parentEl = preEl.parentElement
       preEl.classList.add('grid', 'grid-cols-1', 'grid-rows-1', 'relative', 'aspect-square', 'children:rounded-md')
@@ -223,6 +241,10 @@ if (frontmatter.hydra) {
       preEl.children[1].insertAdjacentElement('afterend', linkEl)
 
       const handleFocus = () => {
+        if (runningBlock === preEl)
+          return
+        runningBlock = preEl
+
         // Calculate square size based on container
         const containerRect = placeholder.getBoundingClientRect()
         const size = containerRect.width;
