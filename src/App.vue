@@ -7,9 +7,9 @@ const ChatWidget = defineAsyncComponent(() => import('./components/ChatWidget.vu
 
 const route = useRoute()
 
-// Strip leading date prefix like "2024-03-27_" from a slug
+// Strip the leading year and month prefix, "2403-", from a slug
 function stripDate(segment: string) {
-  return segment.replace(/^\d{4}-\d{2}-\d{2}_?/, '')
+  return segment.replace(/^\d{4}-/, '')
 }
 
 // Build title as "{pageTitle} - Bodo Braegger/{parents}"
