@@ -97,19 +97,86 @@ onMounted(() => {
   }, 1)
 })
 
+// `a` is hydra's audio object: a.fft, a.show(), a.setBins(), a.onBeat.
+const AUDIO_PATTERN = /\ba\.(?:fft|show|hide|setBins|setSmooth|setCutoff|setScale|onBeat)\b/
+
+// hyper-hydra adds the array operators a sketch uses beside the fast, smooth
+// and ease that hydra-synth already provides. zfill is one of them. It used to
+// be served from glitch.me, which answers 410 since the free hosting closed, so
+// the old tag threw on every page that holds a sketch.
+const HYDRA_ARRAYS_URL = 'https://cdn.jsdelivr.net/gh/geikha/hyper-hydra@main/hydra-arrays.js'
+
+const LOAD_SCRIPT_PATTERN = /loadScript\(\s*["'`]([^"'`]+)["'`]\s*\)/g
+const loadedScripts = new Map<string, Promise<void>>()
+
+function loadScriptOnce(src: string) {
+  if (!loadedScripts.has(src)) {
+    loadedScripts.set(src, new Promise<void>((resolve, reject) => {
+      const el = document.createElement('script')
+      el.src = src
+      el.async = true
+      el.addEventListener('load', () => resolve())
+      el.addEventListener('error', () => reject(new Error(`could not load ${src}`)))
+      document.head.appendChild(el)
+    }))
+  }
+  return loadedScripts.get(src)!
+}
+
+/**
+ * A sketch that pulls in an extra shader library calls loadScript, which
+ * returns a promise. The line after it runs at once and reaches for a function
+ * the library has not defined yet. Loading those up front removes the race.
+ */
+function loadSketchScripts(source: string) {
+  const urls = [...source.matchAll(LOAD_SCRIPT_PATTERN)].map(match => match[1])
+  return Promise.all(urls.map(loadScriptOnce)).catch(() => [])
+}
+
 if (frontmatter.hydra) {
-  useScriptTag('https://hyper-hydra.glitch.me/hydra-arrays.js', () => {
-    console.log('hydra-arrays loaded')
-  }, {
-    async: true,
-  })
+  useScriptTag(HYDRA_ARRAYS_URL, () => {}, { async: true })
 
   const hydraObservers: IntersectionObserver[] = []
   const hydraListeners: [Element, string, EventListener][] = []
 
+  // A browser never remembers a screen choice: getDisplayMedia opens the picker
+  // on every call, and a sketch calls it again on every restart. Holding on to
+  // the first stream means the reader picks a screen once per visit.
+  let screenStream: MediaStream | null = null
+  let originalGetDisplayMedia: MediaDevices['getDisplayMedia'] | null = null
+
+  onMounted(() => {
+    if (!navigator.mediaDevices?.getDisplayMedia)
+      return
+
+    originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices)
+
+    navigator.mediaDevices.getDisplayMedia = async (options) => {
+      if (screenStream?.active)
+        return screenStream
+
+      const stream = await originalGetDisplayMedia!(options)
+      // The reader can end the share from the browser's own bar. Then the
+      // picker has to open again for the next sketch.
+      stream.getTracks().forEach(track => track.addEventListener('ended', () => {
+        if (screenStream === stream)
+          screenStream = null
+      }))
+      screenStream = stream
+      return stream
+    }
+  })
+
   onUnmounted(() => {
     hydraObservers.forEach(observer => observer.disconnect())
     hydraListeners.forEach(([el, event, listener]) => el.removeEventListener(event, listener))
+
+    if (originalGetDisplayMedia)
+      navigator.mediaDevices.getDisplayMedia = originalGetDisplayMedia
+    // Leaving the page ends the share, so the browser stops saying this tab
+    // reads the screen.
+    screenStream?.getTracks().forEach(track => track.stop())
+    screenStream = null
   })
 
   useScriptTag('https://unpkg.com/hydra-synth', () => {
@@ -132,6 +199,12 @@ if (frontmatter.hydra) {
     })
 
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
+
+    // A sketch reads the room through the audio object `a`, which hydra only
+    // builds when detectAudio is on. Reading the page once tells us whether any
+    // sketch here needs it, so a page without one never asks for a microphone.
+    const pageNeedsAudio = [...codeBlocks].some(preEl => AUDIO_PATTERN.test(preEl.textContent!))
+
     codeBlocks.forEach((preEl) => {
       // const parentEl = preEl.parentElement
       preEl.classList.add('grid', 'grid-cols-1', 'grid-rows-1', 'relative', 'aspect-square', 'children:rounded-md')
@@ -159,10 +232,15 @@ if (frontmatter.hydra) {
         hydraCanvas.width = size
         hydraCanvas.height = size
 
+        // The canvas goes in first. With detectAudio on, hydra hangs its
+        // frequency display on canvas.parentNode, and a canvas that is still
+        // detached has none, so building the synth first throws there.
+        placeholder.appendChild(hydraCanvas)
+
         // @ts-ignore - hydra global, Reinitialize hydra with new size
         hydra = new Hydra({
           canvas: hydraCanvas,
-          detectAudio: false,
+          detectAudio: pageNeedsAudio,
           enableStreamCapture: false,
           width: size,
           height: size,
@@ -170,14 +248,15 @@ if (frontmatter.hydra) {
 
         // @ts-ignore - hydra global
         hush()
-        setTimeout(() => {
-          // Indirect eval runs the sketch in global, non-strict scope. A direct eval
-          // would inherit this module's strict mode, where a Hydra sketch that opens
-          // with a bare assignment such as `bpm = 120` throws instead of running.
-          const runSketch = eval
-          runSketch(codeEl.textContent!)
-        }, 20)
-        placeholder.appendChild(hydraCanvas)
+        void loadSketchScripts(codeEl.textContent!).then(() => {
+          setTimeout(() => {
+            // Indirect eval runs the sketch in global, non-strict scope. A direct eval
+            // would inherit this module's strict mode, where a Hydra sketch that opens
+            // with a bare assignment such as `bpm = 120` throws instead of running.
+            const runSketch = eval
+            runSketch(codeEl.textContent!)
+          }, 20)
+        })
         // make text semi transparent
         codeEl.classList.add('op-80')
         // add black background
@@ -194,8 +273,11 @@ if (frontmatter.hydra) {
       // A sketch that captures the screen has to start from a real click. The
       // event below is synthetic, it carries no user activation, and the
       // browser rejects getDisplayMedia without one. Starting such a sketch
-      // here would only spend its first run on a rejection.
+      // here would only spend its first run on a rejection. A sketch that
+      // listens to the room waits for the same click, so the microphone is
+      // asked for at the moment the reader starts it, not while scrolling by.
       const needsUserGesture = codeEl.textContent!.includes('initScreen')
+        || AUDIO_PATTERN.test(codeEl.textContent!)
 
       const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting === true) {
