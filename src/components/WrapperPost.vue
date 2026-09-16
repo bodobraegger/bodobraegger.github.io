@@ -205,6 +205,12 @@ if (frontmatter.hydra) {
 </script>
 
 <template>
+  <!-- Both backgrounds sit at the same depth as the page background, so the
+       order here decides which draws on top. Plum is a few faint lines on a
+       clear canvas, so it goes last and reads over the hydra wash. -->
+  <ClientOnly v-if="frontmatter.hydraBackground">
+    <HydraBackground />
+  </ClientOnly>
   <ClientOnly v-if="frontmatter.plum">
     <Plum />
   </ClientOnly>

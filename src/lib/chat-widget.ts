@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { whenIdle } from '~/logics/idle'
+import { onFirstInteraction } from '~/logics/interaction'
 
-const INTERACTION_EVENTS = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const
 const FALLBACK_DELAY_MS = 10_000
 
 export const chatWanted = ref(false)
@@ -12,13 +12,7 @@ export const chatWanted = ref(false)
  * load and hydration.
  */
 export function loadChatWidgetOnInteraction() {
-  const controller = new AbortController()
-  const start = () => {
-    controller.abort()
-    chatWanted.value = true
-  }
-  for (const eventName of INTERACTION_EVENTS)
-    window.addEventListener(eventName, start, { once: true, passive: true, signal: controller.signal })
+  const start = onFirstInteraction(() => chatWanted.value = true)
 
   setTimeout(() => whenIdle(start), FALLBACK_DELAY_MS)
 }
