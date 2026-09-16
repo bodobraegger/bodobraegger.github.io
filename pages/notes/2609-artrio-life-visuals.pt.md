@@ -105,25 +105,9 @@ página não vai carregar o número da porta.
 Fotos a caminho: eu fico na frente da projeção e me capturo através da imagem,
 do mesmo jeito que a sala vai ser capturada através dela na noite.
 
-<!-- Substituir o placeholder abaixo por:
-![Eu através do visual, na frente da projeção](../../src/assets/images/notes/2609-artrio-life-visuals/me-through-the-visual.jpg)
--->
+![me!-inside-the-feedback](../../src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.png)
 
-<figure class="border border-dashed border-base rounded-md px4 py10 text-center font-mono text-sm op50 my6">
-  [ foto de mim na frente da projeção ]<br>
-  <span class="op70">src/assets/images/notes/2609-artrio-life-visuals/me-through-the-visual.jpg</span>
-</figure>
-
-<!-- Substituir o placeholder abaixo por:
-![Minha própria câmera dentro do set, um retrato feito de realimentação](../../src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.jpg)
--->
-
-<figure class="border border-dashed border-base rounded-md px4 py10 text-center font-mono text-sm op50 my6">
-  [ retrato feito alimentando o set com a minha própria câmera ]<br>
-  <span class="op70">src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.jpg</span>
-</figure>
-
-A segunda você pode fazer sozinho. O primeiro bloco de código abaixo pede a sua
+A próxima você pode fazer sozinho. O primeiro bloco de código abaixo pede a sua
 câmera e a coloca onde entram as câmeras da loja.
 
 ## Como rodar na noite
@@ -195,7 +179,7 @@ quadro quatro vezes. Sem câmera, sem som.
 ```javascript
 // a primeira cadeia do set: limiar, cor, e quatro tipos de realimentação
 bpm = 150
-colorChangeSpeed = 1
+colorChangeSpeed = 4
 osc(44, .1, 1.4).rotate(0, .1).thresh([0.5, 0.9].smooth(1).fast(.125))
   .color(
     [...Array(8).fill(1), 1, 0].fast(colorChangeSpeed).smooth(.4),

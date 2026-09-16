@@ -4,9 +4,9 @@ place: Rio de Janeiro, Brasil
 date: 2026-09-26T20:00:00-03:00
 lang: en
 type: note+blog
-# hydra: true
+hydra: true
 plum: true
-hydraBackground: true
+# hydraBackground: true
 ---
 
 This page documents the set I play on 26 September 2026 in Rio de Janeiro. It
@@ -102,27 +102,11 @@ door number.
 ## Me through the visual
 
 Photographs to come: I stand in front of the projection and take myself through
-the image, the way the room will be taken through it on the night.
+the image, the way the streets will be taken through it on the night.
 
-<!-- Replace the placeholder below with:
-![Me through the visual, in front of the projection](../../src/assets/images/notes/2609-artrio-life-visuals/me-through-the-visual.jpg)
--->
+![me!-inside-the-feedback](../../src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.png)
 
-<figure class="border border-dashed border-base rounded-md px4 py10 text-center font-mono text-sm op50 my6">
-  [ photo of me in front of the projection ]<br>
-  <span class="op70">src/assets/images/notes/2609-artrio-life-visuals/me-through-the-visual.jpg</span>
-</figure>
-
-<!-- Replace the placeholder below with:
-![My own camera fed into the set, a portrait made of feedback](../../src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.jpg)
--->
-
-<figure class="border border-dashed border-base rounded-md px4 py10 text-center font-mono text-sm op50 my6">
-  [ portrait made by feeding my own camera into the set ]<br>
-  <span class="op70">src/assets/images/notes/2609-artrio-life-visuals/me-inside-the-feedback.jpg</span>
-</figure>
-
-The second one you can make yourself. The first code block below asks for your
+The next one you can make yourself. The first code block below asks for your
 camera and puts you where the shop cameras go.
 
 ## Running it on the night
@@ -192,7 +176,7 @@ frame four times over. No camera, no sound.
 ```javascript
 // the first chain of the set: threshold, colour, and four kinds of feedback
 bpm = 150
-colorChangeSpeed = 1
+colorChangeSpeed = 3
 osc(44, .1, 1.4).rotate(0, .1).thresh([0.5, 0.9].smooth(1).fast(.125))
   .color(
     [...Array(8).fill(1), 1, 0].fast(colorChangeSpeed).smooth(.4),
