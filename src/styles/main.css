@@ -210,6 +210,21 @@ h6 {
   font-style: oblique 3deg;
 }
 
+/* Every heading wears a photocopy filter on top of the lean: a slow noise
+   pushes the outlines about and a fine grain roughens their edges, so the
+   letters keep their angles and lose their clean cut. The masthead of the home
+   page is a heading too, so its whole block of text is caught here, while the
+   pen beside it keeps out of the filter and out of the grain. The filter
+   itself is in index.html. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  filter: url('#xerox');
+}
+
 h2 {
   + p > em:first-child {
     opacity: 0.5;

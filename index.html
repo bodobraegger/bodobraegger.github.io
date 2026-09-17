@@ -56,6 +56,16 @@
     >
   </head>
   <body class="font-body text-gray-800 dark:text-gray-100 relative">
+    <svg aria-hidden="true" focusable="false" style="position: absolute; width: 0; height: 0; overflow: hidden">
+      <filter id="xerox" x="-6%" y="-60%" width="112%" height="320%" color-interpolation-filters="sRGB">
+        <feTurbulence baseFrequency="0.01 0.02" numOctaves="2" result="swell" />
+        <feDisplacementMap in="SourceGraphic" in2="swell" scale="4" result="warped" />
+        <feComposite in="SourceGraphic" in2="warped" operator="atop" result="edged" />
+        <feTurbulence baseFrequency="2" numOctaves="2" scale="1.1" result="grain" />
+        <feDisplacementMap in="edged" in2="grain" scale="2.6" result="rough" />
+        <feComposite in="edged" in2="rough" operator="atop" />
+      </filter>
+    </svg>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

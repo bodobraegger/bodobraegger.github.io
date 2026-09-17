@@ -29,6 +29,7 @@ const lastUpdate = formatDate(__LAST_UPDATE__, false, { year: 'numeric', month: 
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   opacity: 0.8;
+  filter: url('#xerox');
 }
 
 .meta-item::before {

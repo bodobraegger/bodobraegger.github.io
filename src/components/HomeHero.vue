@@ -8,14 +8,79 @@ const GIVEN_NAME = 'Bodo'
 const SUBLINE = 'hard- and software'
 const TAIL = 'for research, industry and the arts'
 
+/**
+ * The same number for the same seed on every render, so the server and the
+ * browser draw the line alike and a rebuild writes the same page.
+ */
+function random(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453
+  return value - Math.floor(value)
+}
+
+function between(seed: number, low: number, high: number) {
+  return low + random(seed) * (high - low)
+}
+
+/**
+ * Two ends of a range that are far apart, in an order the seed decides. A pair
+ * drawn at random can land close together, and a letter that travels a short
+ * way reads as standing still beside one that travels the whole axis.
+ */
+function swing(seed: number, low: number, high: number): [number, number] {
+  const reach = (high - low) / 4
+  const near = between(seed, low, low + reach)
+  const far = between(seed + 0.5, high - reach, high)
+  return random(seed + 0.25) > 0.5 ? [near, far] : [far, near]
+}
+
+/** The curves a letter can travel on, from a slow breath to a hard snap. */
+const DRIFT_CURVES = [
+  'ease-in-out',
+  'cubic-bezier(0.9, 0, 0.1, 1)',
+  'steps(4, end)',
+  'cubic-bezier(0.34, 1.56, 0.64, 1)',
+]
+
+/**
+ * One letter of the tagline, with the two points of the axes it travels
+ * between, the time it takes and the curve it takes it on. Nothing is shared
+ * between two letters: each starts somewhere else, leans its own way and moves
+ * at its own speed.
+ *
+ * The slnt axis of ABC Areal only leans to the right, so the lean of a letter
+ * is split: as far as the axis reaches it is cut, and the rest, along with
+ * every lean to the left, is a skew. A skew is drawn rather than cut, but
+ * beside the others at this size it reads.
+ */
+function letterStyle(position: number) {
+  const seed = position * 7 + 1
+  const [monoFrom, monoTo] = swing(seed, 0, 100)
+  const [weightFrom, weightTo] = swing(seed + 2, 400, 700)
+  const [leanFrom, leanTo] = swing(seed + 4, -26, 18)
+
+  return {
+    '--mono-from': `${Math.round(monoFrom)}`,
+    '--mono-to': `${Math.round(monoTo)}`,
+    '--weight-from': `${Math.round(weightFrom)}`,
+    '--weight-to': `${Math.round(weightTo)}`,
+    '--slant-from': `${Math.max(Math.min(leanFrom, 0), -12).toFixed(1)}`,
+    '--slant-to': `${Math.max(Math.min(leanTo, 0), -12).toFixed(1)}`,
+    '--skew-from': `${(-Math.min(leanFrom + 12, 0) + Math.max(leanFrom, 0)).toFixed(1)}deg`,
+    '--skew-to': `${(-Math.min(leanTo + 12, 0) + Math.max(leanTo, 0)).toFixed(1)}deg`,
+    '--drift-time': `${between(seed + 6, 0.9, 11).toFixed(2)}s`,
+    // A negative delay starts a letter part way through, so no two of them
+    // begin together.
+    '--drift-offset': `-${between(seed + 7, 0, 12).toFixed(2)}s`,
+    '--drift-curve': DRIFT_CURVES[Math.floor(random(seed + 8) * DRIFT_CURVES.length)],
+  }
+}
+
 // A space of its own collapses between two inline letters, so it is set as a
 // space that does not break.
-const TAIL_LETTERS = [...TAIL].map(letter => (letter === ' ' ? '\u00A0' : letter))
-
-// Seconds of phase between one letter and the next. Negative, so a letter
-// starts further into the cycle than the letter before it and the wave reads
-// as travelling from left to right.
-const LETTER_PHASE = -0.11
+const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
+  letter: letter === ' ' ? '\u00A0' : letter,
+  style: letterStyle(position),
+}))
 </script>
 
 <template>
@@ -33,18 +98,25 @@ const LETTER_PHASE = -0.11
               <span class="tail-sizer" aria-hidden="true">{{ TAIL }}</span>
               <span class="tail-wave">
                 <span
-                  v-for="(letter, position) in TAIL_LETTERS"
+                  v-for="(entry, position) in TAIL_LETTERS"
                   :key="position"
                   class="tail-letter"
-                  :style="{ animationDelay: `${position * LETTER_PHASE}s` }"
-                >{{ letter }}</span>
+                  :style="entry.style"
+                >{{ entry.letter }}</span>
               </span>
             </span>
-            <DrawablePen drag-and-draw />
           </span>
         </span>
       </span>
     </h1>
+
+    <!-- The pen draws from where it stands, so it keeps a place of its own in
+         the flow of the page. Set inside the masthead it would either take
+         width from the line or, held out of the flow, lay its stroke down in
+         the wrong place. -->
+    <p class="pen-row">
+      <DrawablePen drag-and-draw />
+    </p>
   </section>
 </template>
 
@@ -117,9 +189,13 @@ const LETTER_PHASE = -0.11
 /* The pen sits at the right end of the line it belongs to. */
 .tail-line {
   display: flex;
-  align-items: center;
-  gap: 0 1.4cqw;
+  justify-content: flex-end;
   margin-top: 0.6cqw;
+}
+
+.pen-row {
+  margin: 0.6rem 0 0;
+  line-height: 0;
 }
 
 .tail {
@@ -145,29 +221,30 @@ const LETTER_PHASE = -0.11
   top: 0;
 }
 
-/* Each letter travels the whole family: from the proportional cut to the mono
-   one, from regular to bold, and from upright to the full slant. The delay on
-   each letter is a step of phase, so the line reads as one wave passing along
-   it rather than every letter moving together. */
+/* Every letter drifts between two points of its own on the MONO, wght and
+   slnt axes, over a time of its own, from a start of its own. Nothing about
+   the line moves together. */
 .tail-letter {
   display: inline-block;
-  animation: areal-wave 4.4s ease-in-out infinite;
+  animation: areal-drift var(--drift-time) var(--drift-curve) infinite alternate;
+  animation-delay: var(--drift-offset);
 }
 
-@keyframes areal-wave {
-  0%,
-  100% {
+@keyframes areal-drift {
+  from {
     font-variation-settings:
-      'MONO' 0,
-      'wght' 400,
-      'slnt' 0;
+      'MONO' var(--mono-from),
+      'wght' var(--weight-from),
+      'slnt' var(--slant-from);
+    transform: skewX(var(--skew-from));
   }
 
-  50% {
+  to {
     font-variation-settings:
-      'MONO' 100,
-      'wght' 700,
-      'slnt' -12;
+      'MONO' var(--mono-to),
+      'wght' var(--weight-to),
+      'slnt' var(--slant-to);
+    transform: skewX(var(--skew-to));
   }
 }
 
