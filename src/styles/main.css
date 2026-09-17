@@ -15,20 +15,40 @@
   /* Each stack is: web font, metric-matched local fallback (see fonts.css),
      then generics for glyph coverage. Families listed after the fallback only
      ever render characters missing from the first two.
-     --fonts-body is the text of the site, --fonts-heading the headings inside
-     it, --fonts-semimono the words it sets in bold, --fonts-serif the
-     navigation, the post titles and the lists, and --fonts-mono the code
-     blocks, the widgets and the other typewriter places. */
+     --fonts-body is the text of the site, --fonts-serif the navigation, the
+     post titles and the lists, --fonts-serif-extra the years and the dates,
+     and --fonts-mono the code blocks, the widgets and the other typewriter
+     places. */
   --fonts-body: ABCAreal, ABCArealFallback, Arial, Helvetica, sans-serif;
-  --fonts-heading: ABCArealMono, ABCArealMonoFallback, 'Courier New', ui-monospace, monospace;
-  --fonts-semimono: ABCArealSemiMono, ABCArealFallback, Arial, Helvetica, sans-serif;
+  --fonts-heading: var(--fonts-body);
+  --fonts-semimono: var(--fonts-body);
   --fonts-serif: BradfordLL, BradfordLLFallback, Georgia, serif;
   --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', serif;
   --fonts-mono: BradfordMonoLL, BradfordMonoLLFallback, 'Courier New', ui-monospace, monospace;
 
+  /* ABC Areal is one file whose MONO axis holds the three cuts. A rule that
+     sets --fonts-heading or --fonts-semimono sets the matching axis with it,
+     or the text comes out in the proportional cut. */
+  --axis-proportional: 'MONO' 0;
+  --axis-semimono: 'MONO' 50;
+  --axis-mono: 'MONO' 100;
+
   &.dark {
     color-scheme: dark;
   }
+}
+
+/* No text of the site is painted in a fallback face. The page is held back
+   until the fonts are in and then faded in quickly. The class comes from the
+   inline script in index.html, which also gives up after a moment, so a face
+   that never arrives cannot hold the page blank. */
+body {
+  opacity: 0;
+}
+
+html.fonts-ready body {
+  opacity: 1;
+  transition: opacity 120ms ease-out;
 }
 
 html {
@@ -162,6 +182,7 @@ h4,
 h5,
 h6 {
   font-family: var(--fonts-heading);
+  font-variation-settings: var(--axis-mono);
   font-weight: 600;
 }
 

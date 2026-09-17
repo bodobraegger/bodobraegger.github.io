@@ -25,12 +25,12 @@ export default defineConfig({
       '--enter-stage': n,
     })],
     /* Stacks are single-sourced as custom properties in styles/main.css */
-    ['font-body', { 'font-family': 'var(--fonts-body)' }],
-    ['font-heading', { 'font-family': 'var(--fonts-heading)' }],
-    ['font-semimono', { 'font-family': 'var(--fonts-semimono)' }],
-    ['font-serif', { 'font-family': 'var(--fonts-serif)' }],
-    ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)' }],
-    ['font-mono', { 'font-family': 'var(--fonts-mono)' }],
+    ['font-body', { 'font-family': 'var(--fonts-body)', 'font-variation-settings': 'var(--axis-proportional)' }],
+    ['font-heading', { 'font-family': 'var(--fonts-heading)', 'font-variation-settings': 'var(--axis-mono)' }],
+    ['font-semimono', { 'font-family': 'var(--fonts-semimono)', 'font-variation-settings': 'var(--axis-semimono)' }],
+    ['font-serif', { 'font-family': 'var(--fonts-serif)', 'font-variation-settings': 'normal' }],
+    ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)', 'font-variation-settings': 'normal' }],
+    ['font-mono', { 'font-family': 'var(--fonts-mono)', 'font-variation-settings': 'normal' }],
   ],
   presets: [
     presetIcons({

@@ -86,19 +86,6 @@
   line-gap-override: 0%;
 }
 
-/* ABCArealMono: same vertical metrics, advance 61%
-   size-adjust = 61 / (1229/2048 = 60.01) = 101.65% */
-@font-face {
-  font-family: 'ABCArealMonoFallback';
-  font-style: normal;
-  font-weight: 400 700;
-  src: local('Courier New'), local('CourierNewPSMT'), local('Liberation Mono'), local('Cousine');
-  size-adjust: 101.65%;
-  ascent-override: 87.8%;
-  descent-override: 21%;
-  line-gap-override: 0%;
-}
-
 /* Ogg: cap 82.9%; overrides from hhea metrics (asc 109.3%, desc 43.6%, gap 0%)
    because Ogg's OS/2 useTypoMetrics flag is off, so browsers use hhea, not the
    typo metrics the old overrides were based on.
@@ -205,58 +192,25 @@
   font-display: swap;
 }
 
-/* ABCAreal and ABCArealMono are variable: one file each carries every weight
-   from 400 to 700, and the slnt axis carries the slanted cut. A browser reaches
-   the slant through font-style, so the oblique face below points at the same
-   file and asks for no second download. */
+/* One file carries the whole superfamily. Its MONO axis runs from the
+   proportional cut at 0, through the semi mono at 50, to the mono at 100, and
+   its wght and slnt axes carry the weights and the slant. Every use of Areal
+   on the site is this one family with the axis set, so the pages that hold
+   text, headings and code all load the same file. */
 @font-face {
   font-family: 'ABCAreal';
   font-style: normal;
   font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealVariable.woff2') format('woff2');
+  src: url('/src/assets/fonts/ABCArealSuperfamilyVariable.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
   font-family: 'ABCAreal';
   font-style: oblique 0deg 12deg;
   font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealVariable.woff2') format('woff2');
+  src: url('/src/assets/fonts/ABCArealSuperfamilyVariable.woff2') format('woff2');
   font-display: swap;
 }
-
-/* ABCArealSemiMono sits halfway along the MONO axis of the family, so it holds
-   the cap height and the vertical metrics of ABCAreal and needs no fallback of
-   its own: ABCArealFallback above matches it just as closely. */
-@font-face {
-  font-family: 'ABCArealSemiMono';
-  font-style: normal;
-  font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealSemiMonoVariable.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ABCArealSemiMono';
-  font-style: oblique 0deg 12deg;
-  font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealSemiMonoVariable.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'ABCArealMono';
-  font-style: normal;
-  font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealMonoVariable.woff2') format('woff2');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'ABCArealMono';
-  font-style: oblique 0deg 12deg;
-  font-weight: 400 700;
-  src: url('/src/assets/fonts/ABCArealMonoVariable.woff2') format('woff2');
-  font-display: swap;
-}
-
 /* BradfordMonoLL */
 @font-face {
   font-family: 'BradfordMonoLL';

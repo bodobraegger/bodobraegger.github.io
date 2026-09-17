@@ -9,6 +9,7 @@
 
   a {
     font-family: var(--fonts-semimono);
+    font-variation-settings: var(--axis-semimono);
     font-weight: inherit;
     text-decoration: none;
     border: 1px dashed var(--fg);
@@ -36,6 +37,7 @@
   b {
     color: var(--fg-deep);
     font-family: var(--fonts-semimono);
+    font-variation-settings: var(--axis-semimono);
     font-weight: 600;
   }
 
@@ -212,6 +214,9 @@
     font-weight: 600;
     font-size: 0.875em;
     font-family: var(--fonts-mono);
+    /* Bradford Mono has no MONO axis, but the setting inherits, so it is
+       cleared here rather than left to travel into the code. */
+    font-variation-settings: normal;
 
     &::before {
       content: '`';
@@ -493,6 +498,7 @@ a.item:hover {
   top: 90px;
   max-height: calc(100dvh - 90px);
   font-family: var(--fonts-heading);
+  font-variation-settings: var(--axis-mono);
   font-size: 0.8em;
   right: 2px;
   z-index: 200;

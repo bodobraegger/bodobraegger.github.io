@@ -40,14 +40,11 @@ FAMILIES = {
         'BradfordLL-Bold.woff2',
         'BradfordLL-BoldItalic.woff2',
     ],
+    # One file carries the whole Areal superfamily. Its MONO axis runs from the
+    # proportional cut through the semi mono to the mono, so the site sets the
+    # axis per use instead of loading three files.
     'ABCAreal': [
-        'ABCArealVariable.woff2',
-    ],
-    'ABCArealSemiMono': [
-        'ABCArealSemiMonoVariable.woff2',
-    ],
-    'ABCArealMono': [
-        'ABCArealMonoVariable.woff2',
+        'ABCArealSuperfamilyVariable.woff2',
     ],
     'BradfordMonoLL': [
         'BradfordMonoLL-Regular.woff2',
