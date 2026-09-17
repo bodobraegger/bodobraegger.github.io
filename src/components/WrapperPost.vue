@@ -295,8 +295,10 @@ if (frontmatter.hydra) {
   <ClientOnly v-if="frontmatter.plum">
     <Plum />
   </ClientOnly>
+  <!-- The home page opens with its own hero, which already carries the name,
+       so the title block is left to every other page. -->
   <div
-    v-if="frontmatter.display ?? frontmatter.title"
+    v-if="(frontmatter.display ?? frontmatter.title) && route.path !== '/'"
     class="prose m-auto mb-8"
   >
     <h1 class="font-serif font-normal mb-0">

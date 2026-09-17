@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { rename, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -34,6 +35,20 @@ const shikiClasses = buildShikiClasses(SHIKI_THEMES, SHIKI_CSS_VARIABLE_PREFIX)
 
 const DIST_DIR = resolve(__dirname, 'dist')
 
+/**
+ * The date of the commit the site is built from, shown on the home page. A
+ * checkout without git history, a source tarball for one, falls back to the
+ * build itself.
+ */
+const LAST_UPDATE = (() => {
+  try {
+    return execSync('git log -1 --format=%cI', { encoding: 'utf-8' }).trim()
+  }
+  catch {
+    return new Date().toISOString()
+  }
+})()
+
 /** Serves the stylesheet that maps Shiki token classes back to the theme colours. */
 function shikiThemeCss(): Plugin {
   return {
@@ -65,6 +80,10 @@ function preconnectSupabase(supabaseUrl: string | undefined): Plugin {
 }
 
 export default defineConfig(({ mode }) => ({
+  define: {
+    __LAST_UPDATE__: JSON.stringify(LAST_UPDATE),
+  },
+
   resolve: {
     alias: [
       { find: '~/', replacement: `${resolve(__dirname, 'src')}/` },

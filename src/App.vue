@@ -39,7 +39,7 @@ useHead({
   <div class="page-background" />
   <div class="flex flex-col justify-start min-h-screen xl-mx-auto xl:max-w-500">
     <NavBar />
-    <main class="px-7 py-10 of-x-hidden">
+    <main class="px-7 of-x-hidden">
       <!-- The wrapper lives here, not as the markdown wrapperComponent: Vue
            never stringifies static content placed inside a component slot
            in the same template, and every page is static content. -->
