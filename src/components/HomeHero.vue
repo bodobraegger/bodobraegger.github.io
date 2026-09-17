@@ -7,6 +7,15 @@ const HEADLINE = 'Braegger'
 const GIVEN_NAME = 'Bodo'
 const SUBLINE = 'hard- and software'
 const TAIL = 'for research, industry and the arts'
+
+// A space of its own collapses between two inline letters, so it is set as a
+// space that does not break.
+const TAIL_LETTERS = [...TAIL].map(letter => (letter === ' ' ? '\u00A0' : letter))
+
+// Seconds of phase between one letter and the next. Negative, so a letter
+// starts further into the cycle than the letter before it and the wave reads
+// as travelling from left to right.
+const LETTER_PHASE = -0.11
 </script>
 
 <template>
@@ -18,7 +27,19 @@ const TAIL = 'for research, industry and the arts'
         <span class="trade">
           <span class="subline font-serif">{{ SUBLINE }}</span>
           <span class="tail-line">
-            <span class="tail font-serif-extra font-italic">{{ TAIL }}</span>
+            <span class="tail font-body">
+              <!-- A copy at the widest point of the axes holds the width of
+                   the line, so the wave below changes no layout. -->
+              <span class="tail-sizer" aria-hidden="true">{{ TAIL }}</span>
+              <span class="tail-wave">
+                <span
+                  v-for="(letter, position) in TAIL_LETTERS"
+                  :key="position"
+                  class="tail-letter"
+                  :style="{ animationDelay: `${position * LETTER_PHASE}s` }"
+                >{{ letter }}</span>
+              </span>
+            </span>
             <DrawablePen drag-and-draw />
           </span>
         </span>
@@ -102,9 +123,57 @@ const TAIL = 'for research, industry and the arts'
 }
 
 .tail {
+  position: relative;
   font-size: 3.2cqw;
   line-height: 1.1;
   opacity: 0.8;
   white-space: nowrap;
+}
+
+.tail-sizer {
+  visibility: hidden;
+  font-variation-settings:
+    'MONO' 100,
+    'wght' 700;
+}
+
+/* Bound to the right edge of the fixed box, so the line stays flush with the
+   trade above it while the wave changes the width of the letters. */
+.tail-wave {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* Each letter travels the whole family: from the proportional cut to the mono
+   one, from regular to bold, and from upright to the full slant. The delay on
+   each letter is a step of phase, so the line reads as one wave passing along
+   it rather than every letter moving together. */
+.tail-letter {
+  display: inline-block;
+  animation: areal-wave 4.4s ease-in-out infinite;
+}
+
+@keyframes areal-wave {
+  0%,
+  100% {
+    font-variation-settings:
+      'MONO' 0,
+      'wght' 400,
+      'slnt' 0;
+  }
+
+  50% {
+    font-variation-settings:
+      'MONO' 100,
+      'wght' 700,
+      'slnt' -12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tail-letter {
+    animation: none;
+  }
 }
 </style>
