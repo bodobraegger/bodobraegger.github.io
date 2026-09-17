@@ -161,14 +161,21 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
   margin-top: 1.2cqw;
 }
 
-/* Filled with the colour of the page and edged in the colour of the text, so
-   the given name reads as an outline against the solid name above it. */
+/* Solid on a light page and an outline on a dark one, in the grey the year
+   numbers behind the lists are drawn in. light-dark() reads the colour scheme
+   set in main.css. */
 .given-name {
   font-size: 11cqw;
   line-height: 0.9;
-  color: var(--c-bg);
-  -webkit-text-stroke: 0.025em var(--fg-deeper);
+  color: light-dark(var(--c-ghost), transparent);
+  -webkit-text-stroke-color: var(--c-ghost);
   paint-order: stroke fill;
+}
+
+/* light-dark() gives a colour and nothing else, so the width of the stroke
+   cannot switch with the scheme inside one value and takes a rule of its own. */
+html.dark .given-name {
+  -webkit-text-stroke-width: 0.02em;
 }
 
 .trade {

@@ -12,6 +12,10 @@
   --c-border: color-mix(in srgb, var(--fg) 25%, transparent);
   --c-border-soft: color-mix(in srgb, var(--fg) 15%, transparent);
 
+  /* The grey the big year numbers behind the lists are drawn in, and the given
+     name of the masthead with them. It holds in both schemes. */
+  --c-ghost: #aaa;
+
   /* Each stack is: web font, metric-matched local fallback (see fonts.css),
      then generics for glyph coverage. Families listed after the fallback only
      ever render characters missing from the first two.
