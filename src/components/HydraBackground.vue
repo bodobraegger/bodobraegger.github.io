@@ -11,11 +11,14 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 // enough and cost a quarter of the work.
 const RENDER_SCALE = 0.5
 const SOURCE_NAMES = ['s0', 's1', 's2', 's3']
+const BACKGROUND_FPS = 30
+const QUIET_DELAY_MS = 600
 // The sketch of the set asks for five bands, so the clock below fills five.
 const AUDIO_BIN_COUNT = 5
 
 const el = ref<HTMLCanvasElement | null>(null)
 const size = reactive(useWindowSize())
+const hasPicture = ref(false)
 
 /**
  * Stands in for hydra's audio object `a`. A sketch of the set reads the room
@@ -79,7 +82,9 @@ const { load: loadHydra } = useScriptTag(HYDRA_SYNTH_URL, () => {}, {
 let tick: ((deltaMs: number) => void) | null = null
 let frameHandle = 0
 let lastTime = 0
+let started = false
 let stopFollowingScreen: (() => void) | null = null
+let stopWatchingScroll: (() => void) | null = null
 
 onMounted(() => {
   if (window.matchMedia(REDUCED_MOTION_QUERY).matches)
@@ -89,11 +94,19 @@ onMounted(() => {
   // a browser grants those only on a user interaction. It also keeps the sketch
   // away from the page's own first paint.
   onFirstInteraction(async () => {
-    // The script tag is async, so the download blocks nothing. Building the
-    // synth compiles shaders, which does hold the main thread, so it waits for
-    // a gap instead of running inside the gesture that started it.
+    // The script tag is async, so the download blocks nothing.
     await loadHydra()
-    whenIdle(start)
+
+    // Building the synth and compiling the shader of every chain of the sketch
+    // holds the main thread for a fifth of a second, and a browser cannot break
+    // that work up. Inside a scroll it is a visible stutter, so it waits for
+    // the reader to sit still, and then for a gap between two frames.
+    const startWhenQuiet = useDebounceFn(() => {
+      stopWatchingScroll?.()
+      whenIdle(start)
+    }, QUIET_DELAY_MS)
+    stopWatchingScroll = useEventListener(window, 'scroll', startWhenQuiet, { passive: true })
+    void startWhenQuiet()
   })
 })
 
@@ -103,6 +116,7 @@ onUnmounted(() => {
   cancelAnimationFrame(frameHandle)
   document.removeEventListener('visibilitychange', handleVisibility)
   stopFollowingScreen?.()
+  stopWatchingScroll?.()
 })
 
 function handleVisibility() {
@@ -127,9 +141,9 @@ function start() {
   const canvas = el.value
   const Hydra = (window as any).Hydra
   const sketch = document.querySelector(`pre[${HYDRA_BACKGROUND_ATTRIBUTE}] code`)?.textContent
-  // tick is set once the sketch runs, so a second call never stacks instances
-  if (!canvas || !Hydra || !sketch || tick)
+  if (!canvas || !Hydra || !sketch || started)
     return
+  started = true
 
   const width = Math.round(size.width * RENDER_SCALE)
   const height = Math.round(size.height * RENDER_SCALE)
@@ -161,29 +175,41 @@ function start() {
   for (const name of SOURCE_NAMES)
     synth[name].initCam = synth[name].initScreen = () => waitingSources.add(synth[name])
 
-  runSketch(synth, sketch)
+  // Building the synth above compiles shaders, and running the sketch compiles
+  // a shader for every chain it opens. Both hold the main thread long enough to
+  // be felt, so the page gets a gap between the two.
+  whenIdle(() => {
+    runSketch(synth, sketch)
 
-  stopFollowingScreen = followSharedScreen((stream) => {
-    const video = document.createElement('video')
-    video.srcObject = stream
-    video.muted = true
-    video.playsInline = true
-    void video.play()
-    // A texture cannot be built from a video that holds no frame yet.
-    video.addEventListener(
-      'loadeddata',
-      () => waitingSources.forEach(source => source.init({ src: video, dynamic: true })),
-      { once: true },
-    )
+    // A sketch of this set is written for a projector on a machine that does
+    // nothing else. Behind the text of a page it shares the thread with
+    // scrolling and with the sketches of the code blocks, and half the frames
+    // carry a wash just as well.
+    synth.fps = BACKGROUND_FPS
+
+    stopFollowingScreen = followSharedScreen((stream) => {
+      const video = document.createElement('video')
+      video.srcObject = stream
+      video.muted = true
+      video.playsInline = true
+      void video.play()
+      // A texture cannot be built from a video that holds no frame yet.
+      video.addEventListener(
+        'loadeddata',
+        () => waitingSources.forEach(source => source.init({ src: video, dynamic: true })),
+        { once: true },
+      )
+    })
+
+    tick = (deltaMs: number) => {
+      updateAudioClock(synth.time)
+      hydra.tick(deltaMs)
+      hasPicture.value = true
+    }
+    lastTime = performance.now()
+    frameHandle = requestAnimationFrame(frame)
+    document.addEventListener('visibilitychange', handleVisibility)
   })
-
-  tick = (deltaMs: number) => {
-    updateAudioClock(synth.time)
-    hydra.tick(deltaMs)
-  }
-  lastTime = performance.now()
-  frameHandle = requestAnimationFrame(frame)
-  document.addEventListener('visibilitychange', handleVisibility)
 }
 </script>
 
@@ -192,6 +218,13 @@ function start() {
     class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden"
     style="z-index: -1; mask-image: radial-gradient(circle, transparent, black); -webkit-mask-image: radial-gradient(circle, transparent, black)"
   >
-    <canvas ref="el" class="w-full h-full" />
+    <!-- The first frame of a feedback sketch is a hard black square, and the
+         picture only builds up over the seconds after it, so the canvas comes
+         up as slowly as the sketch does. -->
+    <canvas
+      ref="el"
+      class="w-full h-full transition-opacity duration-3000 ease-in-out"
+      :class="hasPicture ? 'opacity-100' : 'opacity-0'"
+    />
   </div>
 </template>
