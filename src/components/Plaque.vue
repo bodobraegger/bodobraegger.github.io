@@ -84,7 +84,7 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
 </script>
 
 <template>
-  <section class="home-hero">
+  <section class="plaque">
     <h1 class="masthead">
       <span class="headline font-body">{{ HEADLINE }}</span>
       <span class="second-line">
@@ -123,7 +123,7 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
 <style scoped>
 /* Every size below is in cqw, so the masthead follows the width of the column
    and keeps its shape on a phone and on a wide screen. */
-.home-hero {
+.plaque {
   container-type: inline-size;
   margin-bottom: 3rem;
 }
