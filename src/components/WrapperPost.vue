@@ -320,13 +320,13 @@ if (frontmatter.hydra) {
       <span v-if="frontmatter.place">
         <span class="op50">✬ </span>
         <span class="op-75 font-light">
-          <a :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
+          <a class="font-serif-extra!" :href="`https://www.google.com/maps/search/${frontmatter.place}`" target="_blank" rel="noopener noreferrer">{{ frontmatter.place }}</a>
         </span>
       </span>
       <span v-if="translations.length" class="text-sm">
         <template v-for="translation in translations" :key="translation.lang">
           <span class="op50">✧ {{ LANGUAGE_DEFINITIONS[translation.lang].readIn }} </span>
-          <RouterLink :to="translation.path" :lang="translation.lang" :hreflang="translation.lang">
+          <RouterLink class="font-almendra!" :to="translation.path" :lang="translation.lang" :hreflang="translation.lang">
             {{ LANGUAGE_DEFINITIONS[translation.lang].name }}
           </RouterLink>
         </template>
