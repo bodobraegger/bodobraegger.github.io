@@ -6,6 +6,7 @@ lang: en
 type: note+blog
 hydra: true
 plum: true
+hydraBackground: true
 ---
 
 Here are code examples of visual programs that were created in different contexts. They are written in JavaScript, with a framework called hydra. It mimics analogue video synthesis modules, which can be freely patched together. They should automatically run when you scroll past them, but if they don't, you can click on it to (re-)start it.
@@ -123,7 +124,7 @@ render(o1)
 
 ```
 
-```javascript
+```javascript background
 osc(10,0,3)
   .layer(osc(20,0,4)
     .mask(shape(4))
