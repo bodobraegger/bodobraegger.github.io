@@ -8,6 +8,7 @@
   line-height: 1.75;
 
   a {
+    font-family: var(--fonts-semimono);
     font-weight: inherit;
     text-decoration: none;
     border: 1px dashed var(--fg);
@@ -31,13 +32,11 @@
     }
   }
 
-  strong {
-    color: var(--fg-deep);
-    font-weight: 600;
-  }
-
+  strong,
   b {
     color: var(--fg-deep);
+    font-family: var(--fonts-semimono);
+    font-weight: 600;
   }
 
   em {
@@ -188,7 +187,6 @@
     margin-top: 20px;
     margin-bottom: 10px;
     opacity: 0.5;
-    font-weight: 500;
     letter-spacing: 2px;
   }
 
@@ -494,6 +492,7 @@ a.item:hover {
   position: fixed;
   top: 90px;
   max-height: calc(100dvh - 90px);
+  font-family: var(--fonts-heading);
   font-size: 0.8em;
   right: 2px;
   z-index: 200;
@@ -523,6 +522,9 @@ a.item:hover {
     }
 
     > a {
+      /* Every link of the site is set in the semi mono; the list here keeps
+         the family of its own container instead. */
+      font-family: inherit;
       --uno: op75 hover-op100 transition;
     }
   }

@@ -16,10 +16,17 @@ from pathlib import Path
 
 from fontTools.subset import Options, Subsetter
 from fontTools.ttLib import TTFont
+from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).parent.parent
 FONTS_DIR = ROOT / 'src' / 'assets' / 'fonts'
 FULL_DIR = FONTS_DIR / 'full'
+
+# Axes of a variable font that the site never sets, pinned to their default so
+# their deltas leave the file. ABC Areal carries DRKM, which thins a glyph for
+# light text on a dark ground. The site sets no variation, so it costs a fifth
+# of the file for nothing.
+PINNED_AXES = {'DRKM': 0}
 
 # woff2 files referenced by src/styles/fonts.css, grouped by family.
 FAMILIES = {
@@ -32,6 +39,15 @@ FAMILIES = {
         'BradfordLL-LightItalic.woff2',
         'BradfordLL-Bold.woff2',
         'BradfordLL-BoldItalic.woff2',
+    ],
+    'ABCAreal': [
+        'ABCArealVariable.woff2',
+    ],
+    'ABCArealSemiMono': [
+        'ABCArealSemiMonoVariable.woff2',
+    ],
+    'ABCArealMono': [
+        'ABCArealMonoVariable.woff2',
     ],
     'BradfordMonoLL': [
         'BradfordMonoLL-Regular.woff2',
@@ -102,6 +118,12 @@ def subset_font(src: Path, dest: Path, codepoints: set[int]) -> tuple[int, int, 
     subsetter = Subsetter(options=make_options())
     subsetter.populate(unicodes=sorted(codepoints - missing))
     subsetter.subset(font)
+
+    pinned = {axis.axisTag: PINNED_AXES[axis.axisTag]
+              for axis in font['fvar'].axes if axis.axisTag in PINNED_AXES} if 'fvar' in font else {}
+    if pinned:
+        instantiateVariableFont(font, pinned, inplace=True, updateFontNames=False)
+
     font.save(dest)
 
     after = dest.stat().st_size

@@ -299,7 +299,7 @@ if (frontmatter.hydra) {
     v-if="frontmatter.display ?? frontmatter.title"
     class="prose m-auto mb-8"
   >
-    <h1 class="font-mono mb-0">
+    <h1 class="font-serif font-normal mb-0">
       {{ frontmatter.display ?? frontmatter.title }}
       <span
         v-if="frontmatter.phonetic"

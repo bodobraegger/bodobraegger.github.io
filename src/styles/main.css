@@ -14,7 +14,14 @@
 
   /* Each stack is: web font, metric-matched local fallback (see fonts.css),
      then generics for glyph coverage. Families listed after the fallback only
-     ever render characters missing from the first two. */
+     ever render characters missing from the first two.
+     --fonts-body is the text of the site, --fonts-heading the headings inside
+     it, --fonts-semimono the words it sets in bold, --fonts-serif the
+     navigation, the post titles and the lists, and --fonts-mono the code
+     blocks, the widgets and the other typewriter places. */
+  --fonts-body: ABCAreal, ABCArealFallback, Arial, Helvetica, sans-serif;
+  --fonts-heading: ABCArealMono, ABCArealMonoFallback, 'Courier New', ui-monospace, monospace;
+  --fonts-semimono: ABCArealSemiMono, ABCArealFallback, Arial, Helvetica, sans-serif;
   --fonts-serif: BradfordLL, BradfordLLFallback, Georgia, serif;
   --fonts-serif-extra: Ogg, OggFallback, 'Times New Roman', serif;
   --fonts-mono: BradfordMonoLL, BradfordMonoLLFallback, 'Courier New', ui-monospace, monospace;
@@ -148,31 +155,47 @@ html {
   }
 }
 
-h1 {
-  font-weight: 500;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--fonts-heading);
+  font-weight: 600;
+}
+
+/* ABC Areal Mono carries a slnt axis, so a letter can lean without a second
+   file. Every letter of a heading is wrapped in one of these classes by
+   scripts/slant-headings.ts, which picks the angle from the heading itself, so
+   a heading leans the same way on every build. */
+.lean-1 {
+  font-style: oblique 2deg;
+}
+
+.lean-2 {
+  font-style: oblique 5deg;
+}
+
+.lean-3 {
+  font-style: oblique 8deg;
+}
+
+.lean-4 {
+  font-style: oblique 11deg;
+}
+
+.lean-5 {
+  font-style: oblique 3deg;
 }
 
 h2 {
-  font-weight: 500;
-
   + p > em:first-child {
     opacity: 0.5;
     display: block;
     margin-top: -20px;
     font-size: 0.9em;
   }
-}
-
-h3 {
-  font-weight: 400;
-}
-
-h4 {
-  font-weight: 400;
-}
-
-h5 {
-  font-weight: 300;
 }
 
 /* The pen toolbar and the chat take the same corner: the chat steps aside while

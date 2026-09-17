@@ -12,8 +12,8 @@
    but not layout.
 
    Fallback metrics measured from the woff2 files (fontTools), constant across
-   weights per family. Local font metrics (per 2048 upem): Georgia cap 1419,
-   Times New Roman cap 1356, Courier New advance 1229. */
+   weights per family. Local font metrics (per 2048 upem): Arial cap 1467,
+   Georgia cap 1419, Times New Roman cap 1356, Courier New advance 1229. */
 
 /* BradfordLL: asc 77%, desc 23%, gap 0%, cap 69.2%
    size-adjust = 69.2 / (1419/2048 = 69.29) = 99.87% */
@@ -55,6 +55,47 @@
   size-adjust: 99.87%;
   ascent-override: 77%;
   descent-override: 23%;
+  line-gap-override: 0%;
+}
+
+/* ABCAreal: asc 87.8%, desc 21%, gap 0%, cap 71.6%
+   size-adjust = 71.6 / (1467/2048 = 71.63) = 99.96%
+   One face per style covers weight 400 to 700 off the wght axis. Liberation
+   Sans and Arimo hold the advance widths of Arial but a shorter cap, so the
+   one size-adjust fits them less closely than it fits Arial itself. */
+@font-face {
+  font-family: 'ABCArealFallback';
+  font-style: normal;
+  font-weight: 400 700;
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 99.96%;
+  ascent-override: 87.8%;
+  descent-override: 21%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'ABCArealFallback';
+  font-style: italic;
+  font-weight: 400 700;
+  src:
+    local('Arial Italic'), local('Arial-ItalicMT'), local('Helvetica Oblique'), local('Liberation Sans Italic'),
+    local('Arimo Italic');
+  size-adjust: 99.96%;
+  ascent-override: 87.8%;
+  descent-override: 21%;
+  line-gap-override: 0%;
+}
+
+/* ABCArealMono: same vertical metrics, advance 61%
+   size-adjust = 61 / (1229/2048 = 60.01) = 101.65% */
+@font-face {
+  font-family: 'ABCArealMonoFallback';
+  font-style: normal;
+  font-weight: 400 700;
+  src: local('Courier New'), local('CourierNewPSMT'), local('Liberation Mono'), local('Cousine');
+  size-adjust: 101.65%;
+  ascent-override: 87.8%;
+  descent-override: 21%;
   line-gap-override: 0%;
 }
 
@@ -161,6 +202,58 @@
   font-style: italic;
   font-weight: 700;
   src: url('/src/assets/fonts/BradfordLL-BoldItalic.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ABCAreal and ABCArealMono are variable: one file each carries every weight
+   from 400 to 700, and the slnt axis carries the slanted cut. A browser reaches
+   the slant through font-style, so the oblique face below points at the same
+   file and asks for no second download. */
+@font-face {
+  font-family: 'ABCAreal';
+  font-style: normal;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealVariable.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABCAreal';
+  font-style: oblique 0deg 12deg;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealVariable.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ABCArealSemiMono sits halfway along the MONO axis of the family, so it holds
+   the cap height and the vertical metrics of ABCAreal and needs no fallback of
+   its own: ABCArealFallback above matches it just as closely. */
+@font-face {
+  font-family: 'ABCArealSemiMono';
+  font-style: normal;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealSemiMonoVariable.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABCArealSemiMono';
+  font-style: oblique 0deg 12deg;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealSemiMonoVariable.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABCArealMono';
+  font-style: normal;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealMonoVariable.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ABCArealMono';
+  font-style: oblique 0deg 12deg;
+  font-weight: 400 700;
+  src: url('/src/assets/fonts/ABCArealMonoVariable.woff2') format('woff2');
   font-display: swap;
 }
 

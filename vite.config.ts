@@ -22,6 +22,7 @@ import TOC from 'markdown-it-table-of-contents'
 import { imagetools } from 'vite-imagetools'
 import { slugify } from './scripts/slugify'
 import { responsiveImages } from './scripts/markdown-images'
+import { slantHeadings } from './scripts/slant-headings'
 import { buildShikiClasses } from './scripts/shiki-classes'
 
 const SHIKI_THEMES = { dark: 'vitesse-dark', light: 'vitesse-light' }
@@ -138,6 +139,8 @@ export default defineConfig(({ mode }) => ({
         }))
 
         md.use(responsiveImages)
+
+        md.use(slantHeadings)
 
         md.use(anchor, {
           slugify,

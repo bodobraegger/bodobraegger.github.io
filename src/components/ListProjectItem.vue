@@ -50,7 +50,7 @@ onMounted(fetchViewCount)
       :class="isHovering ? 'op100!' : ''"
     >
       <li class="relative isolate flex flex-wrap gap-2 md:items-center">
-        <div class="title text-lg leading-1.2em flex gap-2 wrap">
+        <div class="title font-serif text-lg leading-1.2em flex gap-2 wrap">
           <span class="align-middle tracking-wider">{{ item.name }}</span>
           <span v-if="isExternal && item.link && item.link !== '.'" class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right" title="External" />
         </div>
@@ -73,7 +73,7 @@ onMounted(fetchViewCount)
     </component>
     <div
       v-if="item.desc"
-      class="w-full transition-opacity text-sm font-light mt-1 mb-8 leading-snug"
+      class="w-full transition-opacity text-sm font-light op70 mt-1 mb-8 leading-snug"
       v-html="item.desc"
     />
   </div>

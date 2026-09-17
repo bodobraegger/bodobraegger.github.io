@@ -1,0 +1,89 @@
+import type MarkdownIt from 'markdown-it'
+import type Token from 'markdown-it/lib/token'
+
+/**
+ * Gives every letter of a heading its own angle off the slnt axis of ABC Areal
+ * Mono, so a heading leans the way a hand-set line of type does.
+ *
+ * The split happens here rather than in the browser for two reasons. The page
+ * arrives already leaning, with no reflow once a script runs, and each letter
+ * carries a class instead of a style attribute, which is what lets the Vue
+ * compiler keep the whole heading as one static string (see shiki-classes.ts).
+ *
+ * The angles live in src/styles/main.css as .lean-0 to .lean-<n>.
+ */
+
+export const LEAN_ANGLES = [0, 2, 5, 8, 11, 3]
+
+const SPACE_PATTERN = /(\s+)/
+
+/**
+ * A small deterministic hash. The same heading leans the same way on every
+ * build, so a rebuild produces no diff and the server and the browser agree.
+ */
+function hash(text: string, position: number) {
+  let value = 0x811C9DC5
+  for (let index = 0; index < text.length; index++) {
+    value ^= text.charCodeAt(index)
+    value = Math.imul(value, 0x01000193)
+  }
+  // Two letters that sit beside each other differ by one, and one is too small
+  // a change for the multiply alone to scatter. The mix below spreads it, so
+  // neighbours take unrelated angles rather than a rising run.
+  value = Math.imul(value ^ (position + 0x9E3779B9), 0x85EBCA6B)
+  value ^= value >>> 13
+  value = Math.imul(value, 0xC2B2AE35)
+  return Math.abs(value ^ (value >>> 16))
+}
+
+function leanSpans(text: string, md: MarkdownIt, offset: number) {
+  // A space is left outside the spans, so a heading still breaks between words.
+  let position = offset
+
+  return text
+    .split(SPACE_PATTERN)
+    .map((part) => {
+      if (!part || SPACE_PATTERN.test(part)) {
+        position += part.length
+        return md.utils.escapeHtml(part)
+      }
+      return [...part]
+        .map((letter) => {
+          const lean = hash(text, position++) % LEAN_ANGLES.length
+          return `<span class="lean-${lean}">${md.utils.escapeHtml(letter)}</span>`
+        })
+        .join('')
+    })
+    .join('')
+}
+
+export function slantHeadings(md: MarkdownIt) {
+  md.core.ruler.push('slant-headings', (state) => {
+    let insideHeading = false
+
+    for (const token of state.tokens) {
+      // The title of a page is set in Bradford, which has no slnt axis, so the
+      // lean starts at the second level.
+      if (token.type === 'heading_open')
+        insideHeading = token.tag !== 'h1'
+      else if (token.type === 'heading_close')
+        insideHeading = false
+      else if (insideHeading && token.type === 'inline')
+        leanInline(md, token)
+    }
+  })
+}
+
+/** Replaces the plain text of a heading with one span per letter. */
+function leanInline(md: MarkdownIt, inline: Token) {
+  let offset = 0
+
+  for (const child of inline.children ?? []) {
+    if (child.type !== 'text' || !child.content)
+      continue
+    const html = leanSpans(child.content, md, offset)
+    offset += child.content.length
+    child.type = 'html_inline'
+    child.content = html
+  }
+}

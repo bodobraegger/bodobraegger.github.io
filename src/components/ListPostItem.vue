@@ -27,7 +27,7 @@ onMounted(fetchViewCount)
     class="item block mb-6 mt-2 no-underline"
   >
     <li class="flex flex-col md:flex-row gap-2 md:items-center">
-      <div class="title text-lg leading-1.2em flex gap-2 wrap">
+      <div class="title font-serif text-lg leading-1.2em flex gap-2 wrap">
         <span class="align-middle tracking-wider">{{ post.title }}</span>
       </div>
 

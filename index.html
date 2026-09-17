@@ -9,11 +9,12 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="darkreader-lock" />
     <title>Bodo Braegger</title>
-    <!-- The two faces that paint above the fold on every page: body serif and
-         the mono nav and headings. Other faces load on demand and swap in over
-         metric-matched fallbacks (see src/styles/fonts.css). -->
+    <!-- The two faces that paint above the fold on every page: the body text
+         and the navigation. The headings sit a little lower, so their semi mono
+         loads on demand, as every other face does, and swaps in over a
+         metric-matched fallback (see src/styles/fonts.css). -->
+    <link rel="preload" href="/src/assets/fonts/ABCArealVariable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/src/assets/fonts/BradfordLL-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/src/assets/fonts/BradfordMonoLL-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       ;(function () {
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -24,7 +25,7 @@
     </script>
     <!-- The chat widget itself is loaded on first interaction, see src/lib/chat-widget.ts -->
   </head>
-  <body class="font-serif text-gray-800 dark:text-gray-100 relative">
+  <body class="font-body text-gray-800 dark:text-gray-100 relative">
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

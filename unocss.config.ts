@@ -5,7 +5,7 @@ export default defineConfig({
     {
       getCSS: () => `
         html {
-          font-family: var(--fonts-serif);
+          font-family: var(--fonts-body);
         }
         .font-phonetics {
           font-size: smaller;
@@ -25,6 +25,9 @@ export default defineConfig({
       '--enter-stage': n,
     })],
     /* Stacks are single-sourced as custom properties in styles/main.css */
+    ['font-body', { 'font-family': 'var(--fonts-body)' }],
+    ['font-heading', { 'font-family': 'var(--fonts-heading)' }],
+    ['font-semimono', { 'font-family': 'var(--fonts-semimono)' }],
     ['font-serif', { 'font-family': 'var(--fonts-serif)' }],
     ['font-serif-extra', { 'font-family': 'var(--fonts-serif-extra)' }],
     ['font-mono', { 'font-family': 'var(--fonts-mono)' }],
@@ -45,6 +48,11 @@ export default defineConfig({
         phonetics: {
           name: 'Noto Serif',
           weights: [300],
+        },
+        almendra: {
+          name: 'Almendra',
+          weights: [400, 700],
+          italic: true,
         },
       },
     }),
