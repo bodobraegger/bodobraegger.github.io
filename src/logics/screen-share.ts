@@ -1,6 +1,8 @@
 let screenStream: MediaStream | null = null
 let screenRequest: Promise<MediaStream> | null = null
 let originalGetDisplayMedia: MediaDevices['getDisplayMedia'] | null = null
+let stillFrameUrl: string | undefined
+const screenWatchers = new Set<(stream: MediaStream) => void>()
 
 /**
  * A browser never remembers a screen choice: getDisplayMedia opens the picker on
@@ -13,6 +15,8 @@ let originalGetDisplayMedia: MediaDevices['getDisplayMedia'] | null = null
  * share.
  */
 export function shareOneScreen(fallbackImageUrl?: string) {
+  stillFrameUrl = fallbackImageUrl
+
   if (!originalGetDisplayMedia && navigator.mediaDevices?.getDisplayMedia) {
     originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices)
 
@@ -45,6 +49,7 @@ export function shareOneScreen(fallbackImageUrl?: string) {
           })
           .then((stream) => {
             screenStream = stream
+            screenWatchers.forEach(watcher => watcher(stream))
             return stream
           })
           .finally(() => {
@@ -56,6 +61,31 @@ export function shareOneScreen(fallbackImageUrl?: string) {
   }
 
   return stopSharingScreen
+}
+
+/**
+ * Calls back with the screen the reader chose, at once if they have chosen one
+ * already and again when they choose one later, and with a still of the page
+ * while there is none. It never opens the picker itself, so a caller that runs
+ * without a gesture, the page background for one, asks the reader for nothing.
+ *
+ * Returns the function that stops the calls.
+ */
+export function followSharedScreen(callback: (stream: MediaStream) => void) {
+  screenWatchers.add(callback)
+
+  if (screenStream?.active) {
+    callback(screenStream)
+  }
+  else if (stillFrameUrl) {
+    void streamFromImage(stillFrameUrl).then((stream) => {
+      // The reader can pick a screen while the still is still being painted.
+      if (stream && !screenStream?.active)
+        callback(stream)
+    })
+  }
+
+  return () => screenWatchers.delete(callback)
 }
 
 /** Paints the image on a canvas and captures that, so it reads as a video source. */
@@ -87,4 +117,6 @@ function stopSharingScreen() {
   screenStream?.getTracks().forEach(track => track.stop())
   screenStream = null
   screenRequest = null
+  stillFrameUrl = undefined
+  screenWatchers.clear()
 }

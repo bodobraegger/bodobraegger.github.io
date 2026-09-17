@@ -1,5 +1,6 @@
 import { getSingletonHighlighter } from 'shiki'
 import type { ShikiTransformer } from 'shiki'
+import { HYDRA_BACKGROUND_ATTRIBUTE, marksBackground } from '../src/logics/hydra-background'
 
 /**
  * Shiki's dual-theme output puts `style="--s-dark:#...;--s-light:#..."` on
@@ -87,6 +88,11 @@ export async function buildShikiClasses(themes: Record<string, string>, cssVaria
     name: 'shiki-classes',
     pre(node) {
       stylesToClasses(node)
+      // The words after the language on the fence line reach a transformer and
+      // nothing else, so the marker of the background sketch is kept here as an
+      // attribute the page can be read for.
+      if (marksBackground(this.options.meta?.__raw))
+        node.properties[HYDRA_BACKGROUND_ATTRIBUTE] = ''
     },
     span(node) {
       stylesToClasses(node)
