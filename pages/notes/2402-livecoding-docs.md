@@ -161,3 +161,19 @@ osc().modulate(noise(1.5)).color(.5,.5,1).mult(osc().modulate(noise(2.5)).rotate
   .add(osc(10,.1,2.5).mask(shape(99,.1,.3).scale(1,1,width/height)).modulate(noise(3.5)),[0,.5,.8].smooth())
   .out()
 ```
+
+## Screenshots of feedback looped sets
+
+The set takes whatever screen it is given. Pointed at the page that holds it,
+it folds the code, the text and the frame before it back through the same
+chain. These are from the night of 17 September 2026.
+
+![The page folded through the set, the code still legible under a red wash](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-red.png)
+
+![The same picture a moment later, broken into pixelated blocks](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-blocks.png)
+
+![The feedback gone blue, with the columns of the earlier frames still standing](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-blue.png)
+
+![A crimson frame with a pale column at its centre](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-crimson.png)
+
+The set itself is written up in the [life visuals](/notes/2609-artrio-life-visuals) note.

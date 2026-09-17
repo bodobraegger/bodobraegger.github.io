@@ -292,3 +292,15 @@ shape(1,1)
   .out(o0)
 render(o0)
 ```
+
+## Screenshots of feedback looped sets
+
+![The page folded through the set, the code still legible under a red wash](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-red.png)
+
+![The same picture a moment later, broken into pixelated blocks](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-blocks.png)
+
+![The feedback gone blue, with the columns of the earlier frames still standing](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-blue.png)
+
+![A crimson frame with a pale column at its centre](../../src/assets/images/notes/2609-artrio-life-visuals/page-through-itself-crimson.png)
+
+The set itself is written up in the [life visuals](/notes/2609-artrio-life-visuals) note.
