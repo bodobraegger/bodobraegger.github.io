@@ -78,6 +78,8 @@ const penSizeRem = computed(() => PEN_BASE_REM + currentStrokeWidth.value / 40)
 const penFontSize = computed(() => `${penSizeRem.value}rem`)
 const penScale = computed(() => penSizeRem.value / PEN_BASE_REM)
 
+const containerRef = ref<HTMLElement>()
+
 // The drawn pencil reports its own point, the emoji pens keep the hand-set one.
 const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : props.tipOffsetX * penScale.value)
 const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : props.tipOffsetY * penScale.value)
@@ -1206,7 +1208,12 @@ function showHintOnce() {
 <template>
   <canvas ref="canvasRef" class="drawing-canvas" />
 
-  <span class="pen-inline-container" :class="{ 'legacy-mode': dragAndDraw }">
+  <span
+    ref="containerRef"
+    class="pen-inline-container"
+    :class="{ 'legacy-mode': dragAndDraw }"
+    :style="heldSize ? { width: `${heldSize.width}px`, height: `${heldSize.height}px` } : undefined"
+  >
     <span
       ref="penRef"
       class="pen-emoji"
@@ -1317,6 +1324,12 @@ html.dark .drawing-canvas {
   min-width: 2.5rem;
   min-height: 2.5rem;
   z-index: 999;
+  /* An inline-block takes its baseline from its last in-flow line box, and
+     from its bottom edge when it holds none. The pen leaves the flow as it is
+     picked up, which moves that baseline and so the height of the line the pen
+     stands in, and the text below it jumps. Aligning the box itself keeps the
+     baseline out of the question. */
+  vertical-align: bottom;
 }
 
 /* New control scheme: pens fixed on the side */
