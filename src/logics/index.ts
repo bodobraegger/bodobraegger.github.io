@@ -7,6 +7,17 @@ export function toggleDark() {
   isDark.value = !isDark.value
 }
 
+/**
+ * The slide-in animation plays only on the first visit of a list page in a
+ * session. Each list page passes its own key.
+ */
+export function disableSlidingIfVisited(key: string) {
+  if (sessionStorage.getItem(key))
+    document.documentElement.classList.add('no-sliding')
+  else
+    sessionStorage.setItem(key, new Date().toISOString())
+}
+
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
 const SHORT_DATE: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { disableSlidingIfVisited } from '~/logics'
 import { groupTranslations, resolveLanguage } from '~/logics/languages'
 import type { Post } from '~/types'
 
@@ -36,16 +37,7 @@ function getGroupName(p: Post) {
   return getYear(p.date)
 }
 
-const fontsLoaded = ref(false)
-
-onBeforeMount(() => {
-  document.fonts.ready.then(() => fontsLoaded.value = true)
-
-  const hasVisited = sessionStorage.getItem('visited-notes')
-  if (hasVisited)
-    document.documentElement.classList.add('no-sliding')
-  else sessionStorage.setItem('visited-notes', new Date().toISOString())
-})
+onBeforeMount(() => disableSlidingIfVisited('visited-notes'))
 </script>
 
 <template>
@@ -57,21 +49,11 @@ onBeforeMount(() => {
     </template>
 
     <template v-for="post, idx in posts" :key="post.path">
-      <div
+      <BigYear
         v-if="!isSameGroup(post, posts[idx - 1])"
-        class="select-none relative h20 pointer-events-none slide-enter"
-        :class="{ 'op0!': !fontsLoaded }"
-        :style="{
-          '--enter-stage': idx - 2,
-          '--enter-step': '60ms',
-        }"
-      >
-        <span
-          class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa"
-          :class="{ 'max-sm:text-5.4em': getGroupName(post) === 'Upcoming' }"
-        > {{ getGroupName(post) }}
-        </span>
-      </div>
+        :label="getGroupName(post)"
+        :stage="idx - 2"
+      />
       <div>
         <ListPostItem :post="post" />
       </div>

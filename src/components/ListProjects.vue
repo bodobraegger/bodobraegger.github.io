@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { disableSlidingIfVisited } from '~/logics'
+
 const props = defineProps<{ projects: Record<string, any[]> }>()
 
 const activeCategory = ref<string | null>(null)
@@ -72,38 +74,13 @@ const displayItems = computed(() => {
   })
 })
 
-const fontsLoaded = ref(false)
-
-onBeforeMount(() => {
-  if (document.fonts) {
-    document.fonts.ready.then(() => {
-      fontsLoaded.value = true
-    })
-  }
-  else {
-    fontsLoaded.value = true
-  }
-
-  const hasVisited = sessionStorage.getItem('visited-projects')
-  if (hasVisited)
-    document.documentElement.classList.add('no-sliding')
-  else sessionStorage.setItem('visited-projects', new Date().toISOString())
-})
+onBeforeMount(() => disableSlidingIfVisited('visited-projects'))
 </script>
 
 <template>
   <ul class="projects">
     <template v-for="({ item, category, visible, year, showYearHeader }, idx) in displayItems" :key="`${category}-${item.name}`">
-      <div
-        v-if="showYearHeader"
-        class="select-none relative h20 pointer-events-none slide-enter"
-        :class="{ 'op0!': !fontsLoaded }"
-        :style="{ '--enter-stage': idx - 2, '--enter-step': '60ms' }"
-      >
-        <span class="absolute left--3rem top--2rem op-40 color-transparent font-serif-extra font-italic text-8em text-stroke-1 text-shadow text-stroke-hex-aaa">
-          {{ year }}
-        </span>
-      </div>
+      <BigYear v-if="showYearHeader" :label="year" :stage="idx - 2" />
       <div
         :class="visible ? 'op100' : 'op0 h-0 overflow-hidden pointer-events-none'"
         style="transition: opacity 0.1s ease"
