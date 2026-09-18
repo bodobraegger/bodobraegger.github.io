@@ -13,7 +13,7 @@ const TAIL = 'for research, industry and the arts'
  * browser draw the line alike and a rebuild writes the same page.
  */
 function random(seed: number) {
-  const value = Math.sin(seed * 12.9898) * 43758.5453
+  const value = Math.sin(seed * 12.9898) * 64756.5453
   return value - Math.floor(value)
 }
 
@@ -65,8 +65,8 @@ function letterStyle(position: number) {
     '--weight-to': `${Math.round(weightTo)}`,
     '--slant-from': `${Math.max(Math.min(leanFrom, 0), -12).toFixed(1)}`,
     '--slant-to': `${Math.max(Math.min(leanTo, 0), -12).toFixed(1)}`,
-    '--skew-from': `${(-Math.min(leanFrom + 12, 0) + Math.max(leanFrom, 0)).toFixed(1)}deg`,
-    '--skew-to': `${(-Math.min(leanTo + 12, 0) + Math.max(leanTo, 0)).toFixed(1)}deg`,
+    '--skew-from': `${(-Math.min(leanFrom + 20, 0) + Math.max(leanFrom, 0)).toFixed(1)}deg`,
+    '--skew-to': `${(-Math.min(leanTo + 20, 0) + Math.max(leanTo, 0)).toFixed(1)}deg`,
     '--drift-time': `${between(seed + 6, 0.9, 11).toFixed(2)}s`,
     // A negative delay starts a letter part way through, so no two of them
     // begin together.
@@ -126,6 +126,7 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
 .plaque {
   container-type: inline-size;
   margin-bottom: 3rem;
+  filter: url(#xerox);
 }
 
 .masthead {

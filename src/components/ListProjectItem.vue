@@ -78,3 +78,9 @@ onMounted(fetchViewCount)
     />
   </div>
 </template>
+
+<style>
+.item {
+  filter: url(#xerox);
+}
+</style>
