@@ -13,9 +13,9 @@ import HomeMeta from '../src/components/HomeMeta.vue'
 
 Hi, I am <span class="font-almendra font-italic">Bodo Braegger</span>, and I make <span class="font-almendra font-bold">hard-</span> and <span class="font-serif-extra font-italic">software</span> for research, industry and the arts. I am currently enrolled in [MA Transdisciplinary Studies](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies) at [ZHdK](https://www.zhdk.ch/en), and work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zurich](https://ethz.ch/) - the research university where I hold an [MSc Computer Science](https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences/computer-science.html).<br>
 
-This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on. <DrawablePen drag-and-draw />
+This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on.
 
----
+<DrawablePen drag-and-draw />
 
 Find me on
 
