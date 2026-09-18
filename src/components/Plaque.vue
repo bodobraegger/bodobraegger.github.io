@@ -1,6 +1,4 @@
 <script setup lang='ts'>
-import DrawablePen from '~/components/DrawablePen.vue'
-
 // The name across the top, then the given name on the left of the line below
 // it, with the trade and what it is for stacked against the right edge.
 const HEADLINE = 'Braegger'
@@ -109,14 +107,6 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
         </span>
       </span>
     </h1>
-
-    <!-- The pen draws from where it stands, so it keeps a place of its own in
-         the flow of the page. Set inside the masthead it would either take
-         width from the line or, held out of the flow, lay its stroke down in
-         the wrong place. -->
-    <p class="pen-row">
-      <DrawablePen drag-and-draw />
-    </p>
   </section>
 </template>
 
@@ -171,6 +161,7 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
   color: light-dark(var(--c-ghost), transparent);
   -webkit-text-stroke-color: var(--c-ghost);
   paint-order: stroke fill;
+  opacity: 0.5;
 }
 
 /* light-dark() gives a colour and nothing else, so the width of the stroke
@@ -194,16 +185,10 @@ html.dark .given-name {
   white-space: nowrap;
 }
 
-/* The pen sits at the right end of the line it belongs to. */
 .tail-line {
   display: flex;
   justify-content: flex-end;
   margin-top: 0.6cqw;
-}
-
-.pen-row {
-  margin: 0.6rem 0 0;
-  line-height: 0;
 }
 
 .tail {

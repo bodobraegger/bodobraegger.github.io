@@ -13,7 +13,7 @@ import HomeMeta from '../src/components/HomeMeta.vue'
 
 Hi, I am <span class="font-almendra font-italic">Bodo Braegger</span>, and I make <span class="font-almendra font-bold">hard-</span> and <span class="font-serif-extra font-italic">software</span> for research, industry and the arts. I am currently enrolled in [MA Transdisciplinary Studies](https://www.zhdk.ch/en/degree-programmes/transdisciplinarystudies) at [ZHdK](https://www.zhdk.ch/en), and work at the [Decision Science Laboratory](https://descil.ethz.ch/) of [ETH Zurich](https://ethz.ch/) - the research university where I hold an [MSc Computer Science](https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences/computer-science.html).<br>
 
-This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on.
+This page will hold portfolio and curriculum vitae fragments, notes and an archive of projects I have worked on. <DrawablePen drag-and-draw />
 
 ---
 
@@ -43,3 +43,20 @@ and for inquiries, please contact me via
 <HomeMeta />
 
 <!-- If you enjoy my work, consider sponsoring me on [<span i-carbon-favorite /> GitHub Sponsor](https://github.com/sponsors/bodobraegger) to keep them sustainable. -->
+
+<style scoped>
+  span {
+    font-size: 1.25rem;
+    line-height: 0.5;
+  }
+  span.font-almendra.font-bold {
+    font-size: 2.5rem;
+    vertical-align: -0.2rem;
+  }
+  span.font-serif-extra {
+    font-size: 2.5rem;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px;
+    vertical-align: -0.2rem;
+  }
+</style>
