@@ -45,6 +45,15 @@
         if (setting === 'dark' || (prefersDark && setting !== 'light'))
           document.documentElement.classList.toggle('dark', true)
       })()
+      // TEMPORARY. ?off=root,xerox,blur,nav,all — see main.css. The class
+      // survives a route change, so setting it on one page covers the rest.
+      ;(function () {
+        const off = new URLSearchParams(location.search).get('off')
+        if (!off) return
+        off.split(',').forEach(function (name) {
+          document.documentElement.classList.add('off-' + name.trim())
+        })
+      })()
     </script>
     <!-- The chat widget itself is loaded on first interaction, see src/lib/chat-widget.ts -->
     <noscript
