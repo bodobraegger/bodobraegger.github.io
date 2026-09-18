@@ -2,11 +2,6 @@ import { ref } from 'vue'
 import { getPageViewCounts, trackPageView } from '~/lib/page-views'
 import { whenIdle } from '~/logics/idle'
 
-/**
- * The gap between two counts appearing. A list fills in one entry at a time,
- * which is the look this keeps; the batch below only replaces the one request
- * per entry that used to produce it.
- */
 const REVEAL_STEP_MS = 60
 
 interface QueueEntry {
@@ -17,12 +12,8 @@ interface QueueEntry {
 let queue: QueueEntry[] = []
 let flushScheduled = false
 
-/**
- * Every item of a list asks for its count while it mounts, so the asks all
- * land in the same tick and one request answers them together. The flush waits
- * on a timer rather than a microtask, because Vue runs the mounted hooks of a
- * list across several microtasks and an earlier flush would split the batch.
- */
+// A timer, not a microtask: Vue spreads a list's mounted hooks over several
+// microtasks, and an earlier flush would split the batch.
 function queueViewCount(path: string): Promise<number | undefined> {
   return new Promise((resolve) => {
     queue.push({ path, reveal: resolve })
@@ -62,8 +53,6 @@ export function usePageViews(pagePath: string) {
     })
   }
 
-  // Read the current count without incrementing it. The count appears one
-  // entry after another, in the order the list holds them.
   function fetchViewCount() {
     if (!pagePath)
       return

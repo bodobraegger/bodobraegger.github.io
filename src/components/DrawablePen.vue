@@ -1324,11 +1324,8 @@ html.dark .drawing-canvas {
   min-width: 2.5rem;
   min-height: 2.5rem;
   z-index: 999;
-  /* An inline-block takes its baseline from its last in-flow line box, and
-     from its bottom edge when it holds none. The pen leaves the flow as it is
-     picked up, which moves that baseline and so the height of the line the pen
-     stands in, and the text below it jumps. Aligning the box itself keeps the
-     baseline out of the question. */
+  /* Not baseline: an inline-block re-anchors to its bottom edge once its child
+     leaves the flow, which moves the line the pen stands in. */
   vertical-align: bottom;
 }
 
