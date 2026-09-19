@@ -1,8 +1,7 @@
 <script setup lang='ts'>
-// The name across the top, then the given name on the left of the line below
-// it, with the trade and what it is for stacked against the right edge.
+// The name across the top, with the trade and what it is for on the two lines
+// below it. Each line spans the whole column.
 const HEADLINE = 'Braegger'
-const GIVEN_NAME = 'Bodo'
 const SUBLINE = 'hard- and software'
 const TAIL = 'for research, industry and the arts'
 
@@ -85,25 +84,18 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
   <section class="plaque">
     <h1 class="masthead">
       <span class="headline font-body">{{ HEADLINE }}</span>
-      <span class="second-line">
-        <span class="given-name font-serif-extra font-italic">{{ GIVEN_NAME }}</span>
-        <span class="trade">
-          <span class="subline font-serif">{{ SUBLINE }}</span>
-          <span class="tail-line">
-            <span class="tail font-body">
-              <!-- A copy at the widest point of the axes holds the width of
-                   the line, so the wave below changes no layout. -->
-              <span class="tail-sizer" aria-hidden="true">{{ TAIL }}</span>
-              <span class="tail-wave">
-                <span
-                  v-for="(entry, position) in TAIL_LETTERS"
-                  :key="position"
-                  class="tail-letter"
-                  :style="entry.style"
-                >{{ entry.letter }}</span>
-              </span>
-            </span>
-          </span>
+      <span class="subline font-serif">{{ SUBLINE }}</span>
+      <span class="tail font-body">
+        <!-- A copy at the widest point of the axes holds the width of the
+             line, so the wave below changes no layout. -->
+        <span class="tail-sizer" aria-hidden="true">{{ TAIL }}</span>
+        <span class="tail-wave">
+          <span
+            v-for="(entry, position) in TAIL_LETTERS"
+            :key="position"
+            class="tail-letter"
+            :style="entry.style"
+          >{{ entry.letter }}</span>
         </span>
       </span>
     </h1>
@@ -116,11 +108,11 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
 .plaque {
   container-type: inline-size;
   margin-bottom: 3rem;
-  filter: url(#xerox);
+  filter: var(--xerox);
 }
 
 .masthead {
-  display: grid;
+  display: block;
   margin: 0;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--fg-deeper);
@@ -141,60 +133,24 @@ const TAIL_LETTERS = [...TAIL].map((letter, position) => ({
   white-space: nowrap;
 }
 
-/* The given name holds the left edge and the trade the right. Both end on the
-   same line, so the two stacked lines of the trade rise beside the one tall
-   line of the given name. */
-.second-line {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 0 3cqw;
-  margin-top: 1.2cqw;
-}
-
-/* Solid on a light page and an outline on a dark one, in the grey the year
-   numbers behind the lists are drawn in. light-dark() reads the colour scheme
-   set in main.css. */
-.given-name {
-  font-size: 11cqw;
-  line-height: 0.9;
-  color: light-dark(var(--c-ghost), transparent);
-  -webkit-text-stroke-color: var(--c-ghost);
-  paint-order: stroke fill;
-  opacity: 0.5;
-}
-
-/* light-dark() gives a colour and nothing else, so the width of the stroke
-   cannot switch with the scheme inside one value and takes a rule of its own. */
-html.dark .given-name {
-  -webkit-text-stroke-width: 0.02em;
-}
-
-.trade {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
 .subline {
-  /* Sized so the given name, the gap and the trade together span the column. */
-  font-size: 5.6cqw;
+  display: block;
+  margin-top: 1.2cqw;
+  font-size: 8.56cqw;
   line-height: 0.95;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.tail-line {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.6cqw;
-}
-
+/* The letters are held apart so the short line spans the column. */
 .tail {
+  display: block;
   position: relative;
-  font-size: 3.2cqw;
+  margin-top: 0.8cqw;
+  font-size: 3.6cqw;
   line-height: 1.1;
+  letter-spacing: 0.187em;
   opacity: 0.8;
   white-space: nowrap;
 }
@@ -206,11 +162,11 @@ html.dark .given-name {
     'wght' 700;
 }
 
-/* Bound to the right edge of the fixed box, so the line stays flush with the
-   trade above it while the wave changes the width of the letters. */
+/* Bound to the left edge of the fixed box, so the line starts flush with the
+   lines above it while the wave changes the width of the letters. */
 .tail-wave {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
 }
 
