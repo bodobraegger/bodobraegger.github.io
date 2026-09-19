@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { formatDate } from '~/logics'
+import { cutLetters } from '~/logics/hand-set'
 import { usePageViews } from '~/composables/usePageViews'
 import type { Post } from '~/types'
 
 const props = defineProps<{
   post: Post
 }>()
+
+const titleLetters = computed(() => cutLetters(props.post.title))
 
 const { viewCount, fetchViewCount } = usePageViews(props.post.path)
 
@@ -28,7 +31,11 @@ onMounted(fetchViewCount)
   >
     <li class="flex flex-col md:flex-row gap-2 md:items-center">
       <div class="title font-serif text-lg leading-1.2em flex gap-2 wrap">
-        <span class="align-middle tracking-wider">{{ post.title }}</span>
+        <span class="align-middle tracking-wider"><span
+          v-for="(entry, position) in titleLetters"
+          :key="position"
+          :class="entry.className"
+        >{{ entry.letter }}</span></span>
       </div>
 
       <div class="flex gap-2 items-center op50 grow text-sm font-light font-serif-extra font-italic">

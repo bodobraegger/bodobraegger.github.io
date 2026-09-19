@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { formatDate } from '~/logics'
+import { cutLetters } from '~/logics/hand-set'
 import { usePageViews } from '~/composables/usePageViews'
 
 const props = defineProps<{
@@ -23,6 +24,8 @@ const href = computed(() =>
 )
 
 const isHovering = ref(false)
+
+const titleLetters = computed(() => cutLetters(props.item.name))
 
 const pagePath = computed(() =>
   !isExternal.value && props.item.link && props.item.link !== '.'
@@ -51,7 +54,11 @@ onMounted(fetchViewCount)
     >
       <li class="relative isolate flex flex-wrap gap-2 md:items-center">
         <div class="title font-serif text-lg leading-1.2em flex gap-2 wrap">
-          <span class="align-middle tracking-wider">{{ item.name }}</span>
+          <span class="align-middle tracking-wider"><span
+            v-for="(entry, position) in titleLetters"
+            :key="position"
+            :class="entry.className"
+          >{{ entry.letter }}</span></span>
           <span v-if="isExternal && item.link && item.link !== '.'" class="align-middle op50 flex-none text-xs ml--1 mt--1 i-carbon-arrow-up-right" title="External" />
         </div>
         <div class="flex flex-wrap gap-2 items-center op70 grow text-xs md:text-sm font-light font-serif-extra font-italic">

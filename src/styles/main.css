@@ -224,6 +224,48 @@ h6 {
   font-style: oblique 3deg;
 }
 
+/* The cut of a letter, picked beside its lean in src/logics/hand-set.ts. ABC
+   Areal holds its three cuts on the MONO axis and its weights on wght, so a
+   letter takes a width and a weight of its own out of the one file. Bradford
+   is a set of separate faces and reads no axis, so the size and the baseline
+   below carry the same unevenness to the lines set in it, and pull in no
+   further face. */
+.cut-1 {
+  font-variation-settings:
+    'MONO' 40,
+    'wght' 500;
+  font-size: 0.97em;
+}
+
+.cut-2 {
+  font-variation-settings:
+    'MONO' 100,
+    'wght' 700;
+  vertical-align: 0.025em;
+}
+
+.cut-3 {
+  font-variation-settings:
+    'MONO' 70,
+    'wght' 420;
+  font-size: 1.04em;
+  vertical-align: -0.02em;
+}
+
+.cut-4 {
+  font-variation-settings:
+    'MONO' 0,
+    'wght' 640;
+  vertical-align: 0.015em;
+}
+
+.cut-5 {
+  font-variation-settings:
+    'MONO' 85,
+    'wght' 450;
+  font-size: 0.95em;
+}
+
 /* Every heading wears a photocopy filter on top of the lean: a slow noise
    pushes the outlines about and a fine grain roughens their edges, so the
    letters keep their angles and lose their clean cut. */
