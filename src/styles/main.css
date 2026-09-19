@@ -12,9 +12,19 @@
   --c-border: color-mix(in srgb, var(--fg) 25%, transparent);
   --c-border-soft: color-mix(in srgb, var(--fg) 15%, transparent);
 
-  /* The grey the big year numbers behind the lists are drawn in, and the given
-     name of the masthead with them. It holds in both schemes. */
+  /* The grey the big year numbers behind the lists are drawn in. It holds in
+     both schemes. */
   --c-ghost: #aaa;
+
+  /* The photocopy filter of index.html. A phone paints it too slowly to keep
+     the page smooth, so there it is off everywhere but the footer. */
+  --xerox: url('#xerox');
+
+  @media (hover: none) and (pointer: coarse) {
+    & {
+      --xerox: none;
+    }
+  }
 
   /* Each stack is: web font, metric-matched local fallback (see fonts.css),
      then generics for glyph coverage. Families listed after the fallback only
@@ -216,17 +226,14 @@ h6 {
 
 /* Every heading wears a photocopy filter on top of the lean: a slow noise
    pushes the outlines about and a fine grain roughens their edges, so the
-   letters keep their angles and lose their clean cut. The masthead of the home
-   page is a heading too, so its whole block of text is caught here, while the
-   pen beside it keeps out of the filter and out of the grain. The filter
-   itself is in index.html. */
+   letters keep their angles and lose their clean cut. */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  filter: url('#xerox');
+  filter: var(--xerox);
 }
 
 h2 {

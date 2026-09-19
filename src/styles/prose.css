@@ -486,14 +486,7 @@ a.header-anchor {
   transition: 0.2s all ease-out;
   text-decoration: none;
   border: none;
-  filter: url('#xerox');
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .posts a.item,
-  .projects a.item {
-    filter: none;
-  }
+  filter: var(--xerox);
 }
 
 a.item:hover {

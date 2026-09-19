@@ -55,7 +55,7 @@ function isSectionActive(section: string) {
 
 .header {
   mask-image: linear-gradient(to bottom, var(--c-bg) 0%, var(--c-bg) 60%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
-  filter: url(#xerox);
+  filter: var(--xerox);
   transition:
     backdrop-filter 0.3s ease,
     -webkit-backdrop-filter 0.9s ease,
