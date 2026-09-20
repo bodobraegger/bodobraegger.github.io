@@ -1,11 +1,10 @@
 import type MarkdownIt from 'markdown-it'
 import type Token from 'markdown-it/lib/token'
-import { cutClass, leanClass } from '../src/logics/hand-set'
+import { letterClasses } from '../src/logics/hand-set'
 
 /**
- * Gives every letter of a heading its own angle off the slnt axis of ABC Areal
- * Mono and its own cut off the MONO and wght axes, so a heading leans and
- * weighs the way a hand-set line of type does.
+ * Gives every letter of a heading its own place on each axis of ABC Areal, so
+ * a heading leans, widens and weighs the way a hand-set line of type does.
  *
  * The split happens here rather than in the browser for two reasons. The page
  * arrives already leaning, with no reflow once a script runs, and each letter
@@ -28,8 +27,7 @@ function handSetSpans(text: string, md: MarkdownIt, offset: number) {
       }
       return [...part]
         .map((letter) => {
-          const className = `${leanClass(text, position)} ${cutClass(text, position)}`
-          position++
+          const className = letterClasses(text, position++)
           return `<span class="${className}">${md.utils.escapeHtml(letter)}</span>`
         })
         .join('')
@@ -42,20 +40,20 @@ export function slantHeadings(md: MarkdownIt) {
     let insideHeading = false
 
     for (const token of state.tokens) {
-      // The title of a page is set in Bradford, which has no slnt axis, so the
-      // lean starts at the second level.
+      // The title of a page is set in Bradford, which carries no axis at all,
+      // so the treatment starts at the second level.
       if (token.type === 'heading_open')
         insideHeading = token.tag !== 'h1'
       else if (token.type === 'heading_close')
         insideHeading = false
       else if (insideHeading && token.type === 'inline')
-        leanInline(md, token)
+        handSetInline(md, token)
     }
   })
 }
 
 /** Replaces the plain text of a heading with one span per letter. */
-function leanInline(md: MarkdownIt, inline: Token) {
+function handSetInline(md: MarkdownIt, inline: Token) {
   let offset = 0
 
   for (const child of inline.children ?? []) {

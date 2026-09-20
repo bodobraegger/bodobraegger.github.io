@@ -1,21 +1,35 @@
 /**
- * The letter by letter treatment a hand-set line of type gets: an angle off
- * the slnt axis, and a cut off the MONO and wght axes. Both are picked from
- * the text itself, so a line reads the same on every build and the server and
- * the browser agree.
+ * The letter by letter treatment a hand-set line of type gets. ABC Areal
+ * carries three axes, MONO from 0 to 100, wght from 400 to 700 and slnt from
+ * -12 to 0, and a letter takes a value of its own on each of them, plus a step
+ * of its own off the line. Every value is picked from the text itself, so a
+ * line reads the same on every build and the server and the browser agree.
  *
- * The angles live in src/styles/main.css as .lean-0 to .lean-<n>, the cuts as
- * .cut-0 to .cut-<n>. A letter carries classes rather than a style attribute,
- * which is what lets the Vue compiler keep a heading as one static string
- * (see scripts/shiki-classes.ts).
+ * Each table below is a set of classes in src/styles/main.css, which holds the
+ * values. The classes set a custom property each, and one declaration there
+ * reads them all: font-variation-settings is a single property, so a class
+ * that named one axis on its own would reset the other two.
+ *
+ * A letter carries classes rather than a style attribute, which is what lets
+ * the Vue compiler keep a heading as one static string (see
+ * scripts/shiki-classes.ts).
  */
 
-export const LEAN_ANGLES = [0, 2, 5, 8, 11, 3]
+interface LetterTable {
+  /** The prefix of the class, and of the custom property it sets. */
+  name: string
+  /** How many classes of this name src/styles/main.css holds. */
+  count: number
+  /** Keeps the value a letter takes here unrelated to the other tables. */
+  salt: number
+}
 
-export const CUT_COUNT = 6
-
-/** Keeps the cut of a letter unrelated to its lean. */
-const CUT_SALT = 0x5F356495
+const LETTER_TABLES: LetterTable[] = [
+  { name: 'mono', count: 6, salt: 0 },
+  { name: 'wght', count: 6, salt: 0x5F356495 },
+  { name: 'slnt', count: 6, salt: 0x27D4EB2F },
+  { name: 'step', count: 4, salt: 0x165667B1 },
+]
 
 /**
  * A small deterministic hash. Two letters that sit beside each other differ by
@@ -23,7 +37,7 @@ const CUT_SALT = 0x5F356495
  * mix below spreads it, so neighbours take unrelated values rather than a
  * rising run.
  */
-export function hash(text: string, position: number) {
+function hash(text: string, position: number) {
   let value = 0x811C9DC5
   for (let index = 0; index < text.length; index++) {
     value ^= text.charCodeAt(index)
@@ -35,12 +49,12 @@ export function hash(text: string, position: number) {
   return Math.abs(value ^ (value >>> 16))
 }
 
-export function leanClass(text: string, position: number) {
-  return `lean-${hash(text, position) % LEAN_ANGLES.length}`
-}
-
-export function cutClass(text: string, position: number) {
-  return `cut-${hash(text, position + CUT_SALT) % CUT_COUNT}`
+/** The classes of one letter: the base class and one out of every table. */
+export function letterClasses(text: string, position: number) {
+  const picks = LETTER_TABLES.map(table =>
+    `${table.name}-${hash(text, position + table.salt) % table.count}`,
+  )
+  return ['cut', ...picks].join(' ')
 }
 
 export interface Letter {
@@ -52,12 +66,12 @@ export interface Letter {
  * One entry per letter, for the lines Vue renders. A space keeps its place in
  * the list without a class, so the line still breaks between words.
  *
- * Bradford is a set of separate faces and carries no axes, so the cuts reach
- * the lines set in it through their size and their baseline alone.
+ * Bradford is a set of separate faces and reads no axis, so of the four tables
+ * only the step reaches the lines set in it.
  */
 export function cutLetters(text: string): Letter[] {
   return [...text].map((letter, position) => ({
     letter,
-    className: letter.trim() ? cutClass(text, position) : '',
+    className: letter.trim() ? letterClasses(text, position) : '',
   }))
 }

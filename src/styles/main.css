@@ -200,73 +200,114 @@ h6 {
   font-weight: 600;
 }
 
-/* ABC Areal Mono carries a slnt axis, so a letter can lean without a second
-   file. Every letter of a heading is wrapped in one of these classes by
-   scripts/slant-headings.ts, which picks the angle from the heading itself, so
-   a heading leans the same way on every build. */
-.lean-1 {
-  font-style: oblique 2deg;
-}
-
-.lean-2 {
-  font-style: oblique 5deg;
-}
-
-.lean-3 {
-  font-style: oblique 8deg;
-}
-
-.lean-4 {
-  font-style: oblique 11deg;
-}
-
-.lean-5 {
-  font-style: oblique 3deg;
-}
-
-/* The cut of a letter, picked beside its lean in src/logics/hand-set.ts. ABC
-   Areal holds its three cuts on the MONO axis and its weights on wght, so a
-   letter takes a width and a weight of its own out of the one file. Bradford
-   is a set of separate faces and reads no axis, so the size and the baseline
-   below carry the same unevenness to the lines set in it, and pull in no
-   further face. */
-.cut-1 {
+/* Every letter of a heading, and of a list title, is wrapped in .cut and one
+   class out of each table below by src/logics/hand-set.ts. The tables set a
+   custom property each and this declaration reads them all: a class that named
+   one axis in font-variation-settings would reset the other two, because the
+   property carries every axis at once. */
+.cut {
   font-variation-settings:
-    'MONO' 40,
-    'wght' 500;
-  font-size: 0.97em;
+    'MONO' var(--mono, 100),
+    'wght' var(--wght, 600),
+    'slnt' var(--slnt, 0);
 }
 
-.cut-2 {
-  font-variation-settings:
-    'MONO' 100,
-    'wght' 700;
-  vertical-align: 0.025em;
+/* MONO holds the three cuts of ABC Areal in one file: 0 is the proportional
+   cut, 50 the semi-mono and 100 the mono the headings are set in. */
+.mono-0 {
+  --mono: 100;
 }
 
-.cut-3 {
-  font-variation-settings:
-    'MONO' 70,
-    'wght' 420;
+.mono-1 {
+  --mono: 85;
+}
+
+.mono-2 {
+  --mono: 65;
+}
+
+.mono-3 {
+  --mono: 45;
+}
+
+.mono-4 {
+  --mono: 20;
+}
+
+.mono-5 {
+  --mono: 0;
+}
+
+/* wght reaches from 400 to 700. The headings are set at 600. */
+.wght-0 {
+  --wght: 600;
+}
+
+.wght-1 {
+  --wght: 400;
+}
+
+.wght-2 {
+  --wght: 460;
+}
+
+.wght-3 {
+  --wght: 520;
+}
+
+.wght-4 {
+  --wght: 650;
+}
+
+.wght-5 {
+  --wght: 700;
+}
+
+/* slnt only leans to the right, and reaches -12. */
+.slnt-0 {
+  --slnt: 0;
+}
+
+.slnt-1 {
+  --slnt: -2;
+}
+
+.slnt-2 {
+  --slnt: -5;
+}
+
+.slnt-3 {
+  --slnt: -8;
+}
+
+.slnt-4 {
+  --slnt: -11;
+}
+
+.slnt-5 {
+  --slnt: -3;
+}
+
+/* The step off the line is no axis. It is what carries the unevenness to the
+   list titles, which are set in Bradford: that is a set of separate faces, it
+   reads no axis, and a weight of its own for every letter would pull in three
+   more files. */
+.step-1 {
+  font-size: 0.96em;
+  vertical-align: 0.02em;
+}
+
+.step-2 {
   font-size: 1.04em;
   vertical-align: -0.02em;
 }
 
-.cut-4 {
-  font-variation-settings:
-    'MONO' 0,
-    'wght' 640;
-  vertical-align: 0.015em;
+.step-3 {
+  font-size: 0.99em;
+  vertical-align: 0.012em;
 }
 
-.cut-5 {
-  font-variation-settings:
-    'MONO' 85,
-    'wght' 450;
-  font-size: 0.95em;
-}
-
-/* Every heading wears a photocopy filter on top of the lean: a slow noise
+/* Every heading wears a photocopy filter on top of the cut: a slow noise
    pushes the outlines about and a fine grain roughens their edges, so the
    letters keep their angles and lose their clean cut. */
 h1,

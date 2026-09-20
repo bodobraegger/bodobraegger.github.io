@@ -47,5 +47,6 @@
     "json",
     "jsonc",
     "yaml"
-  ]
+  ],
+  "python.terminal.activateEnvironment": false
 }
