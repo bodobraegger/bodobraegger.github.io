@@ -8,7 +8,6 @@ import 'uno.css'
 
 import autoRoutes from 'pages-generated'
 import { ViteSSG } from 'vite-ssg'
-import { setupRouterScroller } from 'vue-router-better-scroller'
 import App from './App.vue'
 import { loadChatWidgetOnInteraction } from './lib/chat-widget'
 import { whenIdle } from './logics/idle'
@@ -39,6 +38,21 @@ export const createApp = ViteSSG(
   App,
   {
     routes,
+    /**
+     * A page the reader comes back to opens where they left it, and every other
+     * one opens at the top. A link into an anchor is left alone: the page it
+     * points into is scrolled by WrapperPost, once that page has rendered.
+     */
+    scrollBehavior(to, _from, savedPosition) {
+      if (savedPosition) {
+        // The slide-in plays for a page arriving fresh, not for one that opens
+        // part way down.
+        if (savedPosition.top)
+          document.documentElement.classList.add('no-sliding')
+        return savedPosition
+      }
+      return to.hash ? false : { top: 0 }
+    },
   },
   ({ router, isClient }) => {
     // GitHub Pages redirects /notes to /notes/, so the browser can start on a
@@ -50,19 +64,6 @@ export const createApp = ViteSSG(
     })
 
     if (isClient) {
-      const html = document.querySelector('html')!
-      setupRouterScroller(router, {
-        selectors: {
-          html(ctx) {
-            // only do the sliding transition when the scroll position is not 0
-            if (ctx.savedPosition?.top)
-              html.classList.add('no-sliding')
-            return true
-          },
-        },
-        behavior: 'auto',
-      })
-
       router.afterEach((to) => {
         // reload the page once when navigating to /der-wahre-walter
         // to fix the issue with vue 404 showing
