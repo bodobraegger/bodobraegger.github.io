@@ -78,8 +78,6 @@ const penSizeRem = computed(() => PEN_BASE_REM + currentStrokeWidth.value / 40)
 const penFontSize = computed(() => `${penSizeRem.value}rem`)
 const penScale = computed(() => penSizeRem.value / PEN_BASE_REM)
 
-const containerRef = ref<HTMLElement>()
-
 // The drawn pencil reports its own point, the emoji pens keep the hand-set one.
 const tipOffsetX = computed(() => glyphTip.value ? glyphTip.value.x : props.tipOffsetX * penScale.value)
 const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : props.tipOffsetY * penScale.value)
@@ -1209,10 +1207,8 @@ function showHintOnce() {
   <canvas ref="canvasRef" class="drawing-canvas" />
 
   <span
-    ref="containerRef"
     class="pen-inline-container"
     :class="{ 'legacy-mode': dragAndDraw }"
-    :style="heldSize ? { width: `${heldSize.width}px`, height: `${heldSize.height}px` } : undefined"
   >
     <span
       ref="penRef"
