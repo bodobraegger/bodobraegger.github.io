@@ -34,7 +34,7 @@ interface RouteLike {
 
 const languageSuffixPattern = new RegExp(`\\.(${LANGUAGES.join('|')})$`)
 
-export function isLanguage(value: unknown): value is Language {
+function isLanguage(value: unknown): value is Language {
   return typeof value === 'string' && (LANGUAGES as readonly string[]).includes(value)
 }
 

@@ -25,7 +25,7 @@ export interface PenRegistry {
 }
 
 /** The character the drawn pencil stands in for: U+1F589, lower left pencil. */
-export const DRAWN_PENCIL = '\u{1F589}'
+const DRAWN_PENCIL = '\u{1F589}'
 
 /**
  * The pointer that draws through the touch toolbar instead of through a pen

@@ -10,7 +10,7 @@ export const CHAT_BODY_MAX_LENGTH = 500
 export const CHAT_PAGE_SIZE = 50
 export const CHAT_TICKER_SIZE = 20
 /** The bucket's file_size_limit; the upload is refused above it, so the client checks first. */
-export const CHAT_IMAGE_MAX_BYTES = 65536
+const CHAT_IMAGE_MAX_BYTES = 65536
 /** How long a message stays editable and deletable by its sender; the functions enforce the same. */
 export const CHAT_EDIT_WINDOW_MS = 15 * 60 * 1000
 

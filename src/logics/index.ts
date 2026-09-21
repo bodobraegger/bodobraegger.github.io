@@ -1,7 +1,7 @@
 import { DEFAULT_LANGUAGE, LANGUAGE_DEFINITIONS } from './languages'
 import type { Language } from './languages'
 
-export const isDark = useDark()
+const isDark = useDark()
 
 export function toggleDark() {
   isDark.value = !isDark.value

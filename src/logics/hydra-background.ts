@@ -1,4 +1,4 @@
-export const HYDRA_BACKGROUND_MARKER = 'background'
+const HYDRA_BACKGROUND_MARKER = 'background'
 export const HYDRA_BACKGROUND_ATTRIBUTE = 'data-hydra-background'
 
 /**
