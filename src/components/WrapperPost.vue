@@ -108,30 +108,20 @@ const AUDIO_PATTERN = /\ba\.(?:fft|show|hide|setBins|setSmooth|setCutoff|setScal
 const HYDRA_ARRAYS_URL = 'https://cdn.jsdelivr.net/gh/geikha/hyper-hydra@main/hydra-arrays.js'
 
 const LOAD_SCRIPT_PATTERN = /loadScript\(\s*["'`]([^"'`]+)["'`]\s*\)/g
-const loadedScripts = new Map<string, Promise<void>>()
-
-function loadScriptOnce(src: string) {
-  if (!loadedScripts.has(src)) {
-    loadedScripts.set(src, new Promise<void>((resolve, reject) => {
-      const el = document.createElement('script')
-      el.src = src
-      el.async = true
-      el.addEventListener('load', () => resolve())
-      el.addEventListener('error', () => reject(new Error(`could not load ${src}`)))
-      document.head.appendChild(el)
-    }))
-  }
-  return loadedScripts.get(src)!
-}
 
 /**
  * A sketch that pulls in an extra shader library calls loadScript, which
  * returns a promise. The line after it runs at once and reaches for a function
  * the library has not defined yet. Loading those up front removes the race.
+ *
+ * useScriptTag reuses a tag that is already in the head and waits for its load
+ * event, so a library named by two sketches is fetched once.
  */
 function loadSketchScripts(source: string) {
   const urls = [...source.matchAll(LOAD_SCRIPT_PATTERN)].map(match => match[1])
-  return Promise.all(urls.map(loadScriptOnce)).catch(() => [])
+  return Promise
+    .all(urls.map(src => useScriptTag(src, undefined, { manual: true, async: true }).load()))
+    .catch(() => [])
 }
 
 // One screen choice serves every hydra instance on the page, so this is set up
