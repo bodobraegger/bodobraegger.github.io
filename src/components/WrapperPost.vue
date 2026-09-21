@@ -168,15 +168,6 @@ if (frontmatter.hydra) {
     hydraCanvas.id = 'hydraCanvas'
     hydraCanvas.classList.add('rounded-md')
 
-    // @ts-ignore - hydra global
-    let hydra = new Hydra({
-      canvas: hydraCanvas,
-      detectAudio: false,
-      enableStreamCapture: false,
-      width,
-      height,
-    })
-
     const codeBlocks = document.querySelectorAll('pre:has(.language-javascript)')
 
     // A sketch reads the room through the audio object `a`, which hydra only
@@ -192,7 +183,6 @@ if (frontmatter.hydra) {
     let runningBlock: Element | null = null
 
     codeBlocks.forEach((preEl) => {
-      // const parentEl = preEl.parentElement
       preEl.classList.add('grid', 'grid-cols-1', 'grid-rows-1', 'relative', 'aspect-square', 'children:rounded-md')
       const codeEl = preEl.firstChild as HTMLElement
       codeEl.classList.add('row-start-1', 'col-start-1', 'z-1', 'hover:cursor-pointer')
@@ -227,8 +217,10 @@ if (frontmatter.hydra) {
         // detached has none, so building the synth first throws there.
         placeholder.appendChild(hydraCanvas)
 
-        // @ts-ignore - hydra global, Reinitialize hydra with new size
-        hydra = new Hydra({
+        // The synth is built for its side effects: it puts osc, hush and the
+        // rest on the window, which is the scope the sketch below is run in.
+        // @ts-ignore - hydra global
+        void new Hydra({
           canvas: hydraCanvas,
           detectAudio: pageNeedsAudio,
           enableStreamCapture: false,
