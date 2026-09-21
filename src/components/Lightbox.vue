@@ -3,10 +3,8 @@ const imageModel = ref<HTMLImageElement>()
 let images: HTMLImageElement[] = []
 let index = -1
 
-enum Direction {
-  PREV = -1,
-  NEXT = 1,
-}
+/** One image back, or one forward. */
+type Step = -1 | 1
 
 /** The largest generated variant when the build produced one, else whatever the page shows. */
 function fullSource(image: HTMLImageElement) {
@@ -15,15 +13,15 @@ function fullSource(image: HTMLImageElement) {
 
 const lightboxSource = computed(() => imageModel.value ? fullSource(imageModel.value) : '')
 
-function neighbourIndex(direction: Direction) {
-  return (index + direction + images.length) % images.length
+function neighbourIndex(step: Step) {
+  return (index + step + images.length) % images.length
 }
 
 function preloadNeighbours() {
   if (images.length < 2)
     return
-  for (const direction of [Direction.PREV, Direction.NEXT])
-    new Image().src = fullSource(images[neighbourIndex(direction)])
+  for (const step of [-1, 1] as Step[])
+    new Image().src = fullSource(images[neighbourIndex(step)])
 }
 
 function show(newIndex: number) {
@@ -32,7 +30,7 @@ function show(newIndex: number) {
   preloadNeighbours()
 }
 
-function step(direction: Direction) {
+function step(direction: Step) {
   show(neighbourIndex(direction))
 }
 
@@ -42,7 +40,7 @@ useEventListener('click', async (e) => {
 
   const lightboxButton = (e.target as HTMLElement).closest('button.lightbox')
   if (lightboxButton) {
-    step(lightboxButton.classList.contains('prev') ? Direction.PREV : Direction.NEXT)
+    step(lightboxButton.classList.contains('prev') ? -1 : 1)
     return
   }
 
@@ -78,13 +76,13 @@ onKeyStroke('Escape', (e) => {
 
 onKeyStroke('ArrowLeft', (e) => {
   if (imageModel.value) {
-    step(Direction.PREV)
+    step(-1)
     e.preventDefault()
   }
 })
 onKeyStroke('ArrowRight', (e) => {
   if (imageModel.value) {
-    step(Direction.NEXT)
+    step(1)
     e.preventDefault()
   }
 })
