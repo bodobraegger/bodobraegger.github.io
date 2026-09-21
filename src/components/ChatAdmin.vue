@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useSelection } from '~/composables/useSelection'
 import { useSupabaseAuth } from '~/composables/useSupabaseAuth'
 import { chatImageUrl } from '~/lib/chat'
 import { getSupabase } from '~/lib/supabase'
-import '~/styles/admin.css'
 
 /** A row of public.chat_messages, as the admin reads and deletes it. */
 interface ChatRow {
@@ -17,12 +17,16 @@ interface ChatRow {
 const MAX_ROWS = 200
 
 const messages = ref<ChatRow[]>([])
-const selectedIds = ref(new Set<string>())
 const loading = ref(true)
 const error = ref('')
 const showConfirmDelete = ref(false)
 
-const { user, email, password, showAuth, signIn, signOut } = useSupabaseAuth(error, loading)
+const auth = useSupabaseAuth(error, loading)
+const { selectedIds, toggle, selectAll, clear } = useSelection(() => messages.value.map(m => m.id))
+
+const confirmQuestion = computed(() => showConfirmDelete.value
+  ? `Delete ${selectedIds.value.size} message${selectedIds.value.size === 1 ? '' : 's'}?`
+  : null)
 
 async function loadMessages() {
   loading.value = true
@@ -55,28 +59,13 @@ async function loadMessages() {
   }
 }
 
-function toggleRow(id: string) {
-  if (selectedIds.value.has(id))
-    selectedIds.value.delete(id)
-  else
-    selectedIds.value.add(id)
-}
-
-function selectAll() {
-  selectedIds.value = new Set(messages.value.map(m => m.id))
-}
-
-function clearSelection() {
-  selectedIds.value.clear()
-}
-
 function requestDelete() {
   if (selectedIds.value.size === 0)
     return
 
-  if (!user.value) {
+  if (!auth.user.value) {
     error.value = 'You must be authenticated to delete messages'
-    showAuth.value = true
+    auth.showAuth.value = true
     return
   }
 
@@ -113,7 +102,7 @@ async function confirmDelete() {
   else {
     const deletedIds = new Set(ids)
     messages.value = messages.value.filter(m => !deletedIds.has(m.id))
-    selectedIds.value.clear()
+    clear()
   }
 
   loading.value = false
@@ -127,7 +116,7 @@ function handleKeyDown(e: KeyboardEvent) {
     if (showConfirmDelete.value)
       cancelDelete()
     else
-      clearSelection()
+      clear()
     return
   }
 
@@ -155,88 +144,38 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="admin-container">
-    <header class="admin-header">
-      <span>chat admin</span>
+  <AdminShell
+    title="chat admin"
+    noun="message"
+    :auth="auth"
+    :error="error"
+    :loading="loading"
+    :confirm-question="confirmQuestion"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  >
+    <template #controls>
+      <button :disabled="loading" @click="loadMessages">
+        refresh
+      </button>
+      <button :disabled="messages.length === 0" @click="selectAll">
+        all
+      </button>
+      <button :disabled="selectedIds.size === 0" @click="clear">
+        none
+      </button>
+      <button
+        :disabled="selectedIds.size === 0 || !auth.user.value"
+        :title="!auth.user.value ? 'Sign in to delete' : ''"
+        @click="requestDelete"
+      >
+        delete ({{ selectedIds.size }})
+      </button>
+    </template>
 
-      <div class="admin-center">
-        <div class="admin-controls">
-          <button :disabled="loading" @click="loadMessages">
-            refresh
-          </button>
-          <button :disabled="messages.length === 0" @click="selectAll">
-            all
-          </button>
-          <button :disabled="selectedIds.size === 0" @click="clearSelection">
-            none
-          </button>
-          <button
-            :disabled="selectedIds.size === 0 || !user"
-            :title="!user ? 'Sign in to delete' : ''"
-            @click="requestDelete"
-          >
-            delete ({{ selectedIds.size }})
-          </button>
-        </div>
-        <div class="admin-stats">
-          <span>{{ messages.length }} messages · {{ selectedIds.size }} selected</span>
-        </div>
-      </div>
-
-      <div class="auth-status">
-        <span v-if="user">{{ user.email }}</span>
-        <button v-if="user" @click="signOut">
-          sign out
-        </button>
-        <button v-else @click="showAuth = !showAuth">
-          {{ showAuth ? 'hide login' : 'sign in' }}
-        </button>
-      </div>
-    </header>
-
-    <p v-if="error" class="error-message">
-      {{ error }}
-    </p>
-
-    <!-- Auth Form -->
-    <div v-if="showAuth && !user" class="auth-form">
-      <h3>sign in to delete messages</h3>
-      <form @submit.prevent="signIn">
-        <input
-          v-model="email"
-          type="email"
-          placeholder="email"
-          required
-          autocomplete="email"
-        >
-        <input
-          v-model="password"
-          type="password"
-          placeholder="password"
-          required
-          autocomplete="current-password"
-        >
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'signing in...' : 'sign in' }}
-        </button>
-      </form>
-    </div>
-
-    <!-- Confirm Delete Dialog -->
-    <div v-if="showConfirmDelete" class="confirm-overlay">
-      <div class="confirm-dialog">
-        <h3>confirm deletion</h3>
-        <p>Delete {{ selectedIds.size }} message{{ selectedIds.size === 1 ? '' : 's' }}?</p>
-        <div class="confirm-actions">
-          <button @click="cancelDelete">
-            cancel
-          </button>
-          <button class="delete-btn" @click="confirmDelete">
-            delete
-          </button>
-        </div>
-      </div>
-    </div>
+    <template #stats>
+      <span>{{ messages.length }} messages · {{ selectedIds.size }} selected</span>
+    </template>
 
     <div class="table-viewport">
       <table>
@@ -254,9 +193,9 @@ onUnmounted(() => {
             v-for="message in messages"
             :key="message.id"
             :class="{ selected: selectedIds.has(message.id) }"
-            @click="toggleRow(message.id)"
+            @click="toggle(message.id)"
           >
-            <td><input type="checkbox" :checked="selectedIds.has(message.id)" @click.stop="toggleRow(message.id)"></td>
+            <td><input type="checkbox" :checked="selectedIds.has(message.id)" @click.stop="toggle(message.id)"></td>
             <td>{{ new Date(message.created_at).toLocaleString() }}</td>
             <td>{{ message.name }}</td>
             <td :title="message.user_id">
@@ -278,7 +217,7 @@ onUnmounted(() => {
         <p>loading messages...</p>
       </div>
     </div>
-  </div>
+  </AdminShell>
 </template>
 
 <style scoped>

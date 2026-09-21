@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useSelection } from '~/composables/useSelection'
 import { useSupabaseAuth } from '~/composables/useSupabaseAuth'
 import { getSupabase } from '~/lib/supabase'
-import '~/styles/admin.css'
 import { drawStroke } from '~/utils/canvas'
 
 /** A row of public.strokes, as the admin reads and restores it. */
@@ -19,7 +19,6 @@ interface StrokeRow {
 
 const canvasCounts = ref(new Map<string, number>())
 const strokes = ref<StrokeRow[]>([])
-const selectedIds = ref(new Set<string>())
 const filterCanvas = ref('')
 const loading = ref(true)
 const error = ref('')
@@ -28,8 +27,13 @@ const error = ref('')
 const undoStack = ref<StrokeRow[][]>([])
 const redoStack = ref<StrokeRow[][]>([])
 
-const { user, email, password, showAuth, signIn, signOut } = useSupabaseAuth(error, loading)
+const auth = useSupabaseAuth(error, loading)
+const { selectedIds, toggle, selectAll: selectAllIds, clear } = useSelection(() => strokes.value.map(s => s.stroke_id))
 const showConfirmDelete = ref(false)
+
+const confirmQuestion = computed(() => showConfirmDelete.value
+  ? `Delete ${selectedIds.value.size} stroke${selectedIds.value.size === 1 ? '' : 's'} from ${filterCanvas.value}?`
+  : null)
 
 const viewportRef = ref<HTMLDivElement | null>(null)
 const containerRef = ref<HTMLDivElement | null>(null)
@@ -266,14 +270,14 @@ function handleWindowMouseUp(e: MouseEvent) {
     for (let i = strokes.value.length - 1; i >= 0; i--) {
       const stroke = strokes.value[i]
       if (isPointNearStroke(dragEnd.x, dragEnd.y, stroke)) {
-        toggleStroke(stroke.stroke_id)
+        toggle(stroke.stroke_id)
         hitStroke = true
         break
       }
     }
 
     if (!hitStroke)
-      selectedIds.value.clear()
+      clear()
   }
   else {
     const minX = Math.min(dragStart.x, dragEnd.x)
@@ -360,20 +364,13 @@ function distanceToLineSegment(px: number, py: number, x1: number, y1: number, x
   return Math.hypot(px - projX, py - projY)
 }
 
-function toggleStroke(strokeId: string) {
-  if (selectedIds.value.has(strokeId))
-    selectedIds.value.delete(strokeId)
-  else
-    selectedIds.value.add(strokeId)
-}
-
 function selectAll() {
-  selectedIds.value = new Set(strokes.value.map(s => s.stroke_id))
+  selectAllIds()
   drawOverlay()
 }
 
 function clearSelection() {
-  selectedIds.value.clear()
+  clear()
   drawOverlay()
 }
 
@@ -390,9 +387,9 @@ async function requestDelete() {
   if (!supabase)
     return
 
-  if (!user.value) {
+  if (!auth.user.value) {
     error.value = 'You must be authenticated to delete strokes'
-    showAuth.value = true
+    auth.showAuth.value = true
     return
   }
 
@@ -433,7 +430,7 @@ async function confirmDelete() {
   error.value = ''
 
   if (await deleteBatch(batch)) {
-    selectedIds.value.clear()
+    clear()
     undoStack.value.push(batch)
     redoStack.value = []
     setupCanvas()
@@ -538,7 +535,7 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 watch(filterCanvas, () => {
-  selectedIds.value.clear()
+  clear()
   undoStack.value = []
   redoStack.value = []
   loadStrokes()
@@ -565,103 +562,53 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="admin-container">
-    <header class="admin-header">
-      <span>stroke admin</span>
+  <AdminShell
+    title="stroke admin"
+    noun="stroke"
+    :auth="auth"
+    :error="error"
+    :loading="loading"
+    :confirm-question="confirmQuestion"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  >
+    <template #controls>
+      <select v-model="filterCanvas">
+        <option value="">
+          choose canvas
+        </option>
+        <option v-for="canvas in canvases" :key="canvas" :value="canvas">
+          {{ canvas }} ({{ canvasCounts.get(canvas) }})
+        </option>
+      </select>
+      <button :disabled="loading" @click="refresh">
+        refresh
+      </button>
+      <button :disabled="strokes.length === 0" @click="selectAll">
+        all
+      </button>
+      <button :disabled="selectedIds.size === 0" @click="clearSelection">
+        none
+      </button>
+      <button :disabled="undoStack.length === 0 || loading" @click="undoDelete">
+        undo
+      </button>
+      <button :disabled="redoStack.length === 0 || loading" @click="redoDelete">
+        redo
+      </button>
+      <button
+        :disabled="selectedIds.size === 0 || !auth.user.value"
+        :title="!auth.user.value ? 'Sign in to delete' : ''"
+        @click="requestDelete"
+      >
+        delete ({{ selectedIds.size }})
+      </button>
+    </template>
 
-      <div class="admin-center">
-        <div class="admin-controls">
-          <select v-model="filterCanvas">
-            <option value="">
-              choose canvas
-            </option>
-            <option v-for="canvas in canvases" :key="canvas" :value="canvas">
-              {{ canvas }} ({{ canvasCounts.get(canvas) }})
-            </option>
-          </select>
-          <button :disabled="loading" @click="refresh">
-            refresh
-          </button>
-          <button :disabled="strokes.length === 0" @click="selectAll">
-            all
-          </button>
-          <button :disabled="selectedIds.size === 0" @click="clearSelection">
-            none
-          </button>
-          <button :disabled="undoStack.length === 0 || loading" @click="undoDelete">
-            undo
-          </button>
-          <button :disabled="redoStack.length === 0 || loading" @click="redoDelete">
-            redo
-          </button>
-          <button
-            :disabled="selectedIds.size === 0 || !user"
-            :title="!user ? 'Sign in to delete' : ''"
-            @click="requestDelete"
-          >
-            delete ({{ selectedIds.size }})
-          </button>
-        </div>
-        <div v-if="filterCanvas" class="admin-stats">
-          <span>{{ strokes.length }} strokes · {{ eraserCount }} erasers · {{ selectedIds.size }} selected</span>
-          <span>click or drag selects · del deletes · ctrl+z undoes delete</span>
-        </div>
-      </div>
-
-      <div class="auth-status">
-        <span v-if="user">{{ user.email }}</span>
-        <button v-if="user" @click="signOut">
-          sign out
-        </button>
-        <button v-else @click="showAuth = !showAuth">
-          {{ showAuth ? 'hide login' : 'sign in' }}
-        </button>
-      </div>
-    </header>
-
-    <p v-if="error" class="error-message">
-      {{ error }}
-    </p>
-
-    <!-- Auth Form -->
-    <div v-if="showAuth && !user" class="auth-form">
-      <h3>sign in to delete strokes</h3>
-      <form @submit.prevent="signIn">
-        <input
-          v-model="email"
-          type="email"
-          placeholder="email"
-          required
-          autocomplete="email"
-        >
-        <input
-          v-model="password"
-          type="password"
-          placeholder="password"
-          required
-          autocomplete="current-password"
-        >
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'signing in...' : 'sign in' }}
-        </button>
-      </form>
-    </div>
-
-    <!-- Confirm Delete Dialog -->
-    <div v-if="showConfirmDelete" class="confirm-overlay">
-      <div class="confirm-dialog">
-        <h3>confirm deletion</h3>
-        <p>Delete {{ selectedIds.size }} stroke{{ selectedIds.size === 1 ? '' : 's' }} from {{ filterCanvas }}?</p>
-        <div class="confirm-actions">
-          <button @click="cancelDelete">
-            cancel
-          </button>
-          <button class="delete-btn" @click="confirmDelete">
-            delete
-          </button>
-        </div>
-      </div>
-    </div>
+    <template v-if="filterCanvas" #stats>
+      <span>{{ strokes.length }} strokes · {{ eraserCount }} erasers · {{ selectedIds.size }} selected</span>
+      <span>click or drag selects · del deletes · ctrl+z undoes delete</span>
+    </template>
 
     <div ref="viewportRef" class="canvas-viewport">
       <div
@@ -691,7 +638,7 @@ onUnmounted(() => {
         class="overlay-canvas"
       />
     </div>
-  </div>
+  </AdminShell>
 </template>
 
 <style scoped>
