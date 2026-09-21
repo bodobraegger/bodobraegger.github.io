@@ -45,55 +45,16 @@
     color: inherit;
   }
 
-  /* Ordered list types */
-  ol {
-    &[type='A'] {
-      --list-counter-style: upper-alpha;
-    }
+  ol > li {
+    position: relative;
+    padding-left: 1.75em;
 
-    &[type='a'] {
-      --list-counter-style: lower-alpha;
-    }
-
-    &[type='A s'] {
-      --list-counter-style: upper-alpha;
-    }
-
-    &[type='a s'] {
-      --list-counter-style: lower-alpha;
-    }
-
-    &[type='I'] {
-      --list-counter-style: upper-roman;
-    }
-
-    &[type='i'] {
-      --list-counter-style: lower-roman;
-    }
-
-    &[type='I s'] {
-      --list-counter-style: upper-roman;
-    }
-
-    &[type='i s'] {
-      --list-counter-style: lower-roman;
-    }
-
-    &[type='1'] {
-      --list-counter-style: decimal;
-    }
-
-    > li {
-      position: relative;
-      padding-left: 1.75em;
-
-      &::before {
-        content: counter(list-item, var(--list-counter-style, decimal)) '.';
-        position: absolute;
-        font-weight: 400;
-        color: var(--fg-muted);
-        left: 0;
-      }
+    &::before {
+      content: counter(list-item) '.';
+      position: absolute;
+      font-weight: 400;
+      color: var(--fg-muted);
+      left: 0;
     }
   }
 
