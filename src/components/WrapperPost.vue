@@ -20,11 +20,6 @@ const { viewCount, trackView } = usePageViews(route.path)
 
 const showViews = frontmatter.showViews ?? true
 
-const ORNAMENT_UNIT = '⋅.˳˳.⋅ॱ˙˙ॱ'
-const ORNAMENT_END = 'ᐧ.˳˳.✶'
-const ORNAMENT_REPEAT = 40
-const ornamentFiller = ORNAMENT_UNIT.repeat(ORNAMENT_REPEAT) + ORNAMENT_END
-
 const language = resolveLanguage(frontmatter.lang, route.path)
 const translations = findTranslations(router.getRoutes(), route.path)
 
@@ -318,9 +313,7 @@ if (frontmatter.hydra) {
         class="flex-1 flex justify-end items-baseline gap-x-2 tabular-nums transition-opacity duration-500"
         :class="viewCount === null ? 'op0' : 'op50'"
       >
-        <span class="relative flex-1 min-w-0 self-stretch overflow-hidden" aria-hidden="true">
-          <span class="absolute right-0 bottom-0 ws-nowrap">{{ ornamentFiller }}</span>
-        </span>
+        <span class="ornament flex-1 min-w-0 self-stretch" aria-hidden="true" />
         <span class="flex-none">{{ (viewCount ?? 0).toString().padStart(3, '0') }} view(s)</span>
       </span>
     </p>
@@ -343,3 +336,21 @@ if (frontmatter.hydra) {
     />
   </div>
 </template>
+
+<style scoped>
+/* The run of marks that fills the gap before the view count. It is set here
+   rather than in the markup, so the repeated glyphs are written once for the
+   whole site instead of into the static HTML of every page. */
+.ornament {
+  position: relative;
+  overflow: hidden;
+}
+
+.ornament::after {
+  content: '⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.✶';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  white-space: nowrap;
+}
+</style>
