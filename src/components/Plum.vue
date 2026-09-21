@@ -12,19 +12,13 @@ const el = ref<HTMLCanvasElement | null>(null)
 const { random } = Math
 const size = reactive(useWindowSize())
 
-const start = ref<Fn>(() => {})
 const MIN_BRANCH = 30
-const len = ref(6)
-const stopped = ref(false)
+const LENGTH = 6
+let stopped = false
 
-function initCanvas(canvas: HTMLCanvasElement, width = 400, height = 400, _dpi?: number) {
+function initCanvas(canvas: HTMLCanvasElement, width = 400, height = 400) {
   const ctx = canvas.getContext('2d')!
-
-  const dpr = window.devicePixelRatio || 1
-  // @ts-expect-error vendor
-  const bsr = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1
-
-  const dpi = _dpi || dpr / bsr
+  const dpi = window.devicePixelRatio || 1
 
   canvas.style.width = `${width}px`
   canvas.style.height = `${height}px`
@@ -32,7 +26,7 @@ function initCanvas(canvas: HTMLCanvasElement, width = 400, height = 400, _dpi?:
   canvas.height = dpi * height
   ctx.scale(dpi, dpi)
 
-  return { ctx, dpi }
+  return ctx
 }
 
 function polar2cart(x = 0, y = 0, r = 0, theta = 0) {
@@ -55,14 +49,14 @@ function startDrawing() {
   const canvas = el.value
   if (!canvas)
     return
-  const { ctx } = initCanvas(canvas, size.width, size.height)
+  const ctx = initCanvas(canvas, size.width, size.height)
   const { width, height } = canvas
 
   let steps: Fn[] = []
   let prevSteps: Fn[] = []
 
   const step = (x: number, y: number, rad: number, counter: { value: number } = { value: 0 }) => {
-    const length = random() * len.value
+    const length = random() * LENGTH
     counter.value += 1
 
     const [nx, ny] = polar2cart(x, y, length, rad)
@@ -107,7 +101,7 @@ function startDrawing() {
 
     if (!prevSteps.length) {
       controls.pause()
-      stopped.value = true
+      stopped = true
     }
 
     // Execute all the steps from the previous frame
@@ -123,7 +117,7 @@ function startDrawing() {
   controls = useRafFn(frame, { immediate: false })
 
   useEventListener(document, 'visibilitychange', () => {
-    if (stopped.value)
+    if (stopped)
       return
     if (document.hidden)
       controls.pause()
@@ -136,7 +130,7 @@ function startDrawing() {
    */
   const randomMiddle = () => random() * 0.6 + 0.2
 
-  start.value = () => {
+  const start = () => {
     controls.pause()
     ctx.clearRect(0, 0, width, height)
     ctx.lineWidth = 1
@@ -151,10 +145,10 @@ function startDrawing() {
     if (size.width < 500)
       steps = steps.slice(0, 2)
     controls.resume()
-    stopped.value = false
+    stopped = false
   }
 
-  start.value()
+  start()
 }
 </script>
 
