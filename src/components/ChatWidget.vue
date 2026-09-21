@@ -424,20 +424,17 @@ onUnmounted(() => {
   }
 }
 
+/* A message from someone else flashes the border in the site's error red. */
 .chat-widget-panel {
   display: flex;
   flex-direction: column;
   border: 1px dashed var(--fg);
   backdrop-filter: blur(2px);
+  transition: border-color 0.3s;
 }
 
 .chat-widget-panel:hover {
   border-style: solid;
-}
-
-/* A message from someone else: the border flashes the site's error red. */
-.chat-widget-panel {
-  transition: border-color 0.3s;
 }
 
 .chat-widget-panel.alert {

@@ -189,6 +189,9 @@ html {
   }
 }
 
+/* Every heading also wears a photocopy filter on top of its cut: a slow noise
+   pushes the outlines about and a fine grain roughens their edges, so the
+   letters keep their angles and lose their clean cut. */
 h1,
 h2,
 h3,
@@ -198,6 +201,7 @@ h6 {
   font-family: var(--fonts-heading);
   font-variation-settings: var(--axis-mono);
   font-weight: 600;
+  filter: var(--xerox);
 }
 
 /* Every letter of a heading, and of a list title, is wrapped in .cut and one
@@ -305,18 +309,6 @@ h6 {
 .step-3 {
   font-size: 0.99em;
   vertical-align: 0.012em;
-}
-
-/* Every heading wears a photocopy filter on top of the cut: a slow noise
-   pushes the outlines about and a fine grain roughens their edges, so the
-   letters keep their angles and lose their clean cut. */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  filter: var(--xerox);
 }
 
 h2 {
