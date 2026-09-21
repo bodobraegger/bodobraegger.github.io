@@ -27,11 +27,9 @@ const isHovering = ref(false)
 
 const titleLetters = computed(() => cutLetters(props.item.name))
 
-const pagePath = computed(() =>
-  !isExternal.value && props.item.link && props.item.link !== '.'
-    ? `/projects/${props.item.link!.replace('./projects/', '').replace('./', '')}`
-    : null,
-)
+// isExternal already covers a missing link and a bare ".", so anything left is
+// a page of this site and href is its path.
+const pagePath = computed(() => isExternal.value ? null : href.value)
 
 const { viewCount, fetchViewCount } = usePageViews(pagePath.value ?? '')
 
