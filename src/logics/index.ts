@@ -47,7 +47,9 @@ export function formatDate(d: string | Date, onlyDate = true, options?: Intl.Dat
   if (Number.isNaN(date.getTime()))
     return String(d)
   const isDateOnly = typeof d === 'string' && DATE_ONLY_PATTERN.test(d)
-  const timeZone = isDateOnly ? 'UTC' : undefined
+  // A caller that names a zone means it. Otherwise a calendar day is read in
+  // UTC, so it falls on the same day in every timezone.
+  const timeZone = options?.timeZone ?? (isDateOnly ? 'UTC' : undefined)
 
   let resolved = options
   if (!resolved) {

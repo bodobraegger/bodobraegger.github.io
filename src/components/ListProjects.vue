@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { disableSlidingIfVisited } from '~/logics'
+import { disableSlidingIfVisited, formatDate } from '~/logics'
 
 const props = defineProps<{ projects: Record<string, any[]> }>()
 
@@ -47,18 +47,18 @@ onUnmounted(() => {
   document.documentElement.classList.remove('toc-always-on')
 })
 
+// A project dated without a timezone is dated where it was made, so its year
+// is read in Zurich rather than wherever the reader happens to be.
+const PROJECT_TIME_ZONE = 'Europe/Zurich'
 const hasTimezone = (date: string) => /Z|[+-]\d{2}:?\d{2}$/.test(date)
-const yearFormatters = new Map<string | undefined, Intl.DateTimeFormat>()
+
 function getYear(date?: string) {
   if (!date)
     return '?'
-  const tz = hasTimezone(date) ? undefined : 'Europe/Zurich'
-  let formatter = yearFormatters.get(tz)
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: tz })
-    yearFormatters.set(tz, formatter)
-  }
-  return Number(formatter.format(new Date(date)))
+  return Number(formatDate(date, false, {
+    year: 'numeric',
+    timeZone: hasTimezone(date) ? undefined : PROJECT_TIME_ZONE,
+  }))
 }
 
 // Single pass: a year header appears on the first visible item of each year
