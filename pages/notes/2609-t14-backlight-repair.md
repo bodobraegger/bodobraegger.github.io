@@ -31,9 +31,50 @@ page numbers are the printed ones.
   cable is fine.
 - Reseating and cleaning the LCD cable at the system board did not help.
 
-So the break is in the backlight supply path. Three candidates remain, in order
-of likelihood: the LCD cable, the backlight fuse on the system board, the LED
-driver on the panel. A multimeter separates them.
+So the break is in the backlight supply path. Three candidates remained: the
+LCD cable, the backlight fuse on the system board, the LED driver on the panel.
+A multimeter separated them, see "Result" below.
+
+## Result, 2026-09-24: the fuse F7 is open
+
+Measured at the LCD connector JLCD1 on the board, panel connected, brightness
+at maximum:
+
+| Net     | JLCD1 pins | Measured | Meaning                      |
+| ------- | ---------- | -------- | ---------------------------- |
+| VCC3LCD | 19 to 21   | 3.33 V   | panel logic supply present   |
+| BL_ON   | 34         | 3.3 V    | backlight enable present     |
+| VBL20   | 37 to 39   | 0 V      | backlight power rail missing |
+
+The cable has no short between VBL20 and ground. The NM-D451 schematic (sheet
+"LCD/LID/MIC/CAMERA/PWR SW") shows VBL20 fed from B+ through one part only, the
+fuse F7, Littelfuse 0497003, 3 A, 32 V, 0603. With BL_ON present and VBL20 at
+0 V, F7 is the only part that can be open.
+
+![NM-D451 schematic, B+ through F7 to VBL20](../../src/assets/images/notes/2609-t14-backlight-repair/nm-d451_schematic_backlight_fuse.png)
+
+F7 sits on the keyboard side of the board, opposite JLCD1, on the corner tab
+next to the SIM reader JSIM1, beside QV901 and UTS1, a few millimetres from the
+"HT4B5 NM-D451 Rev:1.0" print. The board must come out to reach it.
+
+![NM-D451 boardview, keyboard side, F7 circled](../../src/assets/images/notes/2609-t14-backlight-repair/nm-d451_side_B_keyboard_side_F7.png)
+
+![NM-D451 boardview, F7 close-up](../../src/assets/images/notes/2609-t14-backlight-repair/nm-d451_F7_closeup.png)
+
+![JLCD1 on the board, with U238 and the ESD arrays](../../src/assets/images/notes/2609-t14-backlight-repair/jlcd1-photo.webp)
+
+To confirm, board out and unpowered: meter on beep, needles on the two metal
+ends of F7. No beep means open. Then each end of F7 against a mounting-hole
+ring: neither may beep, or a new fuse blows again.
+
+Board removal note: the fan and heatsink are screwed to the board, so they come
+out with it. The keyboard and touchpad cables are on the far side and are
+reached only after the board is lifted and turned. Lift, flip, then disconnect.
+I lifted without flipping and strained them. Do not do that.
+
+Schematic and boardview: indiafix.in,
+[NM-D451 rev 1.0](https://www.indiafix.in/2026/01/lenovo-thinkpad-t14-gen-2-nm-d451-rev.html),
+RAR password "indiafix". The `.tvw` opens in OpenBoardView.
 
 Panel from the EDID: CSOT `MNE001EA1-5`, 14" **UHD 3840x2160**, 40-pin eDP,
 the 500-nit DisplayHDR option in the PSREF. The desktop runs at 1920x1080 only
@@ -217,15 +258,16 @@ Source for the family: [myfixguide](https://www.myfixguide.com/store/lcd-cable-f
 
 System board: Lenovo NM-D451, silkscreen HT4B5, FRU 5B21C82223 for the
 Ryzen 7 PRO 5850U with 16 GB soldered
-([Newegg listing](https://www.newegg.com/p/2RC-003M-00ZW7)). The backlight fuse
-designator on this board is not confirmed anywhere public. On the T14 Gen 3 AMD
-board (NM-E441) it is FV1 next to the display connector
-([badcaps thread](https://www.badcaps.net/forum/troubleshooting-hardware-devices-and-electronics-theory/troubleshooting-laptops-tablets-and-mobile-devices/3619520-which-fuse-is-responsible-for-backlight-on-lenovo-thinkpad-t14-gen-3)),
-and on the contemporary NM-D472 it is "FV1 ... rated 3a 32v"
-([badcaps thread](https://www.badcaps.net/forum/troubleshooting-hardware-devices-and-electronics-theory/troubleshooting-laptops-tablets-and-mobile-devices/schematic-requests-only/98659-lenovo-ideapad-3-15itl6-nm-d472)).
-Working assumption: FV1, 0603 package, 3 A 32 V, next to the LCD connector.
-The NM-D451 schematic is behind registration at
-[dr-bios](https://dr-bios.com/threads/lenovo-thinkpad-t14-gen-2-nm-d451-schematic.68438/).
+([Newegg listing](https://www.newegg.com/p/2RC-003M-00ZW7)). The backlight
+fuse is F7, Littelfuse 0497003.PKRHF, 3 A 32 V fast acting, 0603, confirmed in
+the schematic (see "Result" above). The earlier guess FV1 from sibling boards
+was wrong. Any 3 A 32 V fast-acting 0603 chip fuse fits, for example Littelfuse
+0494003 or 0467003.
+
+Repair shops in Rio de Janeiro with board-level labs: Soluciomática (Centro,
+Barra), FixTech (Méier, Barra), SpeedTech (Del Castilho, courier pickup), JR
+Manutenção de Placa Mãe (Higienópolis). Estimate for a fuse swap: R$ 150 to
+400 labour, plus a diagnostic fee of R$ 50 to 150 usually waived on approval.
 
 | Item                                                              | Where                                                                         | Price            |
 | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------- |
@@ -279,4 +321,6 @@ Link: <https://www.youtube.com/watch?v=I5T9uOPX6kQ>
   39 (error 0288), 41 (LCD symptoms), 103, 105 to 109, 122.
 - Panel and cable part numbers, board name, fuse threads and laptop prices:
   web search on 2026-09-15, links inline above.
+- NM-D451 rev 1.0 schematic and boardview, indiafix.in, read on 2026-09-24.
+  Cable label on this machine: HT4B0 UHD LCD CABLE EDP DC02C00L360.
 - The full investigation log is not publised, `debugging.md`, appendix A15.
