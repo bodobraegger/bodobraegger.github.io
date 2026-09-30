@@ -1930,6 +1930,8 @@ O GCM é um modo **AEAD** (Authenticated Encryption with Associated Data): entre
 propriedades numa passagem só, com uma única chave, e sem a armadilha de combinar cifra e
 MAC na ordem errada.
 
+<CipherTamper />
+
 ---
 
 ## 7b. Lista da tríade CIA ("conceitos iniciais")

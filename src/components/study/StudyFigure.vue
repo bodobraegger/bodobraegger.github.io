@@ -20,15 +20,14 @@ defineProps<{ title: string }>()
   --study-mark: color-mix(in srgb, var(--study-accent) 18%, transparent);
   --study-alert-mark: color-mix(in srgb, var(--study-alert) 18%, transparent);
 
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
   margin: 2em 0;
   padding: 1rem;
   border: 1px dashed var(--c-border);
   font-size: 0.9rem;
   line-height: 1.45;
-
-  > * + * {
-    margin-top: 0.9rem;
-  }
 
   p {
     margin: 0;

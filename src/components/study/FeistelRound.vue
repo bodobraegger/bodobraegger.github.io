@@ -384,7 +384,6 @@ function resetValues() {
 
 .feistel-progress {
   display: flex;
-  margin-top: 0.6rem;
   gap: 3px;
 }
 

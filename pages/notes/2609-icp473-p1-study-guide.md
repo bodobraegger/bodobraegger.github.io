@@ -2045,6 +2045,8 @@ GCM is an **AEAD** mode (Authenticated Encryption with Associated Data): it deli
 properties in one pass, with a single key, and without the risk of combining cipher and MAC in
 the wrong order.
 
+<CipherTamper />
+
 ---
 
 ## 7b. The CIA triad list ("conceitos iniciais")
