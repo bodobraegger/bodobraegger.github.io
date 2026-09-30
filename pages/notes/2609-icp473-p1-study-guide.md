@@ -953,6 +953,8 @@ collisions appear **much earlier** than intuition suggests.
 
 **The rule WEP violates:** the same IV must never be reused with the same secret key.
 
+<BirthdayCollision />
+
 External material:
 
 - Computerphile, video: [Hash Collisions & The Birthday Paradox](https://www.youtube.com/watch?v=jsraR-el8_o)

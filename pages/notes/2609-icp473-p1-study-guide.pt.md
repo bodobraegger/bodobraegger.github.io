@@ -871,6 +871,8 @@ de IV no WEP: as colisões aparecem **muito mais cedo** do que a intuição suge
 
 **A regra que o WEP viola:** o mesmo IV nunca deveria ser reutilizado com a mesma chave secreta.
 
+<BirthdayCollision />
+
 Material externo (em inglês):
 
 - Computerphile, vídeo: [Hash Collisions & The Birthday Paradox](https://www.youtube.com/watch?v=jsraR-el8_o)

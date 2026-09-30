@@ -56,10 +56,13 @@ defineProps<{ title: string }>()
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  flex: 1 1 9rem;
   min-width: 0;
   font-size: 0.85rem;
   color: var(--fg-muted);
+}
+
+.cipher-fields > .cipher-field {
+  flex: 1 1 9rem;
 }
 
 .cipher-figure input[type='text'],
