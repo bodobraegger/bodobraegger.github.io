@@ -292,7 +292,7 @@ function reset() {
 .reuse-bits {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 1.5rem;
+  gap: 0.9rem 1.5rem;
 }
 
 .reuse-recovered {
