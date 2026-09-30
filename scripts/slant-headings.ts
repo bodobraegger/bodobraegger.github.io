@@ -47,21 +47,31 @@ export function slantHeadings(md: MarkdownIt) {
       else if (token.type === 'heading_close')
         insideHeading = false
       else if (insideHeading && token.type === 'inline')
-        handSetInline(md, token)
+        markHandSet(token)
     }
   })
+
+  const renderText = md.renderer.rules.text!
+  md.renderer.rules.text = (tokens, index, options, env, self) => {
+    const offset = tokens[index].meta?.handSetOffset
+    return offset === undefined
+      ? renderText(tokens, index, options, env, self)
+      : handSetSpans(tokens[index].content, md, offset)
+  }
 }
 
-/** Replaces the plain text of a heading with one span per letter. */
-function handSetInline(md: MarkdownIt, inline: Token) {
+/**
+ * Marks the plain text of a heading to be set as one span per letter. The
+ * tokens stay text until render time, because the anchor and table of
+ * contents plugins read a heading's text tokens, and find none in spans.
+ */
+function markHandSet(inline: Token) {
   let offset = 0
 
   for (const child of inline.children ?? []) {
     if (child.type !== 'text' || !child.content)
       continue
-    const html = handSetSpans(child.content, md, offset)
+    child.meta = { ...child.meta, handSetOffset: offset }
     offset += child.content.length
-    child.type = 'html_inline'
-    child.content = html
   }
 }
