@@ -527,6 +527,8 @@ survive the cipher. If `%` is the most common symbol, `%` is probably E.
 | Key space | 25                  | 26! ≈ 4 × 10^26            |
 | Broken by | Brute force         | Frequency analysis         |
 
+<ShiftCipherFrequencies />
+
 External material:
 
 - Khan Academy, video: [The Caesar cipher](https://www.youtube.com/watch?v=sMOZf4GN3oc)
@@ -618,6 +620,8 @@ Cipher: ZICVTWQNGKZEIIGASXSTSLVVWLA
 ```
 
 **It is still vulnerable**, because the key shares the frequency distribution of the plaintext.
+
+<ShiftCipherFrequencies initial-mode="vigenere" />
 
 External material:
 

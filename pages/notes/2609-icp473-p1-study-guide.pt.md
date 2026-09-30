@@ -461,6 +461,8 @@ sobrevivem à cifra. Se `%` é o símbolo mais comum, `%` provavelmente é E.
 | Espaço de chaves | 25                          | 26! ≈ 4 × 10^26                  |
 | Quebra por       | Força bruta                 | Análise de frequência            |
 
+<ShiftCipherFrequencies />
+
 Material externo (em inglês):
 
 - Khan Academy, vídeo: [The Caesar cipher](https://www.youtube.com/watch?v=sMOZf4GN3oc)
@@ -547,6 +549,8 @@ Cifrado: ZICVTWQNGKZEIIGASXSTSLVVWLA
 ```
 
 **Ainda é vulnerável**, porque a chave compartilha a distribuição de frequência do texto claro.
+
+<ShiftCipherFrequencies initial-mode="vigenere" />
 
 Material externo (em inglês):
 
