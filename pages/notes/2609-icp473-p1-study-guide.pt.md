@@ -1224,6 +1224,8 @@ Na rodada de decriptação, `R(i-1)` chega como entrada da função F, ela recal
 **Consequência prática:** o mesmo hardware ou software serve para cifrar e decifrar.
 E a função F **não precisa ser inversível**. Esse é o grande atrativo da estrutura de Feistel.
 
+<FeistelRound />
+
 Material externo (em inglês):
 
 - Computerphile, vídeo: [Feistel Cipher](https://www.youtube.com/watch?v=FGhj3CGxl8I)
@@ -1735,6 +1737,8 @@ Mais as duas considerações adicionais: velocidade em software e facilidade de 
 > `40 XOR 228 = 204 = 11001100`, recuperando `1100110010101010`.
 > **Se a prova perguntar se o código "desfaz" a cifra, a resposta é não.**
 > A troca de metades é apenas o passo final da estrutura de Feistel, não a inversão.
+
+<FeistelRound initial-phase="swap" />
 
 ### Seção 4: DES e 3DES
 

@@ -1322,6 +1322,8 @@ In the decryption round, `R(i-1)` arrives as input to F, F recomputes
 And the function F **does not need to be invertible**.
 That is the main attraction of the Feistel structure.
 
+<FeistelRound />
+
 External material:
 
 - Computerphile, video: [Feistel Cipher](https://www.youtube.com/watch?v=FGhj3CGxl8I)
@@ -1848,6 +1850,8 @@ Plus the two further considerations: speed in software, and ease of analysis.
 > `40 XOR 228 = 204 = 11001100`, recovering `1100110010101010`.
 > **If the exam asks whether the code "undoes" the encryption, the answer is no.**
 > The half swap is only the final step of the Feistel structure, not the inversion.
+
+<FeistelRound initial-phase="swap" />
 
 ### Section 4: DES and 3DES
 
