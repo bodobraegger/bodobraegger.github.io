@@ -1475,6 +1475,8 @@ Alguns autores desaconselham completamente.
 - A chave deve ser trocada após **2^(n/2) blocos**, onde n é o tamanho do bloco.
 - Considerado um dos modos mais seguros e eficientes para o AES.
 
+<CipherModesImage />
+
 Material externo (em inglês):
 
 - Computerphile, vídeo: [Modes of Operation](https://www.youtube.com/watch?v=Rk0NIQfEXBA)

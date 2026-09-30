@@ -1583,6 +1583,8 @@ Some authors advise against any use at all.
 - The key must be changed after **2^(n/2) blocks**, where n is the block size.
 - It is considered one of the most secure and efficient modes for AES.
 
+<CipherModesImage />
+
 External material:
 
 - Computerphile, video: [Modes of Operation](https://www.youtube.com/watch?v=Rk0NIQfEXBA)
