@@ -8,6 +8,18 @@ draft: true
 plum: false
 ---
 
+<script setup>
+import DrawablePen from '../../src/components/DrawablePen.vue'
+</script>
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#1d4ed8" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#dc2626" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(250,204,21,0.4)" :strokeWidth="20" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
+
 **Exam date:** 2 October 2026, Friday.
 **Scope:** slides 1 to 248 (Lectures 1 to 9), plus exercise lists 1, 2 and 3.
 

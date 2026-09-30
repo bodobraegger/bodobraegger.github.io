@@ -8,6 +8,18 @@ draft: true
 plum: false
 ---
 
+<script setup>
+import DrawablePen from '../../src/components/DrawablePen.vue'
+</script>
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#1d4ed8" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#dc2626" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(250,204,21,0.4)" :strokeWidth="20" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
+
 **Prova:** 02/10/2026, sexta-feira.
 **Matéria:** slides do início até o slide 248 (Aulas 1 a 9), mais as listas 1, 2 e 3.
 
