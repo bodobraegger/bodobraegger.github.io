@@ -788,6 +788,8 @@ Because the only operation is a **swap**, `S` remains a permutation of 0 to 255.
 **Strength of RC4:** it resists practical attacks if the key is long enough, for example
 128 bits. **The WEP problem is not RC4 itself. It is how WEP manages the keys.**
 
+<Rc4Stepper />
+
 External material:
 
 - FSA Writes, video: [RC4 Cipher simplified](https://www.youtube.com/watch?v=3-yRvYiw9V4)

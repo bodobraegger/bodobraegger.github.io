@@ -707,6 +707,8 @@ Como a única operação é uma **troca**, `S` continua sendo uma permutação d
 **Força do RC4:** resiste a ataques práticos se a chave for longa o bastante (por exemplo,
 128 bits). **O problema do WEP não é o RC4 em si, é o modo como o WEP gera as chaves.**
 
+<Rc4Stepper />
+
 Material externo (em inglês):
 
 - FSA Writes, vídeo: [RC4 Cipher simplified](https://www.youtube.com/watch?v=3-yRvYiw9V4)
