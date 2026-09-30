@@ -33,7 +33,7 @@ Três regras para os dois dias:
 2. No fim de cada bloco, feche o guia e responda as perguntas indicadas do simulado (seção 10).
 3. Se errar uma pergunta, volte à seção indicada entre parênteses ao lado dela.
 4. Se um conceito não fizer sentido, abra a lista "Material externo" no fim da seção dele.
-   São vídeos e ferramentas interativas em inglês, todos verificados.
+   São vídeos e ferramentas interativas em inglês.
 
 ### Quarta (hoje): conceitos, cripto clássica, fluxo e WEP (cerca de 4 horas e meia)
 
@@ -1713,7 +1713,7 @@ e **função F** (não linear, com SAC e BIC).
 
 Mais as duas considerações adicionais: velocidade em software e facilidade de análise.
 
-> **Resultado numérico do código, verificado.** Com `chave = 0b10101010` e
+> **Resultado numérico do código.** Com `chave = 0b10101010` e
 > `bloco = 0b1100110010101010`:
 > `L = 11001100`, `R = 10101010`, `F = 11100100` (204 × 170 = 34680, e `34680 & 0xFF = 228`),
 > `L1 = 10101010`, `R1 = 204 XOR 228 = 00101000`, `cifrado = 1010101000101000`.

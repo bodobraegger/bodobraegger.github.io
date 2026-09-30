@@ -36,7 +36,7 @@ Three rules for the two days:
 2. At the end of each block, close the guide and answer the listed mock exam questions (section 10).
 3. If you get a question wrong, go back to the section in parentheses next to it.
 4. If a concept does not make sense, open the "External material" list at the end of its section.
-   It has videos and interactive tools, and every link is verified.
+   It has videos and interactive tools.
 
 ### Wednesday (today): concepts, classical ciphers, stream ciphers and WEP (about 4.5 hours)
 
@@ -171,8 +171,6 @@ Learn these. The exam will use the left column.
 | 7       | WEP                                           | 123 to 159 |
 | 8       | Pseudorandom numbers, Intel DRNG              | 160 to 195 |
 | 9       | Block ciphers, Feistel, DES, 3DES, AES, modes | 196 to 256 |
-
-These slide ranges are verified against the PDF.
 
 Exercise lists in scope:
 
@@ -1828,7 +1826,7 @@ and BIC).
 
 Plus the two further considerations: speed in software, and ease of analysis.
 
-> **Numerical result of the code, verified.** With `chave = 0b10101010` and
+> **Numerical result of the code.** With `chave = 0b10101010` and
 > `bloco = 0b1100110010101010`:
 > `L = 11001100`, `R = 10101010`, `F = 11100100` (204 × 170 = 34680, and `34680 & 0xFF = 228`),
 > `L1 = 10101010`, `R1 = 204 XOR 228 = 00101000`, `cifrado = 1010101000101000`.
