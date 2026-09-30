@@ -1419,6 +1419,8 @@ plaintexts or keys, approaching the answer by gradual trials.
   difference of **18 bits**. In the final ciphertext: **32 bits** of difference.
 - Changing **1 bit of the key**: about **half the bits** of the final ciphertext differ.
 
+<AvalancheGrid />
+
 ### 6.9 The strength of DES
 
 **Two areas of concern:** key size and the nature of the algorithm.

@@ -1320,6 +1320,8 @@ busca de textos claros ou de chaves, aproximando-se da resposta por tentativas g
   já há **18 bits** de diferença. No texto cifrado final: **32 bits** de diferença.
 - Mudança de **1 bit na chave**: cerca de **metade dos bits** do cifrado final ficam diferentes.
 
+<AvalancheGrid />
+
 ### 6.9 A força do DES
 
 **Duas áreas de preocupação:** tamanho da chave e natureza do algoritmo.
