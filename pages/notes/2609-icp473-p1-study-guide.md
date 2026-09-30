@@ -1081,6 +1081,8 @@ deterministic algorithm. The PRNG creates no new entropy. It only spreads the en
 - **LavaRnd:** an open project that uses cheap cameras with a saturated CCD as a chaotic source.
 - The online service `random.org`.
 
+<PrngDeterminism />
+
 External material:
 
 - Computerphile, video: [True Random Numbers](https://www.youtube.com/watch?v=aEJB8IAMMpA)
@@ -1146,6 +1148,8 @@ SP 800-22 lists **15 tests**. Three examples:
 
 **Important rule:** do not test a PRNG using a single seed, and do not test a TRNG using a
 single physical output.
+
+<RandomnessTests />
 
 External material:
 
@@ -2151,6 +2155,8 @@ Two examples that get a perfect frequency score and are not random:
   It fails the runs test and Maurer's test, because it is highly compressible.
 
 The rule: accept a sequence as random only if it passes **every** test.
+
+<RandomnessTests initial-preset="alternating" />
 
 ---
 

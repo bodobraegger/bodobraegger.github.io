@@ -993,6 +993,8 @@ determinístico. O PRNG não cria entropia nova, só distribui a entropia da sem
 - **LavaRnd:** projeto aberto que usa câmeras baratas com CCD saturado como fonte caótica.
 - Serviço on-line `random.org`.
 
+<PrngDeterminism />
+
 Material externo (em inglês):
 
 - Computerphile, vídeo: [True Random Numbers](https://www.youtube.com/watch?v=aEJB8IAMMpA)
@@ -1054,6 +1056,8 @@ O SP 800-22 lista **15 testes**. Três exemplos:
 
 **Regra importante:** não se testa um PRNG usando uma única semente, nem um TRNG usando
 uma única saída física.
+
+<RandomnessTests />
 
 Material externo (em inglês):
 
@@ -2037,6 +2041,8 @@ Dois exemplos que passam no teste de frequência com nota perfeita e não são a
   Falha no teste de rodadas e no de Maurer, porque é altamente comprimível.
 
 A regra: uma sequência só é aceita como aleatória se passar em **todos** os testes.
+
+<RandomnessTests initial-preset="alternating" />
 
 ---
 
