@@ -1743,7 +1743,7 @@ Mais as duas considerações adicionais: velocidade em software e facilidade de 
 
 > **Resultado numérico do código.** Com `chave = 0b10101010` e
 > `bloco = 0b1100110010101010`:
-> `L = 11001100`, `R = 10101010`, `F = 11100100` (204 × 170 = 34680, e `34680 & 0xFF = 228`),
+> `L = 11001100`, `R = 10101010`, `F = 11100100` (F usa R: 170 × 170 = 28900, e `28900 & 0xFF = 228`),
 > `L1 = 10101010`, `R1 = 204 XOR 228 = 00101000`, `cifrado = 1010101000101000`.
 > A variável `invertido` imprime **`0010100010101010`**, que **não é o bloco original**.
 > O código só **troca as metades** do cifrado. Isso não é a decriptação.
