@@ -156,15 +156,19 @@ function collapseWhitespace(text: string) {
   return text.replace(WHITESPACE_RUN, ' ').trim()
 }
 
-/** The fragment of a link that points into this page, or null for a link that leaves it. */
-function pageFragment(href: string) {
-  if (href.startsWith('#'))
-    return href.length > 1 ? href : null
+/** Link schemes a reader can open from a book. */
+const BOOK_LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:'])
+
+/**
+ * Where a link points in the book: a fragment for a heading in this page, an
+ * absolute URL for any other page, or null for a link the book cannot follow.
+ */
+function bookHref(href: string, ids: Set<string>) {
   try {
     const url = new URL(href, location.href)
-    return url.origin === location.origin && url.pathname === location.pathname && url.hash
-      ? url.hash
-      : null
+    if (url.origin === location.origin && url.pathname === location.pathname)
+      return url.hash && ids.has(decodeURIComponent(url.hash.slice(1))) ? url.hash : null
+    return BOOK_LINK_PROTOCOLS.has(url.protocol) ? url.href : null
   }
   catch (error) {
     if (error instanceof TypeError)
@@ -206,7 +210,8 @@ function cleanAttributes(root: Element) {
 
 /**
  * A copy of the article with only what a book can hold: no interactive
- * parts, no links out of the page, headings and code as plain text.
+ * parts, links that leave the page as absolute URLs, headings and code as
+ * plain text.
  */
 function cleanArticle(article: HTMLElement) {
   const content = article.cloneNode(true) as HTMLElement
@@ -234,9 +239,9 @@ function cleanArticle(article: HTMLElement) {
 
   const ids = new Set([...content.querySelectorAll('[id]')].map(element => element.id))
   for (const link of content.querySelectorAll('a')) {
-    const fragment = pageFragment(link.getAttribute('href') ?? '')
-    if (fragment && ids.has(decodeURIComponent(fragment.slice(1))))
-      link.setAttribute('href', fragment)
+    const href = bookHref(link.getAttribute('href') ?? '', ids)
+    if (href)
+      link.setAttribute('href', href)
     else
       unwrap(link)
   }
