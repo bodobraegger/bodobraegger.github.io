@@ -1117,6 +1117,8 @@ disponível em chips multicore desde **2012**.
 - **Limite de segurança:** **511 amostras por semente**, e depois ocorre a ressementeação.
 - Sem a semente, prever a saída é computacionalmente inviável.
 
+<IntelDrngPipeline />
+
 ### 5.11 A instrução RDRAND
 
 ```

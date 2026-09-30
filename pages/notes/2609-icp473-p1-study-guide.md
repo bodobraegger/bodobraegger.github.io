@@ -1211,6 +1211,8 @@ available in multicore chips since **2012**.
 - **Security limit:** **511 samples per seed**, after which it reseeds.
 - Without the seed, predicting the output is computationally infeasible.
 
+<IntelDrngPipeline />
+
 ### 5.11 The RDRAND instruction
 
 ```
