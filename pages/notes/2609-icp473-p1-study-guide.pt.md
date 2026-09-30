@@ -512,6 +512,8 @@ e ainda foi usado pelos EUA e aliados na Segunda.
 **Limitação:** ainda deixa rastros da estrutura da linguagem. Algumas centenas de letras
 de texto cifrado bastam para quebrá-la.
 
+<PlayfairSquare />
+
 Material externo (em inglês):
 
 - dCode.fr, ferramenta interativa: [PlayFair Cipher](https://www.dcode.fr/playfair-cipher)

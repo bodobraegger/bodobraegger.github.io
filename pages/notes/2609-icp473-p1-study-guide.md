@@ -581,6 +581,8 @@ used by the USA and allied forces in the Second World War.
 **Limitation:** it still leaves traces of the plaintext language structure.
 A few hundred letters of ciphertext are usually enough to break it.
 
+<PlayfairSquare />
+
 External material:
 
 - dCode.fr, interactive tool: [PlayFair Cipher](https://www.dcode.fr/playfair-cipher)
