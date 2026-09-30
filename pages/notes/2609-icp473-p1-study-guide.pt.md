@@ -660,6 +660,8 @@ números de cartão de crédito, cabeçalhos estruturados.
 - **Fluxo:** dados contínuos. Canais de comunicação, links de navegador e web.
 - **Bloco:** blocos de dados inteiros. Transferência de arquivo, e-mail, banco de dados.
 
+<KeystreamReuse />
+
 Material externo (em inglês):
 
 - Computerphile, vídeo: [Zig Zag Decryption](https://www.youtube.com/watch?v=yxx3Bkmv3ck)
@@ -822,6 +824,8 @@ e se autentica **sem nunca ter conhecido a chave secreta**.
 vulneráveis. Por isso a Wi-Fi Alliance abandonou esse mecanismo.
 Conclusão do slide: a autenticação WEP é **pior que inútil**, porque fornece ao atacante
 informação útil.
+
+<WepKeystreamRecovery />
 
 ### 4.8 Criptografia: chave fixa, IV e a falha do IV
 

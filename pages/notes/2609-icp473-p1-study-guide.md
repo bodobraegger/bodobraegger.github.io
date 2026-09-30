@@ -738,6 +738,8 @@ structured headers.
 - **Stream:** continuous data. Communication channels, browser and web links.
 - **Block:** whole data blocks. File transfer, email, databases.
 
+<KeystreamReuse />
+
 External material:
 
 - Computerphile, video: [Zig Zag Decryption](https://www.youtube.com/watch?v=yxx3Bkmv3ck)
@@ -904,6 +906,8 @@ and they authenticate **without ever knowing the secret key**.
 are the most vulnerable ones. For this reason the Wi-Fi Alliance abandoned the mechanism.
 The slide conclusion: WEP authentication is **worse than useless**, because it supplies the
 attacker with useful information.
+
+<WepKeystreamRecovery />
 
 ### 4.8 Encryption: fixed key, the IV, and the IV failure
 
