@@ -99,16 +99,20 @@ const historyMean = computed(() => history.value.length
 const plaintextCharacters = computed(() => [...inputs.plaintext].map(byte =>
   byte >= PRINTABLE_FIRST && byte <= PRINTABLE_LAST ? String.fromCharCode(byte) : REPLACEMENT_CHARACTER).join(''))
 
-async function toggleBit(bitIndex: number) {
+// Taps are encrypted one after the other, so each history entry counts one flip
+// against the ciphertext of the tap before it.
+let pendingTaps = Promise.resolve()
+
+function toggleBit(bitIndex: number) {
   inputs[target.value] = flipBit(inputs[target.value], bitIndex)
   const { plaintext, key } = inputs
-  const result = await encrypt(plaintext, key)
-  // A later tap may have finished first; only the newest input counts.
-  if (inputs.plaintext !== plaintext || inputs.key !== key)
-    return
-  const changedByTap = countDifferences(bytesToBits(result), ciphertextBits.value)
-  ciphertext.value = result
-  history.value = [...history.value, changedByTap].slice(-HISTORY_LENGTH)
+  // A failed tap must not block the taps after it.
+  pendingTaps = pendingTaps.catch(() => {}).then(async () => {
+    const result = await encrypt(plaintext, key)
+    const changedByTap = countDifferences(bytesToBits(result), ciphertextBits.value)
+    ciphertext.value = result
+    history.value = [...history.value, changedByTap].slice(-HISTORY_LENGTH)
+  })
 }
 
 function undoFlips() {
@@ -158,7 +162,7 @@ onMounted(async () => {
             type="button"
             class="study-bit avalanche-bit is-editable"
             :class="{ 'is-marked': bit !== originalBits[index] }"
-            :aria-label="`${text.targets[target]} bit ${index}`"
+            :aria-label="`${text.targets[target]} bit ${index}: ${bit}`"
             :disabled="!referenceCiphertext"
             @click="toggleBit(index)"
           >

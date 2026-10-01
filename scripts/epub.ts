@@ -74,7 +74,7 @@ const NAV_HEADING_SELECTOR = 'h2, h3'
 const NAV_SUBHEADING_TAG = 'H3'
 const TITLE_ID = 'book-title'
 
-/** The attributes an HTML element keeps. Classes and styles belong to the site, not to the book. */
+/** The attributes an HTML element keeps, with every aria-* one. Classes and styles belong to the site, not to the book. */
 const KEPT_ATTRIBUTES = new Set([
   'alt',
   'cite',
@@ -85,6 +85,7 @@ const KEPT_ATTRIBUTES = new Set([
   'id',
   'lang',
   'reversed',
+  'role',
   'rowspan',
   'scope',
   'src',
@@ -210,7 +211,7 @@ function cleanAttributes(root: Element) {
   for (const element of root.querySelectorAll('*')) {
     const isSvg = element.namespaceURI === SVG_NAMESPACE
     for (const { name } of [...element.attributes]) {
-      const kept = isSvg ? !REMOVED_SVG_ATTRIBUTE_PATTERN.test(name) : KEPT_ATTRIBUTES.has(name)
+      const kept = isSvg ? !REMOVED_SVG_ATTRIBUTE_PATTERN.test(name) : KEPT_ATTRIBUTES.has(name) || name.startsWith('aria-')
       if (!kept)
         element.removeAttribute(name)
     }

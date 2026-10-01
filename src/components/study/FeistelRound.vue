@@ -348,6 +348,7 @@ function resetValues() {
               'is-editable': row.editable,
             }"
             :type="row.editable ? 'button' : undefined"
+            :aria-label="row.editable ? `bit ${index}: ${bit}` : undefined"
             @click="row.editable && toggleBit(row, index)"
           >{{ bit }}</component>
         </span>

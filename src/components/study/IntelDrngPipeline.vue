@@ -68,7 +68,7 @@ const TEXT: Record<Language, Text> = {
   en: {
     title: 'Intel DRNG: from thermal noise to RDRAND',
     intro: 'Step through the three stages. Stage 1 makes raw bits, stage 2 removes their bias, stage 3 makes many fast outputs from one seed.',
-    stageNames: { harvest: 'Entropy source', condition: 'Conditioner (CMAC)', generate: 'CTR_DRBG' },
+    stageNames: { harvest: 'Entropy source', condition: 'Conditioner (AES-CBC-MAC)', generate: 'CTR_DRBG' },
     stageFacts: {
       harvest: '4 Gbps, harvested in 512 bit blocks',
       condition: 'AES-CBC-MAC, 256 bits without bias',
@@ -85,7 +85,7 @@ const TEXT: Record<Language, Text> = {
     discarded: 'discarded',
     kept: 'kept (the MAC)',
     nextBlock: 'Next AES block',
-    conditionDone: 'Only the last ciphertext block is the output: 256 bits without bias, the seed of stage 3.',
+    conditionDone: 'Only the last ciphertext block is the output: 128 bits without bias. A second chain gives 128 more, and the two make the seed of stage 3.',
     seedExplanation: seedNumber => `Seed ${seedNumber} (256 bits from stage 2) sets the AES key K and the counter V. Each output is AES with key K on the next counter value.`,
     counter: 'counter',
     samples: count => `${count} of ${SAMPLES_PER_SEED} samples from this seed`,
@@ -101,7 +101,7 @@ const TEXT: Record<Language, Text> = {
   pt: {
     title: 'Intel DRNG: do ruído térmico ao RDRAND',
     intro: 'Avance pelos três estágios. O estágio 1 gera bits brutos, o estágio 2 remove o viés, o estágio 3 gera muitas saídas rápidas a partir de uma semente.',
-    stageNames: { harvest: 'Fonte de entropia', condition: 'Condicionador (CMAC)', generate: 'CTR_DRBG' },
+    stageNames: { harvest: 'Fonte de entropia', condition: 'Condicionador (AES-CBC-MAC)', generate: 'CTR_DRBG' },
     stageFacts: {
       harvest: '4 Gbps, colhida em blocos de 512 bits',
       condition: 'AES-CBC-MAC, 256 bits não enviesados',
@@ -118,7 +118,7 @@ const TEXT: Record<Language, Text> = {
     discarded: 'descartado',
     kept: 'mantido (o MAC)',
     nextBlock: 'Próximo bloco AES',
-    conditionDone: 'Só o último bloco cifrado é a saída: 256 bits não enviesados, a semente do estágio 3.',
+    conditionDone: 'Só o último bloco cifrado é a saída: 128 bits não enviesados. Uma segunda cadeia dá mais 128, e as duas formam a semente do estágio 3.',
     seedExplanation: seedNumber => `A semente ${seedNumber} (256 bits do estágio 2) define a chave AES K e o contador V. Cada saída é o AES com a chave K no próximo valor do contador.`,
     counter: 'contador',
     samples: count => `${count} de ${SAMPLES_PER_SEED} amostras desta semente`,

@@ -256,17 +256,19 @@ watch(message, () => selectedPosition.value = undefined)
             <span class="cipher-result">{{ text.cipherRow }}</span>
           </span>
           <span v-for="word in words" :key="word[0].position" class="shift-word">
-            <span
+            <component
+              :is="character.shift !== undefined ? 'button' : 'span'"
               v-for="{ character, position } in word"
               :key="position"
               class="shift-column"
               :class="{ 'is-letter': character.shift !== undefined, 'is-selected': position === selected?.position, 'is-space': character.plain === ' ' }"
+              :type="character.shift !== undefined ? 'button' : undefined"
               @click="character.shift !== undefined && (selectedPosition = position)"
             >
               <span class="cipher-plain">{{ character.plain }}</span>
               <span v-if="mode === 'vigenere'" class="cipher-key">{{ character.shift === undefined ? '' : letterAt(character.shift).toLowerCase() }}</span>
               <span class="cipher-result">{{ character.cipher }}</span>
-            </span>
+            </component>
           </span>
         </div>
       </div>

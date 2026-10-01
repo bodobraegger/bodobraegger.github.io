@@ -137,15 +137,19 @@ async function encryptImage() {
     return
   }
   isBusy.value = true
-  const plaintext = readRgbBytes()
-  const results: Record<Mode, Uint8Array> = {
-    ecb: await encryptEcb(keys.value, plaintext),
-    cbc: await encryptCbc(keys.value, randomBytes(AES_BLOCK_BYTES), plaintext),
-    ctr: await encryptCtr(keys.value, newCounterBlock(), plaintext),
+  try {
+    const plaintext = readRgbBytes()
+    const results: Record<Mode, Uint8Array> = {
+      ecb: await encryptEcb(keys.value, plaintext),
+      cbc: await encryptCbc(keys.value, randomBytes(AES_BLOCK_BYTES), plaintext),
+      ctr: await encryptCtr(keys.value, newCounterBlock(), plaintext),
+    }
+    for (const mode of MODES)
+      paintRgbBytes(modeCanvases.value[mode]!, results[mode])
   }
-  for (const mode of MODES)
-    paintRgbBytes(modeCanvases.value[mode]!, results[mode])
-  isBusy.value = false
+  finally {
+    isBusy.value = false
+  }
   if (isEncryptionQueued) {
     isEncryptionQueued = false
     await encryptImage()
@@ -223,6 +227,7 @@ onMounted(() => {
           class="modes-canvas is-drawable"
           :width="IMAGE_SIZE"
           :height="IMAGE_SIZE"
+          role="img"
           :aria-label="text.original"
           @pointerdown="startStroke"
           @pointermove="continueStroke"
@@ -238,6 +243,7 @@ onMounted(() => {
           class="modes-canvas"
           :width="IMAGE_SIZE"
           :height="IMAGE_SIZE"
+          role="img"
           :aria-label="text.modes[mode].name"
         />
         <strong class="modes-name">{{ text.modes[mode].name }}</strong>

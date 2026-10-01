@@ -157,7 +157,7 @@ function reset() {
         {{ labels.reset }}
       </button>
     </div>
-    <p v-if="captureError" class="cipher-error" role="alert">
+    <p v-if="captureError" class="cipher-error" aria-live="polite">
       {{ labels[captureError] }}
     </p>
     <template v-else-if="keystream">
@@ -178,7 +178,7 @@ function reset() {
           {{ labels.randomChallenge }}
         </button>
       </div>
-      <p v-if="replayError" class="cipher-error" role="alert">
+      <p v-if="replayError" class="cipher-error" aria-live="polite">
         {{ labels[replayError] }}
       </p>
       <template v-else-if="forgedResponse">

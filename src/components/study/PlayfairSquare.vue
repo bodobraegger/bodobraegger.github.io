@@ -8,6 +8,8 @@ const GUIDE_KEYWORD = 'monarchy'
 /** The four worked pairs of section 2.9, and the filler example. */
 const PRESET_MESSAGES = ['ar mu hs ea', 'balloon']
 const MAX_MESSAGE_LENGTH = 40
+/** The square holds 25 letters, so a longer keyword adds nothing. */
+const MAX_KEYWORD_LENGTH = 25
 
 interface Text {
   title: string
@@ -151,7 +153,7 @@ function cellLabel(letter: string): string {
     <div class="cipher-fields">
       <label class="cipher-field">
         <span>{{ text.keyword }}</span>
-        <input v-model="keyword" type="text" spellcheck="false" autocomplete="off" :maxlength="MAX_MESSAGE_LENGTH">
+        <input v-model="keyword" type="text" spellcheck="false" autocomplete="off" :maxlength="MAX_KEYWORD_LENGTH">
       </label>
       <label class="cipher-field">
         <span class="cipher-plain">{{ text.message }}</span>

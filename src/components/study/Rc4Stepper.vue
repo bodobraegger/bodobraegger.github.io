@@ -213,7 +213,7 @@ const formula = computed(() => {
         </button>
       </div>
 
-      <div class="rc4-phases study-mono" aria-live="polite">
+      <div class="rc4-phases study-mono" :aria-live="isPlaying ? 'off' : 'polite'">
         <span
           v-for="phase in PHASES"
           :key="phase"

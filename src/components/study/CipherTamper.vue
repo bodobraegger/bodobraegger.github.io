@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Language } from '~/logics/languages'
 import type { AesKeys } from '~/lib/aes'
-import { AES_BLOCK_BYTES, AES_KEY_BYTES, GCM_NONCE_BYTES, decryptCbc, decryptGcm, encryptCbc, encryptGcm, importAesKeys, randomBytes } from '~/lib/aes'
+import { AES_BLOCK_BYTES, AES_KEY_BYTES, NONCE_BYTES, decryptCbc, decryptGcm, encryptCbc, encryptGcm, importAesKeys, randomBytes } from '~/lib/aes'
 import { BITS_PER_BYTE, toBinary, toHex } from '~/lib/bits'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
@@ -33,6 +33,7 @@ interface Text {
   reset: string
   newKey: string
   flips: (count: number) => string
+  intact: string
   accepted: string
   verified: string
   rejected: (error: string) => string
@@ -54,6 +55,7 @@ const TEXT: Record<Language, Text> = {
     reset: 'Undo all changes',
     newKey: 'New key',
     flips: count => count === 1 ? '1 bit flipped' : `${count} bits flipped`,
+    intact: 'Nothing changed. The receiver gets the text that was sent.',
     accepted: 'No error. The receiver accepts this text and cannot know that it was changed.',
     verified: 'The tag is correct. The text is released.',
     rejected: error => `Rejected (${error}): the tag does not match. No plaintext is released.`,
@@ -73,6 +75,7 @@ const TEXT: Record<Language, Text> = {
     reset: 'Desfazer as mudanças',
     newKey: 'Nova chave',
     flips: count => count === 1 ? '1 bit invertido' : `${count} bits invertidos`,
+    intact: 'Nada mudou. O receptor recebe o texto que foi enviado.',
     accepted: 'Nenhum erro. O receptor aceita este texto e não tem como saber que ele mudou.',
     verified: 'A tag está correta. O texto é liberado.',
     rejected: error => `Rejeitado (${error}): a tag não confere. Nenhum texto claro é liberado.`,
@@ -100,7 +103,7 @@ const keys = shallowRef<AesKeys>()
 const states = reactive<Partial<Record<Mode, ModeState>>>({})
 
 let cbcIv = new Uint8Array(AES_BLOCK_BYTES)
-let gcmNonce = new Uint8Array(GCM_NONCE_BYTES)
+let gcmNonce = new Uint8Array(NONCE_BYTES)
 
 function chunk(bytes: Uint8Array): Uint8Array[] {
   return Array.from({ length: Math.ceil(bytes.length / AES_BLOCK_BYTES) }, (_, index) =>
@@ -144,7 +147,7 @@ async function updateResult(mode: Mode) {
 async function encryptMessage() {
   keys.value = await importAesKeys(randomBytes(AES_KEY_BYTES))
   cbcIv = randomBytes(AES_BLOCK_BYTES)
-  gcmNonce = randomBytes(GCM_NONCE_BYTES)
+  gcmNonce = randomBytes(NONCE_BYTES)
   const cbcCiphertext = await encryptCbc(keys.value, cbcIv, plaintext)
   const cbcSent = new Uint8Array(AES_BLOCK_BYTES + cbcCiphertext.length)
   cbcSent.set(cbcIv)
@@ -251,7 +254,7 @@ onMounted(() => {
                   'is-selected': state.selectedByte === block * AES_BLOCK_BYTES + position,
                   'is-changed': isByteChanged(state, block * AES_BLOCK_BYTES + position),
                 }"
-                :aria-label="byteName(mode, block * AES_BLOCK_BYTES + position)"
+                :aria-label="`${byteName(mode, block * AES_BLOCK_BYTES + position)}: ${hex}`"
                 @click="state.selectedByte = block * AES_BLOCK_BYTES + position"
               >
                 {{ hex }}
@@ -269,6 +272,7 @@ onMounted(() => {
               type="button"
               class="study-bit tamper-bit"
               :class="{ 'is-alert': isBitChanged(state, state.selectedByte, position) }"
+              :aria-label="`bit ${position}: ${bit}`"
               @click="flipBit(mode, state.selectedByte, 0x80 >> position)"
             >{{ bit }}</button>
           </span>
@@ -296,7 +300,7 @@ onMounted(() => {
               </div>
             </div>
             <p class="tamper-verdict" :class="{ 'study-alert': mode === 'cbc' && flippedBitCount(state) }">
-              {{ mode === 'cbc' ? text.accepted : text.verified }}
+              {{ mode === 'cbc' ? (flippedBitCount(state) ? text.accepted : text.intact) : text.verified }}
             </p>
           </template>
           <p v-else-if="state.result?.kind === 'rejected'" class="study-alert tamper-verdict">

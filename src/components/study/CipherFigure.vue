@@ -23,12 +23,6 @@ defineProps<{ title: string }>()
   overflow-wrap: anywhere;
 }
 
-/* The paragraph reset of .study-figure outranks its own spacing rule, so the
-   spacing is repeated here with a selector that wins. */
-.cipher-figure.study-figure > * + * {
-  margin-top: 0.9rem;
-}
-
 .cipher-muted {
   color: var(--fg-muted);
 }

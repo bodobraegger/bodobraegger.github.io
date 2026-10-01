@@ -5,7 +5,8 @@
 
 export const AES_BLOCK_BYTES = 16
 export const AES_KEY_BYTES = 16
-export const GCM_NONCE_BYTES = 12
+/** The 96 bit nonce of GCM, and the random part of a CTR counter block. */
+export const NONCE_BYTES = 12
 /** The counter block is 96 random bits followed by 32 incrementing bits, as in the guide. */
 export const CTR_COUNTER_BITS = 32
 
@@ -100,6 +101,6 @@ export async function decryptGcm(keys: AesKeys, nonce: Uint8Array, sealed: Uint8
 /** A counter block for CTR: 96 random bits and a 32 bit counter that starts at zero. */
 export function newCounterBlock(): Uint8Array {
   const counter = new Uint8Array(AES_BLOCK_BYTES)
-  counter.set(randomBytes(GCM_NONCE_BYTES))
+  counter.set(randomBytes(NONCE_BYTES))
   return counter
 }
