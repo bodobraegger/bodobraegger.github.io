@@ -5,6 +5,7 @@ date: 2026-09-30T13:57:33-03:00
 lang: en
 type: note
 draft: true
+epub: true
 plum: false
 ---
 
