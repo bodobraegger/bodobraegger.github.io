@@ -611,6 +611,8 @@ If "VTW" appears twice, 9 characters apart, the key probably has 3 or 9 letters.
 With several repetitions you estimate the key length, then attack each position as a separate
 Caesar cipher.
 
+<ShiftCipherFrequencies initial-mode="vigenere" />
+
 **Autokey Vigenère:** concatenate the keyword with the plaintext itself, forming a running key
 as long as the message.
 
@@ -621,8 +623,6 @@ Cipher: ZICVTWQNGKZEIIGASXSTSLVVWLA
 ```
 
 **It is still vulnerable**, because the key shares the frequency distribution of the plaintext.
-
-<ShiftCipherFrequencies initial-mode="vigenere" />
 
 External material:
 
@@ -788,6 +788,8 @@ Because the only operation is a **swap**, `S` remains a permutation of 0 to 255.
 
 **Strength of RC4:** it resists practical attacks if the key is long enough, for example
 128 bits. **The WEP problem is not RC4 itself. It is how WEP manages the keys.**
+That is the slide's view. Today RC4 is considered broken: the KSA weakness of Fluhrer, Mantin
+and Shamir (2001) is part of the WEP break, and keystream biases made RFC 7465 ban RC4 in TLS.
 
 <Rc4Stepper />
 
@@ -937,7 +939,7 @@ such as IP addresses that repeat in every transmission.
 
 - 24 bits give **16,777,216** (about 17 million) possible values.
 - IEEE 802.11b transmits about **500 frames per second**.
-- The IV space is exhausted in about **7 hours**.
+- The IV space is exhausted in about **9 hours** (16,777,216 / 500 = 33,554 s).
 - Keys are almost never changed, so reuse is **inevitable**.
 
 **Implementation problems that make it worse:**
@@ -1200,9 +1202,11 @@ available in multicore chips since **2012**.
 
 - **Problem:** the stage 1 output can carry **bias** and **subtle correlations**.
 - **Solution:** a cryptographic conditioner using **CBC-MAC (CMAC)**, from NIST SP 800-38B.
+  CMAC is the slide's term. Intel's guide says AES-CBC-MAC. CMAC adds a derived subkey to the last block.
 - The 512 bits from stage 1 are encrypted in **CBC** mode with **AES**.
 - Only the **last ciphertext block** (the MAC) is taken as output.
-- Result: **256 bits** with no bias per block. This step distils the entropy.
+- Result: **256 bits** with no bias. A MAC block is 128 bits, so two CBC-MAC chains run,
+  one for the key and one for the counter of stage 3. This step distils the entropy.
 
 **Stage 3: high speed PRNG (CTR_DRBG).**
 
@@ -1321,7 +1325,8 @@ R_i = L_(i-1) XOR F(R_(i-1), K_i)
 ```
 
 The function `F` takes w bits of `R(i-1)` and y bits of `K_i`, and produces w bits.
-The structure forms a **substitution-permutation network (SPN)**.
+The structure alternates substitution (F) and permutation (the swap of the halves), which is
+Shannon's product cipher. The slides call it an SPN. AES is also an SPN, but not a Feistel cipher.
 
 ### 6.4 Feistel decryption
 
@@ -1731,7 +1736,7 @@ something predictable such as the system clock.
 1. **Entropy source:** two inverters driven into a metastable state by a clock pulse.
    Thermal noise decides the decay. Output: 4 Gbps, harvested in **512 bit** blocks.
 2. **Conditioner:** **CBC-MAC (CMAC)** with AES over the 512 bits.
-   Only the **last ciphertext block** is the output: **256 bits** with no bias.
+   Only the **last ciphertext block** of each of two chains is the output: **256 bits** with no bias.
 3. **PRNG:** **CTR_DRBG** encrypts an incrementing counter with AES, seeded by the 256 bits.
    Output: **128 bit** blocks, at more than 3 Gbps.
 
@@ -2213,7 +2218,7 @@ The rest of list 4 is hash functions, which are not.
 | AES: key / rounds / Nk                  | 128-10-4, 192-12-6, 256-14-8. Nb = 4 always                           |
 | AES: published / competition            | NIST 2001, Rijndael chosen in 2000, FIPS 197                          |
 | WEP: IV / key                           | 24 bits / 40 bits (standard) or 104 bits (extension)                  |
-| WEP: possible IVs / exhaustion time     | 16,777,216 / about 7 hours at 500 frames per second                   |
+| WEP: possible IVs / exhaustion time     | 16,777,216 / about 9 hours at 500 frames per second                   |
 | WEP: ICV                                | 4 byte (32 bit) CRC, added before encryption                          |
 | WEP: frame header                       | IV 3 bytes + KeyID 1 byte                                             |
 | RC4: key / state vector / period        | 1 to 256 bytes / 256 bytes / > 10^100                                 |

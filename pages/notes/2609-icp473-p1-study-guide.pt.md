@@ -540,6 +540,8 @@ Se "VTW" aparece duas vezes a 9 caracteres de distância, a chave provavelmente 
 3 ou 9 letras. Com várias repetições, dá para estimar o comprimento da chave
 e depois atacar cada posição como uma César separada.
 
+<ShiftCipherFrequencies initial-mode="vigenere" />
+
 **Vigenère com auto-chave:** concatena a palavra-chave com o próprio texto claro,
 formando uma chave corrente do tamanho da mensagem.
 
@@ -550,8 +552,6 @@ Cifrado: ZICVTWQNGKZEIIGASXSTSLVVWLA
 ```
 
 **Ainda é vulnerável**, porque a chave compartilha a distribuição de frequência do texto claro.
-
-<ShiftCipherFrequencies initial-mode="vigenere" />
 
 Material externo (em inglês):
 
@@ -707,6 +707,9 @@ Como a única operação é uma **troca**, `S` continua sendo uma permutação d
 
 **Força do RC4:** resiste a ataques práticos se a chave for longa o bastante (por exemplo,
 128 bits). **O problema do WEP não é o RC4 em si, é o modo como o WEP gera as chaves.**
+Essa é a visão do slide. Hoje o RC4 é considerado quebrado: a fraqueza do KSA de Fluhrer, Mantin
+e Shamir (2001) faz parte da quebra do WEP, e os vieses do keystream levaram a RFC 7465 a proibir
+o RC4 no TLS.
 
 <Rc4Stepper />
 
@@ -855,7 +858,7 @@ como endereços IP que se repetem em toda transmissão.
 
 - 24 bits dão **16.777.216** (cerca de 17 milhões) de valores possíveis.
 - O IEEE 802.11b transmite cerca de **500 quadros por segundo**.
-- O espaço de IVs se esgota em cerca de **7 horas**.
+- O espaço de IVs se esgota em cerca de **9 horas** (16.777.216 / 500 = 33.554 s).
 - As chaves quase nunca são trocadas, então o reuso é **inevitável**.
 
 **Problemas de implementação que pioram tudo:**
@@ -1058,7 +1061,7 @@ E a semente precisa ser **imprevisível**: se o adversário deduz a semente, ele
 O SP 800-22 lista **15 testes**. Três exemplos:
 
 - **Frequência:** verifica se o número de uns e zeros é o esperado para uma sequência aleatória.
-- **Rodadas** (_runs_): conta as rodadas, ou seja, as sequências de bits iguais consecutivos
+- **Corridas** (_runs_): conta as corridas, ou seja, as sequências de bits iguais consecutivos
   delimitadas por bits opostos, e compara com o número esperado.
 - **Estatística universal de Maurer:** mede a distância entre padrões correspondentes.
   Detecta se a sequência é significativamente **comprimível**, e portanto não aleatória.
@@ -1106,9 +1109,11 @@ disponível em chips multicore desde **2012**.
 
 - **Problema:** a saída do estágio 1 pode ter **viés** e **correlações sutis**.
 - **Solução:** condicionador criptográfico usando **CBC-MAC (CMAC)**, do NIST SP 800-38B.
+  CMAC é o termo do slide. O guia da Intel diz AES-CBC-MAC. O CMAC soma uma subchave derivada ao último bloco.
 - Os 512 bits do estágio 1 são cifrados em modo **CBC** com **AES**.
 - Apenas o **último bloco cifrado** (o MAC) é tomado como saída.
-- Resultado: **256 bits** não enviesados por bloco. Essa etapa "destila" a entropia.
+- Resultado: **256 bits** não enviesados. Um bloco de MAC tem 128 bits, então rodam duas cadeias
+  de CBC-MAC, uma para a chave e outra para o contador do estágio 3. Essa etapa "destila" a entropia.
 
 **Estágio 3: PRNG de alta velocidade (CTR_DRBG).**
 
@@ -1224,7 +1229,8 @@ R_i = L_(i-1) XOR F(R_(i-1), K_i)
 ```
 
 A função `F` recebe w bits de `R(i-1)` e y bits de `K_i`, e produz w bits.
-A estrutura forma uma **rede de substituição-permutação (SPN)**.
+A estrutura alterna substituição (F) e permutação (a troca das metades), a cifra produto de
+Shannon. Os slides chamam isso de SPN. O AES também é uma SPN, mas não é uma cifra de Feistel.
 
 ### 6.4 Decriptação de Feistel
 
@@ -1620,7 +1626,7 @@ de algo previsível como o relógio do sistema.
 1. **Fonte de entropia:** dois inversores levados a um estado metaestável por um pulso de clock.
    O ruído térmico decide o decaimento. Saída: 4 Gbps, colhidos em blocos de **512 bits**.
 2. **Condicionador:** **CBC-MAC (CMAC)** com AES sobre os 512 bits.
-   Só o **último bloco cifrado** é a saída: **256 bits** não enviesados.
+   Só o **último bloco cifrado** de cada uma das duas cadeias é a saída: **256 bits** não enviesados.
 3. **PRNG:** o **CTR_DRBG** cifra um contador incremental com AES, semeado pelos 256 bits.
    Saída: blocos de **128 bits**, a mais de 3 Gbps.
 
@@ -2028,7 +2034,7 @@ um **nível de confiança**, não uma prova.
 1. Aplique a bateria do NIST SP 800-22 (15 testes), não um teste só.
 2. Inclua pelo menos os três vistos em aula:
    - o **teste de frequência**, que compara o número de uns e zeros com n/2 = 500.000;
-   - o **teste de rodadas**, que conta as sequências de bits iguais consecutivos;
+   - o **teste de corridas**, que conta as sequências de bits iguais consecutivos;
    - o **teste universal de Maurer**, que verifica se a sequência é comprimível.
 3. Verifique as três características do SP 800-22: uniformidade, escalabilidade
    (divida a sequência e teste subsequências) e consistência (teste sequências geradas com
@@ -2046,10 +2052,10 @@ Uma falha em qualquer teste é evidência de um padrão, e um padrão é previs�
 
 Dois exemplos que passam no teste de frequência com nota perfeita e não são aleatórios:
 
-- `010101...01`: exatamente metade de uns, mas tem o número máximo de rodadas.
-  Falha no teste de rodadas, e cada bit é previsível a partir do anterior.
-- `000...000111...111` (500.000 zeros e depois 500.000 uns): só 2 rodadas.
-  Falha no teste de rodadas e no de Maurer, porque é altamente comprimível.
+- `010101...01`: exatamente metade de uns, mas tem o número máximo de corridas.
+  Falha no teste de corridas, e cada bit é previsível a partir do anterior.
+- `000...000111...111` (500.000 zeros e depois 500.000 uns): só 2 corridas.
+  Falha no teste de corridas e no de Maurer, porque é altamente comprimível.
 
 A regra: uma sequência só é aceita como aleatória se passar em **todos** os testes.
 
@@ -2098,7 +2104,7 @@ O resto da lista 4 é hash, que ainda não caiu.
 | AES: chave / rodadas / Nk                     | 128-10-4, 192-12-6, 256-14-8. Nb = 4 sempre                         |
 | AES: publicado / concurso                     | NIST 2001, Rijndael escolhida em 2000, FIPS 197                     |
 | WEP: IV / chave                               | 24 bits / 40 bits (padrão) ou 104 bits (extensão)                   |
-| WEP: IVs possíveis / tempo de esgotamento     | 16.777.216 / cerca de 7 horas a 500 quadros/s                       |
+| WEP: IVs possíveis / tempo de esgotamento     | 16.777.216 / cerca de 9 horas a 500 quadros/s                       |
 | WEP: ICV                                      | CRC de 4 bytes (32 bits), antes da cifra                            |
 | WEP: cabeçalho do quadro                      | IV 3 bytes + KeyID 1 byte                                           |
 | RC4: chave / vetor S / período                | 1 a 256 bytes / 256 bytes / > 10^100                                |
@@ -2169,7 +2175,7 @@ Responda de cabeça. Se travar, volte à seção indicada.
 25. No AES-GCM, como se obtém a confidencialidade e como se obtém a autenticação? (7, seção 6)
 26. O CBC autentica? O que falta e como se resolve na prática? (7, seção 6)
 27. Um invasor manda comandos ao roteador fingindo ser o admin. Qual pilar? (7b)
-28. Uma sequência passa no teste de frequência e falha no de rodadas. É aleatória? (7b)
+28. Uma sequência passa no teste de frequência e falha no de corridas. É aleatória? (7b)
 
 ---
 
