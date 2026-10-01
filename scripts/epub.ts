@@ -1,5 +1,5 @@
-import { readFile, writeFile } from 'node:fs/promises'
-import { extname, join } from 'node:path'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, extname, join } from 'node:path'
 import { LANGUAGE_DEFINITIONS } from '../src/logics/languages'
 import type { Language } from '../src/logics/languages'
 import { createZip } from './zip'
@@ -541,6 +541,8 @@ export async function createEpub(html: string, page: EpubPage, distDir: string) 
 /** Writes the book of a page as <route>.epub into distDir, and returns that path. */
 export async function writeEpub(html: string, page: EpubPage, distDir: string) {
   const file = join(distDir, `${new URL(page.url).pathname}${EPUB_EXTENSION}`)
+  // The hook runs before vite-ssg writes the page, so its directory may not exist yet.
+  await mkdir(dirname(file), { recursive: true })
   await writeFile(file, await createEpub(html, page, distDir))
   return file
 }
