@@ -34,4 +34,13 @@ onBeforeMount(() => {
 .big-year {
   filter: blur(1px);
 }
+
+/* The blur makes each year a composited layer, and iOS WebKit caches those
+   badly: a year drawn half way, magenta tile edges, fixed for a moment by a
+   tap. A phone draws the years sharp, as it already skips the photocopy filter. */
+@media (hover: none) and (pointer: coarse) {
+  .big-year {
+    filter: none;
+  }
+}
 </style>
