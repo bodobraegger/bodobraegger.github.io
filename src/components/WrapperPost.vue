@@ -27,41 +27,13 @@ useHead({
   htmlAttrs: { lang: language },
 })
 
-// The book module is loaded only when a reader asks for a book.
-const EPUB_QUERY = 'epub'
-const epubLink = { query: { [EPUB_QUERY]: null } }
-// Every post answers ?epub. Only a page with `epub: true` shows the link.
-const showEpubLink = frontmatter.epub === true
-
-/**
- * Opening a page with ?epub downloads it as a book. The query is removed
- * again afterwards, so a reload does not download it a second time and the
- * link starts a new download.
- */
-async function exportEpub() {
-  try {
-    const { downloadEpub } = await import('~/logics/epub')
-    await downloadEpub(content.value!, {
-      title: frontmatter.title ?? route.path,
-      language,
-      date: frontmatter.date,
-      slug: route.path.split('/').pop()!,
-    })
-  }
-  finally {
-    const { [EPUB_QUERY]: _, ...query } = route.query
-    await router.replace({ query, hash: route.hash })
-  }
-}
+// The book is a static file written at build time, see scripts/epub.ts.
+// Only a page with `epub: true` has one.
+const epubHref = frontmatter.epub === true ? `${route.path}.epub` : null
 
 onMounted(() => {
   // Track view on mount
   trackView()
-
-  watch(() => route.query[EPUB_QUERY] !== undefined, (requested) => {
-    if (requested)
-      void exportEpub()
-  }, { immediate: true })
 
   document.fonts.ready.then(() => fontsLoaded.value = true)
 
@@ -320,7 +292,7 @@ if (frontmatter.hydra) {
       </span>
     </h1>
     <p
-      v-if="frontmatter.date || frontmatter.place || translations.length || showEpubLink"
+      v-if="frontmatter.date || frontmatter.place || translations.length || epubHref"
       class="!-mt-6 font-serif-extra font-italic flex flex-wrap gap-x-2 items-baseline"
     >
       <span v-if="frontmatter.date" class="op50">
@@ -340,11 +312,8 @@ if (frontmatter.hydra) {
           </RouterLink>
         </template>
       </span>
-      <span v-if="showEpubLink" class="text-sm">
-        <!-- The link points to this page, so a plain RouterLink would style it as the active page. -->
-        <RouterLink v-slot="{ href, navigate }" :to="epubLink" custom>
-          <a class="font-serif-extra! op50" :href="href" rel="nofollow" @click="navigate">EPUB</a>
-        </RouterLink>
+      <span v-if="epubHref" class="text-sm">
+        <a class="font-serif-extra! op50" :href="epubHref" download>EPUB</a>
       </span>
       <span
         v-if="showViews"

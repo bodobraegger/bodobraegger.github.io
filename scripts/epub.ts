@@ -1,24 +1,30 @@
-import { createZip } from '../utils/zip'
-import type { ZipEntry } from '../utils/zip'
-import type { Language } from './languages'
-import { formatDate } from '.'
+import { readFile, writeFile } from 'node:fs/promises'
+import { extname, join } from 'node:path'
+import { LANGUAGE_DEFINITIONS } from '../src/logics/languages'
+import type { Language } from '../src/logics/languages'
+import { createZip } from './zip'
+import type { ZipEntry } from './zip'
 
 /**
- * Builds an EPUB 3 book from the rendered article of a page, in the browser.
+ * Builds an EPUB 3 book from the rendered article of a page, at build time.
  * The book is one content document, a navigation document built from the h2
  * and h3 headings, a small stylesheet and the images of the page that come
- * from this site.
+ * from this site. It is written next to the page, as <route>.epub, so a
+ * reader that runs no script can fetch it.
  */
 
 export interface EpubPage {
   title: string
   language: Language
   date?: string | Date
-  /** The file name of the book, without the extension. */
-  slug: string
+  /** The absolute URL of the page. Relative links in the page are resolved against it. */
+  url: string
+  /** The time of the last change. The commit date keeps a rebuild byte for byte the same. */
+  modified: Date
 }
 
 const EPUB_MEDIA_TYPE = 'application/epub+zip'
+const EPUB_EXTENSION = '.epub'
 const PACKAGE_DIRECTORY = 'EPUB'
 const CONTENT_FILE = 'content.xhtml'
 const NAV_FILE = 'nav.xhtml'
@@ -32,8 +38,8 @@ const XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace'
 const OPS_NAMESPACE = 'http://www.idpf.org/2007/ops'
 const XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>\n'
 
-/** The browser keeps the object URL this long, so a slow download can still read it. */
-const OBJECT_URL_LIFETIME_MS = 60_000
+const ARTICLE_SELECTOR = 'article'
+const AUTHOR_SELECTOR = 'meta[name="author"]'
 
 const REMOVED_SELECTOR = [
   '[data-no-epub]',
@@ -99,15 +105,15 @@ const WHITESPACE_RUN = /\s+/g
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const MILLISECONDS_PATTERN = /\.\d{3}Z$/
 
-/** The image types of the EPUB 3 core media types. A different type is redrawn as PNG. */
-const CORE_IMAGE_EXTENSIONS: Record<string, string> = {
-  'image/gif': 'gif',
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/svg+xml': 'svg',
-  'image/webp': 'webp',
+/** The image types of the EPUB 3 core media types, by file extension. Any other image is left out. */
+const IMAGE_MEDIA_TYPES: Record<string, string> = {
+  '.gif': 'image/gif',
+  '.jpeg': 'image/jpeg',
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
 }
-const FALLBACK_IMAGE_TYPE = 'image/png'
 
 const STYLESHEET = `body { line-height: 1.5; }
 h1, h2, h3, h4 { line-height: 1.25; }
@@ -143,7 +149,7 @@ interface BookImage {
   /** The path from the content document, which is also the path in the manifest. */
   path: string
   mediaType: string
-  data: Uint8Array<ArrayBuffer>
+  data: Uint8Array
 }
 
 interface NavEntry {
@@ -163,30 +169,33 @@ const BOOK_LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:'])
  * Where a link points in the book: a fragment for a heading in this page, an
  * absolute URL for any other page, or null for a link the book cannot follow.
  */
-function bookHref(href: string, ids: Set<string>) {
+function bookHref(href: string, ids: Set<string>, pageUrl: URL) {
+  let url: URL
+  let fragmentId: string
   try {
-    const url = new URL(href, location.href)
-    if (url.origin === location.origin && url.pathname === location.pathname)
-      return url.hash && ids.has(decodeURIComponent(url.hash.slice(1))) ? url.hash : null
-    return BOOK_LINK_PROTOCOLS.has(url.protocol) ? url.href : null
+    url = new URL(href, pageUrl)
+    fragmentId = decodeURIComponent(url.hash.slice(1))
   }
-  catch (error) {
-    if (error instanceof TypeError)
-      return null
-    throw error
+  catch {
+    return null
   }
+  if (url.origin === pageUrl.origin && url.pathname === pageUrl.pathname)
+    return url.hash && ids.has(fragmentId) ? url.hash : null
+  return BOOK_LINK_PROTOCOLS.has(url.protocol) ? url.href : null
 }
 
-function removeComments(root: Node) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT)
+function removeComments(root: Element) {
+  const { NodeFilter } = root.ownerDocument.defaultView!
+  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_COMMENT)
   const comments: Node[] = []
   while (walker.nextNode())
     comments.push(walker.currentNode)
   comments.forEach(comment => comment.parentNode?.removeChild(comment))
 }
 
-function removeInvalidCharacters(root: Node) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+function removeInvalidCharacters(root: Element) {
+  const { NodeFilter } = root.ownerDocument.defaultView!
+  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT)
   while (walker.nextNode()) {
     const node = walker.currentNode as Text
     node.data = node.data.replace(INVALID_XML_CHARACTERS, '')
@@ -213,7 +222,8 @@ function cleanAttributes(root: Element) {
  * parts, links that leave the page as absolute URLs, headings and code as
  * plain text.
  */
-function cleanArticle(article: HTMLElement) {
+function cleanArticle(article: HTMLElement, pageUrl: URL) {
+  const document = article.ownerDocument
   const content = article.cloneNode(true) as HTMLElement
 
   removeComments(content)
@@ -239,7 +249,7 @@ function cleanArticle(article: HTMLElement) {
 
   const ids = new Set([...content.querySelectorAll('[id]')].map(element => element.id))
   for (const link of content.querySelectorAll('a')) {
-    const href = bookHref(link.getAttribute('href') ?? '', ids)
+    const href = bookHref(link.getAttribute('href') ?? '', ids, pageUrl)
     if (href)
       link.setAttribute('href', href)
     else
@@ -251,40 +261,21 @@ function cleanArticle(article: HTMLElement) {
   return content
 }
 
-async function redrawAsPng(blob: Blob) {
-  const bitmap = await createImageBitmap(blob)
-  const canvas = document.createElement('canvas')
-  canvas.width = bitmap.width
-  canvas.height = bitmap.height
-  canvas.getContext('2d')!.drawImage(bitmap, 0, 0)
-  bitmap.close()
-  return new Promise<Blob>((resolve, reject) => canvas.toBlob(
-    png => png ? resolve(png) : reject(new DOMException('The image cannot be encoded as PNG', 'EncodingError')),
-    FALLBACK_IMAGE_TYPE,
-  ))
-}
-
-/** The image at the URL in a type that every EPUB reader shows, or null if it cannot be fetched. */
-async function fetchImage(url: string, name: string): Promise<BookImage | null> {
+/** The built file of an image of this site, or null if the book cannot hold it. */
+async function readImage(url: URL, distDir: string, name: string): Promise<BookImage | null> {
+  const extension = extname(url.pathname).toLowerCase()
+  const mediaType = IMAGE_MEDIA_TYPES[extension]
+  if (!mediaType)
+    return null
   try {
-    const response = await fetch(url)
-    if (!response.ok)
-      return null
-    let blob = await response.blob()
-    let mediaType = blob.type.split(';')[0].trim()
-    if (!(mediaType in CORE_IMAGE_EXTENSIONS)) {
-      blob = await redrawAsPng(blob)
-      mediaType = FALLBACK_IMAGE_TYPE
-    }
     return {
-      path: `${IMAGE_DIRECTORY}/${name}.${CORE_IMAGE_EXTENSIONS[mediaType]}`,
+      path: `${IMAGE_DIRECTORY}/${name}${extension}`,
       mediaType,
-      data: new Uint8Array(await blob.arrayBuffer()),
+      data: await readFile(join(distDir, decodeURIComponent(url.pathname))),
     }
   }
   catch (error) {
-    // A network failure is a TypeError, an image the browser cannot decode a DOMException.
-    if (error instanceof TypeError || error instanceof DOMException)
+    if ((error as { code?: string }).code === 'ENOENT')
       return null
     throw error
   }
@@ -292,13 +283,13 @@ async function fetchImage(url: string, name: string): Promise<BookImage | null> 
 
 /**
  * Points every image of this site at its copy in the book, and removes the
- * images of other sites and the ones that cannot be fetched.
+ * images of other sites and the ones the book cannot hold.
  */
-async function embedImages(content: HTMLElement) {
+async function embedImages(content: HTMLElement, pageUrl: URL, distDir: string) {
   const imagesByUrl = new Map<string, HTMLImageElement[]>()
   for (const image of content.querySelectorAll('img')) {
-    const url = new URL(image.getAttribute('src') ?? '', location.href)
-    if (url.origin !== location.origin) {
+    const url = new URL(image.getAttribute('src') ?? '', pageUrl)
+    if (url.origin !== pageUrl.origin) {
       image.remove()
       continue
     }
@@ -306,11 +297,11 @@ async function embedImages(content: HTMLElement) {
   }
 
   const urls = [...imagesByUrl.keys()]
-  const fetched = await Promise.all(urls.map((url, index) => fetchImage(url, `image-${index + 1}`)))
+  const read = await Promise.all(urls.map((url, index) => readImage(new URL(url), distDir, `image-${index + 1}`)))
 
   const bookImages: BookImage[] = []
   urls.forEach((url, index) => {
-    const bookImage = fetched[index]
+    const bookImage = read[index]
     for (const image of imagesByUrl.get(url)!) {
       if (!bookImage) {
         image.remove()
@@ -341,7 +332,7 @@ function collectNavEntries(content: HTMLElement) {
   return entries
 }
 
-function createXhtmlDocument(title: string, language: Language) {
+function createXhtmlDocument(document: Document, title: string, language: Language) {
   const doctype = document.implementation.createDocumentType('html', '', '')
   const xhtml = document.implementation.createDocument(XHTML_NAMESPACE, 'html', doctype)
   const html = xhtml.documentElement
@@ -366,31 +357,39 @@ function createXhtmlDocument(title: string, language: Language) {
 
   const body = create('body')
   html.append(head, body)
-  return { xhtml, body, create }
+  const { XMLSerializer } = document.defaultView!
+  const serialize = () => XML_DECLARATION + new XMLSerializer().serializeToString(xhtml)
+  return { xhtml, body, create, serialize }
 }
 
-function serializeXml(xml: Document) {
-  return XML_DECLARATION + new XMLSerializer().serializeToString(xml)
+/** The date of a page in the language of the page. A calendar day is read in UTC, so it stays the same day everywhere. */
+function formatBylineDate(date: string | Date, language: Language) {
+  const parsed = new Date(date)
+  if (Number.isNaN(parsed.getTime()))
+    return String(date)
+  const isDateOnly = typeof date === 'string' && DATE_ONLY_PATTERN.test(date)
+  const { locale } = LANGUAGE_DEFINITIONS[language]
+  return new Intl.DateTimeFormat(locale, { ...BYLINE_DATE, timeZone: isDateOnly ? 'UTC' : undefined }).format(parsed)
 }
 
 function buildContentDocument(content: HTMLElement, page: EpubPage, author: string | undefined) {
-  const { xhtml, body, create } = createXhtmlDocument(page.title, page.language)
+  const { xhtml, body, create, serialize } = createXhtmlDocument(content.ownerDocument, page.title, page.language)
   const title = create('h1', page.title)
   title.setAttribute('id', TITLE_ID)
   body.append(title)
 
-  const byline = [author, page.date && formatDate(page.date, false, BYLINE_DATE, page.language)]
+  const byline = [author, page.date && formatBylineDate(page.date, page.language)]
     .filter(Boolean)
     .join(', ')
   if (byline)
     body.append(create('p', byline))
 
   body.append(...xhtml.importNode(content, true).childNodes)
-  return serializeXml(xhtml)
+  return serialize()
 }
 
-function buildNavDocument(entries: NavEntry[], page: EpubPage) {
-  const { xhtml, body, create } = createXhtmlDocument(page.title, page.language)
+function buildNavDocument(document: Document, entries: NavEntry[], page: EpubPage) {
+  const { body, create, serialize } = createXhtmlDocument(document, page.title, page.language)
 
   const buildList = (items: NavEntry[]) => {
     const list = create('ol')
@@ -413,7 +412,7 @@ function buildNavDocument(entries: NavEntry[], page: EpubPage) {
   const listed = entries.length ? entries : [{ id: TITLE_ID, text: page.title, children: [] }]
   nav.append(create('h1', page.title), buildList(listed))
   body.append(nav)
-  return serializeXml(xhtml)
+  return serialize()
 }
 
 /** A W3C date as dc:date and dcterms:modified take it: a calendar day, or a time in UTC to the second. */
@@ -425,7 +424,6 @@ function w3cDate(date: string | Date) {
 }
 
 function buildPackageDocument(page: EpubPage, options: {
-  identifier: string
   author: string | undefined
   modified: Date
   images: BookImage[]
@@ -433,7 +431,7 @@ function buildPackageDocument(page: EpubPage, options: {
 }) {
   const date = page.date && w3cDate(page.date)
   const metadata = [
-    `<dc:identifier id="book-id">${escapeXml(options.identifier)}</dc:identifier>`,
+    `<dc:identifier id="book-id">${escapeXml(page.url)}</dc:identifier>`,
     `<dc:title>${escapeXml(page.title)}</dc:title>`,
     `<dc:language>${page.language}</dc:language>`,
     options.author && `<dc:creator>${escapeXml(options.author)}</dc:creator>`,
@@ -464,13 +462,20 @@ ${indent(manifest)}
 `
 }
 
-/** The EPUB file of a page, built from its rendered article. */
-export async function createEpub(article: HTMLElement, page: EpubPage) {
-  const content = cleanArticle(article)
-  const images = await embedImages(content)
+/** The EPUB file of a page, built from its rendered HTML and the built files in distDir. */
+export async function createEpub(html: string, page: EpubPage, distDir: string) {
+  // jsdom is loaded here and not at the top, so a dev server start does not pay for it.
+  const { JSDOM } = await import('jsdom')
+  const { document } = new JSDOM(html).window
+  const article = document.querySelector<HTMLElement>(ARTICLE_SELECTOR)
+  if (!article)
+    throw new Error(`The page ${page.url} has no ${ARTICLE_SELECTOR} element`)
+
+  const pageUrl = new URL(page.url)
+  const content = cleanArticle(article, pageUrl)
+  const images = await embedImages(content, pageUrl, distDir)
   const navEntries = collectNavEntries(content)
-  const author = document.querySelector('meta[name="author"]')?.getAttribute('content') ?? undefined
-  const modified = new Date()
+  const author = document.querySelector(AUTHOR_SELECTOR)?.getAttribute('content') ?? undefined
 
   const encoder = new TextEncoder()
   const packageFile = (name: string) => `${PACKAGE_DIRECTORY}/${name}`
@@ -481,33 +486,24 @@ export async function createEpub(article: HTMLElement, page: EpubPage) {
     {
       name: packageFile(PACKAGE_FILE),
       data: encoder.encode(buildPackageDocument(page, {
-        identifier: location.origin + location.pathname,
         author,
-        modified,
+        modified: page.modified,
         images,
         hasSvg: !!content.querySelector('svg'),
       })),
     },
-    { name: packageFile(NAV_FILE), data: encoder.encode(buildNavDocument(navEntries, page)) },
+    { name: packageFile(NAV_FILE), data: encoder.encode(buildNavDocument(document, navEntries, page)) },
     { name: packageFile(CONTENT_FILE), data: encoder.encode(buildContentDocument(content, page, author)) },
     { name: packageFile(STYLESHEET_FILE), data: encoder.encode(STYLESHEET) },
     ...images.map(image => ({ name: packageFile(image.path), data: image.data })),
   ]
 
-  return new Blob([createZip(entries, modified)], { type: EPUB_MEDIA_TYPE })
+  return createZip(entries, page.modified)
 }
 
-function saveFile(blob: Blob, fileName: string) {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = fileName
-  document.body.append(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_LIFETIME_MS)
-}
-
-export async function downloadEpub(article: HTMLElement, page: EpubPage) {
-  saveFile(await createEpub(article, page), `${page.slug}.epub`)
+/** Writes the book of a page as <route>.epub into distDir, and returns that path. */
+export async function writeEpub(html: string, page: EpubPage, distDir: string) {
+  const file = join(distDir, `${new URL(page.url).pathname}${EPUB_EXTENSION}`)
+  await writeFile(file, await createEpub(html, page, distDir))
+  return file
 }

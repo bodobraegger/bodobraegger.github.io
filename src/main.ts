@@ -95,7 +95,7 @@ export const createApp = ViteSSG(
       // signals a navigation a few hundred milliseconds before the click
       function prefetchOnIntent(event: Event) {
         const link = (event.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
-        if (!link || link.target === '_blank')
+        if (!link || link.target === '_blank' || link.download)
           return
         const url = new URL(link.href, location.href)
         if (url.origin === location.origin)

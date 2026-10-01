@@ -6,7 +6,7 @@
 
 export interface ZipEntry {
   name: string
-  data: Uint8Array<ArrayBuffer>
+  data: Uint8Array
 }
 
 const LOCAL_FILE_HEADER_SIGNATURE = 0x04034B50
@@ -62,14 +62,14 @@ function dosDateTime(date: Date) {
  * an entry is stored are the same in the local header and in the central
  * directory, so one function writes both.
  */
-export function createZip(entries: ZipEntry[], modified = new Date()): Blob {
+export function createZip(entries: ZipEntry[], modified = new Date()): Uint8Array {
   if (entries.length > MAXIMUM_ENTRY_COUNT)
     throw new ZipLimitError(`A ZIP archive without ZIP64 holds at most ${MAXIMUM_ENTRY_COUNT} entries`)
 
   const encoder = new TextEncoder()
   const { time, day } = dosDateTime(modified)
-  const localParts: Uint8Array<ArrayBuffer>[] = []
-  const centralParts: Uint8Array<ArrayBuffer>[] = []
+  const localParts: Uint8Array[] = []
+  const centralParts: Uint8Array[] = []
   let offset = 0
 
   for (const entry of entries) {
@@ -124,5 +124,11 @@ export function createZip(entries: ZipEntry[], modified = new Date()): Blob {
   endView.setUint32(12, centralSize, true)
   endView.setUint32(16, offset, true)
 
-  return new Blob([...localParts, ...centralParts, end])
+  const archive = new Uint8Array(offset + centralSize + END_OF_CENTRAL_DIRECTORY_SIZE)
+  let position = 0
+  for (const part of [...localParts, ...centralParts, end]) {
+    archive.set(part, position)
+    position += part.length
+  }
+  return archive
 }

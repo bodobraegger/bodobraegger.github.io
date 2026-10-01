@@ -25,6 +25,8 @@ import { slugify } from './scripts/slugify'
 import { responsiveImages } from './scripts/markdown-images'
 import { slantHeadings } from './scripts/slant-headings'
 import { buildShikiClasses } from './scripts/shiki-classes'
+import { writeEpub } from './scripts/epub'
+import { resolveLanguage } from './src/logics/languages'
 
 const SHIKI_THEMES = { dark: 'vitesse-dark', light: 'vitesse-light' }
 const SHIKI_CSS_VARIABLE_PREFIX = '--s-'
@@ -34,6 +36,8 @@ const RESOLVED_SHIKI_THEME_CSS_ID = `\0${SHIKI_THEME_CSS_ID}`
 const shikiClasses = buildShikiClasses(SHIKI_THEMES, SHIKI_CSS_VARIABLE_PREFIX)
 
 const DIST_DIR = resolve(__dirname, 'dist')
+/** Where the site is served. Links that leave a page are written as absolute URLs into its book. */
+const SITE_URL = 'https://bbo.do'
 
 /**
  * The date of the commit the site is built from, shown on the home page. A
@@ -255,6 +259,21 @@ export default defineConfig(({ mode }) => ({
     // Renders the catch-all page as well. GitHub Pages serves it for every path
     // it has no file for.
     includedRoutes: paths => [...paths.filter(path => !path.includes(':')), '/404'],
+    // A page with `epub: true` is also written as <route>.epub, a static file
+    // that an e-reader fetches without running any script.
+    async onPageRendered(route, html, { router }) {
+      const { frontmatter } = router.resolve(route).meta
+      if (frontmatter?.epub === true) {
+        await writeEpub(html, {
+          title: frontmatter.title ?? route,
+          language: resolveLanguage(frontmatter.lang, route),
+          date: frontmatter.date,
+          url: SITE_URL + route,
+          modified: new Date(LAST_UPDATE),
+        }, DIST_DIR)
+      }
+      return html
+    },
     async onFinished() {
       // GitHub Pages reads the missing page from 404.html in the site root, and
       // never from the 404/index.html that the nested style writes.
