@@ -5,7 +5,6 @@ import { formatDate } from '~/logics'
 import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage } from '~/logics/languages'
 import { usePageViews } from '~/composables/usePageViews'
 import { shareOneScreen } from '~/logics/screen-share'
-import { EPUB_LINK, EPUB_QUERY, offersEpub } from '~/logics/epub-link'
 
 const { frontmatter } = defineProps<{
   frontmatter: Record<string, any>
@@ -29,7 +28,10 @@ useHead({
 })
 
 // The book module is loaded only when a reader asks for a book.
-const showEpub = offersEpub(frontmatter)
+const EPUB_QUERY = 'epub'
+const epubLink = { query: { [EPUB_QUERY]: null } }
+// Every post answers ?epub. Only a page with `epub: true` shows the link.
+const showEpubLink = frontmatter.epub === true
 
 /**
  * Opening a page with ?epub downloads it as a book. The query is removed
@@ -56,7 +58,7 @@ onMounted(() => {
   // Track view on mount
   trackView()
 
-  watch(() => showEpub && route.query[EPUB_QUERY] !== undefined, (requested) => {
+  watch(() => route.query[EPUB_QUERY] !== undefined, (requested) => {
     if (requested)
       void exportEpub()
   }, { immediate: true })
@@ -318,7 +320,7 @@ if (frontmatter.hydra) {
       </span>
     </h1>
     <p
-      v-if="frontmatter.date || frontmatter.place || translations.length || showEpub"
+      v-if="frontmatter.date || frontmatter.place || translations.length || showEpubLink"
       class="!-mt-6 font-serif-extra font-italic flex flex-wrap gap-x-2 items-baseline"
     >
       <span v-if="frontmatter.date" class="op50">
@@ -338,9 +340,9 @@ if (frontmatter.hydra) {
           </RouterLink>
         </template>
       </span>
-      <span v-if="showEpub" class="text-sm">
+      <span v-if="showEpubLink" class="text-sm">
         <!-- The link points to this page, so a plain RouterLink would style it as the active page. -->
-        <RouterLink v-slot="{ href, navigate }" :to="EPUB_LINK" custom>
+        <RouterLink v-slot="{ href, navigate }" :to="epubLink" custom>
           <a class="font-serif-extra! op50" :href="href" rel="nofollow" @click="navigate">EPUB</a>
         </RouterLink>
       </span>

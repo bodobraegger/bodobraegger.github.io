@@ -1,9 +1,5 @@
 <script setup lang='ts'>
 import { readerPlace } from '~/logics/weather'
-import { EPUB_LINK, offersEpub } from '~/logics/epub-link'
-
-const route = useRoute()
-const showEpub = computed(() => offersEpub(route.meta.frontmatter))
 </script>
 
 <template>
@@ -12,9 +8,6 @@ const showEpub = computed(() => offersEpub(route.meta.frontmatter))
       <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color:inherit">
         CC BY-NC-SA 4.0</a>
       2023-PRESENT ©&nbsp;Bodo&nbsp;Braegger
-      <RouterLink v-if="showEpub" v-slot="{ href, navigate }" :to="EPUB_LINK" custom>
-        <a :href="href" rel="nofollow" style="color:inherit" @click="navigate">&nbsp;EPUB</a>
-      </RouterLink>
     </span>
     <span class="text-xs font-light op50 ml-auto">
       <WeatherLine :place="readerPlace()" label="◌ are you in ≈" />
