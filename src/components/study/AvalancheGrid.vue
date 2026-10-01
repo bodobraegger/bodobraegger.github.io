@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Language } from '~/logics/languages'
 import { AES_BLOCK_BYTES, encryptBlock, importAesKeys } from '~/lib/aes'
-import { BITS_PER_BYTE, bytesToBits, flipBit } from '~/lib/bits'
+import { BITS_PER_BYTE, asciiCharacter, bytesToBits, flipBit, hammingDistance } from '~/lib/bits'
+import { useWebCrypto } from '~/composables/useWebCrypto'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 const BLOCK_BITS = AES_BLOCK_BYTES * BITS_PER_BYTE
@@ -9,9 +10,6 @@ const BLOCK_BITS = AES_BLOCK_BYTES * BITS_PER_BYTE
 const EXAMPLE_KEY = Uint8Array.from({ length: AES_BLOCK_BYTES }, (_, index) => index)
 const HISTORY_LENGTH = 8
 const PERCENT = 100
-const PRINTABLE_FIRST = 0x20
-const PRINTABLE_LAST = 0x7E
-const REPLACEMENT_CHARACTER = '�'
 
 type Target = 'plaintext' | 'key'
 const TARGETS: Target[] = ['plaintext', 'key']
@@ -28,7 +26,6 @@ interface Text {
   history: string
   mean: string
   reset: string
-  unsupported: string
 }
 
 const TEXT: Record<Language, Text> = {
@@ -44,7 +41,6 @@ const TEXT: Record<Language, Text> = {
     history: 'Ciphertext bits changed by each tap:',
     mean: 'mean',
     reset: 'Undo all flips',
-    unsupported: 'This browser has no WebCrypto API, so it cannot show this figure.',
   },
   pt: {
     title: 'Efeito avalanche no AES-128',
@@ -58,7 +54,6 @@ const TEXT: Record<Language, Text> = {
     history: 'Bits do cifrado mudados por cada toque:',
     mean: 'média',
     reset: 'Desfazer as inversões',
-    unsupported: 'Este navegador não tem a API WebCrypto, então não mostra esta figura.',
   },
 }
 
@@ -68,7 +63,7 @@ const ORIGINAL: Record<Target, Uint8Array> = {
   key: EXAMPLE_KEY,
 }
 
-const isSupported = ref(true)
+const isSupported = useWebCrypto()
 const target = ref<Target>('plaintext')
 const inputs = shallowReactive<Record<Target, Uint8Array>>({ ...ORIGINAL })
 const referenceCiphertext = shallowRef<Uint8Array>()
@@ -84,20 +79,17 @@ const originalBits = computed(() => bytesToBits(ORIGINAL[target.value]))
 const referenceBits = computed(() => referenceCiphertext.value ? bytesToBits(referenceCiphertext.value) : [])
 const ciphertextBits = computed(() => ciphertext.value ? bytesToBits(ciphertext.value) : [])
 
-function countDifferences(left: number[], right: number[]) {
-  return left.filter((bit, index) => bit !== right[index]).length
-}
-
 const flippedInputCount = computed(() => TARGETS.reduce((count, name) =>
-  count + countDifferences(bytesToBits(inputs[name]), bytesToBits(ORIGINAL[name])), 0))
-const changedCount = computed(() => countDifferences(ciphertextBits.value, referenceBits.value))
+  count + hammingDistance(inputs[name], ORIGINAL[name]), 0))
+const changedCount = computed(() => ciphertext.value && referenceCiphertext.value
+  ? hammingDistance(ciphertext.value, referenceCiphertext.value)
+  : 0)
 const changedPercent = computed(() => Math.round(changedCount.value * PERCENT / BLOCK_BITS))
 const historyMean = computed(() => history.value.length
   ? Math.round(history.value.reduce((sum, count) => sum + count, 0) / history.value.length)
   : 0)
 
-const plaintextCharacters = computed(() => [...inputs.plaintext].map(byte =>
-  byte >= PRINTABLE_FIRST && byte <= PRINTABLE_LAST ? String.fromCharCode(byte) : REPLACEMENT_CHARACTER).join(''))
+const plaintextCharacters = computed(() => [...inputs.plaintext].map(byte => asciiCharacter(byte)).join(''))
 
 // Taps are encrypted one after the other, so each history entry counts one flip
 // against the ciphertext of the tap before it.
@@ -109,7 +101,7 @@ function toggleBit(bitIndex: number) {
   // A failed tap must not block the taps after it.
   pendingTaps = pendingTaps.catch(() => {}).then(async () => {
     const result = await encrypt(plaintext, key)
-    const changedByTap = countDifferences(bytesToBits(result), ciphertextBits.value)
+    const changedByTap = ciphertext.value ? hammingDistance(result, ciphertext.value) : 0
     ciphertext.value = result
     history.value = [...history.value, changedByTap].slice(-HISTORY_LENGTH)
   })
@@ -122,21 +114,16 @@ function undoFlips() {
 }
 
 onMounted(async () => {
-  if (!globalThis.crypto?.subtle) {
-    isSupported.value = false
+  if (!isSupported.value)
     return
-  }
   referenceCiphertext.value = await encrypt(ORIGINAL.plaintext, ORIGINAL.key)
   ciphertext.value = referenceCiphertext.value
 })
 </script>
 
 <template>
-  <StudyFigure :title="text.title">
+  <StudyFigure :title="text.title" :unsupported="!isSupported">
     <p>{{ text.intro }}</p>
-    <p v-if="!isSupported" class="study-alert">
-      {{ text.unsupported }}
-    </p>
 
     <div class="study-controls">
       <span class="study-label">{{ text.flipTarget }}</span>
@@ -155,7 +142,7 @@ onMounted(async () => {
     <div class="avalanche-grids">
       <div class="avalanche-panel">
         <span class="study-label">{{ text.targets[target] }}</span>
-        <div class="avalanche-grid study-mono">
+        <div class="study-bit-grid">
           <button
             v-for="(bit, index) in inputBits"
             :key="index"
@@ -175,7 +162,7 @@ onMounted(async () => {
 
       <div class="avalanche-panel">
         <span class="study-label">{{ text.ciphertext }}</span>
-        <div class="avalanche-grid study-mono">
+        <div class="study-bit-grid">
           <span
             v-for="(bit, index) in ciphertextBits"
             :key="index"
@@ -222,19 +209,7 @@ onMounted(async () => {
   gap: 0.35rem;
 }
 
-.avalanche-grid {
-  display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 1px;
-}
-
-/* A gap after each byte */
-.avalanche-bit:nth-child(8n):not(:nth-child(16n)) {
-  margin-right: 3px;
-}
-
 .study-bit.avalanche-bit {
-  width: auto;
   height: 1.45rem;
   font-size: 0.72rem;
 }

@@ -1,5 +1,19 @@
 <script setup lang="ts">
-defineProps<{ title: string }>()
+import type { Language } from '~/logics/languages'
+import { usePageLanguage } from '~/composables/usePageLanguage'
+
+const { unsupported = false } = defineProps<{
+  title: string
+  /** True when the browser lacks an API the figure needs, see useWebCrypto. */
+  unsupported?: boolean
+}>()
+
+const UNSUPPORTED_TEXT: Record<Language, string> = {
+  en: 'This browser has no WebCrypto API, so it cannot show this figure.',
+  pt: 'Este navegador não tem a API WebCrypto, então não mostra esta figura.',
+}
+
+const unsupportedText = UNSUPPORTED_TEXT[usePageLanguage()]
 </script>
 
 <template>
@@ -7,6 +21,9 @@ defineProps<{ title: string }>()
     <figcaption class="study-figure-title">
       {{ title }}
     </figcaption>
+    <p v-if="unsupported" class="study-alert">
+      {{ unsupportedText }}
+    </p>
     <slot />
   </figure>
 </template>
@@ -19,6 +36,7 @@ defineProps<{ title: string }>()
   --study-success: light-dark(#15803d, #5fd48a);
   --study-mark: color-mix(in srgb, var(--study-accent) 18%, transparent);
   --study-alert-mark: color-mix(in srgb, var(--study-alert) 18%, transparent);
+  --study-byte-gap: 0.4rem;
 
   display: flex;
   flex-direction: column;
@@ -95,8 +113,25 @@ defineProps<{ title: string }>()
 .study-bits {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 2px;
   font-family: var(--fonts-mono);
+}
+
+/* Sixteen bits per row: two bytes with a gap column between them. The rule
+   on the ninth bit of each row steps over the gap column; auto placement
+   then continues after it and wraps the seventeenth bit to the next row. */
+.study-bit-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr)) var(--study-byte-gap) repeat(8, minmax(0, 1fr));
+  row-gap: 0.3rem;
+  font-family: var(--fonts-mono);
+
+  > :nth-child(16n + 9) {
+    grid-column-start: 10;
+  }
+
+  > .study-bit {
+    width: auto;
+  }
 }
 
 .study-bit {
@@ -128,6 +163,22 @@ defineProps<{ title: string }>()
   }
 }
 
+/* The bits of one byte share their side borders, and only the bytes have a
+   gap. A coloured box is raised, so its border is not hidden by the next box. */
+.study-bit + .study-bit:not(:nth-child(8n + 1)) {
+  margin-left: -1px;
+}
+
+.study-bits > .study-bit:nth-child(8n):not(:last-child) {
+  margin-right: var(--study-byte-gap);
+}
+
+.study-bit.is-marked,
+.study-bit.is-alert {
+  position: relative;
+  z-index: 1;
+}
+
 .study-success {
   color: var(--study-success);
 }
@@ -139,10 +190,6 @@ defineProps<{ title: string }>()
 @media (max-width: 480px) {
   .study-figure {
     padding: 0.75rem;
-  }
-
-  .study-bits {
-    gap: 1px;
   }
 
   .study-bit {

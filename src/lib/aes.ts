@@ -3,6 +3,8 @@
  * has no ECB mode and always pads CBC, so both are built here from AES-CBC.
  */
 
+import { randomBytes, xorBytes } from '~/lib/bits'
+
 export const AES_BLOCK_BYTES = 16
 export const AES_KEY_BYTES = 16
 /** The 96 bit nonce of GCM, and the random part of a CTR counter block. */
@@ -21,10 +23,6 @@ export interface AesKeys {
   gcm: CryptoKey
 }
 
-export function randomBytes(length: number): Uint8Array {
-  return crypto.getRandomValues(new Uint8Array(length))
-}
-
 /** One raw key, imported once for each mode, because a CryptoKey is bound to one algorithm. */
 export async function importAesKeys(raw: Uint8Array): Promise<AesKeys> {
   const usages: KeyUsage[] = ['encrypt', 'decrypt']
@@ -37,10 +35,6 @@ export async function importAesKeys(raw: Uint8Array): Promise<AesKeys> {
 function assertWholeBlocks(data: Uint8Array) {
   if (data.length % AES_BLOCK_BYTES !== 0)
     throw new RangeError(`Data length ${data.length} is not a multiple of ${AES_BLOCK_BYTES} bytes`)
-}
-
-function xorBytes(left: Uint8Array, right: Uint8Array): Uint8Array {
-  return left.map((byte, index) => byte ^ right[index])
 }
 
 /** AES on one block: CBC with a zero IV, without the padding block that WebCrypto adds. */

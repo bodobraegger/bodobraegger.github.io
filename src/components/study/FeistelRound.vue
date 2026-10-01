@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Language } from '~/logics/languages'
-import { toBinary } from '~/lib/bits'
+import { countOnes, toBinary } from '~/lib/bits'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 const { initialPhase = 'encryption' } = defineProps<{ initialPhase?: Phase }>()
@@ -160,10 +160,6 @@ function bitOf(value: number, width: number, index: number) {
   return (value >> (width - 1 - index)) & 1
 }
 
-function countBits(value: number) {
-  return toBinary(value, BLOCK_WIDTH).split('').filter(bit => bit === '1').length
-}
-
 const values = computed<Values>(() => {
   const left = block.value >> HALF_WIDTH
   const right = block.value & HALF_MASK
@@ -185,7 +181,7 @@ const values = computed<Values>(() => {
     ciphertext,
     recovered,
     swapped,
-    swapDifference: countBits(swapped ^ block.value),
+    swapDifference: countOnes(swapped ^ block.value),
   }
 })
 
@@ -429,15 +425,6 @@ function resetValues() {
 .feistel-row-value {
   font-size: 0.8rem;
   color: var(--fg-muted);
-}
-
-/* A gap between the two halves of a 16 bit value */
-.feistel-block > :nth-child(8) {
-  margin-right: 0.4rem;
-
-  @media (max-width: 480px) {
-    margin-right: 0.25rem;
-  }
 }
 
 .is-low-aligned {

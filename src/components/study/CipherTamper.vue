@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Language } from '~/logics/languages'
 import type { AesKeys } from '~/lib/aes'
-import { AES_BLOCK_BYTES, AES_KEY_BYTES, NONCE_BYTES, decryptCbc, decryptGcm, encryptCbc, encryptGcm, importAesKeys, randomBytes } from '~/lib/aes'
-import { BITS_PER_BYTE, toBinary, toHex } from '~/lib/bits'
+import { AES_BLOCK_BYTES, AES_KEY_BYTES, NONCE_BYTES, decryptCbc, decryptGcm, encryptCbc, encryptGcm, importAesKeys } from '~/lib/aes'
+import { BITS_PER_BYTE, asciiCharacter, hammingDistance, randomBytes, toBinary, toHex } from '~/lib/bits'
+import { useWebCrypto } from '~/composables/useWebCrypto'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 type Mode = 'cbc' | 'gcm'
@@ -17,9 +18,6 @@ const CBC_SECOND_BLOCK_OFFSET = 2 * AES_BLOCK_BYTES
 /** Bit 3 turns the digit 0 (0x30) into 8 (0x38). */
 const AMOUNT_BIT_MASK = 0x08
 const AMOUNT_DIGITS = '0100'
-const PRINTABLE_FIRST = 0x20
-const PRINTABLE_LAST = 0x7E
-const REPLACEMENT_CHARACTER = '�'
 
 interface Text {
   title: string
@@ -39,7 +37,6 @@ interface Text {
   rejected: (error: string) => string
   cbcRule: string
   gcmRule: string
-  unsupported: string
 }
 
 const TEXT: Record<Language, Text> = {
@@ -61,7 +58,6 @@ const TEXT: Record<Language, Text> = {
     rejected: error => `Rejected (${error}): the tag does not match. No plaintext is released.`,
     cbcRule: 'A flipped bit in C(i-1) flips the same bit of P_i and destroys P(i-1).',
     gcmRule: 'GHASH covers every ciphertext bit with the key H, so any change breaks the tag.',
-    unsupported: 'This browser has no WebCrypto API, so it cannot show this figure.',
   },
   pt: {
     title: 'Adulteração: CBC contra GCM',
@@ -81,7 +77,6 @@ const TEXT: Record<Language, Text> = {
     rejected: error => `Rejeitado (${error}): a tag não confere. Nenhum texto claro é liberado.`,
     cbcRule: 'Um bit invertido em C(i-1) inverte o mesmo bit de P_i e destrói P(i-1).',
     gcmRule: 'O GHASH cobre cada bit do cifrado com a chave H, então qualquer mudança quebra a tag.',
-    unsupported: 'Este navegador não tem a API WebCrypto, então não mostra esta figura.',
   },
 }
 
@@ -98,7 +93,7 @@ const text = TEXT[usePageLanguage()]
 const plaintext = new TextEncoder().encode(text.message)
 const plaintextLines = chunk(plaintext)
 
-const isSupported = ref(true)
+const isSupported = useWebCrypto()
 const keys = shallowRef<AesKeys>()
 const states = reactive<Partial<Record<Mode, ModeState>>>({})
 
@@ -110,17 +105,12 @@ function chunk(bytes: Uint8Array): Uint8Array[] {
     bytes.subarray(index * AES_BLOCK_BYTES, (index + 1) * AES_BLOCK_BYTES))
 }
 
-function displayCharacter(byte: number) {
-  return byte >= PRINTABLE_FIRST && byte <= PRINTABLE_LAST ? String.fromCharCode(byte) : REPLACEMENT_CHARACTER
-}
-
 function byteName(mode: Mode, index: number) {
   return `${BLOCK_LABELS[mode][Math.floor(index / AES_BLOCK_BYTES)]}[${index % AES_BLOCK_BYTES}]`
 }
 
 function flippedBitCount(state: ModeState) {
-  return state.received.reduce((count, byte, index) =>
-    count + toBinary(byte ^ state.sent[index], BITS_PER_BYTE).split('').filter(bit => bit === '1').length, 0)
+  return hammingDistance(state.received, state.sent)
 }
 
 async function decrypt(mode: Mode, received: Uint8Array): Promise<Result> {
@@ -197,20 +187,14 @@ const panels = computed(() => MODES.flatMap(mode => states[mode] ? [{ mode, stat
 const isChanged = computed(() => panels.value.some(({ state }) => flippedBitCount(state) > 0))
 
 onMounted(() => {
-  if (!globalThis.crypto?.subtle) {
-    isSupported.value = false
-    return
-  }
-  encryptMessage()
+  if (isSupported.value)
+    encryptMessage()
 })
 </script>
 
 <template>
-  <StudyFigure :title="text.title">
+  <StudyFigure :title="text.title" :unsupported="!isSupported">
     <p>{{ text.intro }}</p>
-    <p v-if="!isSupported" class="study-alert">
-      {{ text.unsupported }}
-    </p>
 
     <div>
       <div class="study-label">
@@ -219,7 +203,7 @@ onMounted(() => {
       <div class="tamper-text study-mono">
         <div v-for="(line, index) in plaintextLines" :key="index" class="tamper-line">
           <span class="tamper-line-label">P{{ index + 1 }}</span>
-          <span v-for="(byte, position) in line" :key="position" class="tamper-character">{{ displayCharacter(byte) }}</span>
+          <span v-for="(byte, position) in line" :key="position" class="tamper-character">{{ asciiCharacter(byte) }}</span>
         </div>
       </div>
     </div>
@@ -296,7 +280,7 @@ onMounted(() => {
                   :key="position"
                   class="tamper-character"
                   :class="{ 'is-changed': byte !== plaintextLines[index][position] }"
-                >{{ displayCharacter(byte) }}</span>
+                >{{ asciiCharacter(byte) }}</span>
               </div>
             </div>
             <p class="tamper-verdict" :class="{ 'study-alert': mode === 'cbc' && flippedBitCount(state) }">

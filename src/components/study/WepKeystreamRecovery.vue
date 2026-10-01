@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BitRow } from './XorBitRows.vue'
 import type { Language } from '~/logics/languages'
-import { HexParseError, bytesToHex, parseHex, randomBytes, xorBytes } from '~/lib/xor'
+import { HexParseError, bytesToHex, parseHex, randomBytes, xorBytes } from '~/lib/bits'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 /** The captured exchange of the worked example in section 4.7. */
@@ -11,7 +11,23 @@ const GUIDE_NEXT_CHALLENGE = '6B0E51D7'
 const MAX_BYTES = 8
 const MAX_INPUT_LENGTH = MAX_BYTES * 3
 
-const LABELS = {
+type InputError = 'notHex' | 'oddLength' | 'empty' | 'lengthMismatch' | 'tooLong'
+
+interface Text extends Record<InputError, string> {
+  title: string
+  stepCapture: string
+  challenge: string
+  response: string
+  recovered: string
+  stepReplay: string
+  nextChallenge: string
+  randomChallenge: string
+  forged: string
+  accepted: string
+  reset: string
+}
+
+const TEXT: Record<Language, Text> = {
   en: {
     title: 'WEP authentication: recover the keystream, then log in without the key',
     stepCapture: 'Step 1: the attacker listens to one authentication.',
@@ -48,15 +64,15 @@ const LABELS = {
     lengthMismatch: 'P e C precisam ter o mesmo número de bytes.',
     tooLong: `Use no máximo ${MAX_BYTES} bytes.`,
   },
-} satisfies Record<Language, Record<string, string>>
+}
 
-const labels = LABELS[usePageLanguage()]
+const text = TEXT[usePageLanguage()]
 
 const challengeText = ref(GUIDE_CHALLENGE)
 const responseText = ref(GUIDE_RESPONSE)
 const nextChallengeText = ref(GUIDE_NEXT_CHALLENGE)
 
-type Parsed = { bytes: number[] } | { error: keyof typeof LABELS.en }
+type Parsed = { bytes: Uint8Array } | { error: InputError }
 
 function parse(text: string): Parsed {
   try {
@@ -140,51 +156,51 @@ function reset() {
 </script>
 
 <template>
-  <CipherFigure :title="labels.title">
-    <p>{{ labels.stepCapture }}</p>
+  <CipherFigure :title="text.title">
+    <p>{{ text.stepCapture }}</p>
     <div class="cipher-fields">
       <label class="cipher-field">
-        <span class="cipher-plain">{{ labels.challenge }}</span>
+        <span class="cipher-plain">{{ text.challenge }}</span>
         <input v-model="challengeText" type="text" :maxlength="MAX_INPUT_LENGTH" spellcheck="false" autocomplete="off" autocapitalize="characters">
       </label>
       <label class="cipher-field">
-        <span>{{ labels.response }}</span>
+        <span>{{ text.response }}</span>
         <input v-model="responseText" type="text" :maxlength="MAX_INPUT_LENGTH" spellcheck="false" autocomplete="off" autocapitalize="characters">
       </label>
     </div>
     <div class="study-controls">
       <button type="button" class="study-button" @click="reset">
-        {{ labels.reset }}
+        {{ text.reset }}
       </button>
     </div>
     <p v-if="captureError" class="cipher-error" aria-live="polite">
-      {{ labels[captureError] }}
+      {{ text[captureError] }}
     </p>
     <template v-else-if="keystream">
       <XorBitRows :rows="captureRows" />
       <p class="cipher-key">
-        R = {{ bytesToHex(keystream) }}. {{ labels.recovered }}
+        R = {{ bytesToHex(keystream) }}. {{ text.recovered }}
       </p>
 
-      <p>{{ labels.stepReplay }}</p>
+      <p>{{ text.stepReplay }}</p>
       <div class="cipher-fields">
         <label class="cipher-field">
-          <span class="cipher-plain">{{ labels.nextChallenge }}</span>
+          <span class="cipher-plain">{{ text.nextChallenge }}</span>
           <input v-model="nextChallengeText" type="text" :maxlength="MAX_INPUT_LENGTH" spellcheck="false" autocomplete="off" autocapitalize="characters">
         </label>
       </div>
       <div class="study-controls">
         <button type="button" class="study-button" @click="pickRandomChallenge">
-          {{ labels.randomChallenge }}
+          {{ text.randomChallenge }}
         </button>
       </div>
       <p v-if="replayError" class="cipher-error" aria-live="polite">
-        {{ labels[replayError] }}
+        {{ text[replayError] }}
       </p>
       <template v-else-if="forgedResponse">
-        <p>{{ labels.forged }}</p>
+        <p>{{ text.forged }}</p>
         <XorBitRows :rows="replayRows" />
-        <p>{{ labels.accepted }}</p>
+        <p>{{ text.accepted }}</p>
       </template>
     </template>
   </CipherFigure>

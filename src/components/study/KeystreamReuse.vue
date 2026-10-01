@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BitRow, BitRowTone } from './XorBitRows.vue'
 import type { Language } from '~/logics/languages'
-import { byteToHex, bytesToHex, parseHex, randomBytes, xorBytes } from '~/lib/xor'
+import { asciiCharacter, byteToHex, bytesToHex, parseHex, randomBytes, xorBytes } from '~/lib/bits'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 const MAX_BYTES = 12
@@ -10,12 +10,25 @@ const DEFAULT_SECOND_PLAINTEXT = 'PIN 0307'
 const DEFAULT_KEYSTREAM = parseHex('9C3E71A85B0F2D64E7194AC2')
 /** The first byte where the two default plaintexts differ, so the start view shows a non-zero XOR. */
 const DEFAULT_SELECTED_BYTE = 4
-const FIRST_PRINTABLE = 0x20
-const LAST_PRINTABLE = 0x7E
-const SPACE = 0x20
 const VISIBLE_SPACE = '␣'
 
-const LABELS = {
+interface Text {
+  title: string
+  firstPlaintext: string
+  secondPlaintext: string
+  newKeystream: string
+  reset: string
+  visibility: string
+  selectByte: string
+  equalEverywhere: string
+  zeroNote: string
+  guessHeading: string
+  guess: string
+  recovered: string
+  xorLegend: string
+}
+
+const TEXT: Record<Language, Text> = {
   en: {
     title: 'Stream cipher: the same keystream K used for two messages',
     firstPlaintext: 'Plaintext P1',
@@ -46,9 +59,9 @@ const LABELS = {
     recovered: 'P2 = (C1 ⊕ C2) ⊕ palpite',
     xorLegend: '⊕ significa XOR.',
   },
-} satisfies Record<Language, Record<string, string>>
+}
 
-const labels = LABELS[usePageLanguage()]
+const text = TEXT[usePageLanguage()]
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
@@ -59,8 +72,8 @@ const guessText = ref(DEFAULT_FIRST_PLAINTEXT)
 const keystream = ref(DEFAULT_KEYSTREAM)
 const selectedByte = ref(DEFAULT_SELECTED_BYTE)
 
-function encode(text: string): number[] {
-  return [...encoder.encode(text)].slice(0, MAX_BYTES)
+function encode(input: string): Uint8Array {
+  return encoder.encode(input).subarray(0, MAX_BYTES)
 }
 
 const firstPlaintext = computed(() => encode(firstPlaintextText.value))
@@ -70,14 +83,14 @@ const secondCiphertext = computed(() => xorBytes(secondPlaintext.value, keystrea
 const ciphertextXor = computed(() => xorBytes(firstCiphertext.value, secondCiphertext.value))
 const plaintextXor = computed(() => xorBytes(firstPlaintext.value, secondPlaintext.value))
 const recoveredSecond = computed(() => xorBytes(ciphertextXor.value, encode(guessText.value)))
-const recoveredSecondText = computed(() => decoder.decode(new Uint8Array(recoveredSecond.value)))
+const recoveredSecondText = computed(() => decoder.decode(recoveredSecond.value))
 
 const columnCount = computed(() => Math.max(firstPlaintext.value.length, secondPlaintext.value.length))
 const selectedColumn = computed(() => Math.min(selectedByte.value, columnCount.value - 1))
 
 interface TableRow {
   label: string
-  bytes: number[]
+  bytes: Uint8Array
   tone: BitRowTone
   showCharacters?: boolean
 }
@@ -92,9 +105,9 @@ const tableRows = computed<TableRow[]>(() => [
   { label: 'P1⊕P2', bytes: plaintextXor.value, tone: 'result' },
 ])
 
-function pick(bytes: number[]): number[] {
+function pick(bytes: Uint8Array): Uint8Array {
   const byte = bytes[selectedColumn.value]
-  return byte === undefined ? [] : [byte]
+  return byte === undefined ? new Uint8Array() : Uint8Array.of(byte)
 }
 
 const ciphertextBitRows = computed<BitRow[]>(() => [
@@ -109,7 +122,7 @@ const plaintextBitRows = computed<BitRow[]>(() => [
   { label: 'P1⊕P2', bytes: pick(plaintextXor.value), tone: 'result', separated: true },
 ])
 
-function hexAt(bytes: number[]): string {
+function hexAt(bytes: Uint8Array): string {
   const byte = bytes[selectedColumn.value]
   return byte === undefined ? '--' : byteToHex(byte)
 }
@@ -128,11 +141,7 @@ const cancellation = computed(() => {
 })
 
 function character(byte: number | undefined): string {
-  if (byte === undefined)
-    return ''
-  if (byte === SPACE)
-    return VISIBLE_SPACE
-  return byte >= FIRST_PRINTABLE && byte <= LAST_PRINTABLE ? String.fromCharCode(byte) : ''
+  return byte === undefined ? '' : asciiCharacter(byte, '').replace(' ', VISIBLE_SPACE)
 }
 
 function newKeystream() {
@@ -149,29 +158,29 @@ function reset() {
 </script>
 
 <template>
-  <CipherFigure :title="labels.title">
+  <CipherFigure :title="text.title">
     <div class="cipher-fields">
       <label class="cipher-field">
-        <span class="cipher-plain">{{ labels.firstPlaintext }}</span>
+        <span class="cipher-plain">{{ text.firstPlaintext }}</span>
         <input v-model="firstPlaintextText" type="text" :maxlength="MAX_BYTES" spellcheck="false" autocomplete="off">
       </label>
       <label class="cipher-field">
-        <span class="cipher-plain">{{ labels.secondPlaintext }}</span>
+        <span class="cipher-plain">{{ text.secondPlaintext }}</span>
         <input v-model="secondPlaintextText" type="text" :maxlength="MAX_BYTES" spellcheck="false" autocomplete="off">
       </label>
     </div>
     <div class="study-controls">
       <button type="button" class="study-button" @click="newKeystream">
-        {{ labels.newKeystream }}
+        {{ text.newKeystream }}
       </button>
       <button type="button" class="study-button" @click="reset">
-        {{ labels.reset }}
+        {{ text.reset }}
       </button>
     </div>
 
     <template v-if="columnCount > 0">
       <p class="cipher-muted">
-        {{ labels.visibility }} {{ labels.selectByte }} {{ labels.xorLegend }}
+        {{ text.visibility }} {{ text.selectByte }} {{ text.xorLegend }}
       </p>
       <div class="cipher-scroll">
         <div class="reuse-grid" :style="{ '--reuse-columns': columnCount }">
@@ -210,21 +219,21 @@ function reset() {
         {{ cancellation }}
       </div>
       <p class="cipher-result">
-        {{ labels.equalEverywhere }}
+        {{ text.equalEverywhere }}
       </p>
       <p class="cipher-muted">
-        {{ labels.zeroNote }}
+        {{ text.zeroNote }}
       </p>
 
-      <p>{{ labels.guessHeading }}</p>
+      <p>{{ text.guessHeading }}</p>
       <div class="cipher-fields">
         <label class="cipher-field">
-          <span>{{ labels.guess }}</span>
+          <span>{{ text.guess }}</span>
           <input v-model="guessText" type="text" :maxlength="MAX_BYTES" spellcheck="false" autocomplete="off">
         </label>
       </div>
       <p>
-        {{ labels.recovered }} = <span class="cipher-plain reuse-recovered">{{ recoveredSecondText }}</span>
+        {{ text.recovered }} = <span class="cipher-plain reuse-recovered">{{ recoveredSecondText }}</span>
         <span class="cipher-muted"> ({{ bytesToHex(recoveredSecond) }})</span>
       </p>
     </template>

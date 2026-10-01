@@ -144,12 +144,12 @@ function toggleBit(index: number) {
       </button>
     </div>
 
-    <div class="randomness-grid study-mono">
+    <div class="study-bit-grid">
       <button
         v-for="(bit, index) in bits"
         :key="index"
         type="button"
-        class="randomness-bit"
+        class="study-bit randomness-bit"
         :class="{ 'is-odd-run': runIndices[index] % 2 === 1 }"
         :aria-label="`bit ${index}: ${bit}`"
         @click="toggleBit(index)"
@@ -193,19 +193,11 @@ function toggleBit(index: number) {
 </template>
 
 <style scoped>
-.randomness-grid {
-  display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 1px;
-}
-
-.randomness-bit {
+.study-bit.randomness-bit {
   height: 1.7rem;
   padding: 0;
-  border: 1px solid var(--c-border-soft);
   font: inherit;
   font-size: 0.75rem;
-  color: var(--fg-deep);
   background: transparent;
   cursor: pointer;
 

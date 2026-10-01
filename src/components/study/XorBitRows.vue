@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { byteToBits, byteToHex } from '~/lib/xor'
+import { BITS_PER_BYTE, byteToHex, toBinary } from '~/lib/bits'
 
 export type BitRowTone = 'plain' | 'key' | 'result' | 'neutral'
 
 export interface BitRow {
   label: string
-  bytes: number[]
+  bytes: Uint8Array
   tone: BitRowTone
   /** Draws the XOR rule above the row, as in a written column sum. */
   separated?: boolean
@@ -21,7 +21,7 @@ const NIBBLE_LENGTH = 4
 const byteCount = computed(() => Math.max(0, ...rows.map(row => row.bytes.length)))
 
 function nibbles(byte: number): string[] {
-  const bits = byteToBits(byte)
+  const bits = toBinary(byte, BITS_PER_BYTE)
   return [bits.slice(0, NIBBLE_LENGTH), bits.slice(NIBBLE_LENGTH)]
 }
 </script>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { AesKeys } from '~/lib/aes'
 import type { Language } from '~/logics/languages'
-import { AES_BLOCK_BYTES, AES_KEY_BYTES, encryptCbc, encryptCtr, importAesKeys, randomBytes } from '~/lib/aes'
-import { BITS_PER_BYTE, toHex } from '~/lib/bits'
+import { AES_BLOCK_BYTES, AES_KEY_BYTES, encryptCbc, encryptCtr, importAesKeys } from '~/lib/aes'
+import { BITS_PER_BYTE, bytesToHex, randomBytes } from '~/lib/bits'
+import { useWebCrypto } from '~/composables/useWebCrypto'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 const HARVEST_BITS = 512
@@ -61,7 +62,6 @@ interface Text {
   rdrand: string
   play: string
   pause: string
-  unsupported: string
 }
 
 const TEXT: Record<Language, Text> = {
@@ -96,7 +96,6 @@ const TEXT: Record<Language, Text> = {
     rdrand: 'rdrand rax: CF = 1 (success), RAX =',
     play: 'Play',
     pause: 'Pause',
-    unsupported: 'This browser has no WebCrypto API, so it cannot show this figure.',
   },
   pt: {
     title: 'Intel DRNG: do ruído térmico ao RDRAND',
@@ -129,13 +128,12 @@ const TEXT: Record<Language, Text> = {
     rdrand: 'rdrand rax: CF = 1 (sucesso), RAX =',
     play: 'Reproduzir',
     pause: 'Pausar',
-    unsupported: 'Este navegador não tem a API WebCrypto, então não mostra esta figura.',
   },
 }
 
 const text = TEXT[usePageLanguage()]
 
-const isSupported = ref(true)
+const isSupported = useWebCrypto()
 const stage = ref<Stage>('harvest')
 const harvest = ref<number[]>([])
 const trace = ref<number[]>([])
@@ -148,7 +146,6 @@ const seedNumber = ref(0)
 /** All 511 outputs of the current seed, computed at once in `seed()`. */
 const outputs = shallowRef<Uint8Array[]>([])
 const sampleCount = ref(0)
-const isPlaying = ref(false)
 
 let conditionerKeys: AesKeys | undefined
 
@@ -267,10 +264,10 @@ function addSamples(count: number) {
 const isLimitReached = computed(() => sampleCount.value === SAMPLES_PER_SEED)
 const shownSamples = computed(() => Array.from({ length: Math.min(SHOWN_SAMPLES, sampleCount.value) }, (_, offset) => {
   const number = sampleCount.value - offset
-  return { number, hex: toHex(outputs.value[number - 1]).join('') }
+  return { number, hex: bytesToHex(outputs.value[number - 1]) }
 }))
 const rdrandValue = computed(() => sampleCount.value
-  ? toHex(outputs.value[sampleCount.value - 1].subarray(0, RDRAND_BYTES)).join('')
+  ? bytesToHex(outputs.value[sampleCount.value - 1].subarray(0, RDRAND_BYTES))
   : '')
 
 function reseed() {
@@ -282,7 +279,7 @@ function reseed() {
 }
 
 function prefix(bytes: Uint8Array) {
-  return `${toHex(bytes.subarray(0, PREFIX_BYTES)).join('')}…`
+  return `${bytesToHex(bytes.subarray(0, PREFIX_BYTES))}…`
 }
 
 const harvestBlockPrefixes = computed(() => harvest.value.length === HARVEST_BITS
@@ -310,23 +307,17 @@ function playStep() {
   }
 }
 
-const { pause, resume } = useIntervalFn(playStep, PLAY_MILLISECONDS, { immediate: false })
+const { isActive: isPlaying, pause, resume } = useIntervalFn(playStep, PLAY_MILLISECONDS, { immediate: false })
 
 function togglePlay() {
-  isPlaying.value = !isPlaying.value
   if (isPlaying.value) {
+    pause()
+  }
+  else {
     playStep()
     resume()
   }
-  else {
-    pause()
-  }
 }
-
-onMounted(() => {
-  if (!globalThis.crypto?.subtle)
-    isSupported.value = false
-})
 
 onBeforeUnmount(() => clearTimeout(pulseTimer))
 
@@ -347,11 +338,8 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
 </script>
 
 <template>
-  <StudyFigure :title="text.title" class="drng">
+  <StudyFigure :title="text.title" class="drng" :unsupported="!isSupported">
     <p>{{ text.intro }}</p>
-    <p v-if="!isSupported" class="study-alert">
-      {{ text.unsupported }}
-    </p>
 
     <div class="drng-stages" role="list">
       <div

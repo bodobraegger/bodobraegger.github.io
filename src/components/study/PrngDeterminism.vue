@@ -70,7 +70,7 @@ const differentCount = computed(() =>
       <span class="study-label study-mono prng-states">
         <template v-for="(state, index) in outputs[run].states.slice(0, SHOWN_STATES)" :key="index">X{{ index + 1 }} = {{ state }}, </template>...
       </span>
-      <div class="prng-bits study-mono">
+      <div class="study-bit-grid">
         <span
           v-for="(bit, index) in outputs[run].bits"
           :key="index"
@@ -114,14 +114,7 @@ const differentCount = computed(() =>
   overflow-wrap: anywhere;
 }
 
-.prng-bits {
-  display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 1px;
-}
-
 .study-bit.prng-bit {
-  width: auto;
   height: 1.4rem;
   font-size: 0.72rem;
 }

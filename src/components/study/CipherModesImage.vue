@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Language } from '~/logics/languages'
 import type { AesKeys } from '~/lib/aes'
-import { AES_BLOCK_BYTES, AES_KEY_BYTES, encryptCbc, encryptCtr, encryptEcb, importAesKeys, newCounterBlock, randomBytes } from '~/lib/aes'
-import { toHex } from '~/lib/bits'
+import { AES_BLOCK_BYTES, AES_KEY_BYTES, encryptCbc, encryptCtr, encryptEcb, importAesKeys, newCounterBlock } from '~/lib/aes'
+import { bytesToHex, randomBytes } from '~/lib/bits'
+import { useWebCrypto } from '~/composables/useWebCrypto'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
 /** A row of the image is 96 × 3 = 288 bytes, a whole number of AES blocks. */
@@ -26,7 +27,6 @@ interface Text {
   newKey: string
   resetImage: string
   busy: string
-  unsupported: string
 }
 
 const TEXT: Record<Language, Text> = {
@@ -44,7 +44,6 @@ const TEXT: Record<Language, Text> = {
     newKey: 'New key',
     resetImage: 'Reset image',
     busy: 'Encrypting',
-    unsupported: 'This browser has no WebCrypto API, so it cannot show this figure.',
   },
   pt: {
     title: 'Modos de operação em uma imagem',
@@ -60,7 +59,6 @@ const TEXT: Record<Language, Text> = {
     newKey: 'Nova chave',
     resetImage: 'Restaurar imagem',
     busy: 'Cifrando',
-    unsupported: 'Este navegador não tem a API WebCrypto, então não mostra esta figura.',
   },
 }
 
@@ -70,8 +68,8 @@ const sourceCanvas = ref<HTMLCanvasElement>()
 const modeCanvases = ref<Partial<Record<Mode, HTMLCanvasElement>>>({})
 const keys = shallowRef<AesKeys>()
 const isBusy = ref(false)
-const isSupported = ref(true)
-const keyHex = computed(() => keys.value ? toHex(keys.value.raw).join('') : '')
+const isSupported = useWebCrypto()
+const keyHex = computed(() => keys.value ? bytesToHex(keys.value.raw) : '')
 
 let isEncryptionQueued = false
 let lastPoint: { x: number, y: number } | undefined
@@ -205,21 +203,15 @@ function endStroke() {
 }
 
 onMounted(() => {
-  if (!globalThis.crypto?.subtle) {
-    isSupported.value = false
+  if (!isSupported.value)
     return
-  }
   drawPadlock()
   useNewKey()
 })
 </script>
 
 <template>
-  <StudyFigure :title="text.title">
-    <p v-if="!isSupported" class="study-alert">
-      {{ text.unsupported }}
-    </p>
-
+  <StudyFigure :title="text.title" :unsupported="!isSupported">
     <div class="modes-grid">
       <div class="modes-cell">
         <canvas
