@@ -1,12 +1,16 @@
+import { deflateRawSync } from 'node:zlib'
+
 /**
- * A ZIP archive writer with the store method only: every entry keeps its
- * bytes as they are, which is what an EPUB needs for its first entry and is
- * enough for the rest of a small book.
+ * A ZIP archive writer. An entry is deflated unless it asks to be stored,
+ * which the first entry of an EPUB has to be. Entry names are ASCII, so
+ * the archive needs no UTF-8 flag that an old reader may not know.
  */
 
 export interface ZipEntry {
   name: string
   data: Uint8Array
+  /** Keeps the bytes as they are instead of deflating them. */
+  store?: boolean
 }
 
 const LOCAL_FILE_HEADER_SIGNATURE = 0x04034B50
@@ -17,9 +21,11 @@ const LOCAL_FILE_HEADER_SIZE = 30
 const CENTRAL_DIRECTORY_HEADER_SIZE = 46
 const END_OF_CENTRAL_DIRECTORY_SIZE = 22
 
-const VERSION_NEEDED_TO_EXTRACT = 10
+const VERSION_NEEDED_TO_EXTRACT = 20
 const COMPRESSION_METHOD_STORE = 0
-const FLAG_UTF8_NAME = 0x0800
+const COMPRESSION_METHOD_DEFLATE = 8
+const NO_FLAGS = 0
+const ASCII_NAME_PATTERN = /^[\x20-\x7E]+$/
 
 const MAXIMUM_ENTRY_COUNT = 0xFFFF
 const MAXIMUM_ARCHIVE_SIZE = 0xFFFFFFFF
@@ -73,19 +79,22 @@ export function createZip(entries: ZipEntry[], modified = new Date()): Uint8Arra
   let offset = 0
 
   for (const entry of entries) {
+    if (!ASCII_NAME_PATTERN.test(entry.name))
+      throw new ZipLimitError(`The entry name "${entry.name}" is not ASCII`)
     const name = encoder.encode(entry.name)
     const checksum = crc32(entry.data)
-    const size = entry.data.length
+    const stored = entry.store ? entry.data : new Uint8Array(deflateRawSync(entry.data))
+    const method = entry.store ? COMPRESSION_METHOD_STORE : COMPRESSION_METHOD_DEFLATE
 
     const writeCommonFields = (view: DataView, start: number) => {
       view.setUint16(start, VERSION_NEEDED_TO_EXTRACT, true)
-      view.setUint16(start + 2, FLAG_UTF8_NAME, true)
-      view.setUint16(start + 4, COMPRESSION_METHOD_STORE, true)
+      view.setUint16(start + 2, NO_FLAGS, true)
+      view.setUint16(start + 4, method, true)
       view.setUint16(start + 6, time, true)
       view.setUint16(start + 8, day, true)
       view.setUint32(start + 10, checksum, true)
-      view.setUint32(start + 14, size, true)
-      view.setUint32(start + 18, size, true)
+      view.setUint32(start + 14, stored.length, true)
+      view.setUint32(start + 18, entry.data.length, true)
       view.setUint16(start + 22, name.length, true)
       // The extra field stays empty: a reader of the EPUB mimetype entry
       // expects the file content right after the name.
@@ -107,9 +116,9 @@ export function createZip(entries: ZipEntry[], modified = new Date()): Uint8Arra
     centralView.setUint32(42, offset, true)
     centralHeader.set(name, CENTRAL_DIRECTORY_HEADER_SIZE)
 
-    localParts.push(localHeader, entry.data)
+    localParts.push(localHeader, stored)
     centralParts.push(centralHeader)
-    offset += localHeader.length + size
+    offset += localHeader.length + stored.length
   }
 
   const centralSize = centralParts.reduce((total, part) => total + part.length, 0)

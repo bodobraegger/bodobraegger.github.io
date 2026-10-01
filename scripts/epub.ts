@@ -28,6 +28,9 @@ const EPUB_EXTENSION = '.epub'
 const PACKAGE_DIRECTORY = 'EPUB'
 const CONTENT_FILE = 'content.xhtml'
 const NAV_FILE = 'nav.xhtml'
+/** The EPUB 2 table of contents, which an older reader still expects. */
+const NCX_FILE = 'toc.ncx'
+const NCX_NAMESPACE = 'http://www.daisy.org/z3986/2005/ncx/'
 const STYLESHEET_FILE = 'style.css'
 const PACKAGE_FILE = 'package.opf'
 const IMAGE_DIRECTORY = 'images'
@@ -35,6 +38,7 @@ const IMAGE_DIRECTORY = 'images'
 const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
 const XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace'
+const XMLNS_NAMESPACE = 'http://www.w3.org/2000/xmlns/'
 const OPS_NAMESPACE = 'http://www.idpf.org/2007/ops'
 const XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>\n'
 
@@ -339,6 +343,7 @@ function createXhtmlDocument(document: Document, title: string, language: Langua
   const html = xhtml.documentElement
   html.setAttribute('lang', language)
   html.setAttributeNS(XML_NAMESPACE, 'xml:lang', language)
+  html.setAttributeNS(XMLNS_NAMESPACE, 'xmlns:epub', OPS_NAMESPACE)
 
   const create = (tag: string, text?: string) => {
     const element = xhtml.createElementNS(XHTML_NAMESPACE, tag)
@@ -416,6 +421,35 @@ function buildNavDocument(document: Document, entries: NavEntry[], page: EpubPag
   return serialize()
 }
 
+/** The same table of contents as the nav document, in the NCX form of EPUB 2. */
+function buildNcxDocument(entries: NavEntry[], page: EpubPage) {
+  let playOrder = 0
+  const buildPoints = (items: NavEntry[], depth: number): string => items.map((item) => {
+    playOrder++
+    const indent = '    '.repeat(depth)
+    return `${indent}<navPoint id="navpoint-${playOrder}" playOrder="${playOrder}">
+${indent}  <navLabel><text>${escapeXml(item.text)}</text></navLabel>
+${indent}  <content src="${CONTENT_FILE}#${escapeXml(item.id)}"/>
+${item.children.length ? `\n${buildPoints(item.children, depth + 1)}` : ''}
+${indent}</navPoint>`
+  }).join('\n')
+  const listed = entries.length ? entries : [{ id: TITLE_ID, text: page.title, children: [] }]
+
+  return `${XML_DECLARATION}<ncx xmlns="${NCX_NAMESPACE}" version="2005-1" xml:lang="${page.language}">
+  <head>
+    <meta name="dtb:uid" content="${escapeXml(page.url)}"/>
+    <meta name="dtb:depth" content="2"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle><text>${escapeXml(page.title)}</text></docTitle>
+  <navMap>
+${buildPoints(listed, 1)}
+  </navMap>
+</ncx>
+`
+}
+
 /** A W3C date as dc:date and dcterms:modified take it: a calendar day, or a time in UTC to the second. */
 function w3cDate(date: string | Date) {
   if (typeof date === 'string' && DATE_ONLY_PATTERN.test(date))
@@ -442,6 +476,7 @@ function buildPackageDocument(page: EpubPage, options: {
   const manifest = [
     `<item id="nav" href="${NAV_FILE}" media-type="application/xhtml+xml" properties="nav"/>`,
     `<item id="content" href="${CONTENT_FILE}" media-type="application/xhtml+xml"${options.hasSvg ? ' properties="svg"' : ''}/>`,
+    `<item id="ncx" href="${NCX_FILE}" media-type="application/x-dtbncx+xml"/>`,
     `<item id="style" href="${STYLESHEET_FILE}" media-type="text/css"/>`,
     ...options.images.map((image, index) =>
       `<item id="image-${index + 1}" href="${image.path}" media-type="${image.mediaType}"/>`),
@@ -456,7 +491,7 @@ ${indent(metadata)}
   <manifest>
 ${indent(manifest)}
   </manifest>
-  <spine>
+  <spine toc="ncx">
     <itemref idref="content"/>
   </spine>
 </package>
@@ -482,7 +517,7 @@ export async function createEpub(html: string, page: EpubPage, distDir: string) 
   const packageFile = (name: string) => `${PACKAGE_DIRECTORY}/${name}`
   const entries: ZipEntry[] = [
     // The mimetype has to be the first entry, stored as it is, for a reader to recognise the book.
-    { name: 'mimetype', data: encoder.encode(EPUB_MEDIA_TYPE) },
+    { name: 'mimetype', data: encoder.encode(EPUB_MEDIA_TYPE), store: true },
     { name: 'META-INF/container.xml', data: encoder.encode(CONTAINER_DOCUMENT) },
     {
       name: packageFile(PACKAGE_FILE),
@@ -494,6 +529,7 @@ export async function createEpub(html: string, page: EpubPage, distDir: string) 
       })),
     },
     { name: packageFile(NAV_FILE), data: encoder.encode(buildNavDocument(document, navEntries, page)) },
+    { name: packageFile(NCX_FILE), data: encoder.encode(buildNcxDocument(navEntries, page)) },
     { name: packageFile(CONTENT_FILE), data: encoder.encode(buildContentDocument(content, page, author)) },
     { name: packageFile(STYLESHEET_FILE), data: encoder.encode(STYLESHEET) },
     ...images.map(image => ({ name: packageFile(image.path), data: image.data })),
