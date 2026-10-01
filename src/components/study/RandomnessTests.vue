@@ -176,19 +176,26 @@ function toggleBit(index: number) {
         <strong>{{ text.runs }}</strong>
         <span class="study-mono">{{ text.proportion(runs.proportion.toFixed(STATISTIC_DECIMALS)) }}</span>
         <span class="study-mono">{{ text.prerequisite(tolerance, runs.prerequisiteMet) }}</span>
-        <template v-if="runs.prerequisiteMet">
-          <span class="study-mono">{{ text.runCount(runs.runs, runs.expectedRuns.toFixed(EXPECTED_RUNS_DECIMALS)) }}</span>
-          <span class="study-mono" :class="runs.passed ? 'study-success' : 'study-alert'">
-            {{ formatP(runs.pValue) }}: {{ runs.passed ? `✓ ${text.pass}` : `✗ ${text.fail}` }}
-          </span>
-        </template>
-        <span v-else class="study-alert">✗ {{ text.notRun }}</span>
+        <div class="study-stack">
+          <div class="randomness-test" :class="{ 'study-ghost': !runs.prerequisiteMet }">
+            <span class="study-mono">{{ text.runCount(runs.runs, runs.expectedRuns.toFixed(EXPECTED_RUNS_DECIMALS)) }}</span>
+            <span class="study-mono" :class="runs.passed ? 'study-success' : 'study-alert'">
+              {{ formatP(runs.pValue) }}: {{ runs.passed ? `✓ ${text.pass}` : `✗ ${text.fail}` }}
+            </span>
+          </div>
+          <span class="study-alert" :class="{ 'study-ghost': runs.prerequisiteMet }">✗ {{ text.notRun }}</span>
+        </div>
       </section>
     </div>
 
-    <p :class="frequency.passed && runs.passed ? 'study-success' : 'study-alert'" aria-live="polite">
-      {{ frequency.passed && runs.passed ? text.verdictPass : text.verdictFail }}
-    </p>
+    <div class="study-stack" aria-live="polite">
+      <p class="study-success" :class="{ 'study-ghost': !(frequency.passed && runs.passed) }">
+        {{ text.verdictPass }}
+      </p>
+      <p class="study-alert" :class="{ 'study-ghost': frequency.passed && runs.passed }">
+        {{ text.verdictFail }}
+      </p>
+    </div>
   </StudyFigure>
 </template>
 
@@ -225,9 +232,12 @@ function toggleBit(index: number) {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  padding-top: 0.5rem;
-  border-top: 1px dashed var(--c-border);
   font-size: 0.82rem;
   overflow-wrap: anywhere;
+}
+
+.randomness-results > .randomness-test {
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--c-border);
 }
 </style>

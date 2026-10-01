@@ -9,6 +9,8 @@ const BLOCK_BITS = AES_BLOCK_BYTES * BITS_PER_BYTE
 /** The AES-128 key of the FIPS-197 example, so that every visitor sees the same numbers. */
 const EXAMPLE_KEY = Uint8Array.from({ length: AES_BLOCK_BYTES }, (_, index) => index)
 const HISTORY_LENGTH = 8
+/** Fills the hidden history line before the first tap, so the line keeps its height. */
+const HISTORY_PLACEHOLDER = Array.from({ length: HISTORY_LENGTH }, () => BLOCK_BITS / 2)
 const PERCENT = 100
 
 type Target = 'plaintext' | 'key'
@@ -176,10 +178,10 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="history.length" class="study-controls">
+    <div class="study-controls" :class="{ 'study-ghost': !history.length }">
       <span class="study-label">
         {{ text.history }}
-        <span class="study-mono">{{ history.join(', ') }}</span>
+        <span class="study-mono">{{ (history.length ? history : HISTORY_PLACEHOLDER).join(', ') }}</span>
         ({{ text.mean }} {{ historyMean }})
       </span>
     </div>

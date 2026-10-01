@@ -26,8 +26,8 @@ const TRACE_POINTS = 60
 const NOISE_POINTS = 24
 const NOISE_AMPLITUDE = 0.06
 const DECAY_RATE = 0.22
-const PULSE_MILLISECONDS = 900
-const PLAY_MILLISECONDS = 700
+const PULSE_MILLISECONDS = 1800
+const PLAY_MILLISECONDS = 1400
 const PLAY_HARVEST_BITS = 64
 const PLAY_SLOW_SAMPLES = 3
 const PLAY_FAST_SAMPLES = 64
@@ -356,152 +356,159 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
       </div>
     </div>
 
-    <div v-if="stage === 'harvest'" class="drng-panel">
-      <p>{{ text.harvestExplanation }}</p>
-      <div class="drng-circuit">
-        <svg viewBox="0 0 160 80" class="drng-inverters" role="img" :aria-label="text.stageNames.harvest">
-          <g class="drng-wire" :class="{ 'is-metastable': isMetastable }">
-            <path d="M30,20 H130 V60 H30 Z" fill="none" />
-          </g>
-          <g class="drng-gate">
-            <path d="M68,10 L88,20 L68,30 Z" />
-            <circle cx="91" cy="20" r="3" />
-            <path d="M92,50 L72,60 L92,70 Z" />
-            <circle cx="69" cy="60" r="3" />
-          </g>
-          <text x="30" y="14" class="drng-node">A</text>
-          <text x="126" y="76" class="drng-node">B</text>
-          <text x="48" y="45" class="drng-node-value" :class="{ 'is-metastable': isMetastable }">
-            {{ isMetastable ? '½' : lastBit ?? '' }}
-          </text>
-          <text x="112" y="45" class="drng-node-value" :class="{ 'is-metastable': isMetastable }">
-            {{ isMetastable ? '½' : lastBit === undefined ? '' : 1 - lastBit }}
-          </text>
-        </svg>
-        <svg :viewBox="`0 0 ${TRACE_WIDTH} ${TRACE_HEIGHT}`" class="drng-trace" aria-hidden="true">
-          <line :x1="TRACE_MARGIN" :x2="TRACE_WIDTH - TRACE_MARGIN" :y1="TRACE_HEIGHT / 2" :y2="TRACE_HEIGHT / 2" class="drng-trace-middle" />
-          <text x="0" :y="TRACE_MARGIN + 3" class="drng-trace-label">1</text>
-          <text x="0" :y="TRACE_HEIGHT / 2 + 3" class="drng-trace-label">½</text>
-          <text x="0" :y="TRACE_HEIGHT - TRACE_MARGIN + 3" class="drng-trace-label">0</text>
-          <path v-if="trace.length" :key="traceKey" :d="tracePath" pathLength="1" class="drng-trace-line" />
-        </svg>
-      </div>
-      <p class="study-label" aria-live="polite">
-        {{ isMetastable ? text.metastable : lastBit === undefined ? '' : text.decayed(lastBit) }}
-      </p>
-      <span class="study-label study-mono">{{ text.harvest(harvest.length) }}</span>
-      <div class="drng-harvest" :style="{ '--columns': HARVEST_COLUMNS }">
-        <span
-          v-for="index in HARVEST_BITS"
-          :key="index"
-          class="drng-harvest-bit"
-          :class="{
-            'is-one': harvest[index - 1] === 1,
-            'is-zero': harvest[index - 1] === 0,
-            'is-block-start': isBlockStart(index - 1),
-          }"
-        />
-      </div>
-      <div class="study-controls">
-        <button class="study-button" type="button" :disabled="!isSupported || isPlaying" @click="clockPulse">
-          {{ text.pulse }}
-        </button>
-        <button class="study-button" type="button" :disabled="!isSupported || isPlaying" @click="fillHarvest">
-          {{ text.fillHarvest }}
-        </button>
-      </div>
-    </div>
-
-    <div v-else-if="stage === 'condition'" class="drng-panel">
-      <p>{{ text.chainExplanation }}</p>
-      <svg :viewBox="`0 0 ${CHAIN_WIDTH} ${CHAIN_HEIGHT}`" class="drng-chain" role="img" :aria-label="text.stageNames.condition">
-        <g
-          v-for="column in columns"
-          :key="column.index"
-          class="drng-column"
-          :class="{
-            'is-done': column.index < processedBlocks,
-            'is-kept': isChainDone && column.index === HARVEST_BLOCKS - 1,
-            'is-discarded': isChainDone && column.index < HARVEST_BLOCKS - 1,
-          }"
-        >
-          <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_MESSAGE - 14" :width="BOX_WIDTH" height="28" class="drng-box" />
-          <text :x="column.center" :y="ROW_MESSAGE - 2" class="drng-box-title">m{{ column.index + 1 }}</text>
-          <text :x="column.center" :y="ROW_MESSAGE + 10" class="drng-box-value">{{ harvestBlockPrefixes[column.index] }}</text>
-          <line :x1="column.center" :x2="column.center" :y1="ROW_MESSAGE + 14" :y2="ROW_XOR - XOR_RADIUS" class="drng-arrow" />
-          <text v-if="!column.index" :x="column.center - XOR_RADIUS - 4" :y="ROW_XOR + 3" class="drng-box-note drng-iv">IV = 0</text>
-          <circle :cx="column.center" :cy="ROW_XOR" :r="XOR_RADIUS" class="drng-xor" />
-          <path :d="`M${column.center - XOR_RADIUS},${ROW_XOR} h${2 * XOR_RADIUS} M${column.center},${ROW_XOR - XOR_RADIUS} v${2 * XOR_RADIUS}`" class="drng-xor" />
-          <line :x1="column.center" :x2="column.center" :y1="ROW_XOR + XOR_RADIUS" :y2="ROW_AES - 12" class="drng-arrow" />
-          <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_AES - 12" :width="BOX_WIDTH" height="24" class="drng-box drng-aes" />
-          <text :x="column.center" :y="ROW_AES + 4" class="drng-box-title">AES</text>
-          <line :x1="column.center" :x2="column.center" :y1="ROW_AES + 12" :y2="ROW_CIPHER - 14" class="drng-arrow" />
-          <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_CIPHER - 14" :width="BOX_WIDTH" height="28" class="drng-box drng-cipher" />
-          <text :x="column.center" :y="ROW_CIPHER - 2" class="drng-box-title">c{{ column.index + 1 }}</text>
-          <text :x="column.center" :y="ROW_CIPHER + 10" class="drng-box-value">
-            {{ column.index < processedBlocks ? prefix(chainBlocks[column.index]) : '' }}
-          </text>
-          <text :x="column.center" :y="ROW_CIPHER + 30" class="drng-box-note">
-            {{ isChainDone ? (column.index === HARVEST_BLOCKS - 1 ? text.kept : text.discarded) : '' }}
-          </text>
-          <path
-            v-if="column.index < HARVEST_BLOCKS - 1"
-            :d="`M${column.center + BOX_WIDTH / 2},${ROW_CIPHER} H${column.center + COLUMN_WIDTH / 2} V${ROW_XOR} H${column.center + COLUMN_WIDTH - XOR_RADIUS}`"
-            class="drng-arrow drng-feed"
-            fill="none"
+    <div class="study-stack">
+      <div class="drng-panel" :class="{ 'study-ghost': stage !== 'harvest' }" :inert="stage !== 'harvest' || undefined">
+        <p>{{ text.harvestExplanation }}</p>
+        <div class="drng-circuit">
+          <svg viewBox="0 0 160 80" class="drng-inverters" role="img" :aria-label="text.stageNames.harvest">
+            <g class="drng-wire" :class="{ 'is-metastable': isMetastable }">
+              <path d="M30,20 H130 V60 H30 Z" fill="none" />
+            </g>
+            <g class="drng-gate">
+              <path d="M68,10 L88,20 L68,30 Z" />
+              <circle cx="91" cy="20" r="3" />
+              <path d="M92,50 L72,60 L92,70 Z" />
+              <circle cx="69" cy="60" r="3" />
+            </g>
+            <text x="30" y="14" class="drng-node">A</text>
+            <text x="126" y="76" class="drng-node">B</text>
+            <text x="48" y="45" class="drng-node-value" :class="{ 'is-metastable': isMetastable }">
+              {{ isMetastable ? '½' : lastBit ?? '' }}
+            </text>
+            <text x="112" y="45" class="drng-node-value" :class="{ 'is-metastable': isMetastable }">
+              {{ isMetastable ? '½' : lastBit === undefined ? '' : 1 - lastBit }}
+            </text>
+          </svg>
+          <svg :viewBox="`0 0 ${TRACE_WIDTH} ${TRACE_HEIGHT}`" class="drng-trace" aria-hidden="true">
+            <line :x1="TRACE_MARGIN" :x2="TRACE_WIDTH - TRACE_MARGIN" :y1="TRACE_HEIGHT / 2" :y2="TRACE_HEIGHT / 2" class="drng-trace-middle" />
+            <text x="0" :y="TRACE_MARGIN + 3" class="drng-trace-label">1</text>
+            <text x="0" :y="TRACE_HEIGHT / 2 + 3" class="drng-trace-label">½</text>
+            <text x="0" :y="TRACE_HEIGHT - TRACE_MARGIN + 3" class="drng-trace-label">0</text>
+            <path v-if="trace.length" :key="traceKey" :d="tracePath" pathLength="1" class="drng-trace-line" />
+          </svg>
+        </div>
+        <div class="study-stack" aria-live="polite">
+          <p class="study-label" :class="{ 'study-ghost': !isMetastable }">
+            {{ text.metastable }}
+          </p>
+          <p class="study-label" :class="{ 'study-ghost': isMetastable || lastBit === undefined }">
+            {{ text.decayed(lastBit ?? 0) }}
+          </p>
+        </div>
+        <span class="study-label study-mono">{{ text.harvest(harvest.length) }}</span>
+        <div class="drng-harvest" :style="{ '--columns': HARVEST_COLUMNS }">
+          <span
+            v-for="index in HARVEST_BITS"
+            :key="index"
+            class="drng-harvest-bit"
+            :class="{
+              'is-one': harvest[index - 1] === 1,
+              'is-zero': harvest[index - 1] === 0,
+              'is-block-start': isBlockStart(index - 1),
+            }"
           />
-        </g>
-      </svg>
-      <p v-if="isChainDone" class="study-success" aria-live="polite">
-        ✓ {{ text.conditionDone }}
-      </p>
-      <div class="study-controls">
-        <button v-if="!isChainDone" class="study-button" type="button" :disabled="isPlaying" @click="nextBlock">
-          {{ text.nextBlock }}
-        </button>
-        <button v-else class="study-button" type="button" :disabled="isPlaying" @click="seed">
-          {{ text.stageLabel(3) }} →
-        </button>
+        </div>
+        <div class="study-controls">
+          <button class="study-button" type="button" :disabled="!isSupported || isPlaying" @click="clockPulse">
+            {{ text.pulse }}
+          </button>
+          <button class="study-button" type="button" :disabled="!isSupported || isPlaying" @click="fillHarvest">
+            {{ text.fillHarvest }}
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div v-else class="drng-panel">
-      <p>{{ text.seedExplanation(seedNumber) }}</p>
-      <div class="drng-counter study-mono">
-        <span class="study-label">{{ text.counter }}</span>
-        <span>V + {{ Math.max(1, sampleCount) }}</span>
-        <span aria-hidden="true">→</span>
-        <span class="drng-counter-aes">AES<sub>K</sub></span>
-        <span aria-hidden="true">→</span>
-        <span>128 bits</span>
-      </div>
-      <div class="drng-samples study-mono">
-        <span v-for="sample in shownSamples" :key="sample.number" :class="{ 'is-latest': sample.number === sampleCount }">
-          <span class="study-label">#{{ sample.number }}</span> {{ sample.hex }}
-        </span>
-      </div>
-      <div class="drng-progress" role="progressbar" :aria-valuenow="sampleCount" aria-valuemin="0" :aria-valuemax="SAMPLES_PER_SEED">
-        <span :style="{ width: `${sampleCount / SAMPLES_PER_SEED * 100}%` }" :class="{ 'is-full': isLimitReached }" />
-      </div>
-      <span class="study-label study-mono" aria-live="polite">{{ text.samples(sampleCount) }}</span>
-      <p v-if="rdrandValue" class="study-mono drng-rdrand">
-        {{ text.rdrand }} <span class="study-success">{{ rdrandValue }}</span>
-      </p>
-      <p v-if="isLimitReached" class="study-alert">
-        {{ text.limitReached }}
-      </p>
-      <div class="study-controls">
-        <template v-if="!isLimitReached">
-          <button class="study-button" type="button" :disabled="isPlaying" @click="addSamples(1)">
-            {{ text.nextSample }}
+      <div class="drng-panel" :class="{ 'study-ghost': stage !== 'condition' }" :inert="stage !== 'condition' || undefined">
+        <p>{{ text.chainExplanation }}</p>
+        <svg :viewBox="`0 0 ${CHAIN_WIDTH} ${CHAIN_HEIGHT}`" class="drng-chain" role="img" :aria-label="text.stageNames.condition">
+          <g
+            v-for="column in columns"
+            :key="column.index"
+            class="drng-column"
+            :class="{
+              'is-done': column.index < processedBlocks,
+              'is-kept': isChainDone && column.index === HARVEST_BLOCKS - 1,
+              'is-discarded': isChainDone && column.index < HARVEST_BLOCKS - 1,
+            }"
+          >
+            <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_MESSAGE - 14" :width="BOX_WIDTH" height="28" class="drng-box" />
+            <text :x="column.center" :y="ROW_MESSAGE - 2" class="drng-box-title">m{{ column.index + 1 }}</text>
+            <text :x="column.center" :y="ROW_MESSAGE + 10" class="drng-box-value">{{ harvestBlockPrefixes[column.index] }}</text>
+            <line :x1="column.center" :x2="column.center" :y1="ROW_MESSAGE + 14" :y2="ROW_XOR - XOR_RADIUS" class="drng-arrow" />
+            <text v-if="!column.index" :x="column.center - XOR_RADIUS - 4" :y="ROW_XOR + 3" class="drng-box-note drng-iv">IV = 0</text>
+            <circle :cx="column.center" :cy="ROW_XOR" :r="XOR_RADIUS" class="drng-xor" />
+            <path :d="`M${column.center - XOR_RADIUS},${ROW_XOR} h${2 * XOR_RADIUS} M${column.center},${ROW_XOR - XOR_RADIUS} v${2 * XOR_RADIUS}`" class="drng-xor" />
+            <line :x1="column.center" :x2="column.center" :y1="ROW_XOR + XOR_RADIUS" :y2="ROW_AES - 12" class="drng-arrow" />
+            <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_AES - 12" :width="BOX_WIDTH" height="24" class="drng-box drng-aes" />
+            <text :x="column.center" :y="ROW_AES + 4" class="drng-box-title">AES</text>
+            <line :x1="column.center" :x2="column.center" :y1="ROW_AES + 12" :y2="ROW_CIPHER - 14" class="drng-arrow" />
+            <rect :x="column.center - BOX_WIDTH / 2" :y="ROW_CIPHER - 14" :width="BOX_WIDTH" height="28" class="drng-box drng-cipher" />
+            <text :x="column.center" :y="ROW_CIPHER - 2" class="drng-box-title">c{{ column.index + 1 }}</text>
+            <text :x="column.center" :y="ROW_CIPHER + 10" class="drng-box-value">
+              {{ column.index < processedBlocks ? prefix(chainBlocks[column.index]) : '' }}
+            </text>
+            <text :x="column.center" :y="ROW_CIPHER + 30" class="drng-box-note">
+              {{ isChainDone ? (column.index === HARVEST_BLOCKS - 1 ? text.kept : text.discarded) : '' }}
+            </text>
+            <path
+              v-if="column.index < HARVEST_BLOCKS - 1"
+              :d="`M${column.center + BOX_WIDTH / 2},${ROW_CIPHER} H${column.center + COLUMN_WIDTH / 2} V${ROW_XOR} H${column.center + COLUMN_WIDTH - XOR_RADIUS}`"
+              class="drng-arrow drng-feed"
+              fill="none"
+            />
+          </g>
+        </svg>
+        <p class="study-success" :class="{ 'study-ghost': !isChainDone }" aria-live="polite">
+          ✓ {{ text.conditionDone }}
+        </p>
+        <div class="study-controls">
+          <button v-if="!isChainDone" class="study-button" type="button" :disabled="isPlaying" @click="nextBlock">
+            {{ text.nextBlock }}
           </button>
-          <button class="study-button" type="button" :disabled="isPlaying" @click="addSamples(SAMPLES_PER_SEED)">
-            {{ text.runToLimit }}
+          <button v-else class="study-button" type="button" :disabled="isPlaying" @click="seed">
+            {{ text.stageLabel(3) }} →
           </button>
-        </template>
-        <button v-else class="study-button" type="button" :disabled="isPlaying" @click="reseed">
-          {{ text.reseed }}
-        </button>
+        </div>
+      </div>
+
+      <div class="drng-panel" :class="{ 'study-ghost': stage !== 'generate' }" :inert="stage !== 'generate' || undefined">
+        <p>{{ text.seedExplanation(seedNumber) }}</p>
+        <div class="drng-counter study-mono">
+          <span class="study-label">{{ text.counter }}</span>
+          <span>V + {{ Math.max(1, sampleCount) }}</span>
+          <span aria-hidden="true">→</span>
+          <span class="drng-counter-aes">AES<sub>K</sub></span>
+          <span aria-hidden="true">→</span>
+          <span>128 bits</span>
+        </div>
+        <div class="drng-samples study-mono">
+          <span v-for="sample in shownSamples" :key="sample.number" :class="{ 'is-latest': sample.number === sampleCount }">
+            <span class="study-label">#{{ sample.number }}</span> {{ sample.hex }}
+          </span>
+        </div>
+        <div class="drng-progress" role="progressbar" :aria-valuenow="sampleCount" aria-valuemin="0" :aria-valuemax="SAMPLES_PER_SEED">
+          <span :style="{ width: `${sampleCount / SAMPLES_PER_SEED * 100}%` }" :class="{ 'is-full': isLimitReached }" />
+        </div>
+        <span class="study-label study-mono" aria-live="polite">{{ text.samples(sampleCount) }}</span>
+        <p class="study-mono drng-rdrand" :class="{ 'study-ghost': !rdrandValue }">
+          {{ text.rdrand }} <span class="study-success">{{ rdrandValue || '0'.repeat(RDRAND_BYTES * 2) }}</span>
+        </p>
+        <p class="study-alert" :class="{ 'study-ghost': !isLimitReached }">
+          {{ text.limitReached }}
+        </p>
+        <div class="study-controls">
+          <template v-if="!isLimitReached">
+            <button class="study-button" type="button" :disabled="isPlaying" @click="addSamples(1)">
+              {{ text.nextSample }}
+            </button>
+            <button class="study-button" type="button" :disabled="isPlaying" @click="addSamples(SAMPLES_PER_SEED)">
+              {{ text.runToLimit }}
+            </button>
+          </template>
+          <button v-else class="study-button" type="button" :disabled="isPlaying" @click="reseed">
+            {{ text.reseed }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -533,9 +540,9 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
   border: 1px dashed var(--c-border);
   opacity: 0.6;
   transition:
-    opacity 0.3s,
-    border-color 0.3s,
-    background-color 0.3s;
+    opacity 0.6s,
+    border-color 0.6s,
+    background-color 0.6s;
 
   &.is-active {
     border: 1px solid var(--study-accent);
@@ -578,7 +585,7 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
 .drng-wire path {
   stroke: var(--fg-muted);
   stroke-width: 1.5;
-  transition: stroke 0.3s;
+  transition: stroke 0.6s;
 }
 
 .drng-wire.is-metastable path {
@@ -627,7 +634,7 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
   stroke: var(--study-accent);
   stroke-width: 1.5;
   stroke-dasharray: 1;
-  animation: drng-draw 0.9s ease-in forwards;
+  animation: drng-draw 1.8s ease-in forwards;
 }
 
 @keyframes drng-draw {
@@ -650,7 +657,7 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
 .drng-harvest-bit {
   aspect-ratio: 1;
   border: 1px solid var(--c-border-soft);
-  transition: background-color 0.2s;
+  transition: background-color 0.4s;
 
   &.is-one {
     border-color: var(--study-accent);
@@ -671,8 +678,8 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
   stroke: var(--c-border);
   stroke-dasharray: 3 2;
   transition:
-    stroke 0.3s,
-    fill 0.3s;
+    stroke 0.6s,
+    fill 0.6s;
 }
 
 .drng-box-title,
@@ -709,7 +716,7 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
 }
 
 .drng-column {
-  transition: opacity 0.3s;
+  transition: opacity 0.6s;
 
   &.is-done {
     .drng-box {
@@ -785,7 +792,7 @@ const columns = Array.from({ length: HARVEST_BLOCKS }, (_, index) => ({
     display: block;
     height: 100%;
     background: var(--study-accent);
-    transition: width 0.3s;
+    transition: width 0.6s;
 
     &.is-full {
       background: var(--study-alert);

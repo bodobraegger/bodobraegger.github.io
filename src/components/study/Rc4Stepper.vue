@@ -339,8 +339,8 @@ const formula = computed(() => {
   color: var(--fg-deep);
   font-size: 1.05rem;
   transition:
-    background-color 0.3s,
-    border-color 0.3s;
+    background-color 0.6s,
+    border-color 0.6s;
 
   &.is-swapped {
     border: 2px solid var(--cipher-plain);
@@ -374,7 +374,7 @@ const formula = computed(() => {
 }
 
 .rc4-swap-move {
-  transition: transform 0.6s ease-in-out;
+  transition: transform 1.2s ease-in-out;
 }
 
 .rc4-keystream {

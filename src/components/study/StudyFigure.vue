@@ -14,10 +14,20 @@ const UNSUPPORTED_TEXT: Record<Language, string> = {
 }
 
 const unsupportedText = UNSUPPORTED_TEXT[usePageLanguage()]
+
+const figure = ref<HTMLElement>()
+/** A figure never gets shorter than it has been, so content that comes and goes moves nothing below it. */
+const reservedHeight = ref(0)
+useResizeObserver(figure, ([entry]) => {
+  reservedHeight.value = Math.max(reservedHeight.value, entry.target.getBoundingClientRect().height)
+})
+// A new width lays the content out again, so the reserve starts over.
+const { width: windowWidth } = useWindowSize()
+watch(windowWidth, () => reservedHeight.value = 0)
 </script>
 
 <template>
-  <figure class="study-figure" data-no-epub>
+  <figure ref="figure" class="study-figure" data-no-epub :style="{ minHeight: reservedHeight ? `${reservedHeight}px` : undefined }">
     <figcaption class="study-figure-title">
       {{ title }}
     </figcaption>
@@ -79,8 +89,8 @@ const unsupportedText = UNSUPPORTED_TEXT[usePageLanguage()]
   cursor: pointer;
   opacity: 0.8;
   transition:
-    opacity 0.2s,
-    border-color 0.2s;
+    opacity 0.4s,
+    border-color 0.4s;
 
   &:hover:not(:disabled) {
     opacity: 1;
@@ -98,6 +108,22 @@ const unsupportedText = UNSUPPORTED_TEXT[usePageLanguage()]
     border-style: solid;
     color: var(--fg-deeper);
   }
+}
+
+/* Alternatives that take turns stay in the flow on top of each other. A
+   hidden one keeps its height, so the box is as tall as the tallest, and
+   none of them is stretched to that height. */
+.study-stack {
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+    align-self: start;
+  }
+}
+
+.study-ghost {
+  visibility: hidden;
 }
 
 .study-mono {
@@ -143,8 +169,8 @@ const unsupportedText = UNSUPPORTED_TEXT[usePageLanguage()]
   border: 1px solid var(--c-border-soft);
   color: var(--fg-deep);
   transition:
-    background-color 0.3s,
-    color 0.3s;
+    background-color 0.6s,
+    color 0.6s;
 
   &.is-marked {
     background: var(--study-mark);

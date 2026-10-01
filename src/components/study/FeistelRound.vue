@@ -289,6 +289,8 @@ const steps = computed<Step[]>(() => {
 stepIndex.value = steps.value.findIndex(item => item.phase === initialPhase)
 
 const step = computed(() => steps.value[stepIndex.value])
+/** The outcome of the last step stands in, hidden, where a step has none, so the line keeps its height. */
+const shownOutcome = computed(() => step.value.outcome ?? steps.value.find(item => item.outcome)?.outcome)
 const isEdited = computed(() => block.value !== GUIDE_BLOCK || key.value !== GUIDE_KEY)
 
 function toggleBit(row: Row, index: number) {
@@ -328,27 +330,35 @@ function resetValues() {
       />
     </div>
 
-    <div class="feistel-rows">
-      <div v-for="row in step.rows" :key="row.label" class="feistel-row">
-        <span class="feistel-row-label study-mono">{{ row.label }}</span>
-        <span class="study-bits" :class="{ 'feistel-block': row.width === BLOCK_WIDTH, 'is-low-aligned': row.alignLow }">
-          <component
-            :is="row.editable ? 'button' : 'span'"
-            v-for="(bit, index) in toBinary(row.value, row.width)"
-            :key="index"
-            class="study-bit"
-            :class="{
-              'is-marked': row.marked?.(index),
-              'is-alert': row.alert?.(index),
-              'is-faded': row.faded?.(index),
-              'is-editable': row.editable,
-            }"
-            :type="row.editable ? 'button' : undefined"
-            :aria-label="row.editable ? `bit ${index}: ${bit}` : undefined"
-            @click="row.editable && toggleBit(row, index)"
-          >{{ bit }}</component>
-        </span>
-        <span class="feistel-row-value study-mono">{{ row.width === HALF_WIDTH ? row.value : '' }}</span>
+    <div class="study-stack">
+      <div
+        v-for="(item, itemIndex) in steps"
+        :key="itemIndex"
+        class="feistel-rows"
+        :class="{ 'study-ghost': itemIndex !== stepIndex }"
+        :inert="itemIndex !== stepIndex || undefined"
+      >
+        <div v-for="row in item.rows" :key="row.label" class="feistel-row">
+          <span class="feistel-row-label study-mono">{{ row.label }}</span>
+          <span class="study-bits" :class="{ 'feistel-block': row.width === BLOCK_WIDTH, 'is-low-aligned': row.alignLow }">
+            <component
+              :is="row.editable ? 'button' : 'span'"
+              v-for="(bit, index) in toBinary(row.value, row.width)"
+              :key="index"
+              class="study-bit"
+              :class="{
+                'is-marked': row.marked?.(index),
+                'is-alert': row.alert?.(index),
+                'is-faded': row.faded?.(index),
+                'is-editable': row.editable,
+              }"
+              :type="row.editable ? 'button' : undefined"
+              :aria-label="row.editable ? `bit ${index}: ${bit}` : undefined"
+              @click="row.editable && toggleBit(row, index)"
+            >{{ bit }}</component>
+          </span>
+          <span class="feistel-row-value study-mono">{{ row.width === HALF_WIDTH ? row.value : '' }}</span>
+        </div>
       </div>
     </div>
 
@@ -356,13 +366,13 @@ function resetValues() {
       {{ step.caption }}
     </p>
 
-    <p v-if="step.outcome" class="study-mono" :class="step.outcome.success ? 'study-success' : 'study-alert'">
-      {{ step.outcome.success ? '✓' : '✗' }} {{ step.outcome.text }}
+    <p v-if="shownOutcome" class="study-mono" :class="step.outcome ? (shownOutcome.success ? 'study-success' : 'study-alert') : 'study-ghost'">
+      {{ shownOutcome.success ? '✓' : '✗' }} {{ shownOutcome.text }}
     </p>
 
     <div v-if="stepIndex === 0" class="study-controls">
       <span class="study-label">{{ text.editHint }}</span>
-      <button v-if="isEdited" class="study-button" type="button" @click="resetValues">
+      <button class="study-button" type="button" :class="{ 'study-ghost': !isEdited }" :inert="!isEdited || undefined" @click="resetValues">
         {{ text.reset }}
       </button>
     </div>
@@ -388,7 +398,7 @@ function resetValues() {
   flex: 1;
   height: 4px;
   background: var(--c-border-soft);
-  transition: background-color 0.3s;
+  transition: background-color 0.6s;
 
   &.is-done {
     background: var(--c-border);

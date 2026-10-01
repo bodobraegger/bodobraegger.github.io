@@ -274,9 +274,9 @@ function cellLabel(letter: string): string {
   color: var(--fg-muted);
   font-size: 1.05rem;
   transition:
-    background-color 0.3s,
-    border-color 0.3s,
-    color 0.3s;
+    background-color 0.6s,
+    border-color 0.6s,
+    color 0.6s;
 
   &.is-region {
     background: var(--c-border-soft);

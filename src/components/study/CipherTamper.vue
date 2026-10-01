@@ -247,23 +247,25 @@ onMounted(() => {
           </template>
         </div>
 
-        <div v-if="state.selectedByte !== undefined" class="tamper-bit-picker">
-          <span class="study-label">{{ text.byteBits(byteName(mode, state.selectedByte)) }}</span>
-          <span class="study-bits">
-            <button
-              v-for="(bit, position) in toBinary(state.received[state.selectedByte], BITS_PER_BYTE)"
-              :key="position"
-              type="button"
-              class="study-bit tamper-bit"
-              :class="{ 'is-alert': isBitChanged(state, state.selectedByte, position) }"
-              :aria-label="`bit ${position}: ${bit}`"
-              @click="flipBit(mode, state.selectedByte, 0x80 >> position)"
-            >{{ bit }}</button>
-          </span>
+        <div class="study-stack">
+          <div class="tamper-bit-picker" :class="{ 'study-ghost': state.selectedByte === undefined }" :inert="state.selectedByte === undefined || undefined">
+            <span class="study-label">{{ text.byteBits(byteName(mode, state.selectedByte ?? 0)) }}</span>
+            <span class="study-bits">
+              <button
+                v-for="(bit, position) in toBinary(state.received[state.selectedByte ?? 0], BITS_PER_BYTE)"
+                :key="position"
+                type="button"
+                class="study-bit tamper-bit"
+                :class="{ 'is-alert': isBitChanged(state, state.selectedByte ?? 0, position) }"
+                :aria-label="`bit ${position}: ${bit}`"
+                @click="flipBit(mode, state.selectedByte ?? 0, 0x80 >> position)"
+              >{{ bit }}</button>
+            </span>
+          </div>
+          <p class="study-label" :class="{ 'study-ghost': state.selectedByte !== undefined }">
+            {{ text.tapByte }}
+          </p>
         </div>
-        <p v-else class="study-label">
-          {{ text.tapByte }}
-        </p>
 
         <div>
           <div class="study-label">

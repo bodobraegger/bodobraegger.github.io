@@ -204,7 +204,7 @@ watch(message, () => selectedPosition.value = undefined)
 </script>
 
 <template>
-  <CipherFigure :title="text.title[mode]">
+  <CipherFigure :title="text.title[mode]" class="shift-figure">
     <div class="study-controls">
       <button
         v-for="option in MODES"
@@ -318,7 +318,7 @@ watch(message, () => selectedPosition.value = undefined)
             <span v-for="letter in ALPHABET" :key="letter" :class="{ 'is-selected': letter === entry.highlighted }">{{ letter }}</span>
           </div>
         </div>
-        <p v-if="letterTotal < SHAPE_MIN_LETTERS" class="cipher-muted">
+        <p class="cipher-muted" :class="{ 'study-ghost': letterTotal >= SHAPE_MIN_LETTERS }">
           {{ text.shortTextNote }}
         </p>
         <p>{{ text.observation[mode] }}</p>
@@ -328,11 +328,24 @@ watch(message, () => selectedPosition.value = undefined)
 </template>
 
 <style scoped>
+/* The title changes with the mode, and the longer one takes two lines on a
+   narrow screen. The message box keeps its two rows for any text. */
+@media (max-width: 640px) {
+  .shift-figure :deep(.study-figure-title) {
+    min-height: 2lh;
+  }
+}
+
+.shift-message {
+  field-sizing: fixed;
+}
+
 .shift-text {
   display: flex;
   flex-wrap: wrap;
   row-gap: 0.4rem;
-  max-height: 16rem;
+  align-content: flex-start;
+  height: 16rem;
   overflow-y: auto;
   margin-top: 0.3rem;
   font-size: 0.95rem;
@@ -420,7 +433,7 @@ watch(message, () => selectedPosition.value = undefined)
 .shift-bar {
   width: 100%;
   border-radius: 2px 2px 0 0;
-  transition: height 0.3s ease-out;
+  transition: height 0.6s ease-out;
 }
 
 .shift-bar-plain {
