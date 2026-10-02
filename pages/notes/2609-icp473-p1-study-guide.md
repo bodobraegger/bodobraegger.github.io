@@ -7,6 +7,7 @@ type: note
 draft: true
 epub: true
 plum: false
+
 ---
 
 <script setup>
@@ -35,10 +36,6 @@ https://www.aft.org/ae/fall2013/dunlosky
 Rawson and Dunlosky 2011 and 2013 (recall to one correct retrieval per session, across sessions),
 https://www.retrievalpractice.org/strategies/2018/successive-relearning
 Cepeda et al. 2006 (spacing holds inside a single day).
-
-**Practical rule:** the professor's questions always say _justifique_ ("justify your answer").
-Naming the algorithm earns nothing. Marks come from two things: **which problem the algorithm
-solves**, and **how it fails**.
 
 ---
 
@@ -2176,88 +2173,60 @@ The rest of list 4 is hash functions, which are not.
 
 ## 10. Recall decks
 
-Questions first, answers below. Each deck names its source Part.
-
 ### 10.1 Deck W: WEP
-
-#### Questions
-
-**W1.** Name the five goals of the 1999 WEP standard. Which one explains the 40 bit key?
-
-**W2.** What was the conceptual error of WEP, and what lesson does the professor want?
-Give the fair counterpoint too.
-
-**W3.** What are the two phases of WEP?
-
-**W4.** Describe shared-key authentication in three steps. What is the size of the
-challenge?
-
-**W5.** State the four rules of authentication. Which ones does WEP break, and how?
-
-**W6.** Explain the XOR attack on WEP authentication: what is captured, what is
-computed, what the attacker gains.
-
-**W7.** Compute `2A7F9C4E XOR D3B1AC8B`. What is the result, and what is it not?
-
-**W8.** Why does WEP need an IV? Give its size, the effective key size, and the
-number of bits that are really secret.
-
-**W9.** Why is IV reuse inevitable? Give the numbers and four implementation problems.
-
-**W10.** State the birthday paradox with its numbers. Where does it apply in this course?
-
-**W11.** What is the ICV? Size, what it covers, when it is added. Describe the frame.
-
-**W12.** Why does the ICV not protect against an active attacker? Two properties.
-What is the general lesson?
-
-**W13.** Describe the replay attack in five steps. What does the attacker never do?
-
-**W14.** List the eight WEP failures with their root causes.
-
-**W15.** "The WEP problem is not RC4." Justify. How often does WEP run the two RC4 phases?
-
-**W16.** Name the four fields of the 802.11 authentication message and their values.
-
-#### Answers
 
 Source: Part 4.
 
-**W1.** Reasonable strength (depends on key length and on how often key and IV change).
+**W1.** Name the five goals of the 1999 WEP standard. Which one explains the 40 bit key?
+
+Reasonable strength (depends on key length and on how often key and IV change).
 Exportability: 40 bit keys so the US Department of Commerce would approve export.
 Too small for brute force, and that is why it passed.
 Self-synchronisation: each packet encrypted separately, so one lost packet does not
 break the next ones. Efficiency: hardware or software. Optionality.
 
-**W2.** Marketing dropped "reasonable". WEP was sold as secure, then absolutely secure.
+**W2.** What was the conceptual error of WEP, and what lesson does the professor want?
+Give the fair counterpoint too.
+
+Marketing dropped "reasonable". WEP was sold as secure, then absolutely secure.
 Lesson: there are only two kinds of security, strong or none. The standard should have
 included a robust solution, or stated that security must come from elsewhere (VPN, HTTPS).
 Counterpoint: the goal was wired-equivalent protection, a minimum barrier against the
 casual attacker. On a home network with little traffic it gives something, because most
 attacks need many packets.
 
-**W3.** Authentication (the station proves its identity to the AP), then encryption
+**W3.** What are the two phases of WEP?
+
+Authentication (the station proves its identity to the AP), then encryption
 (confidentiality after authentication).
 
-**W4.** The AP sends a challenge text, a random value. The station encrypts it with the
+**W4.** Describe shared-key authentication in three steps. What is the size of the
+challenge?
+
+The AP sends a challenge text, a random value. The station encrypts it with the
 secret key using WEP and sends it back. The AP checks that the response used the right key.
 Size: 128 bytes in the 802.11 standard. The slides say 128 bits once. Write 128 bytes,
 and say "a random value of fixed length".
 
-**W5.** Rule 1: a robust method that cannot be forged. Irrelevant, given the rest.
+**W5.** State the four rules of authentication. Which ones does WEP break, and how?
+
+Rule 1: a robust method that cannot be forged. Irrelevant, given the rest.
 Rule 2: identity persists and is not transferable. Broken: no token after the handshake,
 nothing is revalidated for the rest of the session.
 Rule 3: mutual authentication. Broken: the AP never proves anything. A fake AP replies
 "success" without the key.
 Rule 4: authentication key separate from encryption key. Broken: same key.
 
-**W6.** The attacker captures the challenge P (sent in clear) and the response C.
+**W6.** Explain the XOR attack on WEP authentication: what is captured, what is
+computed, what the attacker gains.
+
+The attacker captures the challenge P (sent in clear) and the response C.
 Because RC4 is XOR, `C = P XOR R`, so `R = P XOR C`. R is the keystream for that IV.
 Later the attacker answers a new challenge with that R and the same IV, and
 authenticates without ever knowing the key. Worse: the first keystream bytes, the
 weakest ones, are handed over for free. Conclusion: worse than useless.
 
-**W7.**
+**W7.** Compute `2A7F9C4E XOR D3B1AC8B`. What is the result, and what is it not?
 
 ```
 2A7F9C4E = 0010 1010 0111 1111 1001 1100 0100 1110
@@ -2267,12 +2236,17 @@ F9CE30C5 = 1111 1001 1100 1110 0011 0000 1100 0101
 
 Result F9CE30C5. It is the keystream for that IV. It is not the secret key.
 
-**W8.** A fixed key gives the same keystream on every packet, so repeated plaintexts
+**W8.** Why does WEP need an IV? Give its size, the effective key size, and the
+number of bits that are really secret.
+
+A fixed key gives the same keystream on every packet, so repeated plaintexts
 (IP addresses) repeat in the ciphertext. The IV is a 24 bit number that changes per
 packet. Effective key: 104 secret bits plus 24 IV bits, 128 bits. The IV travels in
 the clear, so only 104 bits are secret. "128 bit security" is misleading.
 
-**W9.** 2^24 = 16,777,216 IVs. At about 500 frames per second (802.11b), the space is
+**W9.** Why is IV reuse inevitable? Give the numbers and four implementation problems.
+
+2^24 = 16,777,216 IVs. At about 500 frames per second (802.11b), the space is
 exhausted in about 7 hours. Keys are almost never changed, so reuse is inevitable.
 Worse: devices restart with the same IV or reset it to zero; "pseudorandom" IV
 sequences repeat across devices; several devices share the key; random IVs collide
@@ -2280,28 +2254,39 @@ earlier because of the birthday paradox. Rule violated: never reuse an IV with t
 same key. Ideal policy on the slide: increment the IV on every frame, to maximise the
 time until a repeat.
 
-**W10.** 23 people give 253 pairs, and the chance of a shared birthday passes 50%.
+**W10.** State the birthday paradox with its numbers. Where does it apply in this course?
+
+23 people give 253 pairs, and the chance of a shared birthday passes 50%.
 Collisions appear far earlier than intuition says. It applies to WEP IV collisions,
 to hash collisions (birthday attack), and to the 2^(n/2) block limit of CBC and CTR.
 
-**W11.** ICV: Integrity Check Value, a 4 byte (32 bit) CRC over the data, appended
+**W11.** What is the ICV? Size, what it covers, when it is added. Describe the frame.
+
+ICV: Integrity Check Value, a 4 byte (32 bit) CRC over the data, appended
 before encryption. Frame, in slide order: IV (3 bytes) + KeyID (1 byte) at the start;
 encrypted data + encrypted ICV; MAC header and CRC. The conventional CRC is added after
 encryption. A bit in the MAC header marks the frame as WEP. Each fragment of the data is
 an MPDU of 10 to 1500 bytes.
 
-**W12.** The CRC is linear: you can predict how the ICV changes when you flip message
+**W12.** Why does the ICV not protect against an active attacker? Two properties.
+What is the general lesson?
+
+The CRC is linear: you can predict how the ICV changes when you flip message
 bits. XOR allows bit flipping: flipping a ciphertext bit flips the same plaintext bit,
 with no decryption. Together: modify the message and fix the ICV. The ICV catches
 accidental error, not an adversary. Lesson: a checksum is not a MAC. Detecting
 tampering needs a key (HMAC, CMAC, GMAC).
 
-**W13.** Sniff frames between AP and station. Note the encrypted messages and sizes.
+**W13.** Describe the replay attack in five steps. What does the attacker never do?
+
+Sniff frames between AP and station. Note the encrypted messages and sizes.
 Wait for the victim to disconnect. Connect with the victim's MAC address. Resend a
 captured frame. The AP accepts it. The attacker never decrypts anything. Cause: no
 replay protection, the sequence number is not protected.
 
-**W14.** Useless authentication: the (P, C) pair gives the keystream.
+**W14.** List the eight WEP failures with their root causes.
+
+Useless authentication: the (P, C) pair gives the keystream.
 No mutual authentication: the AP never proves it has the key.
 No identity persistence: no token after the handshake.
 Auth key = encryption key: no key separation.
@@ -2310,146 +2295,142 @@ False integrity: linear CRC plus XOR bit flipping.
 No replay protection: sequence number unprotected.
 Short key: 40 bits in the standard, 104 in extensions.
 
-**W15.** RC4 with a long key (128 bits) resists practical attacks. WEP fails in how it
+**W15.** "The WEP problem is not RC4." Justify. How often does WEP run the two RC4 phases?
+
+RC4 with a long key (128 bits) resists practical attacks. WEP fails in how it
 manages keys and IVs (24 bit IV, same key for auth and encryption, no rekeying), and in
 protocol design (challenge-response leaks keystream, CRC as integrity, no replay
 protection). WEP runs both RC4 phases (KSA and PRGA) on every
 packet, so a lost packet does not break the next ones, and that per-packet rekeying with a
 24 bit IV is what opens the attacks.
 
-**W16.** Algorithm Number: 0 Open System, 1 Shared Key (WEP). Transaction Sequence: the
+**W16.** Name the four fields of the 802.11 authentication message and their values.
+
+Algorithm Number: 0 Open System, 1 Shared Key (WEP). Transaction Sequence: the
 step, message 1, 2, and 3 in WEP. Status Code: success or failure, in the last message.
 Challenge Text: only in shared key authentication. The Wi-Fi Alliance abandoned this
 authentication mechanism.
 
 ### 10.2 Deck R: random numbers and Intel DRNG
 
-#### Questions
+Source: Part 5 and section 7.
 
 **R1.** Give four uses of random numbers in security. Why must a nonce be unpredictable?
+
+Nonces in key distribution and mutual authentication, session keys, RSA key
+generation, keystreams for stream ciphers. A predictable nonce lets the attacker
+replay old transactions.
 
 **R2.** What are the two criteria of statistical randomness? What is the problem with
 the second one?
 
-**R3.** Define forward and backward unpredictability. For cryptography, which matters
-more: statistical randomness or unpredictability?
-
-**R4.** Compare TRNG and PRNG on six points: source, determinism, period, speed,
-bias, use.
-
-**R5.** The fundamental difference between TRNG and PRNG, in terms of entropy.
-
-**R6.** Name six entropy sources for a TRNG.
-
-**R7.** What is bias (_propensão_)? Where does it come from? What are the consequences?
-How is it corrected?
-
-**R8.** Why does a TRNG feed a PRNG? Three reasons and the condition on the seed.
-
-**R9.** PRNG versus PRF: output, input, typical use.
-
-**R10.** NIST SP 800-22: three characteristics, number of tests, three named tests,
-and the rule about seeds.
-
-**R11.** Two categories of cryptographically strong PRNG. Three general techniques.
-
-**R12.** Why was the Intel DRNG new (2012)? Two advantages.
-
-**R13.** DRNG stage 1: how are bits generated in the circuit? Rate and block size.
-
-**R14.** DRNG stage 2: how is bias removed? Input size, algorithm, output size, why it works.
-
-**R15.** DRNG stage 3: why a PRNG after real entropy? Algorithm, seed, output, limit.
-
-**R16.** RDRAND: what does the carry flag mean, when is it not set, why check it?
-
-**R17.** A sequence passes the frequency test and fails the runs test. Random? Examples.
-
-**R18.** How do you test one million bits for randomness? Why not trust the function?
-
-#### Answers
-
-Source: Part 5 and section 7.
-
-**R1.** Nonces in key distribution and mutual authentication, session keys, RSA key
-generation, keystreams for stream ciphers. A predictable nonce lets the attacker
-replay old transactions.
-
-**R2.** Uniform distribution: ones and zeros equally frequent, no bias. Independence:
+Uniform distribution: ones and zeros equally frequent, no bias. Independence:
 no value can be deduced from the others. Problem: tests exist for distribution, but no
 single test proves independence. You run many tests. If none shows dependence you have
 high confidence, not proof.
 
-**R3.** Forward: without the seed, the next bit cannot be predicted even with all
+**R3.** Define forward and backward unpredictability. For cryptography, which matters
+more: statistical randomness or unpredictability?
+
+Forward: without the seed, the next bit cannot be predicted even with all
 previous bits. Backward: the seed cannot be recovered from the output. No correlation
 between seed and output. For session keys, nonces and keystreams the main requirement is
 not statistical randomness but the unpredictability of successive numbers. The same test
 suite also checks unpredictability.
 
-**R4.** TRNG: physical entropy source. Not deterministic, cannot be reproduced.
+**R4.** Compare TRNG and PRNG on six points: source, determinism, period, speed,
+bias, use.
+
+TRNG: physical entropy source. Not deterministic, cannot be reproduced.
 No period. Slow, a bottleneck. Suffers from bias. Used for critical cases and to
 generate the seed.
 PRNG: seed plus deterministic algorithm. Same seed, same sequence. Periodic, with a
 huge period. Fast, high volume. No bias if the algorithm is good. Typical use on the
 slide: input to symmetric stream ciphers (keys and nonces belong to the PRF).
 
-**R5.** A TRNG extracts new randomness from a physical process; a PRNG creates no
+**R5.** The fundamental difference between TRNG and PRNG, in terms of entropy.
+
+A TRNG extracts new randomness from a physical process; a PRNG creates no
 entropy, it expands the entropy of a short seed into a long sequence. A 128 bit seed
 never holds more than 128 bits of entropy, however long the output.
 
-**R6.** Keystroke timing, mouse movement, disk electrical activity (air turbulence,
+**R6.** Name six entropy sources for a TRNG.
+
+Keystroke timing, mouse movement, disk electrical activity (air turbulence,
 seek times), instantaneous clock values, thermal noise (open microphone, covered camera),
 radiation detectors, gas discharge tubes, leaky capacitors, LavaRnd (saturated CCD),
 random.org.
 
-**R7.** Bias: a TRNG produces more ones than zeros, or the reverse. Origin: the physical
+**R7.** What is bias (_propensão_)? Where does it come from? What are the consequences?
+How is it corrected?
+
+Bias: a TRNG produces more ones than zeros, or the reverse. Origin: the physical
 source is not symmetric (circuit asymmetry, sensor drift, preferred side).
 Consequence: fails uniform distribution, lowers entropy per bit, an attacker who knows
 the bias narrows the search. Fixes: de-skewing algorithms; hash functions that compress
 m ≥ n input bits to n bits and mix sources; cryptographic conditioners such as the CMAC
 in the Intel DRNG; Linux passes the pool through SHA-1 (`/dev/urandom`).
 
-**R8.** Speed: the TRNG is slow, the PRNG gives volume. Distribution: you cannot send a
+**R8.** Why does a TRNG feed a PRNG? Three reasons and the condition on the seed.
+
+Speed: the TRNG is slow, the PRNG gives volume. Distribution: you cannot send a
 whole keystream over a secure channel (the OTP problem); with a PRNG you send only the
 short key and each side generates the stream. Bias removal: the PRNG or PRF removes
 residual bias. Condition: the seed must be unpredictable. With the seed the adversary
 reproduces the whole output. That is why the seed comes from a TRNG, never from a
 predictable value.
 
-**R9.** PRNG: output as long as needed, input a seed, used as input to a stream cipher.
+**R9.** PRNG versus PRF: output, input, typical use.
+
+PRNG: output as long as needed, input a seed, used as input to a stream cipher.
 PRF: output of fixed length, input a seed plus context (user ID, application ID), used
 to generate symmetric keys and nonces.
 
-**R10.** Uniformity (expected n/2 zeros), scalability (random subsequences also pass),
+**R10.** NIST SP 800-22: three characteristics, number of tests, three named tests,
+and the rule about seeds.
+
+Uniformity (expected n/2 zeros), scalability (random subsequences also pass),
 consistency (same behaviour across seeds). 15 tests. Frequency test: count of ones and
 zeros. Runs test: count of runs of identical bits. Maurer's universal test: distance
 between matching patterns, detects compressibility. Rule: never test a PRNG with one
 seed, never test a TRNG with one physical output.
 
-**R11.** Special purpose generators (RC4 is one), and generators based on existing
+**R11.** Two categories of cryptographically strong PRNG. Three general techniques.
+
+Special purpose generators (RC4 is one), and generators based on existing
 cryptographic algorithms. Techniques: symmetric block ciphers, asymmetric ciphers, hash
 functions and MACs.
 
-**R12.** First commercial TRNG with a rate comparable to a PRNG. Advantages: fully in
+**R12.** Why was the Intel DRNG new (2012)? Two advantages.
+
+First commercial TRNG with a rate comparable to a PRNG. Advantages: fully in
 hardware (security and speed), and integrated in the multicore chip (no I/O delay).
 
-**R13.** Two inverters (NOT gates) with feedback have two stable states. A clock pulse
+**R13.** DRNG stage 1: how are bits generated in the circuit? Rate and block size.
+
+Two inverters (NOT gates) with feedback have two stable states. A clock pulse
 forces them into a metastable state. Thermal noise in the transistors decides which
 stable state the circuit decays to. Fundamentally unpredictable. Rate 4 Gbps, harvested
 in 512 bit blocks.
 
-**R14.** Stage 1 output can carry bias and subtle correlation. The conditioner applies
+**R14.** DRNG stage 2: how is bias removed? Input size, algorithm, output size, why it works.
+
+Stage 1 output can carry bias and subtle correlation. The conditioner applies
 CBC-MAC (CMAC, NIST SP 800-38B): the 512 bits are encrypted with AES in CBC mode and only
 the last ciphertext block is kept. Output: 256 bits with no bias. Why: CBC chains every
 block, so the last block depends on all 512 input bits. Compression concentrates the
 entropy, like a hash used for de-skewing, but keyed.
 
-**R15.** Throughput: even 4 Gbps raw entropy is not enough, and stage 2 halves it.
+**R15.** DRNG stage 3: why a PRNG after real entropy? Algorithm, seed, output, limit.
+
+Throughput: even 4 Gbps raw entropy is not enough, and stage 2 halves it.
 CTR_DRBG encrypts an incrementing counter with AES, seeded by the 256 bits. Output 128
 bit blocks at more than 3 Gbps. Limit: 511 samples per seed, then reseed. Without the
 seed the output is computationally unpredictable.
 
-**R16.** `RDRAND reg`, with reg of 16, 32 or 64 bits (AX, EAX, RAX). It returns the final
+**R16.** RDRAND: what does the carry flag mean, when is it not set, why check it?
+
+`RDRAND reg`, with reg of 16, 32 or 64 bits (AX, EAX, RAX). It returns the final
 DRNG output (stage 2 or 3). CF = 1: the register holds a valid random value. CF = 0: it does not. The code
 uses `jnc .exit` to skip the value when CF = 0. Not set when the DRNG has no randomness
 ready: buffer empty because requests arrive faster than it refills (many cores in a
@@ -2457,12 +2438,16 @@ loop), or hardware failure. Check it because with CF = 0 the register holds garb
 a predictable or repeated value, which as key, nonce or IV breaks the property you
 wanted.
 
-**R17.** No. Each test checks one property. Frequency only shows balance, not order.
+**R17.** A sequence passes the frequency test and fails the runs test. Random? Examples.
+
+No. Each test checks one property. Frequency only shows balance, not order.
 `0101...01` has half ones and the maximum number of runs: predictable.
 `000...0111...1` has 2 runs and is highly compressible, fails runs and Maurer.
 Accept only if every test passes.
 
-**R18.** A function is deterministic and periodic. It only looks random, and a bad one
+**R18.** How do you test one million bits for randomness? Why not trust the function?
+
+A function is deterministic and periodic. It only looks random, and a bad one
 leaves bias or correlation that predicts the next bits or the seed. Tests give a level
 of confidence, not a proof. Procedure: run the SP 800-22 battery, not one test; include
 frequency (expect 500,000 ones), runs, Maurer; check uniformity, scalability (test
@@ -2471,54 +2456,12 @@ gives a p-value, pass when p ≥ 0.01.
 
 ### 10.3 Deck F: Feistel, DES, 3DES
 
-#### Questions
+Source: Part 6 and section 7.
 
 **F1.** Diffusion versus confusion: what each relates, its goal, how it is implemented.
 Who, when?
 
-**F2.** Write the two equations of one Feistel round. What is the input and what is F?
-
-**F3.** How does Feistel decryption work and why? What follows for F and for hardware?
-
-**F4.** Five Feistel design parameters and the effect of increasing each. The cost?
-
-**F5.** Two further design considerations. Which one does DES fail?
-
-**F6.** Criteria for the function F: four terms.
-
-**F7.** DES facts: year, other name, block, key, rounds, subkey, structure.
-
-**F8.** DES algorithm flow in five steps.
-
-**F9.** The DES round function f in six steps, with bit counts.
-
-**F10.** Avalanche effect: definition, why it matters, the DES numbers.
-
-**F11.** DES key space and the brute force numbers (1977 and today).
-
-**F12.** The design criterion for the number of rounds, with the DES numbers.
-
-**F13.** Why was DES replaced? Four reasons, the main one first.
-
-**F14.** Why does 3DES use EDE and not EEE? Show the algebra.
-
-**F15.** Effective key of 3DES with three keys, two keys, one key. Years?
-
-**F16.** What is the problem with 3DES keeping a 64 bit block? Numbers and what leaks.
-
-**F17.** More rounds or a larger key against brute force? True or false: AES-128 with
-10 rounds is more secure against brute force than DES with 16 rounds.
-
-**F18.** In the list 3 Feistel code, where is confusion and where is diffusion?
-Why is a linear F fatal even with many rounds? Does the code decrypt?
-
-**F19.** Compute one round with `K = 10101010`, block `1100110010101010`. Then invert it.
-
-#### Answers
-
-Source: Part 6 and section 7.
-
-**F1.** Shannon, 1945, product ciphers. Diffusion relates plaintext to
+Shannon, 1945, product ciphers. Diffusion relates plaintext to
 ciphertext: each plaintext bit affects many ciphertext bits, ciphertext frequencies
 become uniform. Implemented, in the slide's words, by "permutations followed by transformation
 functions", so bits from different positions feed each ciphertext bit. Confusion relates key
@@ -2526,7 +2469,7 @@ to ciphertext: a complex relation, so part of the output reveals nothing about t
 Implemented by non-linear substitutions (S-boxes). Shared goal: defeat statistics of
 the plaintext (frequencies, probable words).
 
-**F2.**
+**F2.** Write the two equations of one Feistel round. What is the input and what is F?
 
 ```
 L_i = R_(i-1)
@@ -2536,78 +2479,109 @@ R_i = L_(i-1) XOR F(R_(i-1), K_i)
 Input: a block of 2w bits split into L0 and R0, plus key K. Round i uses subkey K_i.
 F takes w bits of R and y bits of K_i and gives w bits. Structure: SPN.
 
-**F3.** Same algorithm, subkeys in reverse order (K_n first, K_1 last). Why: XOR
+**F3.** How does Feistel decryption work and why? What follows for F and for hardware?
+
+Same algorithm, subkeys in reverse order (K_n first, K_1 last). Why: XOR
 properties, `A XOR A = 0`, `A XOR 0 = A`, associativity. In the decryption round F is
 recomputed on the same R(i-1) and the XOR cancels it. So F need not be invertible, and
 the same hardware or software encrypts and decrypts. That is the main attraction.
 
-**F4.** Block size: more diffusion (64 traditional, 128 AES). Key size: more confusion
+**F4.** Five Feistel design parameters and the effect of increasing each. The cost?
+
+Block size: more diffusion (64 traditional, 128 AES). Key size: more confusion
 and brute force resistance (64 or less is insecure). Rounds: one is inadequate, 16 is
 typical. Subkey generation: more complex means harder cryptanalysis. Function F: more
 complex and non-linear means more resistance. Cost: speed and complexity.
 
-**F5.** Speed in software, and ease of analysis (clear algorithms can be assessed,
+**F5.** Two further design considerations. Which one does DES fail?
+
+Speed in software, and ease of analysis (clear algorithms can be assessed,
 transparency gives confidence). DES fails ease of analysis.
 
-**F6.** Non-linearity. Avalanche effect: one input bit changes many output bits.
+**F6.** Criteria for the function F: four terms.
+
+Non-linearity. Avalanche effect: one input bit changes many output bits.
 SAC, strict avalanche criterion: any output bit changes with probability 1/2 when any
 input bit flips. BIC, bit independence criterion: output bits change independently.
 Key schedule goal: hard to deduce subkeys and hard to recover the key from subkeys. No
 universally accepted general principle exists for designing it.
 
-**F7.** 1977, NIST. Also DEA. Block 64 bits. Key 56 effective bits (64 with 8 parity).
+**F7.** DES facts: year, other name, block, key, rounds, subkey, structure.
+
+1977, NIST. Also DEA. Block 64 bits. Key 56 effective bits (64 with 8 parity).
 The least significant bit of each key byte is the parity bit. A few weak keys exist, easy
 to avoid. 16 rounds. 48 bit subkey. Feistel. 1994 reaffirmed for non-confidential use, 1999
 legacy only, 3DES recommended, today AES.
 
-**F8.** Initial permutation IP on 64 bits. Split into two 32 bit halves. 16 Feistel
+**F8.** DES algorithm flow in five steps.
+
+Initial permutation IP on 64 bits. Split into two 32 bit halves. 16 Feistel
 rounds. Swap the halves (pre-output). Final permutation IP^-1. Decryption: same, subkeys
 reversed, permutations reversed.
 
-**F9.** Key: 56 bits shifted (circular left) and reduced to 48 by a fixed permutation.
+**F9.** The DES round function f in six steps, with bit counts.
+
+Key: 56 bits shifted (circular left) and reduced to 48 by a fixed permutation.
 Right half 32 bits expanded to 48. XOR with the 48 bit subkey. 8 S-boxes give 32 bits.
 Permutation of the 32 bits. XOR with the left half, then swap.
 
-**F10.** A small change in plaintext or key must change many ciphertext bits. Otherwise
+**F10.** Avalanche effect: definition, why it matters, the DES numbers.
+
+A small change in plaintext or key must change many ciphertext bits. Otherwise
 the attacker narrows the search by gradual trials. DES: one plaintext bit changed, 18
 bits differ after 3 rounds, 32 in the final ciphertext. One key bit changed: about half
 the ciphertext bits differ.
 
-**F11.** 2^56 ≈ 7.2 × 10^16 keys. One encryption per microsecond: more than 1000 years
+**F11.** DES key space and the brute force numbers (1977 and today).
+
+2^56 ≈ 7.2 × 10^16 keys. One encryption per microsecond: more than 1000 years
 for half the space. 1977, Diffie and Hellman: one million devices, about 10 hours, about
 US$ 20 million. Today: a PC does about 10^9 keys per second, DES falls in about 1 year;
 a supercomputer at 10^13 per second takes about 1 hour. 128 bit keys: about 100,000
 years even with a 10^12 speed up.
 
-**F12.** Rounds must be enough that the best cryptanalysis costs more than brute force.
+**F12.** The design criterion for the number of rounds, with the DES numbers.
+
+Rounds must be enough that the best cryptanalysis costs more than brute force.
 DES, 16 rounds: differential cryptanalysis 2^55.1, brute force 2^55. With 15 rounds or
 fewer, cryptanalysis would be cheaper. Once the criterion holds, strength is judged by
 key size.
 
-**F13.** The slide names two concerns: key size and the nature of the algorithm. Key size:
+**F13.** Why was DES replaced? Four reasons, the main one first.
+
+The slide names two concerns: key size and the nature of the algorithm. Key size:
 56 bits is too short (main reason, see F11). Nature of the algorithm: the structure is
 hard to analyse, and the rounds margin is narrow, 2^55.1 against 2^55. From list 3, not
 the slides: the 64 bit block is small (see F16).
 
-**F14.** `C = E(K3, D(K2, E(K1, P)))`. With K1 = K2 = K3 = K:
+**F14.** Why does 3DES use EDE and not EEE? Show the algebra.
+
+`C = E(K3, D(K2, E(K1, P)))`. With K1 = K2 = K3 = K:
 `E(K, D(K, E(K, P))) = E(K, P)`, plain DES. So 3DES equipment interoperates with legacy
 DES in both directions. The middle decryption has no cryptographic meaning. Its only
 benefit is backward compatibility.
 
-**F15.** Three keys: 168 bits. Two keys (K1 = K3): 112 bits. One key: 56 bits, DES.
+**F15.** Effective key of 3DES with three keys, two keys, one key. Years?
+
+Three keys: 168 bits. Two keys (K1 = K3): 112 bits. One key: 56 bits, DES.
 ANSI X9.17 in 1985 for finance, FIPS 46-3 in 1999. FIPS 46-3 guidelines: 3DES is the
 approved symmetric algorithm for current use, DES is for legacy systems only, new
 procurements must support 3DES, and 3DES and AES coexist for a gradual transition. From
 list 3, not the slides: about three times slower than DES.
 
-**F16.** 3DES raised the key but kept the 64 bit block. In CBC and CTR, block collisions
+**F16.** What is the problem with 3DES keeping a 64 bit block? Numbers and what leaks.
+
+3DES raised the key but kept the 64 bit block. In CBC and CTR, block collisions
 follow the birthday paradox: expect one after 2^(n/2) blocks under one key. n = 64:
 2^32 blocks of 8 bytes, about 32 GB, reached by a long TLS session or a VPN. n = 128:
 2^64, unreachable. In CBC, two equal ciphertext blocks give the XOR of two plaintext
 blocks, without the key. Same leak as keystream reuse and WEP IV reuse. Conclusion:
 the path forward was AES with a 128 bit block, not a stretched DES.
 
-**F17.** Key size sets the search space, 2^k keys, average 2^(k-1). Each bit doubles the
+**F17.** More rounds or a larger key against brute force? True or false: AES-128 with
+10 rounds is more secure against brute force than DES with 16 rounds.
+
+Key size sets the search space, 2^k keys, average 2^(k-1). Each bit doubles the
 cost. Only the key limits brute force. Rounds set resistance to cryptanalysis
 (differential, linear) and do not change the number of keys. DES with 100 rounds still
 has 2^56 keys. The statement is TRUE: AES-128 has 2^128 keys, 2^72 times more than DES,
@@ -2615,7 +2589,10 @@ about 100,000 years even with a 10^12 speed up. The 16 rounds of DES are irrelev
 brute force. AES-128 also meets its rounds criterion: no practical cryptanalysis beats
 brute force.
 
-**F18.** Confusion is in `funcao_F(R, chave)`, the only place the key enters. Diffusion
+**F18.** In the list 3 Feistel code, where is confusion and where is diffusion?
+Why is a linear F fatal even with many rounds? Does the code decrypt?
+
+Confusion is in `funcao_F(R, chave)`, the only place the key enters. Diffusion
 is in `R1 = L ^ F` (spreads F over the left half) and in the swap `L1 = R` (so the other
 half passes through F next round). One round gives partial diffusion: L1 = R leaves
 unchanged, hence many rounds.
@@ -2627,7 +2604,9 @@ and BIC.
 The code does not decrypt. `invertido` is `0010100010101010`, only the halves swapped.
 Correct inversion: `R = L1`, `L = R1 XOR F(L1, K)`.
 
-**F19.** L = 11001100 (204), R = 10101010 (170), K = 10101010 (170).
+**F19.** Compute one round with `K = 10101010`, block `1100110010101010`. Then invert it.
+
+L = 11001100 (204), R = 10101010 (170), K = 10101010 (170).
 F = (170 × 170) & 0xFF = 28900 & 0xFF = 228 = 11100100.
 L1 = R = 10101010. R1 = 204 XOR 228 = 00101000 (40).
 Ciphertext: `1010101000101000`.
@@ -2636,27 +2615,23 @@ Recovered `1100110010101010`.
 
 ### 10.4 Deck M: AES and ECB
 
-#### Questions
+Source: Part 6 (6.11) and Part 6B (ECB only).
 
 **M1.** AES facts: who, when, origin, structure, block size, specification.
 
-**M2.** The three AES variants: key, rounds, Nk, Nb. What differs between them?
-
-**M3.** ECB: how it works, the advantage on the slide, three disadvantages, the conclusion.
-
-#### Answers
-
-Source: Part 6 (6.11) and Part 6B (ECB only).
-
-**M1.** NIST, published 2001. Rijndael chosen in 2000. AES does not use the Feistel
+NIST, published 2001. Rijndael chosen in 2000. AES does not use the Feistel
 structure (slide 243). The slides call the Feistel structure itself an SPN (slide 204).
 Block 128 bits always. FIPS 197.
 
-**M2.** AES-128: 10 rounds, Nk 4. AES-192: 12 rounds, Nk 6. AES-256: 14 rounds, Nk 8.
+**M2.** The three AES variants: key, rounds, Nk, Nb. What differs between them?
+
+AES-128: 10 rounds, Nk 4. AES-192: 12 rounds, Nk 6. AES-256: 14 rounds, Nk 8.
 Nb = 4 always. Differences: key length, number of rounds (size of key schedule), and
 the recursion in KEY EXPANSION. Only these configurations are AES.
 
-**M3.** Split into blocks, encrypt each separately with the same key, pad the last.
+**M3.** ECB: how it works, the advantage on the slide, three disadvantages, the conclusion.
+
+Split into blocks, encrypt each separately with the same key, pad the last.
 Advantage (slide 247): errors in one block do not propagate, uncorrupted blocks still
 decrypt. Parallelism is also true but is not on the slide. Disadvantages: deterministic, identical
 blocks give identical ciphertext; same message starts are recognisable; block order can
@@ -2664,87 +2639,67 @@ be changed undetected. Not recommended beyond one block; some say never.
 
 ### 10.5 Deck C: classical cryptography
 
-#### Questions
+Source: Part 2.
 
 **C1.** The three dimensions that classify a cryptographic system.
+
+Type of operation: substitution, transposition, or product. Number of keys:
+symmetric (one shared key) or asymmetric (public and private). Processing mode: block
+or stream.
 
 **C2.** Define cryptography, cryptanalysis, cryptology. The five components of a
 symmetric cipher and the two formulas.
 
-**C3.** Two requirements for secure use of symmetric encryption. The consequence.
-
-**C4.** Cryptanalysis versus brute force: method, effort, guarantee. Goal of an attack?
-
-**C5.** Four attack types by information available, from weakest to strongest.
-
-**C6.** When is a scheme computationally secure? What is the problem?
-
-**C7.** Caesar: formulas. Three conditions that make brute force work. Why does brute
-force fail on modern ciphers?
-
-**C8.** Monoalphabetic: key, key space, what breaks it and why.
-
-**C9.** Homophones: what, why Gauss thought it was unbreakable, why it is not.
-
-**C10.** Playfair: build the matrix for "monarchy", state the four rules, give the
-security number and the limitation.
-
-**C11.** Vigenère: formulas, the Kasiski attack, autokey and its weakness.
-
-**C12.** Vernam versus One-Time Pad: three conditions, properties, two practical limits.
-
-#### Paper practice
-
-**C13.** Encrypt `meet me after the toga party` with Caesar k = 3.
-
-**C14.** Decrypt with probable word: `G sotng igyg k asg igyg` (k = 6).
-
-**C15.** Playfair, key "monarchy": encrypt `hs`, `mu`, `ar`, `ea`, and `balloon`.
-
-**C16.** Vigenère, key `deceptive`: encrypt `wearediscovered`.
-
-#### Answers
-
-Source: Part 2.
-
-**C1.** Type of operation: substitution, transposition, or product. Number of keys:
-symmetric (one shared key) or asymmetric (public and private). Processing mode: block
-or stream.
-
-**C2.** Cryptography makes codes, cryptanalysis breaks them without the key, cryptology
+Cryptography makes codes, cryptanalysis breaks them without the key, cryptology
 studies both. Components: plaintext, encryption algorithm, secret key, ciphertext,
 decryption algorithm. `Y = E(K, X)`, `X = D(K, Y)`.
 
-**C3.** A strong algorithm: knowing the algorithm and ciphertexts (even with matching
+**C3.** Two requirements for secure use of symmetric encryption. The consequence.
+
+A strong algorithm: knowing the algorithm and ciphertexts (even with matching
 plaintexts), the opponent cannot find key or plaintext. A protected key, shared securely.
 Consequence: the secret is the key, not the algorithm, so cheap chips can embed it.
 
-**C4.** Cryptanalysis uses the algorithm structure and known plaintext; effort depends
+**C4.** Cryptanalysis versus brute force: method, effort, guarantee. Goal of an attack?
+
+Cryptanalysis uses the algorithm structure and known plaintext; effort depends
 on the algorithm; no guarantee. Brute force tests every key; on average half the key
 space; guaranteed given time. The opponent has two objectives: recover the plaintext X
 (an estimate), or recover the key K, which opens all future messages.
 
-**C5.** Ciphertext only (hardest for the attacker, statistics). Known plaintext (pairs;
+**C5.** Four attack types by information available, from weakest to strongest.
+
+Ciphertext only (hardest for the attacker, statistics). Known plaintext (pairs;
 fixed headers, banners, protocol fields). Probable word (part of the message or words at
 fixed positions, a copyright notice). Chosen plaintext (the attacker gets messages of
 their choice encrypted and inserts revealing patterns).
 
-**C6.** Cost of breaking exceeds the value of the information, or time to break exceeds
+**C6.** When is a scheme computationally secure? What is the problem?
+
+Cost of breaking exceeds the value of the information, or time to break exceeds
 its useful life. Problem: the real cryptanalysis effort is hard to estimate.
 
-**C7.** `C = (p + k) mod 26`, `p = (C - k) mod 26`, k from 1 to 25. Brute force needs
+**C7.** Caesar: formulas. Three conditions that make brute force work. Why does brute
+force fail on modern ciphers?
+
+`C = (p + k) mod 26`, `p = (C - k) mod 26`, k from 1 to 25. Brute force needs
 all three: algorithm known, small key space (25), plaintext language known and
 recognisable. Modern ciphers: huge key space (3DES 168 bits, about 3.7 × 10^50 keys)
 and plaintext hard to recognise if compressed or in an unknown language.
 
-**C8.** Key: a full permutation of the alphabet. 26! ≈ 4 × 10^26, resists brute force.
+**C8.** Monoalphabetic: key, key space, what breaks it and why.
+
+Key: a full permutation of the alphabet. 26! ≈ 4 × 10^26, resists brute force.
 Broken by frequency analysis: letter frequencies survive. Most common symbol is E.
 
-**C9.** Several symbols for one letter (E as 16, 74, 35, 21), proportional to frequency,
+**C9.** Homophones: what, why Gauss thought it was unbreakable, why it is not.
+
+Several symbols for one letter (E as 16, 74, 35, 21), proportional to frequency,
 so single letter frequencies vanish. Gauss believed it unbreakable. Digrams and trigrams
 remain (DE, ES, EN, NT, RE, RA, AR, OS, TE, CO). `$#%` suggests NTE as in "mente".
 
-**C10.**
+**C10.** Playfair: build the matrix for "monarchy", state the four rules, give the
+security number and the limitation.
 
 ```
 M O N A R
@@ -2761,29 +2716,43 @@ column (`hs` to `BP`, `ea` to `IM`). Security: 676 digrams instead of 26 letters
 British Army field system in WWI, still used in WWII. Limit: language structure leaks;
 a few hundred letters break it.
 
-**C11.** `C_i = (p_i + k_(i mod m)) mod 26`, `p_i = (C_i - k_(i mod m)) mod 26`, m the
+**C11.** Vigenère: formulas, the Kasiski attack, autokey and its weakness.
+
+`C_i = (p_i + k_(i mod m)) mod 26`, `p_i = (C_i - k_(i mod m)) mod 26`, m the
 key length. 26 Caesar ciphers chosen by the key. Kasiski: the key repeats, so repeated
 plaintext at the same phase gives repeated ciphertext. "VTW" twice, 9 apart: key length 3
 or 9. Then attack each position as a Caesar. Autokey: key is keyword plus the plaintext
 itself. Still vulnerable: the key has the plaintext's frequency distribution.
 
-**C12.** Vernam 1918, AT&T: bits, `c = p XOR k`, a long but repeating key. Breaks with
+**C12.** Vernam versus One-Time Pad: three conditions, properties, two practical limits.
+
+Vernam 1918, AT&T: bits, `c = p XOR k`, a long but repeating key. Breaks with
 enough ciphertext and probable plaintext. OTP (Mauborgne): truly random key, as long as
 the message, never reused. Ciphertext fully random, no correlation, unbreakable, the only
 system with perfect secrecy. Limits: generating large quantities of true randomness, and
 distributing and protecting a key as long as every message. Use: low bandwidth, very high
 security.
 
-**C13.** `PHHW PH DIWHU WKH WRJD SDUWB`.
+#### Paper practice
 
-**C14.** `A minha casa e uma casa`. `igyg` repeats and matches "casa", so k = 6.
+**C13.** Encrypt `meet me after the toga party` with Caesar k = 3.
 
-**C15.** `hs` BP, `mu` CM, `ar` RM, `ea` IM. `balloon`: ba lx lo on. ba: same column
+`PHHW PH DIWHU WKH WRJD SDUWB`.
+
+**C14.** Decrypt with probable word: `G sotng igyg k asg igyg` (k = 6).
+
+`A minha casa e uma casa`. `igyg` repeats and matches "casa", so k = 6.
+
+**C15.** Playfair, key "monarchy": encrypt `hs`, `mu`, `ar`, `ea`, and `balloon`.
+
+`hs` BP, `mu` CM, `ar` RM, `ea` IM. `balloon`: ba lx lo on. ba: same column
 (B row 2, A row 1, both col 4), take the letter below: IB. lx: L row 4 col 1, X row 5
 col 4, rectangle: SU. lo: L row 4 col 1, O row 1 col 2, rectangle: PM. on: same row,
 right with wrap: NA. Result `IB SU PM NA`.
 
-**C16.** Write the key under the text and add mod 26:
+**C16.** Vigenère, key `deceptive`: encrypt `wearediscovered`.
+
+Write the key under the text and add mod 26:
 
 ```
 plain  w e a r e d i s c o v e r e d
@@ -2793,147 +2762,114 @@ cipher Z I C V T W Q N G R Z G V T W
 
 ### 10.6 Deck S: stream ciphers and RC4
 
-#### Questions
+Source: Part 3.
 
 **S1.** State Kerckhoffs's principle and its implication.
 
-**S2.** How does a stream cipher work? Which XOR property makes it work?
-
-**S3.** Three design considerations for a stream cipher.
-
-**S4.** Advantages of stream ciphers over block ciphers. Why did the advantage shrink?
-
-**S5.** Why is key reuse in a stream cipher catastrophic? Algebra and consequence.
-
-**S6.** Where do you use a stream cipher, and where a block cipher?
-
-**S7.** RC4 facts: author, year, key length, period, operations per byte, public since,
-uses, status.
-
-**S8.** RC4 phase 1, KSA. Why does S remain a permutation?
-
-**S9.** RC4 phase 2, PRGA. What happens with the key?
-
-**S10.** Stream cipher versus One-Time Pad: the difference.
-
-#### Answers
-
-Source: Part 3.
-
-**S1.** Security must depend only on the key, even when the method is public.
+Security must depend only on the key, even when the method is public.
 Implication: security through obscurity is a fallacy. If secrecy of the method is
 needed, the method is flawed.
 
-**S2.** A key seeds a pseudorandom bit generator, which produces the keystream. The
+**S2.** How does a stream cipher work? Which XOR property makes it work?
+
+A key seeds a pseudorandom bit generator, which produces the keystream. The
 keystream is XORed byte by byte with the plaintext. `(P XOR K) XOR K = P`, so encryption
 and decryption are the same operation. Both sides share only the key and generate the
 stream locally.
 
-**S3.** Long period (the generator is deterministic and repeats; a short period is the
+**S3.** Three design considerations for a stream cipher.
+
+Long period (the generator is deterministic and repeats; a short period is the
 Vigenère problem). Good randomness (ones and zeros balanced, all 256 byte values equally
 frequent). Key of at least 128 bits against brute force.
 
-**S4.** Faster, less code (RC4 is a few lines). Shrunk because AES is efficient in
+**S4.** Advantages of stream ciphers over block ciphers. Why did the advantage shrink?
+
+Faster, less code (RC4 is a few lines). Shrunk because AES is efficient in
 software, and the Intel AES instruction set runs a round in hardware, an order of
 magnitude gain.
 
-**S5.** `C1 XOR C2 = (P1 XOR K) XOR (P2 XOR K) = P1 XOR P2`. The attacker gets the XOR
+**S5.** Why is key reuse in a stream cipher catastrophic? Algebra and consequence.
+
+`C1 XOR C2 = (P1 XOR K) XOR (P2 XOR K) = P1 XOR P2`. The attacker gets the XOR
 of the plaintexts without the key. Severe with known patterns: text, card numbers,
 headers. A block cipher allows key reuse without this.
 
-**S6.** Stream: continuous data, communication channels, browser and web links. Block:
+**S6.** Where do you use a stream cipher, and where a block cipher?
+
+Stream: continuous data, communication channels, browser and web links. Block:
 whole blocks, file transfer, email, databases.
 
-**S7.** Ron Rivest, 1987, RSA Security. Key 1 to 256 bytes (8 to 2048 bits). Period
+**S7.** RC4 facts: author, year, key length, period, operations per byte, public since,
+uses, status.
+
+Ron Rivest, 1987, RSA Security. Key 1 to 256 bytes (8 to 2048 bits). Period
 probably above 10^100. 8 to 16 operations per byte. Trade secret until 1994 (Cypherpunks
 list). Used in SSL/TLS and WEP/WPA. Insecure today.
 
-**S8.** `S[i] = i` for 0 to 255. T is the key repeated to 256 bytes. Walk S from 0 to
+**S8.** RC4 phase 1, KSA. Why does S remain a permutation?
+
+`S[i] = i` for 0 to 255. T is the key repeated to 256 bytes. Walk S from 0 to
 255, swapping `S[i]` with another byte, driven by `T[i]`. Only swaps are used, so S stays
 a permutation of 0 to 255.
 
-**S9.** The key is no longer used. Walk S, swapping `S[i]` with another byte driven by
+**S9.** RC4 phase 2, PRGA. What happens with the key?
+
+The key is no longer used. Walk S, swapping `S[i]` with another byte driven by
 the current state of S, wrapping after 255. Each step yields one byte k.
 `c = p XOR k`, `p = c XOR k`.
 
-**S10.** A stream cipher uses a pseudorandom keystream expanded from a short key; the
+**S10.** Stream cipher versus One-Time Pad: the difference.
+
+A stream cipher uses a pseudorandom keystream expanded from a short key; the
 OTP uses a truly random key as long as the message, never reused. Only the OTP has
 perfect secrecy. The slides' classical examples of stream ciphers: autokey Vigenère and
 Vernam.
 
 ### 10.7 Deck K: concepts, triad, NetFlow, auditd
 
-#### Questions
+Source: Part 1 and section 7b.
 
 **K1.** Why protect information? State the economic principle (RFC 2196) and the two
 lessons of the C&M Software case.
 
-**K2.** Define the three pillars with a typical threat and an example each. NIST source?
-
-**K3.** Confidentiality: two faces, main mechanism, need to know, resource hiding,
-the sentence about the key, VeraCrypt.
-
-**K4.** Integrity: data versus system, data versus origin, the newspaper example.
-
-**K5.** Integrity mechanisms: prevention versus detection. Why is integrity harder to
-assess than confidentiality?
-
-**K6.** Availability: definition, why DoS is hard to detect, the nines, data sources.
-
-**K7.** Define a flow (RFC 3954). What does a record contain? Whose protocol? Five uses.
-
-**K8.** Three NetFlow components. Transport? When does the exporter export?
-
-**K9.** Name the NFDUMP tools. What is NfSen?
-
-**K10.** Authenticity versus non-repudiation. Two examples of the first without the
-second. How to close the gap. The Brazilian example.
-
-**K11.** Accountability: definition, objectives, the professor's sentence.
-
-**K12.** auditd: the four commands, the three flags, the log path, syscall 257.
-
-**K13.** The five elements of security.
-
-**K14.** The eight rules of the triad answer key.
-
-**K15.** Classify: DDoS on the portal; sniffer reads login; intruder commands router as
-admin; virus changes firmware; user asks to delete own logs; analyst finds peak with
-nfdump; fibre cut; student edits SHA-256 on site; grade changed 5.0 to 9.0; doctor
-deletes allergy by mistake; slow system blocks nurses; ransomware; log "Professor Ana
-14:30"; system blocks student from another's report.
-
-#### Answers
-
-Source: Part 1 and section 7b.
-
-**K1.** Information is the most valuable asset: decisions, competitive advantage,
+Information is the most valuable asset: decisions, competitive advantage,
 financial and personal value. Loss: money, reputation, legal risk. RFC 2196: the cost
 to protect must be lower than the cost to recover; effort proportional to value. C&M
 (July 2025, R$ 541 million): the human factor (trusted insiders) is critical, and one
 failure can cost billions. Other cases: Gmail 2023, CrowdStrike 2024, 223 million
 Brazilians leaked 2021.
 
-**K2.** NISTIR 7298 (COMPUSEC): measures and controls that ensure confidentiality,
+**K2.** Define the three pillars with a typical threat and an example each. NIST source?
+
+NISTIR 7298 (COMPUSEC): measures and controls that ensure confidentiality,
 integrity and availability of information system assets, including hardware, software,
 firmware and the information processed, stored and communicated. Confidencialidade: protection against unauthorised access; threat
 data leak; example secrecy of court cases. Integridade: prevention of improper changes;
 threat fraud in records; example election systems. Disponibilidade: continuous access;
 threat DDoS; example a platform during a crisis.
 
-**K3.** Data confidentiality (not disclosed) and privacy (the individual controls what is
+**K3.** Confidentiality: two faces, main mechanism, need to know, resource hiding,
+the sentence about the key, VeraCrypt.
+
+Data confidentiality (not disclosed) and privacy (the individual controls what is
 collected and disclosed). Mechanism: access control, inside it cryptography. Need to know
 (_necessário saber_) in military and government. Resource hiding: the existence of
 information is protected too; knowing a search was made can reveal more than its result.
 Protecting the key is as critical as protecting the information. VeraCrypt: on-the-fly
 disk encryption, AES, Serpent, Twofish, hidden volumes for plausible deniability.
 
-**K4.** Data integrity: content not changed improperly. System integrity: the system does
+**K4.** Integrity: data versus system, data versus origin, the newspaper example.
+
+Data integrity: content not changed improperly. System integrity: the system does
 what it should. Data integrity: content correct. Origin integrity = authenticity: source
 legitimate. Newspaper publishes a true White House leak but credits the wrong source:
 data integrity preserved, origin integrity broken.
 
-**K5.** Prevention blocks unauthorised changes, in two cases: an attacker, or an
+**K5.** Integrity mechanisms: prevention versus detection. Why is integrity harder to
+assess than confidentiality?
+
+Prevention blocks unauthorised changes, in two cases: an attacker, or an
 authorised user acting without authorisation (the accountant moving money abroad).
 Detection reports a break: analysing system events or checking data constraints.
 Confidentiality is binary, compromised or not. Integrity includes correctness and
@@ -2941,30 +2877,41 @@ trustworthiness and depends on three factors: the origin of the data, how well i
 protected before reaching the current machine, and how well it is protected on it. In practice: `sha256sum`;
 MD5 no longer recommended.
 
-**K6.** The system works and service is not denied to authorised users. DoS is hard to
+**K6.** Availability: definition, why DoS is hard to detect, the nines, data sources.
+
+The system works and service is not denied to authorised users. DoS is hard to
 detect because you must separate intent from unusual legitimate use; statistical models
 absorb the attack. More nines, less downtime per year. Sources: ping, monitoring
 software, tickets, incident reports, SIEM, logs. Slide example: a DDoS of more than
 100,000 requests per second from bots. Prevention: filter malicious traffic, limit
 attempts per IP. Recovery: automatic spare servers, priority for registered students.
 
-**K7.** A unidirectional sequence of packets with common properties through a network
+**K7.** Define a flow (RFC 3954). What does a record contain? Whose protocol? Five uses.
+
+A unidirectional sequence of packets with common properties through a network
 device. One TCP conversation is two flows. Record: IP addresses, packet and byte counts,
 timestamps, ToS, ports, input and output interfaces. Cisco. Uses: ISP billing,
 monitoring and capacity planning, application and user profiling, security analysis,
 marketing data mining.
 
-**K8.** Exporter identifies flows by IP, ports, protocol and type of service, aggregates
+**K8.** Three NetFlow components. Transport? When does the exporter export?
+
+Exporter identifies flows by IP, ports, protocol and type of service, aggregates
 packets into flows and exports records over UDP, for inactive or closed flows (TCP FIN or
 RST). Collector receives, pre-processes, stores. Analyser
 processes, reports, alerts.
 
-**K9.** `nfcapd` captures flows (v5, v7, v9) to files. `nfdump` reads and displays, like
+**K9.** Name the NFDUMP tools. What is NfSen?
+
+`nfcapd` captures flows (v5, v7, v9) to files. `nfdump` reads and displays, like
 tcpdump. `nfprofile` builds profiles from filters. `nfreplay` sends data to another host.
 `nfclean.pl` removes old data. `ft2nfdump` converts other formats. NfSen: the web front
 end, browses data, time ranges, profiles, alerts, plugins.
 
-**K10.** Authenticity: the origin is legitimate and verifiable (examples: login with
+**K10.** Authenticity versus non-repudiation. Two examples of the first without the
+second. How to close the gap. The Brazilian example.
+
+Authenticity: the origin is legitimate and verifiable (examples: login with
 password or biometrics, the digital certificate of an HTTPS site). Non-repudiation: you
 can prove the action and its origin so the party cannot deny it. Its two sides: proof of
 delivery for the sender, proof of the sender's identity for the receiver (examples: signed
@@ -2976,13 +2923,15 @@ auditable timestamped record. ITI tool with ICP-Brasil: certificate bound to ide
 private key signs, auditable record, later changes detected. Gives authenticity,
 non-repudiation and integrity.
 
-**K11.** The actions of an entity can be traced uniquely to that entity. Objectives:
+**K11.** Accountability: definition, objectives, the professor's sentence.
+
+The actions of an entity can be traced uniquely to that entity. Objectives:
 support non-repudiation, deter bad behaviour, isolate faults, detect and prevent
 intrusion, support recovery and legal action. Logs that nobody acts on are not
 accountability. It needs identification, authentication, recording, auditing,
 traceability and sanctions.
 
-**K12.**
+**K12.** auditd: the four commands, the three flags, the log path, syscall 257.
 
 ```
 sudo auditd
@@ -2997,23 +2946,35 @@ logout, executed commands and changes to critical files, each with UID, time and
 operation. `syscall=257` is openat. proctitle is hex.
 User name: `getent passwd AUID`.
 
-**K13.** Confidentiality, integrity, availability (triad), authenticity, accountability
+**K13.** The five elements of security.
+
+Confidentiality, integrity, availability (triad), authenticity, accountability
 (extension).
 
-**K14.** The cause does not change the pillar (accident counts). Posing as someone is
+**K14.** The eight rules of the triad answer key.
+
+The cause does not change the pillar (accident counts). Posing as someone is
 origin Integrity, not Confidentiality. Tampered hardware or firmware is system Integrity.
 Privacy is Confidentiality. Detection with nfdump is Integrity, not Availability. An
 automatic log with author and time is origin Integrity (no accountability option).
 A preserved pillar also gets its name. Ransomware is Availability; mention
 Confidentiality if there is space.
 
-**K15.** DDoS: Disponibilidade. Sniffer: Confidencialidade. Intruder as admin:
+**K15.** Classify: DDoS on the portal; sniffer reads login; intruder commands router as
+admin; virus changes firmware; user asks to delete own logs; analyst finds peak with
+nfdump; fibre cut; student edits SHA-256 on site; grade changed 5.0 to 9.0; doctor
+deletes allergy by mistake; slow system blocks nurses; ransomware; log "Professor Ana
+14:30"; system blocks student from another's report.
+
+DDoS: Disponibilidade. Sniffer: Confidencialidade. Intruder as admin:
 Integridade (autenticidade). Firmware: Integridade (sistema). Delete own logs:
 Confidencialidade (privacidade). nfdump peak: Integridade (detecção). Fibre cut:
 Disponibilidade. SHA-256 edited: Integridade (dados). Grade 5.0 to 9.0: Integridade.
 Doctor's mistake: Integridade. Slow system: Disponibilidade. Ransomware:
 Disponibilidade. Log "Professor Ana": Integridade (origem). Blocked student:
 Confidencialidade (preserved).
+
+---
 
 ## 11. Essay skeletons
 

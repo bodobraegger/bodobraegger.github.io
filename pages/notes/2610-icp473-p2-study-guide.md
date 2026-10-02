@@ -7,6 +7,7 @@ type: note
 draft: true
 epub: true
 plum: false
+
 ---
 
 <script setup>
@@ -21,13 +22,8 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 <DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
 
-**Exam date:** to be confirmed.
 **Scope:** slides 249 to 447 (end of Lecture 9, Lectures 10 to 13), plus exercise lists 4
 (hash sections), 5, 6 and 7.
-
-The link at the top of this page opens the Portuguese version. The content is the same.
-The exam is written in Portuguese, so every section keeps the Portuguese exam term
-next to the English one. Study the concept in English. Recognise the term in Portuguese.
 
 > **Scope assumption.** The course presentation slide lists only P1 and P2, but this term has
 > three exams. P1 ended at slide 248 (ECB). This page assumes that P2 covers slides 249 to 447:
@@ -40,55 +36,15 @@ next to the English one. Study the concept in English. Recognise the term in Por
 
 [[toc]]
 
-## 0. Study plan
-
-Study from the decks in section 11. Open a Part only to check a missed card.
-
-### Method
-
-1. Before a deck, write what you recall of the topic. 2 minutes.
-2. Answer each question in full sentences, with the justification and the number,
-   before you scroll to the answers.
-3. Mark each card hit or miss. Note the miss codes, for example `H6 A9 I8`.
-4. Redo the misses until each one is a hit.
-5. Start each later session with all misses so far. A hit in a later session clears a miss.
-
-### Schedule
-
-Sessions of 45 minutes, one deck per session, misses re-quizzed at the start of the next one.
-
-| Session | Content                                            |
-| ------- | -------------------------------------------------- |
-| 1       | Deck A (RSA, Diffie-Hellman), on paper.            |
-| 2       | Deck H (hash, MAC, SHA-512), then misses.          |
-| 3       | Deck I (IPsec, ESP, IKE), then misses.             |
-| 4       | Deck T (TLS, handshake, Heartbleed), then misses.  |
-| 5       | Deck B (CBC, CTR, GCM), then misses.               |
-| 6       | Lists 5 and 6 (sections 7 and 8), written in full. |
-| 7       | Lists 4 and 7 (sections 6 and 9), written in full. |
-| 8       | Section 10 numbers, section 12 essay skeletons.    |
-| 9       | Mock exam, section 13. 45 minutes, no notes.       |
-| 10      | Correct it with the decks. Redo misses.            |
-
-Morning of the exam, 20 minutes: section 10 and the miss list.
-
-Paper is needed for A6, A7, A11, H9 and H10.
-
 Sources: Dunlosky et al. 2013 (practice testing and spacing rate highest, rereading lowest),
 https://www.aft.org/ae/fall2013/dunlosky
 Rawson and Dunlosky 2011 and 2013 (recall to one correct retrieval per session, across sessions),
 https://www.retrievalpractice.org/strategies/2018/successive-relearning
 Cepeda et al. 2006 (spacing holds inside a single day).
 
-**Practical rule:** the professor's questions always say _justifique_ ("justify your answer").
-Naming the algorithm earns nothing. Marks come from two things: **which problem the mechanism
-solves**, and **how it fails**.
-
 ---
 
 ## 0b. Portuguese to English glossary
-
-Learn these. The exam will use the left column.
 
 | Portuguese                            | English                           |
 | ------------------------------------- | --------------------------------- |
@@ -2208,234 +2164,224 @@ session cookies, passwords. The attack is trivial and leaves no log (slides 446,
 
 ## 11. Recall decks
 
-Questions first, answers below. Each deck names its source Part.
-
 ### 11.1 Deck B: modes CBC, CTR, GCM
-
-#### Questions
-
-**B1.** How does CBC chain blocks, and what does the IV give?
-
-**B2.** Two disadvantages of CBC compared to ECB.
-
-**B3.** CTR: what is XORed with what? What does that make the block cipher?
-
-**B4.** Five properties of CTR (padding, errors, parallelism, operations, counter).
-
-**B5.** How is the CTR counter initialised, and when must the key change?
-
-**B6.** GCM: the two functions and the mechanism of each.
-
-**B7.** GF(2^128): what is a block, what is addition, what is multiplication, what is H?
-
-**B8.** Write the GHASH step. What does the XOR do, what does the modulus do?
-
-**B9.** What is AAD, and when is the tag checked?
-
-**B10.** Which modes authenticate?
-
-#### Answers
 
 Source: Part 1.
 
-**B1.** Each plaintext block is XORed with the previous ciphertext block before
+**B1.** How does CBC chain blocks, and what does the IV give?
+
+Each plaintext block is XORed with the previous ciphertext block before
 encryption; the first with the IV. The IV makes repeated encryptions of the same plaintext
 give different ciphertexts and removes the repeated patterns of ECB.
 
-**B2.** More processing time because of the chaining, and no parallelism in encryption.
+**B2.** Two disadvantages of CBC compared to ECB.
 
-**B3.** The plaintext block is XORed with the encryption of the counter. The block cipher
+More processing time because of the chaining, and no parallelism in encryption.
+
+**B3.** CTR: what is XORed with what? What does that make the block cipher?
+
+The plaintext block is XORed with the encryption of the counter. The block cipher
 becomes a keystream generator, a stream cipher.
 
-**B4.** No padding on the last block. Independent blocks, no error propagation.
+**B4.** Five properties of CTR (padding, errors, parallelism, operations, counter).
+
+No padding on the last block. Independent blocks, no error propagation.
 Parallelism and pre-processing. Encryption and decryption are the same operation. Never
 reuse a counter with the same key: complete loss of confidentiality.
 
-**B5.** 96 random bits plus 32 incrementing bits. Change the key after 2^(n/2) blocks,
+**B5.** How is the CTR counter initialised, and when must the key change?
+
+96 random bits plus 32 incrementing bits. Change the key after 2^(n/2) blocks,
 n the block size.
 
-**B6.** Confidentiality by CTR encryption. Authentication by a tag from GHASH, which
+**B6.** GCM: the two functions and the mechanism of each.
+
+Confidentiality by CTR encryption. Authentication by a tag from GHASH, which
 multiplies in GF(2^128).
 
-**B7.** A block is a polynomial of degree at most 127 with coefficients 0 or 1. Addition is
+**B7.** GF(2^128): what is a block, what is addition, what is multiplication, what is H?
+
+A block is a polynomial of degree at most 127 with coefficients 0 or 1. Addition is
 XOR. Multiplication is modulo p(x) = x^128 + x^7 + x^2 + x + 1. H = AES applied to the
 zero block.
 
-**B8.** `X_i = ((X_(i-1) XOR B_i) * H) mod p(x)`, X_0 = 0. The XOR chains the blocks and
+**B8.** Write the GHASH step. What does the XOR do, what does the modulus do?
+
+`X_i = ((X_(i-1) XOR B_i) * H) mod p(x)`, X_0 = 0. The XOR chains the blocks and
 mixes the data. The modulus keeps 128 bits for the next block or the final tag.
 
-**B9.** Additional authenticated data: headers that stay readable but must not change.
+**B9.** What is AAD, and when is the tag checked?
+
+Additional authenticated data: headers that stay readable but must not change.
 Authenticated by the tag, not encrypted. In authenticated decryption the tag is verified
 before the plaintext is released.
 
-**B10.** Only GCM (AEAD). ECB, CBC and CTR give confidentiality only and need an external
+**B10.** Which modes authenticate?
+
+Only GCM (AEAD). ECB, CBC and CTR give confidentiality only and need an external
 MAC.
 
 ### 11.2 Deck H: hash functions
 
-#### Questions
+Source: Part 2 and section 6.
 
 **H1.** Define a hash function. Three desirable properties and the main goal.
 
+Variable size message M in, fixed size h = H(M) out; h is the hash or digest.
+Output looks random and uniform; a small change in M changes many bits of h; the main goal
+is data integrity.
+
 **H2.** Two properties of a cryptographic hash function from slide 259.
+
+One-way: given h, infeasible to find M with H(M) = h. Collision-free: infeasible to
+find M1, M2 with the same hash. Infeasible to break with better efficiency than brute force.
 
 **H3.** What does hash padding contain, and why?
 
+Padding up to a multiple of the block size (for example 1024 bits), and it includes
+the original length in bits. Goal: make it harder to build an alternative message with the
+same hash; each length gives a different hash.
+
 **H4.** Six applications of hash functions.
 
+Message authentication, digital signatures, one-way password file, intrusion and
+virus detection, PRF, PRNG.
+
 **H5.** The four steps of message authentication with a hash. What is the problem?
+
+Sender computes the hash, sends message plus hash, receiver recomputes, receiver
+compares. Problem: Darth intercepts, changes the message and computes a new hash; Bob sees
+nothing. The hash must be protected.
 
 **H6.** The four protection methods A to D. Which give confidentiality? Which is the basis
 of HMAC?
 
-**H7.** Why send the message in clear with only a protected hash? Give the GPG example and
-its three steps.
-
-**H8.** What is a MAC? What two things does its verification prove?
-
-**H9.** Digital signature: which key encrypts what, who verifies, how to add confidentiality.
-
-**H10.** Show that the XOR hash is order independent with the professor's three blocks.
-What fixes it?
-
-**H11.** Define preimage and collision. How many preimages per hash value?
-
-**H12.** The seven requirements of Table 11.1. Which three are basic?
-
-**H13.** Define preimage resistance, second preimage resistance, collision resistance.
-Which attack does each prevent?
-
-**H14.** Weak versus strong hash. The three step signature attack without collision
-resistance.
-
-**H15.** Relations between the three resistances.
-
-**H16.** Effort for preimage, second preimage and collision. Why is collision cheaper?
-
-**H17.** The birthday attack on a signature, five steps, with the 64 bit number.
-
-**H18.** Van Oorschot and Wiener: machine, cost, hash, time. And for 160 bits?
-
-**H19.** Merkle's iterated structure: blocks, compression function, chaining variable,
-length. Why is the length included?
-
-**H20.** The Merkle-Damgård result, and where cryptanalysis attacks.
-
-**H21.** Why do collisions always exist, and what does security mean then?
-
-**H22.** SHA history: five dates and standards. The SHA-1 attack numbers.
-
-**H23.** Table 11.3: digest, block, word and steps for SHA-1, SHA-256, SHA-512.
-
-**H24.** SHA-512 steps 1 and 2 with every number.
-
-**H25.** SHA-512 buffer and constants: sizes and origins. The round function.
-
-#### Answers
-
-Source: Part 2 and section 6.
-
-**H1.** Variable size message M in, fixed size h = H(M) out; h is the hash or digest.
-Output looks random and uniform; a small change in M changes many bits of h; the main goal
-is data integrity.
-
-**H2.** One-way: given h, infeasible to find M with H(M) = h. Collision-free: infeasible to
-find M1, M2 with the same hash. Infeasible to break with better efficiency than brute force.
-
-**H3.** Padding up to a multiple of the block size (for example 1024 bits), and it includes
-the original length in bits. Goal: make it harder to build an alternative message with the
-same hash; each length gives a different hash.
-
-**H4.** Message authentication, digital signatures, one-way password file, intrusion and
-virus detection, PRF, PRNG.
-
-**H5.** Sender computes the hash, sends message plus hash, receiver recomputes, receiver
-compares. Problem: Darth intercepts, changes the message and computes a new hash; Bob sees
-nothing. The hash must be protected.
-
-**H6.** A: message plus hash encrypted symmetrically (confidentiality). B: only the hash
+A: message plus hash encrypted symmetrically (confidentiality). B: only the hash
 encrypted. C: hash over message plus shared secret S, H(M ‖ S). D: C plus encryption of
 everything (confidentiality, the VPN case). A and D give confidentiality. C is the basis
 of HMAC.
 
-**H7.** When confidentiality is not needed, hashing costs less than encrypting the whole
+**H7.** Why send the message in clear with only a protected hash? Give the GPG example and
+its three steps.
+
+When confidentiality is not needed, hashing costs less than encrypting the whole
 message; encryption software is slow with constant flows and hardware costs per node.
 GPG: `gpg --verify sha256sum.txt.gpg sha256sum.txt` reads the signature, computes the real
 hash of the file, compares with the signed hash: Good or BAD signature.
 
-**H8.** A keyed hash function between two parties that share a secret key: MAC = f(key,
+**H8.** What is a MAC? What two things does its verification prove?
+
+A keyed hash function between two parties that share a secret key: MAC = f(key,
 data). Verification recomputes and compares. It proves integrity (no change without the
 key) and authenticity (only the key holder could produce it).
 
-**H9.** The hash of the message is encrypted with the sender's private key. Anyone with the
+**H9.** Digital signature: which key encrypts what, who verifies, how to add confidentiality.
+
+The hash of the message is encrypted with the sender's private key. Anyone with the
 public key verifies. To change the message the attacker needs the private key. For
 confidentiality, encrypt message plus signature with a symmetric key (slide 278). This is
 the Linux Mint iso case.
 
-**H10.** B1 = 11001100, B2 = 01010101, B3 = 11000111. In any order the XOR is 01011110,
+**H10.** Show that the XOR hash is order independent with the professor's three blocks.
+What fixes it?
+
+B1 = 11001100, B2 = 01010101, B3 = 11000111. In any order the XOR is 01011110,
 because XOR is commutative and associative. Fix: make each step depend on the position, for
 example H*i = ROTL_1(H*(i-1)) XOR B_i, or include the length as a final block.
 
-**H11.** x is a preimage of h if H(x) = h. A collision is x ≠ y with H(x) = H(y). With b
+**H11.** Define preimage and collision. How many preimages per hash value?
+
+x is a preimage of h if H(x) = h. A collision is x ≠ y with H(x) = H(y). With b
 bit input and n bit output, each hash value has about 2^(b-n) preimages.
 
-**H12.** Variable input, fixed output, efficiency, preimage resistance, second preimage
+**H12.** The seven requirements of Table 11.1. Which three are basic?
+
+Variable input, fixed output, efficiency, preimage resistance, second preimage
 resistance, collision resistance, pseudorandomness. The first three are basic.
 
-**H13.** Preimage: given h, infeasible to find y with H(y) = h; protects the secret S in
+**H13.** Define preimage resistance, second preimage resistance, collision resistance.
+Which attack does each prevent?
+
+Preimage: given h, infeasible to find y with H(y) = h; protects the secret S in
 H(S ‖ M) and the password file. Second preimage: given x, infeasible to find y ≠ x with the
 same hash; protects an intercepted message with encrypted hash or signature, and intrusion
 detection. Collision: infeasible to find any pair; protects signatures and MACs against a
 party that crafts both messages.
 
-**H14.** First five properties only: weak. Plus collision resistance: strong. Bob makes m1
+**H14.** Weak versus strong hash. The three step signature attack without collision
+resistance.
+
+First five properties only: weak. Plus collision resistance: strong. Bob makes m1
 and m2 with the same hash; Alice signs m1; Bob claims m2 was signed.
 
-**H15.** Collision resistance implies second preimage resistance, not the reverse.
+**H15.** Relations between the three resistances.
+
+Collision resistance implies second preimage resistance, not the reverse.
 Collision and preimage are independent. Preimage and second preimage are independent.
 
-**H16.** Preimage 2^m (average 2^(m-1)), second preimage 2^m, collision 2^(m/2). Collision
+**H16.** Effort for preimage, second preimage and collision. Why is collision cheaper?
+
+Preimage 2^m (average 2^(m-1)), second preimage 2^m, collision 2^(m/2). Collision
 is cheaper because the attacker chooses both messages and the birthday paradox applies: 23
 people, more than 50%.
 
-**H17.** Legitimate x is created. The opponent makes 2^(m/2) variations x' with the same
+**H17.** The birthday attack on a signature, five steps, with the 64 bit number.
+
+Legitimate x is created. The opponent makes 2^(m/2) variations x' with the same
 meaning and stores the hashes. He prepares fraudulent y. He generates variations y' and
 checks H(y') against the stored H(x'). On a match, A signs the harmless x' and the signature
 is attached to y'. With 64 bits: about 2^32. Variations: space-space-backspace, rewriting.
 
-**H18.** [VANO94], US$ 10 million machine, MD5 (128 bits), collision in 24 days: 128 bits
+**H18.** Van Oorschot and Wiener: machine, cost, hash, time. And for 160 bits?
+
+[VANO94], US$ 10 million machine, MD5 (128 bits), collision in 24 days: 128 bits
 inadequate. 160 bits (SHA-1): more than 4,000 years on the same machine, but no longer safe
 with technological evolution.
 
-**H19.** Message split into L blocks of b bits; last block padded; the padding includes the
+**H19.** Merkle's iterated structure: blocks, compression function, chaining variable,
+length. Why is the length included?
+
+Message split into L blocks of b bits; last block padded; the padding includes the
 total length. The compression function f takes the chaining variable (n bits) and the block
 (b bits), b > n, and gives n bits. The initial chaining variable is fixed by the algorithm;
 the final one is the hash. The length makes the opponent find collisions among messages of
 the same or different lengths that still hash equal.
 
-**H20.** Merkle 1989, Damgård 1989: if f is collision proof, the iterated hash is collision
+**H20.** The Merkle-Damgård result, and where cryptanalysis attacks.
+
+Merkle 1989, Damgård 1989: if f is collision proof, the iterated hash is collision
 proof, for any message length. Design reduces to a secure f. Cryptanalysis attacks the
 internal structure of f, collisions in one execution with the fixed IV, patterns of bit
 changes between rounds.
 
-**H21.** Messages have at least 2^b possibilities and hashes only 2^n, b > n, so the map is
+**H21.** Why do collisions always exist, and what does security mean then?
+
+Messages have at least 2^b possibilities and hashes only 2^n, b > n, so the map is
 many-to-one. Security is the effort needed to find a collision, not the absence of
 collisions.
 
-**H22.** NIST, FIPS 180 in 1993 (SHA-0, flawed). FIPS 180-1 in 1995: SHA-1, 160 bits, based
+**H22.** SHA history: five dates and standards. The SHA-1 attack numbers.
+
+NIST, FIPS 180 in 1993 (SHA-0, flawed). FIPS 180-1 in 1995: SHA-1, 160 bits, based
 on MD4. FIPS 180-2 in 2002: SHA-256, 384, 512 (SHA-2). FIPS 180-3 in 2008: SHA-224. RFC 6234
 with C code. 2005: NIST announces SHA-1 retirement by 2010; Wang et al. find a collision in
 2^69 instead of 2^80.
 
-**H23.** SHA-1: 160, block 512, word 32, 80 steps. SHA-256: 256, 512, 32, 64 steps.
+**H23.** Table 11.3: digest, block, word and steps for SHA-1, SHA-256, SHA-512.
+
+SHA-1: 160, block 512, word 32, 80 steps. SHA-256: 256, 512, 32, 64 steps.
 SHA-512: 512, block 1024, word 64, 80 steps. Message limit 2^64 bits for SHA-1, 224, 256;
 2^128 for 384 and 512.
 
-**H24.** Step 1: pad to length ≡ 896 mod 1024, always, 1 to 1024 bits, a 1 then 0s. Step 2:
+**H24.** SHA-512 steps 1 and 2 with every number.
+
+Step 1: pad to length ≡ 896 mod 1024, always, 1 to 1024 bits, a 1 then 0s. Step 2:
 append a 128 bit big-endian length of the original message. Result: a multiple of 1024
 bits, N blocks.
 
-**H25.** Buffer: 512 bits, 8 registers of 64 bits, big-endian, initialised with the first
+**H25.** SHA-512 buffer and constants: sizes and origins. The round function.
+
+Buffer: 512 bits, 8 registers of 64 bits, big-endian, initialised with the first
 64 bits of the fractional parts of the square roots of the first 8 primes. 80 rounds; each
 round uses W_t (64 bits from the block) and K_t, the first 64 bits of the fractional parts
 of the cube roots of the first 80 primes. Round: 6 words permuted (b c d f g h), 2
@@ -2443,441 +2389,431 @@ substituted (a, e). Output: 512 bits after N blocks.
 
 ### 11.3 Deck A: asymmetric cryptography
 
-#### Questions
+Source: Part 3 and section 7.
 
 **A1.** What changes with public key cryptography? Two misconceptions.
 
-**A2.** Define public key certificate and PKI.
-
-**A3.** The two problems that motivated public key cryptography, with Diffie's sentence.
-
-**A4.** The four essential steps of confidential communication to Alice.
-
-**A5.** Secrecy, authentication, both: which key, which order, what cost?
-
-**A6.** Table 9.3: what can RSA, elliptic curve, Diffie-Hellman and DSS do?
-
-**A7.** The six requirements for public key cryptography. Which algorithms meet them?
-
-**A8.** Define a trapdoor one-way function, and "easy" versus "infeasible".
-
-**A9.** RSA: who, when, what kind of cipher, typical n, the two formulas, the keys.
-
-**A10.** RSA key generation, five lines. Why must gcd(e, φ(n)) = 1?
-
-**A11.** The slide example: p, q, n, φ, e, d, and the encryption of 88 with the
-intermediate values.
-
-**A12.** Why does decryption work? Name the theorem and show the exponent.
-
-**A13.** Why e = 65537? Four properties.
-
-**A14.** The three attack routes on RSA, and the conclusion.
-
-**A15.** Factoring scale: 512, 768, 1024, and the recommendation.
-
-**A16.** Diffie-Hellman: year, what it does, what it does not do, the hard problem.
-
-**A17.** Define primitive root and discrete logarithm.
-
-**A18.** The Diffie-Hellman algorithm in five lines, and why both sides get the same K.
-
-**A19.** The slide example: q, α, X_A, X_B, Y_A, Y_B, K. What does the intruder have?
-
-**A20.** The man-in-the-middle attack: result, cause, solution.
-
-**A21.** Name the seven parameters of a real RSA key file.
-
-#### Answers
-
-Source: Part 3 and section 7.
-
-**A1.** Mathematical functions instead of substitution and permutation; two keys instead of
+Mathematical functions instead of substitution and permutation; two keys instead of
 one; affects confidentiality, key distribution and authentication. Not more secure than
 symmetric (security is key size and cost), and it does not replace symmetric: it adds key
 management and digital signatures.
 
-**A2.** Certificate: a document issued and signed by the private key of a CA that binds a
+**A2.** Define public key certificate and PKI.
+
+Certificate: a document issued and signed by the private key of a CA that binds a
 subscriber's name to a public key and guarantees exclusive control of the private key.
 PKI: policies, processes and platforms to issue, maintain and revoke certificates and key
 pairs; supports authentication, confidentiality and integrity.
 
-**A3.** Key distribution: symmetric needs a pre-shared key or a KDC. Diffie [DIFF88]: what is
+**A3.** The two problems that motivated public key cryptography, with Diffie's sentence.
+
+Key distribution: symmetric needs a pre-shared key or a KDC. Diffie [DIFF88]: what is
 the use of impenetrable cryptosystems if users must share keys with a KDC that can be
 compromised by theft or bribery. Digital signatures: electronic documents need the
 equivalent of the paper signature.
 
-**A4.** Each user generates a pair. Public key to a repository, private key secret. Bob
+**A4.** The four essential steps of confidential communication to Alice.
+
+Each user generates a pair. Public key to a repository, private key secret. Bob
 encrypts with Alice's public key. Alice decrypts with her private key; only she can.
 
-**A5.** Secrecy: receiver's public key encrypts, receiver's private key decrypts.
+**A5.** Secrecy, authentication, both: which key, which order, what cost?
+
+Secrecy: receiver's public key encrypts, receiver's private key decrypts.
 Authentication: sender's private key encrypts, anyone verifies with the public key, no
 confidentiality. Both: Z = E(PU_b, E(PR_a, X)), sign first, then encrypt; 4 asymmetric
 operations per message.
 
-**A6.** RSA and elliptic curve: encryption, signature, key exchange. Diffie-Hellman: key
+**A6.** Table 9.3: what can RSA, elliptic curve, Diffie-Hellman and DSS do?
+
+RSA and elliptic curve: encryption, signature, key exchange. Diffie-Hellman: key
 exchange only. DSS: signature only.
 
-**A7.** Easy key pair generation; easy encryption with PU and M; easy decryption with PR
+**A7.** The six requirements for public key cryptography. Which algorithms meet them?
+
+Easy key pair generation; easy encryption with PU and M; easy decryption with PR
 and C; infeasible PR from PU; infeasible M from PU and C; optional: keys in either order.
 RSA, ECC, Diffie-Hellman, DSS.
 
-**A8.** Y = f(X) easy, X = f^-1(Y) infeasible unless the trapdoor k is known; with k both
+**A8.** Define a trapdoor one-way function, and "easy" versus "infeasible".
+
+Y = f(X) easy, X = f^-1(Y) infeasible unless the trapdoor k is known; with k both
 directions are easy. Easy: polynomial time O(n^a), class P. Infeasible: faster than
 polynomial, for example O(2^n). Must hold for practically all inputs, not only worst or
 average case.
 
-**A9.** Rivest, Shamir, Adleman, MIT, 1977, published 1978, after the 1976 Diffie-Hellman
+**A9.** RSA: who, when, what kind of cipher, typical n, the two formulas, the keys.
+
+Rivest, Shamir, Adleman, MIT, 1977, published 1978, after the 1976 Diffie-Hellman
 challenge. A block cipher on integers 0 ≤ M < n. n ≈ 1024 bits, 309 decimal digits.
 C = M^e mod n, M = C^d mod n. PU = {e, n}, PR = {d, n}.
 
-**A10.** Choose primes p, q. n = pq. φ(n) = (p - 1)(q - 1). Choose e with gcd(e, φ(n)) = 1,
+**A10.** RSA key generation, five lines. Why must gcd(e, φ(n)) = 1?
+
+Choose primes p, q. n = pq. φ(n) = (p - 1)(q - 1). Choose e with gcd(e, φ(n)) = 1,
 1 < e < φ(n). d = e^-1 mod φ(n) by extended Euclid. The inverse exists only when e and φ(n)
 are coprime.
 
-**A11.** p = 17, q = 11, n = 187, φ(n) = 160, e = 7, d = 23 (23 × 7 = 161 ≡ 1 mod 160).
+**A11.** The slide example: p, q, n, φ, e, d, and the encryption of 88 with the
+intermediate values.
+
+p = 17, q = 11, n = 187, φ(n) = 160, e = 7, d = 23 (23 × 7 = 161 ≡ 1 mod 160).
 88^7 mod 187 = (88 × 77 × 132) mod 187 = 11; 11^23 mod 187 = 88.
 
-**A12.** Euler: M^φ(n) ≡ 1 (mod n) when gcd(M, n) = 1. ed = 1 + kφ(n), so
+**A12.** Why does decryption work? Name the theorem and show the exponent.
+
+Euler: M^φ(n) ≡ 1 (mod n) when gcd(M, n) = 1. ed = 1 + kφ(n), so
 C^d = M^(ed) = M × (M^φ(n))^k ≡ M × 1 ≡ M (mod n).
 
-**A13.** 65537 = 2^16 + 1. Odd, so coprime with φ(n) in most cases. Small, 17 bits,
+**A13.** Why e = 65537? Four properties.
+
+65537 = 2^16 + 1. Odd, so coprime with φ(n) in most cases. Small, 17 bits,
 binary 10000000000000001, very few multiplications. Large enough to avoid small exponent
 attacks (e = 3, 17). Ideal point between security and performance.
 
-**A14.** Factor n into p and q, then φ(n) and d. Determine φ(n) directly. Determine d
+**A14.** The three attack routes on RSA, and the conclusion.
+
+Factor n into p and q, then φ(n) and d. Determine φ(n) directly. Determine d
 directly from e and n. All look as hard as factoring; the best factoring algorithms are the
 security benchmark.
 
-**A15.** 1024 bits about 1000 times harder than 768; 768 thousands of times harder than 512. 512 first factored about a decade ago; 1024 may fall within a decade. Avoid 1024 in the
+**A15.** Factoring scale: 512, 768, 1024, and the recommendation.
+
+1024 bits about 1000 times harder than 768; 768 thousands of times harder than 512. 512 first factored about a decade ago; 1024 may fall within a decade. Avoid 1024 in the
 next 3 to 4 years; use at least 2048.
 
-**A16.** 1976, Diffie and Hellman, the first public key algorithm. Two users exchange values
+**A16.** Diffie-Hellman: year, what it does, what it does not do, the hard problem.
+
+1976, Diffie and Hellman, the first public key algorithm. Two users exchange values
 to build a shared secret key for later symmetric encryption. It encrypts nothing. Security:
 the discrete logarithm problem.
 
-**A17.** Primitive root a of prime p: a^1, a^2, ..., a^(p-1) mod p generate all integers 1
+**A17.** Define primitive root and discrete logarithm.
+
+Primitive root a of prime p: a^1, a^2, ..., a^(p-1) mod p generate all integers 1
 to p - 1. For any b there is a unique i with b ≡ a^i (mod p); i = log_a(b) mod p is the
 discrete logarithm, infeasible to compute for large p.
 
-**A18.** Public q prime and α primitive root. A picks X_A < q, B picks X_B < q.
+**A18.** The Diffie-Hellman algorithm in five lines, and why both sides get the same K.
+
+Public q prime and α primitive root. A picks X_A < q, B picks X_B < q.
 Y_A = α^X_A mod q, Y_B = α^X_B mod q, exchanged. K = Y_B^X_A mod q = Y_A^X_B mod q. Both
 equal α^(X_A X_B) mod q by the rules of modular arithmetic.
 
-**A19.** q = 353, α = 3, X_A = 97, X_B = 233. Y_A = 40, Y_B = 248. K = 160 on both sides.
+**A19.** The slide example: q, α, X_A, X_B, Y_A, Y_B, K. What does the intruder have?
+
+q = 353, α = 3, X_A = 97, X_B = 233. Y_A = 40, Y_B = 248. K = 160 on both sides.
 The intruder has q, α, Y_A, Y_B and must compute X_B = log_3(248) mod 353.
 
-**A20.** Alice shares K2 with Darth and Bob shares K1 with Darth; Darth reads or modifies
+**A20.** The man-in-the-middle attack: result, cause, solution.
+
+Alice shares K2 with Darth and Bob shares K1 with Darth; Darth reads or modifies
 everything. Cause: the protocol does not authenticate the participants. Solution: digital
 signatures and certificates.
 
-**A21.** modulus n = pq; publicExponent e (65537); privateExponent d; prime1 p; prime2 q;
+**A21.** Name the seven parameters of a real RSA key file.
+
+modulus n = pq; publicExponent e (65537); privateExponent d; prime1 p; prime2 q;
 exponent1 and exponent2, d mod (p - 1) and d mod (q - 1), for the Chinese remainder
 theorem; coefficient q^-1 mod p.
 
 ### 11.4 Deck I: IPsec
 
-#### Questions
+Source: Part 4 and section 8.
 
 **I1.** Where does IPsec work, what does it protect, what is it used for, and its relation
 to IPv6?
 
+At the network layer; IP datagrams between any hosts or routers; VPNs over the
+public Internet. Defined by the IAB as essential for IPv6, compatible with IPv4 and IPv6,
+widely supported.
+
 **I2.** The three functional areas of IP level security.
+
+Authentication (packet from the identified source, not altered), confidentiality
+(encryption against eavesdropping), key management (secure exchange of keys).
 
 **I3.** What does secrecy at the network layer mean, what is the payload, and what is the
 result?
 
+The sender encrypts the payload of every datagram it sends. Payload: TCP segment,
+UDP segment, ICMP message, SNMP message. Result: total coverage, all data hidden.
+
 **I4.** Four other services of a network layer security protocol.
+
+Origin authentication, data integrity, replay attack prevention (detect duplicates),
+and the ability to encrypt and/or authenticate all IP traffic.
 
 **I5.** Five benefits of IPsec.
 
-**I6.** Private network versus VPN: definition, problem, solution.
-
-**I7.** The two traffic flows, and the mixed traffic point.
-
-**I8.** The five steps from a headquarters host to the salesperson's notebook.
-
-**I9.** AH versus ESP: services. Why is ESP used, and what is the status of AH?
-
-**I10.** Define SA. Its key characteristic. How many SAs for 1 headquarters, 1 branch, n
-salespeople?
-
-**I11.** SAD versus SPD: what each one answers, and on what the SPD decides.
-
-**I12.** The SA state of R1 for the example: five items with the example values.
-
-**I13.** Seven SA parameters from slides 393 and 394.
-
-**I14.** Tunnel versus transport: which is used for VPNs and why.
-
-**I15.** The four steps that build an ESP tunnel mode datagram.
-
-**I16.** The resulting datagram: inner and outer addresses, protocol field.
-
-**I17.** The two fields of the ESP header and their functions.
-
-**I18.** The three fields of the ESP trailer, each with its reason.
-
-**I19.** The ESP MAC: over what, with what, where.
-
-**I20.** The six processing steps at R2.
-
-**I21.** Manual keying versus IKE. The RFC.
-
-**I22.** The three responsibilities of IKE.
-
-**I23.** The two phases, the IKE SA versus the IPsec SA.
-
-**I24.** The two exchanges of phase 1.
-
-**I25.** Why two phases?
-
-#### Answers
-
-Source: Part 4 and section 8.
-
-**I1.** At the network layer; IP datagrams between any hosts or routers; VPNs over the
-public Internet. Defined by the IAB as essential for IPv6, compatible with IPv4 and IPv6,
-widely supported.
-
-**I2.** Authentication (packet from the identified source, not altered), confidentiality
-(encryption against eavesdropping), key management (secure exchange of keys).
-
-**I3.** The sender encrypts the payload of every datagram it sends. Payload: TCP segment,
-UDP segment, ICMP message, SNMP message. Result: total coverage, all data hidden.
-
-**I4.** Origin authentication, data integrity, replay attack prevention (detect duplicates),
-and the ability to encrypt and/or authenticate all IP traffic.
-
-**I5.** Firewall or router implementation: all perimeter traffic protected, no internal
+Firewall or router implementation: all perimeter traffic protected, no internal
 overhead. Resistance to bypass when the firewall is the only entry. Transparency to
 applications (below transport, no software change). Transparency to users (no training, no
 per-user keys). Flexibility for individual users and secure virtual subnets.
 
-**I6.** Private network: independent physical network, separate from the Internet, own
+**I6.** Private network versus VPN: definition, problem, solution.
+
+Private network: independent physical network, separate from the Internet, own
 routers, links and DNS; too expensive. VPN: runs over the public Internet, traffic encrypted
 before entering it, no dedicated network.
 
-**I7.** Flow 1, internal, inside one site: plain IPv4, never leaves. Flow 2, between sites or
+**I7.** The two traffic flows, and the mixed traffic point.
+
+Flow 1, internal, inside one site: plain IPv4, never leaves. Flow 2, between sites or
 with a travelling salesperson: crosses the Internet, encrypted with IPsec. Not all traffic
 is IPsec: access to a public web server is plain IPv4; the edge router emits both.
 
-**I8.** Host sends a plain IPv4 datagram. Edge router intercepts, converts to IPsec,
+**I8.** The five steps from a headquarters host to the salesperson's notebook.
+
+Host sends a plain IPv4 datagram. Edge router intercepts, converts to IPsec,
 forwards. On the Internet the outer IPv4 header is processed normally. The payload holds an
 IPsec header and the original encrypted payload. The notebook OS decrypts, checks integrity,
 delivers to TCP or UDP.
 
-**I9.** AH: origin authentication and integrity, no confidentiality. ESP: all three. ESP is
+**I9.** AH versus ESP: services. Why is ESP used, and what is the status of AH?
+
+AH: origin authentication and integrity, no confidentiality. ESP: all three. ESP is
 used because VPNs want authentication and encryption: keep intruders out and stop
 eavesdroppers. AH is deprecated: ESP already authenticates; kept in IPsecv3 for backward
 compatibility only.
 
-**I10.** A logical network layer connection created before IPsec datagrams can be sent.
+**I10.** Define SA. Its key characteristic. How many SAs for 1 headquarters, 1 branch, n
+salespeople?
+
+A logical network layer connection created before IPsec datagrams can be sent.
 Unidirectional (simplex); two SAs for bidirectional traffic. 2 + 2n.
 
-**I11.** SPD: what to do (IPsec, discard, let pass) and which SA; decides on source IP,
+**I11.** SAD versus SPD: what each one answers, and on what the SPD decides.
+
+SPD: what to do (IPsec, discard, let pass) and which SA; decides on source IP,
 destination IP and protocol. SAD: how to do it, the parameters of every active SA.
 
-**I12.** 32 bit SPI. Interfaces 200.168.1.100 to 193.68.2.23. Encryption type (3DES with
+**I12.** The SA state of R1 for the example: five items with the example values.
+
+32 bit SPI. Interfaces 200.168.1.100 to 193.68.2.23. Encryption type (3DES with
 CBC) and key. Integrity type (HMAC with MD5) and key. R2 keeps the same state under the SPI.
 
-**I13.** Sequence number counter (32 bits, anti-replay). Sequence counter overflow flag
+**I13.** Seven SA parameters from slides 393 and 394.
+
+Sequence number counter (32 bits, anti-replay). Sequence counter overflow flag
 (log and stop). Anti-replay sliding window. ESP information (algorithms, keys, IVs,
 lifetimes). SA lifetime (time or bytes, then new SA and SPI). Protocol mode (tunnel or
 transport). Path MTU with aging.
 
-**I14.** Tunnel mode encapsulates the whole original datagram in a new one with the gateway
+**I14.** Tunnel versus transport: which is used for VPNs and why.
+
+Tunnel mode encapsulates the whole original datagram in a new one with the gateway
 addresses; transport mode keeps the original header and protects the payload. VPNs use
 tunnel mode: the endpoints are the gateways, the hosts need nothing, the inner addresses are
 hidden. It is the most implemented.
 
-**I15.** Encrypt the original datagram plus trailer and prepend the ESP header (SPI,
+**I15.** The four steps that build an ESP tunnel mode datagram.
+
+Encrypt the original datagram plus trailer and prepend the ESP header (SPI,
 sequence). Compute the MAC (ICV) over the whole unit with the SA algorithm and key. Append
 the MAC. Prepend a new 20 byte IPv4 header for the Internet routers.
 
-**I16.** Inner, encrypted: 172.16.1.17 to 172.16.2.48, invisible. Outer, visible:
+**I16.** The resulting datagram: inner and outer addresses, protocol field.
+
+Inner, encrypted: 172.16.1.17 to 172.16.2.48, invisible. Outer, visible:
 200.168.1.100 to 193.68.2.23, protocol 50 (ESP), not 6 or 17.
 
-**I17.** SPI: tells R2 which SA, used to index the SAD and find keys and algorithms.
+**I17.** The two fields of the ESP header and their functions.
+
+SPI: tells R2 which SA, used to index the SAD and find keys and algorithms.
 Sequence Number: replay protection against the anti-replay window.
 
-**I18.** Padding: block ciphers need a multiple of the block (128 bits for AES). Pad
+**I18.** The three fields of the ESP trailer, each with its reason.
+
+Padding: block ciphers need a multiple of the block (128 bits for AES). Pad
 Length: so the receiver removes exactly the padding. Next Header: the protocol of the
 original payload, so the OS delivers it (TCP, UDP, ICMP). Added before encryption.
 
-**I19.** Over the ESP header (clear), the encrypted datagram and the encrypted trailer, with
+**I19.** The ESP MAC: over what, with what, where.
+
+Over the ESP header (clear), the encrypted datagram and the encrypted trailer, with
 the secret MAC key of the SA, as a fixed size hash (HMAC-MD5, HMAC-SHA1). Appended at the
 end of the packet.
 
-**I20.** Protocol 50, read the SPI, find the SA. Compute the MAC and compare: from R1 and
+**I20.** The six processing steps at R2.
+
+Protocol 50, read the SPI, find the SA. Compute the MAC and compare: from R1 and
 unaltered. Check the sequence number. Decrypt payload plus trailer. Remove padding, extract
 the original datagram. Forward it in clear to 172.16.2.48.
 
-**I21.** Manual: the administrator types algorithms, keys and SPIs into the SADs; fine for 2
+**I21.** Manual keying versus IKE. The RFC.
+
+Manual: the administrator types algorithms, keys and SPIs into the SADs; fine for 2
 routers, impractical for hundreds. IKE: automatic creation of SAs, RFC 5996.
 
-**I22.** Authenticate the entities with certificates. Negotiate encryption (AES, 3DES) and
+**I22.** The three responsibilities of IKE.
+
+Authenticate the entities with certificates. Negotiate encryption (AES, 3DES) and
 authentication (HMAC-SHA1) algorithms. Generate keys with Diffie-Hellman and create the
 session keys of the IPsec SAs.
 
-**I23.** Phase 1 creates the IKE SA, a bidirectional secure channel for IKE itself, in two
+**I23.** The two phases, the IKE SA versus the IPsec SA.
+
+Phase 1 creates the IKE SA, a bidirectional secure channel for IKE itself, in two
 exchanges. Phase 2 creates the IPsec SAs, unidirectional, one per direction, for the user
 data.
 
-**I24.** First, anonymous: Diffie-Hellman, keys for the IKE SA, a master secret; no identity
+**I24.** The two exchanges of phase 1.
+
+First, anonymous: Diffie-Hellman, keys for the IKE SA, a master secret; no identity
 revealed, nothing signed. Second, authenticated: identities and certificates, messages
 signed, inside the encrypted channel so passive analysers see nothing; negotiation of the
 algorithms of the IPsec SAs.
 
-**I25.** Cost. Phase 1 is expensive (Diffie-Hellman, RSA signatures). Phase 2 is cheap (no
+**I25.** Why two phases?
+
+Cost. Phase 1 is expensive (Diffie-Hellman, RSA signatures). Phase 2 is cheap (no
 public key, uses the master secret). Many IPsec SAs for one IKE SA.
 
 ### 11.5 Deck T: TLS
 
-#### Questions
+Source: Part 5 and section 9.
 
 **T1.** Three services TLS adds to TCP. Its RFC and its predecessor.
 
+Confidentiality, data integrity, end-point authentication. RFC 4346 (IETF). SSL
+version 3 by Netscape; ideas from Woo 1994.
+
 **T2.** The e-commerce scenario: three missing services and the attack on each.
+
+No confidentiality: Trudy intercepts the order and uses the card. No integrity:
+Trudy changes the order, 10 times more bottles. No server authentication: Trudy's server
+poses as Alice Inc. with the same logo, takes the money or the identity.
 
 **T3.** Which applications can use TLS, how does the developer see it, and where is it in the
 stack?
 
-**T4.** The two layers of TLS and the three management protocols.
-
-**T5.** Define connection and session. Their relation and purpose.
-
-**T6.** The two services of the Record Protocol, and its four content types.
-
-**T7.** Change Cipher Spec: size, value, purpose, relation to the handshake.
-
-**T8.** Alert Protocol: structure, fatal consequence, two examples.
-
-**T9.** What the handshake lets the parties do, and its four phases.
-
-**T10.** The five fields of client hello, with the structure of Random and the meaning of
-Session ID.
-
-**T11.** What the server hello contains.
-
-**T12.** Phase 2 messages: which are optional, which is mandatory.
-
-**T13.** Phase 3: what the client checks and what it sends.
-
-**T14.** Phase 4: the order of messages and what is special about `finished`.
-
-**T15.** Heartbeat: year, RFC, two purposes.
-
-**T16.** Heartbeat operation: position, messages, negotiation, two modes.
-
-**T17.** Heartbeat message content, the response rule, and the padding use.
-
-**T18.** The four categories of TLS attacks with one example each.
-
-**T19.** BEAST and CRIME: year, authors, mechanism, result.
-
-**T20.** The THC DoS attack: mechanism and why it works.
-
-**T21.** Heartbleed: where, when, what, and what it was not.
-
-**T22.** The Heartbleed exploit in three steps with the numbers.
-
-**T23.** Heartbleed impact: what leaks, the perfect storm, the scale.
-
-#### Answers
-
-Source: Part 5 and section 9.
-
-**T1.** Confidentiality, data integrity, end-point authentication. RFC 4346 (IETF). SSL
-version 3 by Netscape; ideas from Woo 1994.
-
-**T2.** No confidentiality: Trudy intercepts the order and uses the card. No integrity:
-Trudy changes the order, 10 times more bottles. No server authentication: Trudy's server
-poses as Alice Inc. with the same logo, takes the money or the identity.
-
-**T3.** Any application over TCP (HTTP, FTP, SMTP). As a transport protocol with a sockets
+Any application over TCP (HTTP, FTP, SMTP). As a transport protocol with a sockets
 API like TCP's plus security; the application includes the TLS library. Technically in the
 application layer, between the application and TCP (Figure 8.24).
 
-**T4.** Layer 1: Record Protocol on TCP, basic security services. Layer 2: Handshake,
+**T4.** The two layers of TLS and the three management protocols.
+
+Layer 1: Record Protocol on TCP, basic security services. Layer 2: Handshake,
 Change Cipher Spec, Alert, on top of the Record Protocol. HTTP above.
 
-**T5.** Connection: a transport providing a service, peer-to-peer, transient, bound to one
+**T5.** Define connection and session. Their relation and purpose.
+
+Connection: a transport providing a service, peer-to-peer, transient, bound to one
 session. Session: client-server association created by the handshake, with security
 parameters shared by several connections. Purpose: avoid renegotiating for every
 connection.
 
-**T6.** Confidentiality with a symmetric key from the handshake; message integrity with a
+**T6.** The two services of the Record Protocol, and its four content types.
+
+Confidentiality with a symmetric key from the handshake; message integrity with a
 MAC under another key from the handshake. Content types: change cipher spec, alert,
 handshake, application data (opaque).
 
-**T7.** One message, one byte, value 1. Signals the transition: the pending cipher suite
+**T7.** Change Cipher Spec: size, value, purpose, relation to the handshake.
+
+One message, one byte, value 1. Signals the transition: the pending cipher suite
 becomes current. Not part of the handshake, a signal between phases.
 
-**T8.** Two bytes: severity warning(1) or fatal(2), then the code. Fatal: the connection
+**T8.** Alert Protocol: structure, fatal consequence, two examples.
+
+Two bytes: severity warning(1) or fatal(2), then the code. Fatal: the connection
 ends immediately; other connections of the session continue; no new connection in the
 session. Fatal example: incorrect MAC. Warning: close notify.
 
-**T9.** Mutual authentication (especially server to client), negotiate the encryption
+**T9.** What the handshake lets the parties do, and its four phases.
+
+Mutual authentication (especially server to client), negotiate the encryption
 algorithm, the MAC algorithm and the keys, before any application data. Phases:
 capabilities, server authentication, client response, finish.
 
-**T10.** Version (highest understood). Random: 32 bit timestamp plus 28 random bytes,
+**T10.** The five fields of client hello, with the structure of Random and the meaning of
+Session ID.
+
+Version (highest understood). Random: 32 bit timestamp plus 28 random bytes,
 against replay. Session ID: non-zero to resume or add a connection to an existing session,
 zero for a new session. CipherSuite: list in decreasing preference, each with a key exchange
 algorithm and a CipherSpec (cipher and MAC). Compression methods.
 
-**T11.** The same fields with one choice each: version, server Random, session ID, the
+**T11.** What the server hello contains.
+
+The same fields with one choice each: version, server Random, session ID, the
 single cipher suite, the single compression method.
 
-**T12.** Certificate (almost always), ServerKeyExchange (optional, for example
+**T12.** Phase 2 messages: which are optional, which is mandatory.
+
+Certificate (almost always), ServerKeyExchange (optional, for example
 Diffie-Hellman parameters), CertificateRequest (optional, mutual authentication), Server
 Done (always mandatory).
 
-**T13.** Checks the certificate if required and the acceptability of the server hello
+**T13.** Phase 3: what the client checks and what it sends.
+
+Checks the certificate if required and the acceptability of the server hello
 parameters. Sends ClientKeyExchange (pre-master secret encrypted with the server's public
 key) and CertificateVerify if a client certificate was requested.
 
-**T14.** Client: change cipher spec (own protocol), copy pending to current, then
+**T14.** Phase 4: the order of messages and what is special about `finished`.
+
+Client: change cipher spec (own protocol), copy pending to current, then
 `finished`, already under the new algorithms and keys; it verifies that key exchange and
 authentication succeeded. Server: its own change cipher spec and `finished`. Then
 application data.
 
-**T15.** 2012. The slides say RFC 6250 (the IETF number is 6520), "TLS and DTLS Heartbeat
-Extension". Keep-alive: the other side is still alive even without application data.
-Firewall traversal: traffic during idle periods so firewalls do not close the connection.
+**T15.** Heartbeat: year, RFC, two purposes.
 
-**T16.** On top of the Record Protocol. heartbeat request and heartbeat response.
+2012. The slides say RFC 6250 (the IETF number is 6520), "TLS and DTLS Heartbeat
+      Extension". Keep-alive: the other side is still alive even without application data.
+      Firewall traversal: traffic during idle periods so firewalls do not close the connection.
+
+**T16.** Heartbeat operation: position, messages, negotiation, two modes.
+
+On top of the Record Protocol. heartbeat request and heartbeat response.
 Negotiated in phase 1 of the handshake: each peer says if it supports heartbeats. Mode 1:
 receives requests and answers. Mode 2: only sends requests.
 
-**T17.** Payload: random, 16 bytes to 64 KB. Payload Length. Padding: more random content.
+**T17.** Heartbeat message content, the response rule, and the padding use.
+
+Payload: random, 16 bytes to 64 KB. Payload Length. Padding: more random content.
 A request may be sent at any time; the response must carry an exact copy of the payload.
 The padding allows Path MTU discovery by growing it until the response fails.
 
-**T18.** Handshake attacks: Bleichenbacher 1998 on RSA formatting, refined in BARD12.
+**T18.** The four categories of TLS attacks with one example each.
+
+Handshake attacks: Bleichenbacher 1998 on RSA formatting, refined in BARD12.
 Record and application data: BEAST 2011, CRIME 2012. PKI: GEOR12, certificate validation
 bugs in OpenSSL, GnuTLS, JSSE, ApacheHttpClient, cURL, PHP, Python. Other: THC DoS 2011.
 
-**T19.** BEAST 2011, Thai Duong and Juliano Rizzo: chosen-plaintext attack, a guess for the
+**T19.** BEAST and CRIME: year, authors, mechanism, result.
+
+BEAST 2011, Thai Duong and Juliano Rizzo: chosen-plaintext attack, a guess for the
 plaintext of a known ciphertext, made a theoretical weakness practical; patched. CRIME 2012,
 same authors: exploits compression with TLS, recovers web cookies, enables session
 hijacking.
 
-**T20.** Flood the server with handshake requests, new connections or renegotiation. Most
+**T20.** The THC DoS attack: mechanism and why it works.
+
+Flood the server with handshake requests, new connections or renegotiation. Most
 handshake CPU work is on the server, so it keeps computing random numbers and keys until
 its resources are exhausted.
 
-**T21.** OpenSSL, 2014, a bug in the Heartbeat implementation. Not a design flaw of TLS or
+**T21.** Heartbleed: where, when, what, and what it was not.
+
+OpenSSL, 2014, a bug in the Heartbeat implementation. Not a design flaw of TLS or
 Heartbeat: a programming mistake specific to OpenSSL.
 
-**T22.** Request with Payload Length 64 KB and a 16 byte payload. The server allocates 64
+**T22.** The Heartbleed exploit in three steps with the numbers.
+
+Request with Payload Length 64 KB and a 16 byte payload. The server allocates 64
 KB, copies 16 bytes, leaves 63.9 KB of old memory untouched, and sends 64 KB back. The
 missing check: real size equals declared length.
 
-**T23.** Private keys, user identification, session cookies, passwords. Perfect storm:
+**T23.** Heartbleed impact: what leaks, the perfect storm, the scale.
+
+Private keys, user identification, session cookies, passwords. Perfect storm:
 undiscovered for years, trivial exploit, no trace in logs. More than two thirds of web
 servers used OpenSSL; finance, banks, email, social networks, governments.
+
+---
 
 ## 12. Essay skeletons
 
