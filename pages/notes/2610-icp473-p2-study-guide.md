@@ -44,6 +44,33 @@ Cepeda et al. 2006 (spacing holds inside a single day).
 
 ---
 
+## 0. The exam format
+
+An exam of this course has 4 questions of 2.5 pt. Each question has items (a), (b), (c),
+and every item ends in _justifique sua resposta_. One question joins two or three deck
+cards. The four question patterns, each with the P1 example:
+
+1. **Judge a statement, then apply the mechanism.** (a) A sentence that mixes two
+   neighbouring definitions, true or false, with the reason. P1: "a PRNG creates random
+   numbers from thermal noise and feeds them as a seed to RC4" (false: that is a TRNG, and
+   RC4 is the cipher). (b) How a mechanism copes with a real condition. P1: how WEP decrypts
+   a packet when earlier packets were lost (the per-packet IV in clear).
+2. **Explain, run by hand, undo.** (a) Two concepts related to a structure. (b) One round
+   with symbolic data, every operation and intermediate value written out. (c) The inverse.
+   P1: confusion and diffusion in Feistel, one round with B = AAAABBBB, K = 123456 and
+   F(a, b), then the decryption of that block.
+3. **Demonstrate the attack.** From the flaw to the secret, with the equations. P1: the
+   keystream is reused, C2 encrypts a known P2, so P1 = C1 XOR C2 XOR P2.
+4. **Map an incident to the pillars.** A story in stages; for each stage, the pillar it
+   broke and the attacker action; say which pillars stayed intact. P1: rogue access point
+   (availability), fake SSID and malicious DNS to a cloned login page (integrity), captured
+   credentials and exfiltrated health records (confidentiality).
+
+Practise the hand computation: for P2 that is RSA and Diffie-Hellman on paper, deck A and
+section 7. Section 13 is a mock exam in this format.
+
+---
+
 ## 0b. Portuguese to English glossary
 
 | Portuguese                            | English                           |
@@ -2879,40 +2906,393 @@ Every long answer has the same four parts.
 - **Fix:** patch the library, revoke and reissue keys and certificates, disable compression,
   rate limit renegotiation.
 
-## 13. Mock exam (45 minutes, no notes)
+## 13. Mock exam in the P1 format (4 questions, 2.5 pt each)
 
-Answers in the decks of section 11.
+Lectures 9 (end), 10, 11, 12 and 13. Justify every answer. 45 minutes, no notes. The
+answer key follows the questions.
 
-1. Why does CBC not authenticate, and which mode does? (B10)
-2. The four steps of message authentication with a hash, and the attack that breaks it. (H5)
-3. Methods A to D for protecting a hash. Which one is the basis of HMAC? (H6)
-4. Show with three 8 bit blocks that the XOR hash ignores order. Propose a fix. (H10)
-5. Preimage, second preimage, collision: definitions and efforts. (H13, H16)
-6. Describe the birthday attack on a digital signature. (H17)
-7. What did Van Oorschot and Wiener show about MD5? (H18)
-8. The Merkle-Damgård structure and its guarantee. (H19, H20)
-9. SHA-512: padding rule, length field, buffer, rounds. (H24, H25)
-10. Two misconceptions about public key cryptography. (A1)
-11. RSA with p = 17 and q = 11: compute d for e = 7 and encrypt 88. (A11)
-12. Why does RSA decryption recover M? (A12)
-13. The three ways to attack RSA, and what knowing φ(n) means. (A14)
-14. Run Diffie-Hellman with q = 353, α = 3, X_A = 97, X_B = 233. (A19)
-15. Why does Diffie-Hellman fall to a man-in-the-middle, and what fixes it? (A20)
-16. What does a certificate bind, and who signs it? (A2)
-17. Define an SA and count them for 1 branch and n salespeople. (I10)
-18. SPD versus SAD. (I11)
-19. The four steps that build an ESP tunnel mode datagram. (I15)
-20. The three fields of the ESP trailer and why each exists. (I18)
-21. What does the ESP MAC cover? (I19)
-22. The two phases of IKE and why there are two. (I23, I25)
-23. Connection versus session in TLS. (T5)
-24. The five fields of client hello. (T10)
-25. What happens on a fatal alert? (T8)
-26. Change Cipher Spec: size, value, purpose. (T7)
-27. The two purposes of Heartbeat. (T15)
-28. Heartbleed: the bug, the exploit, the numbers. (T22)
-29. Why can a client DoS a TLS server with handshakes? (T20)
-30. CTR: how the counter is initialised and when the key changes. (B5)
+### Question 1 (2.5 pt). Modes of operation of a block cipher
+
+**(a) (1.0 pt)** Say whether the statement is true or false and justify your answer:
+
+"In CTR mode, as in CBC mode, each plaintext block is XORed with the previous ciphertext
+block before it enters the block cipher. For this reason neither CBC nor CTR supports
+parallel encryption."
+
+**(b) (1.5 pt)** AES-GCM protects the packets of a network protocol. Each packet has a header
+(addresses, sequence number) that the routers must read in clear, and a payload that must
+stay secret. Explain how GCM processes the header and the payload so that the receiver
+detects any change to either part. Name the two functions of GCM, the role of the hash
+subkey H, the GHASH step and the tag T. Say in which order the receiver verifies and
+decrypts. Justify your answer.
+
+### Question 2 (2.5 pt). RSA
+
+**(a) (0.5 pt)** Explain what a trapdoor one-way function is and what Euler's totient φ(n)
+is. Relate each concept to the RSA key generation and to the encryption and decryption steps.
+
+**(b) (1.0 pt)** Generate an RSA key pair with p = 5, q = 11 and public exponent e = 7. Show
+n, φ(n), the check that e is valid, the computation of d with the extended Euclidean
+algorithm, and the keys PU and PR. Then encrypt M = 9. Show every modular reduction.
+
+**(c) (1.0 pt)** Decrypt the ciphertext of (b) with the private key, by repeated squaring.
+Show every intermediate value. Name the theorem that guarantees that the original message is
+recovered, and show why.
+
+### Question 3 (2.5 pt). Attack on a simple hash
+
+Scenario: a company protects bank transfer orders with the simple XOR hash of the lecture.
+The order is split into 8 bit blocks B*i, H_0 = 00000000, H_i = H*(i-1) XOR B_i, and the
+last H_i is the hash. The hash is encrypted with a symmetric key shared by the two parties
+(method B) and is sent with the order, which travels in clear. One order has three blocks:
+B1 = 10110010 (amount), B2 = 01101100 (destination account), B3 = 11010001 (date). An
+attacker on the network knows the hash scheme but not the key. He intercepts the order and
+swaps the positions of B1 and B2.
+
+**(a) (1.0 pt)** Compute the hash of the original order and of the modified order step by
+step. Show that the receiver accepts the modified order.
+
+**(b) (0.75 pt)** Explain with equations which property of XOR makes this attack possible.
+Say which requirement of a secure hash function (Table 11.1) this hash violates. Explain why
+encrypting the hash (method B) does not stop the attack.
+
+**(c) (0.75 pt)** Propose a modification of the iteration that keeps the block by block
+processing but removes this weakness. Recompute the hash of both orders with your
+modification and show that they differ.
+
+### Question 4 (2.5 pt). Incident in a company with an IPsec VPN and a TLS portal
+
+A logistics company has an IPsec VPN between the headquarters gateway R1 and the branch
+gateway R2. The VPN uses ESP in tunnel mode, with SAs created by IKE. The company also runs
+a public HTTPS customer portal with a vulnerable version of OpenSSL. The portal uses RSA key
+exchange: the client sends the pre-master secret encrypted with the server's public key.
+
+Incident summary:
+
+- **Stage 1.** For three weeks the attacker sends `heartbeat_request` messages with Payload
+  Length = 64 KB and a real payload of 16 bytes to the portal, and stores the responses.
+  From the returned data he extracts the portal's RSA private key and session cookies of
+  logged in customers. The portal logs show nothing.
+- **Stage 2.** On a public Wi-Fi network the attacker places himself on the path between a
+  customer and the portal. He answers the customer's `client_hello` as if he were the
+  portal, presents the real certificate of the portal, and completes the handshake with the
+  stolen private key. He reads the customer's password and changes the delivery address of
+  an order before he forwards it to the real portal.
+- **Stage 3.** The attacker captures ESP datagrams between R1 and R2. He reads the outer IP
+  header and the ESP header, but he cannot read the inner addresses or the TCP payload. Ten
+  minutes later he sends 50 captured datagrams, unchanged, to R2.
+- **Stage 4.** The attacker floods the portal with TLS handshake requests and
+  renegotiations. The portal stops serving customers for two hours.
+
+**(a) (1.0 pt)** For stages 1, 2 and 4, identify which services of TLS were compromised:
+confidentiality, integrity, end-point authentication, availability. Correlate each
+compromised service with the specific attacker action and with the mechanism that failed.
+If a service was not compromised in a stage, say so.
+
+**(b) (1.0 pt)** For stage 3, say for each service of ESP (confidentiality, integrity, origin
+authentication, anti-replay) whether it was compromised. Describe the processing steps of
+R2 that decide the fate of the 50 replayed datagrams, and name the SA parameters involved.
+
+**(c) (0.5 pt)** Say whether the vulnerability of stage 1 is a design flaw of TLS or of the
+Heartbeat extension. List what the company must do with the portal's key pair and
+certificate after the incident, and justify with the definitions of certificate and PKI.
+
+### Answer key
+
+#### Question 1
+
+**(a) False.** The first sentence describes CBC, not CTR. In CBC each plaintext block is
+XORed with the previous ciphertext block before encryption, and the first block is XORed
+with the IV (slide 249). Because block i needs ciphertext block i-1, CBC does not support
+parallelism, unlike ECB (slide 249). CTR works differently: a counter of the block size is
+the IV, and each plaintext block is XORed with the output of the cipher applied to the
+counter (slide 251). The blocks are independent, there is no error propagation, and CTR
+supports parallelism and pre-processing (slide 251). Encryption and decryption are the same
+operation, and the last block needs no padding (slide 251). So the premise is wrong for CTR
+and the conclusion is wrong for CTR. The only chaining-like rule of CTR is a different one:
+never reuse the same counter with the same key, at the risk of complete loss of
+confidentiality (slide 251).
+
+**(b)** GCM combines two functions: confidentiality by encryption in CTR mode, and
+authentication by an integrity tag computed by GHASH (slide 253).
+
+1. **Payload.** The payload is encrypted in CTR mode, so it is secret (slide 253).
+2. **Header.** The header is passed as additional authenticated data (AAD). The AAD enters
+   the tag computation but is not encrypted, so the routers read it and the receiver still
+   detects any change to it (slide 253).
+3. **Hash subkey.** H is obtained by applying AES with the key K to the zero block,
+   H = AES_K(0^128) (slides 253 and 255).
+4. **GHASH.** Each 128 bit block is a polynomial of degree at most 127 with coefficients 0
+   or 1 in GF(2^128). Addition is XOR. Multiplication is modulo
+   p(x) = x^128 + x^7 + x^2 + x + 1 (slide 255). For each block B*i of AAD or ciphertext:
+   take the accumulator X*(i-1) (zero at the start), XOR it with B*i, multiply by H, reduce
+   modulo p(x): X_i = ((X*(i-1) XOR B_i) \* H) mod p(x) (slide 256). The XOR chains the
+   blocks, the modulus keeps 128 bits for the next block or the final tag (slide 256).
+5. **Tag.** The tag T is generated from the confidential data and from the AAD (slide 253).
+   A change of one bit in the header or in the ciphertext changes X_i and so changes T.
+   Without K the attacker cannot compute H, so he cannot produce a valid tag for a modified
+   packet.
+6. **Order at the receiver.** In authenticated decryption the receiver recomputes the tag
+   and verifies it, to guarantee integrity and authenticity, before the plaintext is
+   released (slide 253). GCM is the only mode of the lecture that gives confidentiality and
+   authentication together; ECB, CBC and CTR give confidentiality only (slides 249 to 253).
+
+#### Question 2
+
+**(a)** A one-way function maps X to Y so that Y = f(X) is easy to compute but X = f^-1(Y)
+is infeasible to obtain (slide 338). Easy means polynomial time O(n^a), class P; infeasible
+means effort that grows faster than any polynomial, for example O(2^n), for practically all
+inputs (slide 339). A trapdoor one-way function is a family f_k: Y = f_k(X) is easy with k
+and X, X = f_k^-1(Y) is easy with k and Y, and infeasible with Y alone (slide 340). In RSA
+the forward function is C = M^e mod n, easy with the public key {e, n} (slide 342). The
+trapdoor is d, the private exponent: M = C^d mod n is easy with {d, n} (slide 342). Without
+d the attacker must factor n, which is infeasible for large n (slide 348).
+
+φ(n) is Euler's totient. For n = pq with p and q prime, φ(n) = (p-1)(q-1) (slide 343). Its
+role: e and d must be multiplicative inverses modulo φ(n), ed ≡ 1 (mod φ(n)), so
+d ≡ e^-1 (mod φ(n)), and the inverse exists only if gcd(e, φ(n)) = 1 (slide 343). In key
+generation φ(n) decides which e are valid and gives d by the extended Euclidean algorithm
+(slides 343 and 350). In decryption, Euler's theorem M^φ(n) ≡ 1 (mod n) makes
+M^(ed) ≡ M (mod n) (slides 345 to 347). Anyone who knows φ(n) computes d, so φ(n) is as
+secret as p and q (slide 358).
+
+**(b) Key generation (slides 350, 352).**
+
+```
+p = 5, q = 11
+n = p * q = 55
+φ(n) = (p - 1)(q - 1) = 4 * 10 = 40
+e = 7, check gcd(7, 40) = 1:
+  40 = 5 * 7 + 5
+   7 = 1 * 5 + 2
+   5 = 2 * 2 + 1      remainder 1, so gcd = 1 and the inverse exists
+```
+
+Back substitution for d (slide 343, extended Euclid):
+
+```
+1 = 5 - 2 * 2
+  = 5 - 2 * (7 - 1 * 5) = 3 * 5 - 2 * 7
+  = 3 * (40 - 5 * 7) - 2 * 7 = 3 * 40 - 17 * 7
+so -17 * 7 ≡ 1 (mod 40)
+d = -17 mod 40 = 23
+check: 7 * 23 = 161 = 4 * 40 + 1 ≡ 1 (mod 40)
+PU = {7, 55}, PR = {23, 55}
+```
+
+**Encryption of M = 9 (slides 342, 353).** M = 9 satisfies 0 ≤ M < 55.
+
+```
+9^2 = 81 = 1 * 55 + 26           -> 26
+9^4 = 26^2 = 676 = 12 * 55 + 16  -> 16      (12 * 55 = 660)
+9^7 = 9^4 * 9^2 * 9 = 16 * 26 * 9 = 3744
+3744 = 68 * 55 + 4               -> C = 4   (68 * 55 = 3740)
+```
+
+C = 9^7 mod 55 = 4.
+
+**(c) Decryption of C = 4 with d = 23 (slide 353).** Exponent 23 = 16 + 4 + 2 + 1.
+
+```
+4^1  = 4
+4^2  = 16
+4^4  = 16^2 = 256 = 4 * 55 + 36    -> 36
+4^8  = 36^2 = 1296 = 23 * 55 + 31  -> 31     (23 * 55 = 1265)
+4^16 = 31^2 = 961 = 17 * 55 + 26   -> 26     (17 * 55 = 935)
+4^23 = 4^16 * 4^4 * 4^2 * 4^1 = 26 * 36 * 16 * 4
+26 * 36 = 936 = 17 * 55 + 1        -> 1
+1 * 16 * 4 = 64 = 1 * 55 + 9       -> M = 9
+```
+
+M = 4^23 mod 55 = 9, the original message.
+
+**Why it works: Euler's theorem (slides 345 to 347).** M^φ(n) ≡ 1 (mod n) when
+gcd(M, n) = 1. Since ed ≡ 1 (mod φ(n)), there is k with ed = 1 + kφ(n). Here
+7 _ 23 = 161 = 1 + 4 _ 40, so k = 4. Then
+C^d = (M^e)^d = M^(ed) = M^(1 + kφ(n)) = M _ (M^φ(n))^k ≡ M _ 1^k ≡ M (mod n). With the
+numbers: 9^161 = 9 \* (9^40)^4 ≡ 9 (mod 55). The requirement M^(ed) mod n = M for all M < n
+of slide 342 is met because e and d are inverses modulo φ(n) (slide 343).
+
+#### Question 3
+
+**(a) Original order B1, B2, B3 (slides 281, 282).**
+
+```
+H_0 = 00000000
+H_1 = 00000000 XOR 10110010 = 10110010
+H_2 = 10110010 XOR 01101100 = 11011110
+H_3 = 11011110 XOR 11010001 = 00001111     hash = 00001111
+```
+
+**Modified order B2, B1, B3.**
+
+```
+H_0 = 00000000
+H_1 = 00000000 XOR 01101100 = 01101100
+H_2 = 01101100 XOR 10110010 = 11011110
+H_3 = 11011110 XOR 11010001 = 00001111     hash = 00001111
+```
+
+The receiver decrypts the received hash with the shared key and obtains 00001111 (method B,
+slide 270). He recomputes the hash over the received blocks B2, B1, B3 and obtains 00001111. The two values match, so he accepts an order in which amount and account were
+exchanged. The attacker never touched the encrypted hash and never needed the key.
+
+**(b)** XOR is commutative and associative: B1 XOR B2 = B2 XOR B1 and
+(B1 XOR B2) XOR B3 = B1 XOR (B2 XOR B3). So H = B1 XOR B2 XOR B3 = B2 XOR B1 XOR B3 for any
+order of the blocks. The hash depends on the set of blocks, not on their positions, so
+blocks can be reordered without a change of the hash (slide 283). The requirement violated
+is second preimage resistance: given the message x (the original order), it must be
+infeasible to find y ≠ x with H(y) = H(x); here the attacker finds y by a swap (slides 286
+and 288). Because collision resistance implies second preimage resistance, the hash is also
+not collision resistant (slide 291).
+
+Method B encrypts only the hash value (slide 270). It stops an attacker who must produce a
+new hash, which is the attack of slide 267 (Darth changes the message and recomputes the
+hash). It does not stop this attack, because the new message has the same hash as the old
+one, so the old encrypted hash is still correct. Slide 288 describes exactly this case: the
+attacker intercepts a message with its encrypted hash and creates a different message with
+the same hash. Integrity needs a cryptographic hash function that is collision resistant
+(slide 283).
+
+**(c)** Make each step depend on the position of the block. One simple modification: rotate
+the chaining value one bit to the left before the XOR, H*i = ROTL_1(H*(i-1)) XOR B_i, with
+H_0 = 00000000.
+
+```
+Order B1, B2, B3:
+H_1 = ROTL(00000000) XOR 10110010 = 00000000 XOR 10110010 = 10110010
+H_2 = ROTL(10110010) XOR 01101100 = 01100101 XOR 01101100 = 00001001
+H_3 = ROTL(00001001) XOR 11010001 = 00010010 XOR 11010001 = 11000011
+
+Order B2, B1, B3:
+H_1 = ROTL(00000000) XOR 01101100 = 00000000 XOR 01101100 = 01101100
+H_2 = ROTL(01101100) XOR 10110010 = 11011000 XOR 10110010 = 01101010
+H_3 = ROTL(01101010) XOR 11010001 = 11010100 XOR 11010001 = 00000101
+```
+
+11000011 ≠ 00000101. Each block is rotated a different number of times according to its
+position, so the commutativity is gone. Another valid answer: XOR the block index into each
+step, H*i = H*(i-1) XOR (B_i XOR i). Neither variant is cryptographically secure. A secure
+hash uses Merkle's iterated structure: a collision resistant compression function f applied
+block by block, with the message length included in the padding (slides 301 to 304).
+
+#### Question 4
+
+**(a) Stages 1, 2 and 4 (TLS).**
+
+**Stage 1: confidentiality compromised.** Action: `heartbeat_request` with Payload Length
+64 KB and a 16 byte payload. Mechanism that failed: the vulnerable OpenSSL did not check
+that the real size of the payload matched the Payload Length field (slide 445). The server
+allocated 64 KB, copied 16 bytes, left 63.9 KB of old memory in the buffer, and returned
+64 KB (slide 446). Repeated requests expose large amounts of memory: private keys, user
+identification, session cookies, passwords (slide 447). The attack leaves no trace in logs,
+which explains the empty logs and the three weeks (slide 447). Integrity, authentication
+and availability were not compromised in this stage: the Heartbeat protocol kept working as
+keep-alive and firewall traversal (slide 435).
+
+**Stage 2: end-point authentication, confidentiality and integrity compromised.** Action:
+the attacker poses as the portal with the real certificate and the stolen private key.
+Mechanism that failed: a certificate binds the name of the subscriber to a public key and
+guarantees that the subscriber has exclusive control of the private key (slide 324). After
+stage 1 that guarantee is false. The client verifies the certificate in phase 3, finds it
+valid, and sends the pre-master secret encrypted with the server's public key (slide 432).
+The attacker decrypts it with the stolen private key and derives the same keys as a real
+server. So the two services of the Record Protocol fail: the symmetric encryption key no
+longer protects the password (confidentiality, slide 421), and the MAC key no longer
+protects the order, so the attacker alters the delivery address (integrity, slide 421).
+This is the risk of slide 414: a server run by Trudy poses as Alice Inc. and gets the data.
+It is also the man-in-the-middle of slide 369, whose fix, certificates, does not work when
+the private key has leaked. Availability was not affected.
+
+**Stage 4: availability compromised.** Action: a flood of handshake requests with new
+connections and renegotiation. Mechanism: most of the CPU work of a handshake is on the
+server; it computes random numbers and keys without end until its resources are exhausted
+(slide 443, THC DoS 2011). Confidentiality, integrity and authentication were not affected
+in this stage.
+
+**(b) Stage 3 (IPsec). No service of ESP was compromised.**
+
+- **Confidentiality held.** In tunnel mode the whole original datagram, header included, is
+  encrypted. The inner addresses (for example 172.16.1.17 to 172.16.2.48) are invisible to
+  the Internet (slide 399). The attacker saw only the new outer header with the gateway
+  addresses and protocol 50, and the ESP header with SPI and Sequence Number, which travels
+  in clear (slides 399 and 400).
+- **Integrity and origin authentication held.** The attacker changed nothing, so the ESP
+  MAC, computed with the secret MAC key of the SA over the ESP header, the encrypted
+  datagram and the encrypted trailer, is still valid (slide 402). He cannot forge a MAC for
+  a modified datagram without the key.
+- **Anti-replay held.** Processing at R2 (slides 403 and 404): (1) R2 sees protocol 50,
+  reads the SPI and finds the SA in its SAD. (2) R2 computes the MAC with the SA key and
+  compares it: it matches, so the datagram came from R1 and was not altered. (3) R2 checks
+  the Sequence Number against the anti-replay window of the SA: the 50 numbers were already
+  received and fall outside the sliding window, so the datagrams are discarded as replays.
+  Steps 4 to 6 (decrypt, remove padding, forward) never run for them. SA parameters
+  involved: the 32 bit sequence number counter at R1, which generated the Sequence Number
+  of each ESP header (slide 393), the anti-replay window at R2 (slide 393), and the SPI
+  that indexes the SAD (slides 392 and 400). Replay attack prevention is one of the
+  services of IPsec (slide 376).
+
+**(c)** It is not a design flaw of TLS or of the Heartbeat specification. It is a
+programming mistake specific to OpenSSL (slide 444). The company must update OpenSSL to a
+patched version. Because the attack leaves no trace, the company must assume that the
+private key leaked (slide 447). It must generate a new key pair, obtain a new certificate
+from the CA, and revoke the old certificate. Justification: the certificate is signed by
+the private key of the CA and binds the name to a public key whose private key is now
+shared with the attacker (slide 324). The PKI exists to issue, maintain and revoke
+certificates and key pairs (slide 325). Until the old certificate is revoked, stage 2 can
+be repeated. The company must also invalidate the leaked session cookies (slide 447).
+
+### True or false drill (pattern of question 1a)
+
+**1.** "In GCM, the GHASH function encrypts each block by multiplying it by the hash subkey
+H in GF(2^128). The resulting tag T is then XORed with the plaintext to give
+confidentiality."
+**False.** Confidentiality comes from CTR encryption. GHASH multiplies by H only to compute
+the authentication tag, and H = AES_K(0) (slides 253, 255, 256).
+
+**2.** "Preimage resistance means that, given a message x, it is infeasible to find y ≠ x
+with H(y) = H(x). It protects a digital signature against substitution of the signed
+message."
+**False.** That is second preimage resistance (slides 286 and 288). Preimage resistance:
+given h, it is infeasible to find any y with H(y) = h. It protects the secret S in
+H(M ‖ S) (slide 287).
+
+**3.** "Because of the birthday paradox, a brute force attacker needs about 2^(m/2)
+attempts to find a preimage of an m bit hash."
+**False.** 2^(m/2) is the effort for a collision, where the attacker chooses both messages.
+A preimage or second preimage costs 2^m, on average 2^(m-1) (slides 294, 295, 298).
+
+**4.** "A fatal TLS alert terminates the connection immediately. Other connections of the
+same session may continue, but no new connection can be opened in that session."
+**True.** The alert is 2 bytes, severity and code. A fatal alert kills the connection, not
+the session; other connections continue and no new connection is established in the
+session (slide 423).
+
+**5.** "Encrypting a message with the sender's private key gives confidentiality, because
+only the holder of the matching public key can decrypt it."
+**False.** The public key is public, so anyone decrypts. Private key encryption gives
+authentication, not confidentiality. Confidentiality uses the receiver's public key, and
+both together cost 4 asymmetric operations (slides 332 to 334).
+
+**6.** "Diffie-Hellman is an asymmetric encryption algorithm: Alice encrypts the message
+with Bob's public value Y_B and Bob decrypts it with his secret X_B."
+**False.** Diffie-Hellman encrypts nothing. Both sides compute K = α^(X_A X_B) mod q and
+use K as a symmetric key; Table 9.3 lists it for key exchange only (slides 336, 360, 362,
+363).
+
+**7.** "An IPsec SA is bidirectional, so one SA between the headquarters gateway and the
+branch gateway protects the traffic in both directions. The IKE SA, in contrast, is
+unidirectional."
+**False.** The roles are reversed. An IPsec SA is simplex, so two SAs are needed per pair,
+2 + 2n in the VPN example. The IKE SA of phase 1 is bidirectional (slides 386, 387, 407).
+
+**8.** "The Change Cipher Spec message is part of the Handshake Protocol. It is the last
+handshake message, sent after `finished`, and it carries the negotiated keys to the other
+side."
+**False.** Change Cipher Spec is its own protocol: one message, one byte, value 1. It is not
+part of the Handshake, it is a signal between phases. Each side sends it before `finished`,
+it copies the pending cipher spec to the current one, and it carries no keys (slides 422
+and 433).
 
 ---
 

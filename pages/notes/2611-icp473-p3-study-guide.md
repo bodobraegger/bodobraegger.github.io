@@ -35,6 +35,33 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 [[toc]]
 
+## 0. The exam format
+
+An exam of this course has 4 questions of 2.5 pt. Each question has items (a), (b), (c),
+and every item ends in _justifique sua resposta_. One question joins two or three deck
+cards. The four question patterns, each with the P1 example:
+
+1. **Judge a statement, then apply the mechanism.** (a) A sentence that mixes two
+   neighbouring definitions, true or false, with the reason. P1: "a PRNG creates random
+   numbers from thermal noise and feeds them as a seed to RC4" (false: that is a TRNG, and
+   RC4 is the cipher). (b) How a mechanism copes with a real condition. P1: how WEP decrypts
+   a packet when earlier packets were lost (the per-packet IV in clear).
+2. **Explain, run by hand, undo.** (a) Two concepts related to a structure. (b) One round
+   with symbolic data, every operation and intermediate value written out. (c) The inverse.
+   P1: confusion and diffusion in Feistel, one round with B = AAAABBBB, K = 123456 and
+   F(a, b), then the decryption of that block.
+3. **Demonstrate the attack.** From the flaw to the secret, with the equations. P1: the
+   keystream is reused, C2 encrypts a known P2, so P1 = C1 XOR C2 XOR P2.
+4. **Map an incident to the pillars.** A story in stages; for each stage, the pillar it
+   broke and the attacker action; say which pillars stayed intact. P1: rogue access point
+   (availability), fake SSID and malicious DNS to a cloned login page (integrity), captured
+   credentials and exfiltrated health records (confidentiality).
+
+Practise the hand computation: for P3 that is a rule table or a Snort rule on paper, deck F,
+deck D and section 4. Section 9 is a mock exam in this format.
+
+---
+
 ## 0b. Portuguese to English glossary
 
 | Portuguese                       | English                          |
@@ -2475,38 +2502,470 @@ Every long answer has the same four parts.
   canonicalise first; fuzzing; strongly typed languages; least privilege so a compromise
   gains little.
 
-## 9. Mock exam (45 minutes, no notes)
+## 9. Mock exam in the P1 format (4 questions, 2.5 pt each)
 
-Answers in the decks of section 7.
+Lectures 14, 15 and 16. Justify every answer. 45 minutes, no notes. The answer key follows
+the questions.
 
-1. State the three firewall design goals of [BELL94] and how each is achieved. (F2)
-2. Define an IDS and name its three logical components. (D4)
-3. Why does the lecture C program overwrite "Gabriel"? What does GCC print? (V7)
-4. Positive versus negative filter: which rule is implicit at the end of each? (F5)
-5. Signature detection cannot detect which kind of attack? Why? (D9, D10)
-6. Define defensive programming and its key rule. (V3)
-7. Explain the flaw in rule 4 of Table 9.1 and the exploit on port 8080. (F7)
-8. Loose versus tight interpretation: which error grows in each? (D6)
-9. SQL injection: show the input that deletes the table and name two defences. (V9)
-10. What does the stateful firewall add to the packet filter? What is the state table? (F9)
-11. Four data sources of a HIDS, with one disadvantage each. (D11)
-12. Whitelisting versus blacklisting: which is recommended and why? (V12)
-13. Why is the ACK flag needed in the refined rule 4, beyond source port 25? (F7)
-14. Inline versus passive sensor: which one can be an IPS? (D14)
-15. What is canonicalisation and why must it come before validation? (V12)
-16. Application-level versus circuit-level gateway: which examines the payload? (F11, F12)
-17. The three honeypot positions: which captures insiders, which carries no internal risk? (D16)
-18. Heartbleed: year, software, class of flaw, what leaked. (V8)
-19. Three purposes of the internal firewall in a DMZ. (F15)
-20. Write the Snort rule header and explain `![7680,1521]`. (D17)
-21. XSS: who is the real target, and which two handling steps failed? (V11)
-22. Where should IPsec live: behind the firewall, in the router, or in the firewall? Why? (F16)
-23. Explain the base-rate fallacy for an IDS. (D6)
-24. PATH and LD_LIBRARY_PATH attacks, and two mitigations. (V14)
-25. Why is DROP stealthier than REJECT against a port scan? (F18)
-26. The six steps of the attack methodology, one example each. (D3)
-27. The five OWASP code flaws and the three CWE/SANS categories. (V1)
-28. SOCKS: RFC, port, the five TCP steps. (F12)
+### Question 1 (2.5 pt). Intrusion detection
+
+**(a) (1.0 pt)** Say whether the statement is true or false and justify your answer:
+
+"A signature-based NIDS builds a baseline of the normal behaviour of the legitimate users
+during a training phase. In the detection phase it reports every deviation from that
+baseline as an intrusion, which is why signature detection is the best method against
+zero-day attacks."
+
+**(b) (1.5 pt)** A company monitors its perimeter with a NIDS that uses a passive sensor
+connected to a tap. In the last year almost all web traffic to the company's servers moved
+from HTTP to HTTPS. Explain what the NIDS can still analyse in that traffic and what it can
+no longer analyse. Then name one complementary detection mechanism from the course that
+covers the gap, and explain why it is not affected by the encryption. Justify your answer.
+
+### Question 2 (2.5 pt). Packet filter rules
+
+A packet filtering firewall separates the internal network 192.168.1.0/24 from the
+Internet. The policy is:
+
+1. The internal web server 192.168.1.80 must accept HTTP connections (TCP, port 80) from
+   any external host.
+2. Any internal host may open HTTP connections (TCP, port 80) to external web servers.
+3. Everything else is forbidden.
+
+**(a) (0.5 pt)** Explain positive filtering and negative filtering in relation to the rule
+table of a packet filter. Which one does this policy require, and which default policy does
+that correspond to? Justify your answer.
+
+**(b) (1.0 pt)** Write the rule table by hand for this policy. Use the fields: rule number,
+direction, source address, source port, destination address, destination port, protocol,
+action. Include the rules for the reply traffic and write the final default rule
+explicitly. Use the source port field to make the reply rules as specific as possible.
+State what each rule is for.
+
+**(c) (1.0 pt)** An external attacker configures a machine (203.0.113.7) to run a malicious
+application on TCP port 80. From that machine the attacker sends a TCP SYN packet with
+source port 80 to the internal web proxy 192.168.1.8, destination port 8080. Trace this
+packet through your table, rule by rule, and say whether it is forwarded or discarded. Then
+show the refinement of the table that blocks this packet, and explain why the refinement
+does not block the legitimate replies to the internal clients. Justify your answer.
+
+### Question 3 (2.5 pt). Input handling
+
+**(a) (1.0 pt)** A PHP page builds an SQL query from a form field:
+
+```php
+$name = $_REQUEST['name'];
+$query = "SELECT * FROM suppliers WHERE name = '" . $name . "';";
+$result = mysql_query($query);
+```
+
+Write the exact SQL string that reaches the database for the input `Bob` and for the input
+`Bob'; drop table suppliers`. Explain, step by step, what the database executes in the
+second case and why. Name the prevention measure that keeps the input as data instead of
+code. Justify your answer.
+
+**(b) (1.0 pt)** Consider the program of the lecture:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+char *my_gets(char *s) {
+    int c;
+    char *p = s;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        *p++ = c;
+    }
+    *p = '\0';
+    return s;
+}
+
+void consulta_nome(char *s) {
+    strcpy(s, "Gabriel");
+}
+
+int main() {
+    char var_outrasInfos[10];
+    char var_nome[10];
+    consulta_nome(var_nome);
+    my_gets(var_outrasInfos);
+    printf("Dados: Nome: %s \nOutras Informacoes: %s \n", var_nome, var_outrasInfos);
+    printf("==Fim do Programa==\n");
+    return 0;
+}
+```
+
+Assume that the compiler places `var_nome` in memory immediately after `var_outrasInfos`,
+as in the demonstration of the lecture. The user types `1234567890AAAAA` (15 characters)
+and presses Enter. Show, byte by byte, where the bytes written by `my_gets` go, what
+`var_nome` contains after the call, and what the two lines of the first `printf` print.
+Then explain why a very long input ends the program with the message
+`stack smashing detected`, and which compiler option reproduces the classic attack.
+Justify your answer.
+
+**(c) (0.5 pt)** The two flaws of items (a) and (b) belong to the two concerns of input
+handling named in the lecture. Name the concern of each flaw and the defensive programming
+rule that both violate. Justify your answer.
+
+### Question 4 (2.5 pt). Incident analysis
+
+An online shop has this architecture: a boundary router, an external firewall (packet
+filter), a DMZ with the web server of the shop, an internal firewall (packet filter), and
+an internal network with the database server. A NIDS with a passive sensor watches the
+DMZ. The shop is served over HTTPS. The incident, reconstructed afterwards:
+
+1. The attacker ran NMAP against the company's public address range and found the web
+   server with ports 80 and 443 open.
+2. The search form of the shop concatenates the typed text into an SQL query. With a
+   crafted search string the attacker read the full customer table (names, addresses, card
+   numbers) through HTTPS.
+3. The web server process ran as root. Through a vulnerable plugin the attacker obtained a
+   shell on the web server with root privileges and installed a rootkit with a backdoor.
+4. The internal firewall permitted any DMZ host to reach the database server on TCP port 3306. From the web server the attacker connected to the database, copied it, and
+   changed the prices of several products to one cent.
+5. The attacker edited the web server's log files and removed the entries of the
+   intrusion.
+
+The shop kept working normally. The company learned of the incident weeks later, when the
+customer data appeared for sale.
+
+**(a) (1.0 pt)** For each of the five steps, name the phase of the attack methodology of
+the lecture and the defence that failed or was missing. Justify your answer.
+
+**(b) (1.0 pt)** Identify at which step each of the pillars Confidentiality, Integrity and
+Availability was compromised, relating each pillar to the specific action of the attacker.
+If a pillar was not compromised, say so. Justify your answer.
+
+**(c) (0.5 pt)** After the incident, the company proposes to move the NIDS sensor inline,
+so that it works as an IPS. Would this change have stopped step 2? Justify your answer.
+
+### Answer key
+
+#### Question 1
+
+**(a) False.** The statement describes anomaly detection, not signature detection. Anomaly
+detection collects data on the behaviour of legitimate users over time and builds a
+baseline of normal behaviour (slide 533). It has a training phase, which builds the model,
+and a detection phase, which classifies observed behaviour as legitimate or anomalous
+(slide 534). Signature or heuristic detection, also called misuse detection, works the
+other way: it keeps a set of known malicious patterns or attack rules and compares the
+observed behaviour with them (slide 540). A match means an intruder. The last part is also
+false: signature detection cannot detect zero-day attacks, because no signature exists for
+a new attack (slide 541). The approach that has any chance against unknown attacks is
+anomaly detection, because a new attack may deviate from the baseline (slide 534). The
+statement mixes the mechanism of one approach with the name of the other, and inverts the
+zero-day property.
+
+**(b)** The NIDS examines packet traffic at selected points, packet by packet, at the
+network (L3), transport (L4) and application (L7) protocols (slide 550). Encryption removes
+the L7 part. The slide states the limitation: with TLS/SSL the NIDS lost access to the
+meaningful content (payload) of the traffic, so it cannot see malicious commands inside an
+HTTPS session (slide 552).
+
+What it can still analyse: the IP and TCP headers. The sensor still sees source and
+destination addresses, ports, the TCP flags and the pattern of a sequence of packets. So it
+can still detect a port scan, a connection to an unusual port, or a flood of connections
+(slide 550, layers L3 and L4). The Snort header fields
+`tcp $HOME_NET any -> $EXTERNAL_NET ![7680,1521]` only need those headers (slide 562).
+
+What it can no longer analyse: anything that needs the payload. A
+`content:"|00 00 00 0d 06 00|"; depth:6;` option matches bytes of the payload (slide 563).
+Inside TLS the payload is ciphertext, so no signature on application data matches. An SQL
+injection string or an XSS script inside an HTTPS request passes the NIDS unseen.
+
+Complementary mechanism: a HIDS on the web server. The HIDS examines the activity of the
+users and of the software inside the host, not the packet traffic directed at it (slide
+550). Its preferred data source is the system call trace, with audit records and file
+integrity checksums as alternatives (slides 544 and 545). The web server decrypts the TLS
+session before it processes the request, so every effect of the malicious request
+(processes started, files changed, system calls made) is visible to the HIDS in clear. The
+slide draws this conclusion: the NIDS is important, but it can only form part of the
+solution, inside a defence in depth (slide 552). A honeypot in the DMZ is a valid second
+complement: any access to it is suspicious by definition, with or without encryption
+(slides 554 and 559).
+
+#### Question 2
+
+**(a)** A positive filter permits only the packets that meet specific criteria; its rule
+table ends with a deny (slide 464). A negative filter rejects any packet that meets certain
+criteria; its table ends with an allow (slide 464). The last rule is the default action,
+taken when no rule matches (slide 466). The two default policies are: default discard,
+"what is not expressly permitted is prohibited", more conservative, preferred by business
+and government; and default forward, "what is not expressly prohibited is permitted", less
+secure, used by more open organisations such as universities (slide 466). The policy of
+the question says "everything else is forbidden", so it needs a positive filter with
+default discard: the table lists the permitted HTTP traffic and ends with a deny.
+
+**(b)** Follow Table 9.1 (Part 1.6, slides 467 to 469) with port 80 in place of 25 and
+the refinement of the source ports already applied: the server port in the reply rules,
+a port above 1023 in the new-connection rules.
+
+| Rule | Direction | Src address    | Src port | Dest address   | Dest port | Protocol | Action |
+| ---- | --------- | -------------- | -------- | -------------- | --------- | -------- | ------ |
+| 1    | In        | External       | > 1023   | 192.168.1.80   | 80        | TCP      | Permit |
+| 2    | Out       | 192.168.1.80   | 80       | External       | > 1023    | TCP      | Permit |
+| 3    | Out       | 192.168.1.0/24 | > 1023   | External       | 80        | TCP      | Permit |
+| 4    | In        | External       | 80       | 192.168.1.0/24 | > 1023    | TCP      | Permit |
+| 5    | Either    | Any            | Any      | Any            | Any       | Any      | Deny   |
+
+Rule 1 permits an inbound HTTP request from an external client to the web server. Rule 2
+permits the reply of the web server to that client. Rule 3 permits an outbound HTTP request
+from an internal client to an external web server. Rule 4 permits the reply of the external
+server to the internal client. Rule 5 is the default discard, the positive filter's final
+deny (slides 464 and 466). The source ports follow the client-server model: a server uses a
+fixed well-known port below 1024, a client uses a dynamic temporary port above 1024, for
+example 49152 (slide 478).
+
+A table without the source port column is the slide's first version and earns partial
+credit. It has the flaw of slide 468: rule 4 permits external traffic to any destination
+port above 1023, on the assumption that it is a reply. The exploit of slide 469 shows it:
+an attacker opens a connection from port 5150 to an internal web proxy on port 8080, and
+rule 4 permits it because 8080 > 1023.
+
+**(c)** Trace of the packet (In, from 203.0.113.7 source port 80, to 192.168.1.8
+destination port 8080, TCP, flag SYN):
+
+1. Rule 1: direction In matches, but the destination address is 192.168.1.8, not
+   192.168.1.80, and the destination port is 8080, not 80. No match.
+2. Rule 2: direction Out. No match.
+3. Rule 3: direction Out. No match.
+4. Rule 4: direction In, source External, source port 80, destination 192.168.1.8 inside
+   192.168.1.0/24, destination port 8080 > 1023, protocol TCP. Match, Permit.
+
+The packet is forwarded. This is the remaining vulnerability of slide 470: the use of port
+80 by a web server is only a default. An external machine can run another, malicious
+application on port 80 and send packets from source port 80 to internal machines. Rule 4
+accepts them, because it was written to accept replies coming from port 80.
+
+The refinement is the ACK flag (slide 471). Rule 4 gets a new field and now requires the
+ACK flag set:
+
+| Rule | Direction | Src address | Src port | Dest address   | Dest port | Protocol | Flag | Action |
+| ---- | --------- | ----------- | -------- | -------------- | --------- | -------- | ---- | ------ |
+| 4    | In        | External    | 80       | 192.168.1.0/24 | > 1023    | TCP      | ACK  | Permit |
+
+The slide's version of the new logic (slide 472): the rule now permits inbound packets
+(replies) that have source port 25 and the ACK flag set in the TCP segment, which blocks
+packets that start connections (SYN) from port 25. Here 25 is 80.
+
+Why it works (slide 471): a packet that belongs to an established TCP connection, such as
+a legitimate HTTP reply, always has the ACK flag set. A packet from an attacker trying to
+start a new connection does not have ACK; it has SYN. The attacker's SYN packet now fails
+rule 4, falls to rule 5 and is discarded. The reply of a real external web server to an
+internal client carries ACK and still matches rule 4.
+
+For full marks, name the structural fix as well: the stateful inspection firewall (slide
+479). It keeps a state table of the active outbound TCP connections, one entry per
+established connection, and permits inbound traffic to high ports only if the packet fits
+one of the entries. An entry looks like 192.168.1.23, 1030, 203.0.113.9, 80, Established
+(Table 9.2, slide 481). The attacker's packet to 192.168.1.8 port 8080 matches no entry,
+because no internal host opened a connection to 203.0.113.7, so it is discarded without
+any guess based on flags.
+
+#### Question 3
+
+**(a)** The code concatenates the field into the query string (slide 600). For the input
+`Bob` the string is:
+
+```sql
+SELECT * FROM suppliers WHERE name = 'Bob';
+```
+
+The code works as intended and returns the supplier Bob.
+
+For the input `Bob'; drop table suppliers` the string is:
+
+```sql
+SELECT * FROM suppliers WHERE name = 'Bob'; drop table suppliers';
+```
+
+Step by step: the single quote typed by the attacker closes the string literal `'Bob'`.
+The semicolon ends the first statement. The text `drop table suppliers` becomes a second
+statement. The closing quote and semicolon that the PHP code appends produce a dangling
+`';` at the end. The database executes the SELECT, which retrieves the record of Bob, and
+then executes the DROP, which deletes the entire table (slide 600). The flaw is the one of
+slide 597: the input influences the flow of execution because its interpretation was not
+validated. The attack is similar to command injection, but uses SQL metacharacters (slide
+600).
+
+Prevention (slide 600): use placeholders or SQL parameters instead of concatenating values;
+the database then treats the whole input as one string value, and the quote and semicolon
+lose their meaning. The slide also lists: validate the input before use (escape
+metacharacters or reject), use the sanitising functions of the language, and combine with
+stored procedures.
+
+**(b)** Memory layout, with B the address of `var_outrasInfos`: `var_outrasInfos` occupies
+bytes B to B+9 and `var_nome` occupies bytes B+10 to B+19. The slide's own output confirms
+this order: the printed name starts with the 11th character of the typed input (slide 591).
+
+After `consulta_nome`, `var_nome` holds `G a b r i e l \0` in bytes B+10 to B+17; bytes
+B+18 and B+19 are undefined.
+
+`my_gets` copies every character until the newline and never checks a length (slide 588).
+It writes:
+
+| Input bytes             | Written to   | Variable                       |
+| ----------------------- | ------------ | ------------------------------ |
+| `1234567890` (10 bytes) | B to B+9     | `var_outrasInfos`, full        |
+| `AAAAA` (5 bytes)       | B+10 to B+14 | `var_nome[0]` to `var_nome[4]` |
+| `\0` (1 byte)           | B+15         | `var_nome[5]`                  |
+
+In total 16 bytes go into a 10 byte buffer. After the call `var_nome` contains
+`A A A A A \0 l \0 ? ?`: the first five bytes of Gabriel were overwritten, the `\0` of the
+input stops the string at index 5, and `l \0` remain from the original name.
+
+The first `printf` prints:
+
+```
+Dados: Nome: AAAAA
+Outras Informacoes: 1234567890AAAAA
+```
+
+`%s` with `var_nome` reads from B+10 until the first `\0` at B+15: `AAAAA`. `%s` with
+`var_outrasInfos` reads from B until the same `\0` at B+15: `1234567890AAAAA`, 15
+characters out of a 10 byte buffer. This is what the slide instructs to observe: with more
+than 10 characters, `var_nome` ("Gabriel") is overwritten by the excess characters (slide
+590).
+
+With 15 characters the write ends inside `var_nome`, so the program finishes normally. With
+a very long input, as in the slide's demonstration of 97 characters, the write passes
+`var_nome` and corrupts the rest of the stack frame. GCC inserts protections by default
+that detect the corruption of the stack when the function tries to return, and the program
+ends with `*** stack smashing detected ***: terminated` and signal SIGABRT (slide 591). To
+reproduce the classic attack, compile with `gcc -fno-stack-protector` (slide 592).
+
+**(c)** The lecture names two concerns of input handling: the size of the input, and the
+meaning and interpretation of the input (slide 583). The buffer overflow of (b) is a size
+flaw: the programmer assumed a maximum size and allocated a fixed buffer without checking
+that the real input fits (slide 584). The SQL injection of (a) is an interpretation flaw:
+the program did not validate how the database would interpret the input, so data became
+code (slides 597 and 600). Both violate the key rule of defensive programming: never assume
+anything, verify all assumptions, handle every possible error state (slide 573). The golden
+rule of slide 586 says the same for input: treat any input as dangerous.
+
+#### Question 4
+
+**(a)** Step by step, with the phase of the methodology (slides 516 to 518) and the
+defence:
+
+1. **NMAP scan.** Phase 1, target acquisition and information gathering: mapping network
+   services with NMAP is the slide's own example (slide 519). A scan is not an intrusion by
+   itself. The defence that could have noticed it: the NIDS with a signature for scans
+   (slide 541), or a honeypot placed externally, before the firewall, which tracks
+   connection attempts to unused IP addresses (slide 558). Nothing failed yet, but nobody
+   saw the reconnaissance.
+2. **SQL injection through the search form.** Phase 2, initial access, by exploiting a
+   remote network vulnerability (slide 516). The missing defence is in the application:
+   input validation and placeholders or SQL parameters instead of concatenation (slide
+   600). The perimeter defences could not help. The external packet filter does not
+   examine the payload, so it cannot prevent attacks that use application-specific
+   vulnerabilities: if HTTPS is allowed, every function of the application is allowed
+   (weakness 1, slide 474). The NIDS lost access to the payload because the request was
+   inside TLS (slide 552).
+3. **Root shell and rootkit.** Phases 3 and 5. The vulnerable plugin gives access with the
+   privileges of the server, and the server ran as root, so no further escalation was
+   needed: a privileged program compromised gives the attacker total control (slide 614).
+   The violated principle is least privilege: a server should use root only to bind low
+   ports and then drop privileges (slide 614). The rootkit with a backdoor is phase 5,
+   maintaining access (slides 518 and 521). A HIDS with file integrity checksums could
+   have detected the changed system files (slide 545).
+4. **Connection from the DMZ to the database, copy, price change.** Phase 4, information
+   gathering or system exploitation, with lateral movement to another target (slides 517
+   and 520). The failed defence is the internal firewall. Its second purpose is to protect
+   the internal network against attacks launched from the DMZ, for example from a web
+   server compromised with malware, rootkits or bots (slide 503). A rule that permits any
+   DMZ host to reach port 3306 does not do that; a positive filter should permit only the
+   web server, on the needed port, and deny the rest (slides 464 and 466). The copy is
+   also the slide's example "transfer a large number of documents to an external
+   repository" (slide 520).
+5. **Editing the logs.** Phase 6, covering tracks: the attacker edits log files to remove
+   the entries generated during the intrusion (slides 518 and 521). The weakness is known
+   from the HIDS data sources: audit records can be manipulated by intruders to hide their
+   actions (slide 544). The missing defence is a HIDS that forwards the records to a
+   central analyser, outside the compromised host (slide 524, distributed architecture),
+   and file integrity checksums against a protected baseline (slide 545). The late
+   discovery, weeks later, is what the first motivation of an IDS tries to avoid: fast
+   detection limits the damage (slide 525).
+
+**(b)**
+
+- **Confidentiality** was compromised at step 2, when the attacker read the customer table
+  through SQL injection, and again at step 4, when he copied the whole database. Both are
+  unauthorised reading of sensitive data, the slide's intrusion example "copying a
+  database containing credit card numbers" (slide 513). The later sale of the data is the
+  consequence, not the compromise.
+- **Integrity** was compromised at step 4, when the attacker changed the product prices to
+  one cent. Data was modified without authorisation. Step 3 (rootkit installed on the
+  server) and step 5 (log entries removed) also modify system files and audit data, so
+  they compromise the integrity of the server and of the audit trail.
+- **Availability** was not compromised. The shop kept working normally; no service was
+  stopped, no data was destroyed, and the company noticed nothing for weeks. The attacker's
+  goal matches the cyber criminal profile, financial reward through data theft (slide
+  511), which needs the system to stay up.
+
+**(c) No.** An inline sensor is inserted in the segment so the traffic must pass through
+it, and it can block an attack when detected, acting as an IPS (slide 552). Blocking still
+requires detection, and detection of the injection string requires reading the payload.
+The request of step 2 travelled inside HTTPS, and the slide states that with TLS the NIDS
+lost access to the payload (slide 552). Inline or passive changes what the sensor can do,
+not what it can see. The injection would still pass. The fix for step 2 is in the
+application: validation and SQL parameters (slide 600), with a HIDS on the server as the
+detection layer that sees the decrypted request's effects (slides 543 and 544).
+
+### True or false drill (pattern of question 1a)
+
+**1.** "A stateful inspection firewall keeps a table of the active inbound TCP connections
+and permits outbound traffic to high ports only if it matches an entry."
+**False.** The direction is inverted. The state table holds the active outbound
+connections, and the firewall permits inbound traffic to ports above 1023 only if the
+packet fits an entry (slide 479).
+
+**2.** "A circuit-level gateway sets up two TCP connections, internal host to gateway and
+gateway to external host, and relays the segments without examining the payload."
+**True.** That is the definition of the circuit-level gateway; its only security function
+is to decide which connections are permitted (slide 484). The gateway that examines
+application content, for example to permit GET and deny POST, is the application-level
+gateway (slide 483).
+
+**3.** "An IPS is a NIDS with a passive sensor: it receives a copy of the traffic through
+a tap and discards the malicious packets it detects."
+**False.** A passive sensor monitors a copy; the real traffic does not pass through it, so
+it cannot discard anything (slide 552). Blocking needs an inline sensor, through which the
+traffic must pass; that is what makes the NIDS an IPS (slide 552).
+
+**4.** "A default discard policy is a negative filter: the table lists the prohibited
+traffic and ends with an implicit allow."
+**False.** Default discard, "what is not expressly permitted is prohibited", is the policy
+of a positive filter, which lists the permitted traffic and ends with a deny (slides 464
+and 466). The negative filter with an allow at the end corresponds to default forward.
+
+**5.** "The tiny fragment attack falsifies the source IP address of the first fragment so
+that the packet filter treats it as coming from a trusted internal host."
+**False.** That describes IP address spoofing, countered by discarding external packets
+with an internal source address (slide 476). The tiny fragment attack uses IP
+fragmentation to push the TCP header, with the ports, into a second fragment, so the
+filter decides on a first fragment that has only the IP header (slide 477).
+
+**6.** "Heartbleed was a stack buffer overflow in OpenSSL: an input longer than the buffer
+overwrote the return address of the function."
+**False.** Heartbleed (OpenSSL, 2014) was a buffer over-read: the code failed to check the
+amount of data requested against the amount supplied, so attackers read adjacent memory
+and leaked passwords and private keys (slide 594). The stack overflow with overwritten
+data is the lecture's C example (slides 588 to 592).
+
+**7.** "Canonicalisation must run after validation, so that the validator checks the raw
+encodings the attacker sent."
+**False.** Canonicalisation transforms the input into a unique, standard, minimal
+representation and must run before validation; otherwise long or redundant encodings of a
+character such as `/` bypass the filter (slide 606).
+
+**8.** "XSS is a failure in handling both the input and the output of the program; the
+real target is the next user, not the server, and sanitising the output prevents the
+attack."
+**True.** The slide states exactly this: XSS represents a failure in handling both input
+and output, the target is the subsequent user, and output sanitisation stops it (slide
+604). The injected script runs in the victim's browser, which trusts the originating site
+(slide 618).
 
 ---
 
