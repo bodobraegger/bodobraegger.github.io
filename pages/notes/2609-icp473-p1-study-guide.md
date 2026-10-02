@@ -21,55 +21,14 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 <DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
 
-**Exam date:** 2 October 2026, Friday.
 **Scope:** slides 1 to 248 (Lectures 1 to 9), plus exercise lists 1, 2 and 3.
 
-The link at the top of this page opens the Portuguese version. The content is the same.
-The exam is written in Portuguese, so every section keeps the Portuguese exam term
-next to the English one. Study the concept in English. Recognise the term in Portuguese.
-
-> **Strict cut at slide 248.** Slide 248 is the figure "Modo ECB", inside Lecture 9.
 > Slides 249 to 256 (CBC, CTR, GCM) and Lecture 10 (hash functions, from slide 257) are
 > out of scope. Part 6B and list 3 section 6 stay on this page for reference only.
-> Skip them tomorrow.
 
 ---
 
 [[toc]]
-
-## 0. Thursday plan
-
-Exam: Friday, 2 October 2026. Study from the decks in section 10. Open a Part only to
-check a missed card.
-
-### Method
-
-1. Before a deck, write what you remember of the topic. 2 minutes.
-2. Answer each question in full sentences, with the justification and the number,
-   before you scroll to the answers.
-3. Mark each card hit or miss. Note the miss codes, for example `W6 W9 R8`.
-4. Redo the misses until each one is a hit.
-5. Start each later session with all misses so far. A hit in a later session clears a miss.
-
-### Schedule
-
-| Time  | Session                                        |
-| ----- | ---------------------------------------------- |
-| 09:00 | Deck W (WEP). Essay question most likely.      |
-| 10:00 | Deck R (random, DRNG), then misses.            |
-| 11:00 | Deck F (Feistel, DES, 3DES), then misses.      |
-| 12:00 | Lunch.                                         |
-| 13:30 | Deck M (AES, ECB), then misses.                |
-| 14:30 | Deck C (classical), on paper, then misses.     |
-| 15:30 | Deck S (stream, RC4), then misses.             |
-| 16:30 | Deck K (concepts, triad), then misses.         |
-| 17:30 | Section 9 numbers, section 11 essay skeletons. |
-| 20:00 | Mock exam, section 12. 45 minutes, no notes.   |
-| 21:00 | Correct it with the decks. Redo misses.        |
-
-Friday morning, 20 minutes: section 9 and the miss list.
-
-Paper is needed for W7, C13 to C16 and F19.
 
 Sources: Dunlosky et al. 2013 (practice testing and spacing rate highest, rereading lowest),
 https://www.aft.org/ae/fall2013/dunlosky
@@ -84,8 +43,6 @@ solves**, and **how it fails**.
 ---
 
 ## 0b. Portuguese to English glossary
-
-Learn these. The exam will use the left column.
 
 | Portuguese                  | English                      |
 | --------------------------- | ---------------------------- |
