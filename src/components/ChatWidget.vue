@@ -325,6 +325,11 @@ onUnmounted(() => {
       @paste="sendImage($event.clipboardData?.files)"
     >
       <div v-if="open" class="chat-widget-box">
+        <button class="chat-widget-close" aria-label="Close chat" @click="closeBox">
+          <svg class="chat-widget-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+            <path d="M2 2 L10 10 M10 2 L2 10" fill="none" stroke="currentColor" stroke-width="1" />
+          </svg>
+        </button>
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite">
           <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" :disabled="loadingEarlier" @click="loadEarlier">
             {{ loadingEarlier ? 'loading...' : '↑ earlier messages' }}
@@ -380,7 +385,7 @@ onUnmounted(() => {
         >
         <!-- The picker is for phones, where nothing can be dropped; it steps away while text is typed -->
         <label v-if="!draftBody && !sending" class="chat-widget-pick" aria-label="Send an image">
-          <svg class="chat-widget-pick-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <svg class="chat-widget-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
             <rect x="1" y="1" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1" />
             <path d="M1 9 L4 6 L6 8 L8 5 L11 9" fill="none" stroke="currentColor" stroke-width="1" />
             <circle cx="8" cy="3.5" r="0.8" fill="currentColor" />
@@ -466,6 +471,29 @@ onUnmounted(() => {
 
 .chat-widget-earlier:disabled {
   cursor: progress;
+}
+
+/* A square in the top right corner, on its own row: the list starts below it,
+   so the scrollbar of the list starts below it too. */
+.chat-widget-close {
+  flex: none;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed var(--fg);
+  border-left: 1px dashed var(--fg);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.chat-widget-close:hover {
+  color: var(--fg);
 }
 
 .chat-widget-list {
@@ -642,7 +670,7 @@ html.dark .chat-widget-image {
 }
 
 /* Drawn, not from a font: no icon set is installed and the glyph must match everywhere. */
-.chat-widget-pick-icon {
+.chat-widget-icon {
   display: block;
   width: 13px;
   height: 13px;
