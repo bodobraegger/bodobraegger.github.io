@@ -5,6 +5,14 @@
 export const TITLE_TEXT = 'Suzuno Financial Holdings'
 export const BANNER_TEXT = 'すずのフィナンシャルHD'
 
+/** The lettering of the cover: the title and the line on the banner. */
+export interface CoverTexts {
+  title: string
+  banner: string
+}
+
+export const COVER_TEXTS: CoverTexts = { title: TITLE_TEXT, banner: BANNER_TEXT }
+
 export interface TitleType {
   family: string
   weight: number

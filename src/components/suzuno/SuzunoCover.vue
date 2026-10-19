@@ -5,14 +5,15 @@
 // and the grain. The background patterns (the vine and the grain) come from
 // src/lib/suzuno/patterns/, and `pattern` replaces the vine with other layers. The
 // vine is in the markup, so the cover needs no script; with `grow` it grows
-// from its genome on mount. A `viewBox` shows a detail.
+// from its genome on mount. A `viewBox` shows a detail. `texts` replaces the
+// title and the banner line.
 import { useHead } from '@unhead/vue'
 import { useId } from 'vue'
 import bannerPhoto from '~/assets/suzuno/banner-photo.webp'
 import lighting from '~/assets/suzuno/lighting.png'
 import veil from '~/assets/suzuno/veil.png'
-import type { CoverTypography } from '~/lib/suzuno/cover-typography'
-import { BANNER_TEXT, COVER_TYPOGRAPHY, TITLE_TEXT } from '~/lib/suzuno/cover-typography'
+import type { CoverTexts, CoverTypography } from '~/lib/suzuno/cover-typography'
+import { COVER_TEXTS, COVER_TYPOGRAPHY, TITLE_TEXT } from '~/lib/suzuno/cover-typography'
 import PatternFill from '~/components/suzuno/PatternFill.vue'
 import type { PatternFillValue, PatternLayer } from '~/lib/suzuno/patterns'
 import { COVER_VINE_BOX } from '~/lib/suzuno/patterns/plum-vine'
@@ -20,6 +21,8 @@ import { COVER_VINE_BOX } from '~/lib/suzuno/patterns/plum-vine'
 const props = withDefaults(defineProps<{
   grow?: boolean
   typography?: CoverTypography
+  /** Texts that replace the texts of the print. */
+  texts?: Partial<CoverTexts>
   /** The background over the paper and under the print; by default the vine. */
   pattern?: PatternFillValue
   viewBox?: string
@@ -50,6 +53,9 @@ const url = (name: Definition) => `url(#${ids[name]})`
 
 const title = computed(() => props.typography.title)
 const banner = computed(() => props.typography.banner)
+const texts = computed(() => ({ ...COVER_TEXTS, ...props.texts }))
+// The offsets are fitted to the glyphs of the printed title, so another title keeps the spacing of the face
+const glyphOffsets = computed(() => texts.value.title === TITLE_TEXT ? title.value.glyphOffsets.join(' ') : undefined)
 
 /** The text in runs, with the characters that the face lacks as blank runs. */
 function runs(text: string, missing = '') {
@@ -63,8 +69,8 @@ function runs(text: string, missing = '') {
   }
   return result
 }
-const titleRuns = computed(() => runs(TITLE_TEXT, title.value.missing))
-const bannerRuns = computed(() => runs(BANNER_TEXT, banner.value.missing))
+const titleRuns = computed(() => runs(texts.value.title, title.value.missing))
+const bannerRuns = computed(() => runs(texts.value.banner, banner.value.missing))
 
 // The faces of the print (tools/font-fit*.mjs): Adobe Caslon Pro Bold for the
 // Latin letters and Ro本明朝Std E for the kana, combined like a 合成フォント
@@ -80,8 +86,23 @@ const FONT_FACES = `
 @font-face { font-family: 'Suzuno Latin'; font-weight: 700; src: ${fontSources('Adobe Caslon Pro Bold', 'ACaslonPro-Bold')}; }
 @font-face { font-family: 'Suzuno Kana'; font-weight: 700; src: ${fontSources('Ro本明朝Std E', 'RoHMinchoStd-E')}; unicode-range: U+3000-30FF; }`
 
+// A stylesheet with a text parameter loads only the glyphs of that text. It
+// gets the texts that its family sets, without the spaces, so that the
+// default texts load the subsets that the values were fitted with.
+const GLYPHS_PARAMETER = /([?&]text=)[^&]*/
+const FAMILY_PARAMETER = /[?&]family=([^:&]+)/
+const stylesheets = computed(() => props.typography.stylesheets.map((href) => {
+  const family = decodeURIComponent(href.match(FAMILY_PARAMETER)?.[1] ?? '').replaceAll('+', ' ')
+  const glyphs = [{ family: title.value.family, text: texts.value.title }, { family: banner.value.family, text: texts.value.banner }]
+    .filter(line => line.family.includes(family))
+    .map(line => line.text)
+    .join('')
+    .replace(/\s/g, '')
+  return href.replace(GLYPHS_PARAMETER, `$1${encodeURIComponent(glyphs)}`)
+}))
+
 useHead({
-  link: computed(() => props.typography.stylesheets.map(href => ({ rel: 'stylesheet', href }))),
+  link: computed(() => stylesheets.value.map(href => ({ rel: 'stylesheet', href }))),
   // One style element for all covers on a page
   style: [{ key: 'suzuno-font-slots', innerHTML: FONT_FACES }],
 })
@@ -92,7 +113,7 @@ defineExpose({ growOrnament: () => background.value?.replay() })
 
 <template>
   <svg class="block h-auto w-full" :viewBox="viewBox ?? `0 0 ${SHEET.width} ${SHEET.height}`" role="img" :aria-labelledby="ids.label">
-    <title :id="ids.label">Suzuno Financial Holdings, すずのフィナンシャルHD</title>
+    <title :id="ids.label">{{ texts.title }}, {{ texts.banner }}</title>
     <defs>
       <clipPath :id="ids.titleFrame">
         <rect x="0" y="0" :width="SHEET.width" :height="TITLE_FRAME_BOTTOM" />
@@ -133,7 +154,7 @@ defineExpose({ growOrnament: () => background.value?.replay() })
         :transform="`translate(${title.x} ${title.y}) scale(${title.squeeze} 1)`"
       >
         <!-- A blank run keeps the advance of its fallback glyphs, so that the rest stays in place -->
-        <text v-for="ink in TITLE_INKS" :key="ink.fill" :fill="ink.fill" :dx="title.glyphOffsets.join(' ')" :clip-path="ink.belowRule ? url('belowRule') : undefined">
+        <text v-for="ink in TITLE_INKS" :key="ink.fill" :fill="ink.fill" :dx="glyphOffsets" :clip-path="ink.belowRule ? url('belowRule') : undefined">
           <template v-for="(run, index) in titleRuns" :key="index">
             <tspan v-if="run.blank" fill-opacity="0">{{ run.text }}</tspan>
             <template v-else>{{ run.text }}</template>

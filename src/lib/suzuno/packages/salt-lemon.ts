@@ -200,6 +200,30 @@ export const FRONT_TEXTS: FrontTexts = {
   notes: ['写真はイメージです。', '無果汁'],
 }
 
+/** The texts of the parts of the front: the tagline of the logo, the lines of the salt badge and the citric acid in one bag, in mg. */
+export const FRONT_PART_TEXTS = {
+  logoTagline: '一粒の小さな友達',
+  saltLines: ['鳴門の塩', '使用'],
+  citricAcidMg: 830,
+}
+
+/** The texts of CitricAcidBadge. */
+export interface AcidBadgeTexts {
+  label: string
+  /** The line of the amount; {mg} stands for the citric acid in one bag. */
+  amountTemplate: string
+}
+
+export const ACID_BADGE_TEXTS: AcidBadgeTexts = {
+  label: 'クエン酸',
+  amountTemplate: '(1袋あたり{mg}mg)',
+}
+
+export const ACID_BADGE_SPHERES: [BadgeSphere, BadgeSphere] = [
+  { symbol: 'Na', caption: 'ナトリウム', colors: ['#3aa6dc', '#0d5c97'] },
+  { symbol: 'C6H8O7', caption: 'クエン酸', colors: ['#e868a6', '#a91d63'], width: 34 },
+]
+
 /** The layouts of the parts of the front, which the parts also take as their own defaults. */
 export interface FrontParts {
   title: TitleLayout

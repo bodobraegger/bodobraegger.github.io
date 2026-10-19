@@ -4,7 +4,8 @@
 // the title panel, the logo of the maker, the salt and citric acid badges, the
 // banner line, the tagline and the small print, with the hang hole and the
 // tear notches cut out. Each prop replaces one part; the parts are also
-// components of their own.
+// components of their own. `logoName` and `acidBadge` pass texts on to the
+// logo and the citric acid badge.
 import { useId } from 'vue'
 import lemonPhoto from '~/assets/suzuno/salt-lemon-photo.webp'
 import PatternFill from '~/components/suzuno/PatternFill.vue'
@@ -13,8 +14,8 @@ import KatoLogo from '~/components/suzuno/packages/KatoLogo.vue'
 import SaltBadge from '~/components/suzuno/packages/SaltBadge.vue'
 import SaltLemonBanner from '~/components/suzuno/packages/SaltLemonBanner.vue'
 import SaltLemonTitle from '~/components/suzuno/packages/SaltLemonTitle.vue'
-import type { Box, FrontColors, FrontLayout, FrontParts, FrontTexts, SaltLemonTitleTexts } from '~/lib/suzuno/packages/salt-lemon'
-import { FRONT_COLORS, FRONT_LAYOUT, FRONT_PARTS, FRONT_TEXTS, SALT_LEMON_FONTS, SALT_LEMON_FRONT, SALT_LEMON_TITLE, placePart, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
+import type { AcidBadgeTexts, BadgeSphere, Box, FrontColors, FrontLayout, FrontParts, FrontTexts, SaltLemonTitleTexts } from '~/lib/suzuno/packages/salt-lemon'
+import { FRONT_COLORS, FRONT_LAYOUT, FRONT_PARTS, FRONT_PART_TEXTS, FRONT_TEXTS, SALT_LEMON_FONTS, SALT_LEMON_FRONT, SALT_LEMON_TITLE, placePart, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 import type { PatternFillValue } from '~/lib/suzuno/patterns'
 
 const props = withDefaults(defineProps<{
@@ -26,9 +27,12 @@ const props = withDefaults(defineProps<{
   pattern?: PatternFillValue
   title?: SaltLemonTitleTexts
   texts?: FrontTexts
+  /** A name in place of the drawn letters of the logo. */
+  logoName?: string
   logoTagline?: string
   saltLines?: string[]
   citricAcidMg?: number
+  acidBadge?: Partial<AcidBadgeTexts> & { spheres?: [BadgeSphere, BadgeSphere] }
   colors?: FrontColors
   layout?: FrontLayout
   /** The layouts inside the parts. */
@@ -39,9 +43,9 @@ const props = withDefaults(defineProps<{
   photo: lemonPhoto,
   title: () => SALT_LEMON_TITLE,
   texts: () => FRONT_TEXTS,
-  logoTagline: '一粒の小さな友達',
-  saltLines: () => ['鳴門の塩', '使用'],
-  citricAcidMg: 830,
+  logoTagline: FRONT_PART_TEXTS.logoTagline,
+  saltLines: () => FRONT_PART_TEXTS.saltLines,
+  citricAcidMg: FRONT_PART_TEXTS.citricAcidMg,
   colors: () => FRONT_COLORS,
   layout: () => FRONT_LAYOUT,
   parts: () => FRONT_PARTS,
@@ -81,8 +85,8 @@ const fullName = computed(() => `${props.title.kanji}${props.title.name}${props.
         <image v-else :href="photo" v-bind="photoPlace" preserveAspectRatio="xMidYMid slice" data-part="photo" />
       </svg>
       <SaltLemonTitle v-bind="layout.title" :texts="title" :panel="colors.panel" :ink="colors.ink" :ruby-outline="colors.edge" :layout="parts.title" data-part="title" />
-      <KatoLogo :transform="placePart(layout.logo)" :tagline="logoTagline" :red="colors.logoRed" :tagline-color="colors.logoRed" :layout="parts.logo" data-part="logo" />
-      <CitricAcidBadge :transform="placePart(layout.acidBadge)" :citric-acid-mg="citricAcidMg" :disc="colors.acidDisc" :glow="colors.edge" :layout="parts.acidBadge" data-part="acid-badge" />
+      <KatoLogo :transform="placePart(layout.logo)" :name="logoName" :tagline="logoTagline" :red="colors.logoRed" :tagline-color="colors.logoRed" :layout="parts.logo" data-part="logo" />
+      <CitricAcidBadge v-bind="acidBadge" :transform="placePart(layout.acidBadge)" :citric-acid-mg="citricAcidMg" :disc="colors.acidDisc" :glow="colors.edge" :layout="parts.acidBadge" data-part="acid-badge" />
       <SaltBadge :transform="placePart(layout.saltBadge)" :lines="saltLines" :disc="colors.saltDisc" :waves="colors.saltWaves" :layout="parts.saltBadge" data-part="salt-badge" />
       <SaltLemonBanner :transform="placePart(layout.banner)" :text="texts.banner" :ink="colors.ink" :edge="colors.edge" :layout="parts.banner" data-part="banner" />
       <text

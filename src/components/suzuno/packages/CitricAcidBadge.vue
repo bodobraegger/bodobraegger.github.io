@@ -6,7 +6,7 @@
 // 100. Place it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
 import { useId } from 'vue'
 import type { AcidBadgeLayout, BadgeSphere, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
-import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, formulaParts, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
+import { ACID_BADGE_SPHERES, ACID_BADGE_TEXTS, FRONT_COLORS, FRONT_PARTS, FRONT_PART_TEXTS, SALT_LEMON_FONTS, formulaParts, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -25,13 +25,10 @@ const props = withDefaults(defineProps<{
   captionFont?: SaltLemonFont
   layout?: AcidBadgeLayout
 }>(), {
-  label: 'クエン酸',
-  citricAcidMg: 830,
-  amountTemplate: '(1袋あたり{mg}mg)',
-  spheres: () => [
-    { symbol: 'Na', caption: 'ナトリウム', colors: ['#3aa6dc', '#0d5c97'] },
-    { symbol: 'C6H8O7', caption: 'クエン酸', colors: ['#e868a6', '#a91d63'], width: 34 },
-  ],
+  label: ACID_BADGE_TEXTS.label,
+  citricAcidMg: FRONT_PART_TEXTS.citricAcidMg,
+  amountTemplate: ACID_BADGE_TEXTS.amountTemplate,
+  spheres: () => ACID_BADGE_SPHERES,
   disc: () => FRONT_COLORS.acidDisc,
   rim: '#eef6f8',
   ink: '#ffffff',
