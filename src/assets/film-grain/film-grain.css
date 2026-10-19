@@ -1,0 +1,87 @@
+/* Film grain over the box of a positioned parent, or over the window.
+   The layer needs no script and no framework:
+     <div class="film-grain"></div>                      last child of a positioned box
+     <div class="film-grain film-grain--fixed"></div>    anywhere, covers the window
+   Modifiers: film-grain--color for colour grain, film-grain--still for grain
+   that does not change. These variables apply on the element or on an
+   ancestor:
+     --film-grain-strength  0 to 1, the opacity of the grain (0.25)
+     --film-grain-size      CSS pixels for each texel of the tiles (1)
+     --film-grain-floor     the part of the strength that also shows on
+                            white and on black (0.4)
+   scripts/film-grain.ts makes the tiles and frames.css. */
+@import './frames.css';
+
+.film-grain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Without a box of its own, the element makes no stacking context, so the
+   blend of the layers reaches the page behind them. */
+.film-grain--fixed {
+  display: contents;
+}
+
+/* Each layer shows a tile of 241 texels over a tile of 256 texels, so the
+   grain does not repeat. A layer is larger than its box by the range of the
+   frame offsets (64 texels), and a frame shifts it by up to that range. The
+   compositor moves the layer, so the tiles are rasterized only once. The
+   loop of 2s shows the 48 frames of frames.css at 24 frames per second. */
+.film-grain::before,
+.film-grain::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: calc(var(--film-grain-size, 1) * -64px);
+  bottom: calc(var(--film-grain-size, 1) * -64px);
+  pointer-events: none;
+  background-image: url('./grain-prime.webp'), url('./grain-mono.webp');
+  background-size: calc(var(--film-grain-size, 1) * 241px), calc(var(--film-grain-size, 1) * 256px);
+  animation: film-grain 2s linear infinite;
+}
+
+.film-grain--fixed::before,
+.film-grain--fixed::after {
+  position: fixed;
+  z-index: 2147483647;
+}
+
+/* The floor keeps a little grain on white and on black. The tiles darken
+   with black and lighten with white through their alpha, so the floor needs
+   no blend mode. */
+.film-grain::before {
+  opacity: calc(var(--film-grain-strength, 0.25) * var(--film-grain-floor, 0.4));
+}
+
+/* The overlay blend changes a pixel of brightness b in proportion to
+   min(b, 1 - b), so the grain is strongest in the midtones, like film. */
+.film-grain::after {
+  mix-blend-mode: overlay;
+  opacity: var(--film-grain-strength, 0.25);
+}
+
+.film-grain--color::after {
+  background-image: url('./grain-prime.webp'), url('./grain-color.webp');
+}
+
+.film-grain--still::before,
+.film-grain--still::after {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain::before,
+  .film-grain::after {
+    animation: none;
+  }
+}
+
+@media print {
+  .film-grain {
+    display: none;
+  }
+}
