@@ -1094,23 +1094,24 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 }
 
 // The vines of a page background. The blossoms of a vine are VINE_SCALE
-// times the size of the default growth, and its line is STROKE_SCALE times
-// as wide. A vine branches with BRANCHING. The vines from the bottom stand
-// BOTTOM_SPACING apart, and each rises through a share of the window height
-// in the range BOTTOM_RISE. The vines from a side stand SIDE_SPACING apart
-// and reach SIDE_REACH of the window width into it, but at least
-// SIDE_REACH_MINIMUM. A vine sets one flower per FLOWER_AREA of its box and
-// one bud per BUD_AREA.
-const VINE_SCALE = 0.6
-const STROKE_SCALE = 0.5
+// times the size of the default growth, its steps are STEP_SCALE times as
+// long, and its line is STROKE_SCALE times as wide. A vine branches with
+// BRANCHING. The vines from the bottom stand BOTTOM_SPACING apart, and each
+// rises through a share of the window height in the range BOTTOM_RISE. The
+// vines from a side stand SIDE_SPACING apart and reach SIDE_REACH of the
+// window width into it, but at least SIDE_REACH_MINIMUM. A vine sets one
+// flower per FLOWER_AREA of its box and one bud per BUD_AREA.
+const VINE_SCALE = 0.4
+const STEP_SCALE = 0.55
+const STROKE_SCALE = 0.35
 const BRANCHING = 0.2
-const BOTTOM_SPACING = 240
-const BOTTOM_RISE = [0.55, 0.95]
-const SIDE_SPACING = 360
+const BOTTOM_SPACING = 150
+const BOTTOM_RISE = [0.35, 0.8]
+const SIDE_SPACING = 220
 const SIDE_REACH = 0.4
-const SIDE_REACH_MINIMUM = 240
-const FLOWER_AREA = 40000
-const BUD_AREA = 60000
+const SIDE_REACH_MINIMUM = 200
+const FLOWER_AREA = 18000
+const BUD_AREA = 27000
 // The share of its box that a vine reaches beyond its foot, as `grow` sets
 // its foot at a tenth of the box from the edge
 const FOOT_SHARE = 0.9
@@ -1151,6 +1152,7 @@ export function vines(width: number, height: number, seed: number): Plant[] {
       box,
       direction,
       strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
+      segment: GROWTH.segment * STEP_SCALE,
       branching: BRANCHING,
       flowerSize: [GROWTH.flowerSize[0] * sizeScale, GROWTH.flowerSize[1] * sizeScale],
       budSize: [GROWTH.budSize[0] * sizeScale, GROWTH.budSize[1] * sizeScale],
