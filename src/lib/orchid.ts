@@ -333,7 +333,7 @@ const EDGE_MARGIN = 2
 const clamp = (value: number) => Math.min(1, Math.max(0, value))
 
 /** The growth of the stems, in canvas units per second. */
-const GROWTH_SPEED = 40
+const GROWTH_SPEED = 20
 // The least time between two frames, and the most time that one frame grows.
 // Each frame that changes a canvas costs the browser a copy of it. At 15
 // frames per second, the two canvases cost about as much as the one canvas of
@@ -342,8 +342,8 @@ const GROWTH_SPEED = 40
 const FRAME_INTERVAL = 1000 / 15
 const LONGEST_FRAME = 100
 // The shortest piece of a stem that a frame adds. Each piece ends in a seam,
-// so longer pieces keep the line more even.
-const PIECE_LENGTH = 3
+// so a stem adds no piece shorter than a pixel.
+const PIECE_LENGTH = 1
 
 /** A stem in the growth: the distance of each of its points from its start, and the distance drawn so far. */
 interface GrowingStem extends StemPart {
