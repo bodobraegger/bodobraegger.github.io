@@ -41,7 +41,12 @@ export default defineConfig({
         'vertical-align': 'text-bottom',
       },
     }),
-    presetAttributify(),
+    presetAttributify({
+      // The defaults, and the font size of SVG text: font-size="10" would
+      // become the utility of a 2.5rem font. The check sees the name before
+      // the binding colon is removed, so the bound form is listed too.
+      ignoreAttributes: ['placeholder', 'fill', 'opacity', 'stroke-opacity', 'font-size', ':font-size'],
+    }),
     presetUno(),
     presetWebFonts({
       fonts: {
