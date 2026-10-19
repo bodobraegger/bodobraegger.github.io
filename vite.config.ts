@@ -95,8 +95,10 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     watch: {
-      // Thousands of files that no page imports: watching them uses up the inotify limit
-      ignored: ['**/.venv/**', '**/.claude/**'],
+      // Thousands of files that no page imports: watching them uses up the inotify
+      // limit. Absolute paths, because a worktree in .claude/worktrees/ runs its
+      // own dev server, and a `**/.claude/**` glob would ignore all its files.
+      ignored: [resolve(__dirname, '.venv/**'), resolve(__dirname, '.claude/**')],
     },
   },
   optimizeDeps: {
