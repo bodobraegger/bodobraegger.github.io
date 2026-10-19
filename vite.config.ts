@@ -93,6 +93,12 @@ export default defineConfig(({ mode }) => ({
       { find: '~/', replacement: `${resolve(__dirname, 'src')}/` },
     ],
   },
+  server: {
+    watch: {
+      // Thousands of files that no page imports: watching them uses up the inotify limit
+      ignored: ['**/.venv/**', '**/.claude/**'],
+    },
+  },
   optimizeDeps: {
     include: [
       'vue',
