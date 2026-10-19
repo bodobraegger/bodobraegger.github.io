@@ -3,8 +3,8 @@
 // front is in the pixels of the flat print artwork of the maker (677 x 891),
 // upright and rectangular. tools/fits/packages/salt-lemon.mjs fits the places
 // and colours of salt-lemon-fit.json to flattened references.
-import { useHead } from '@unhead/vue'
 import fitted from '~/lib/suzuno/packages/salt-lemon-fit.json'
+import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
 export const SALT_LEMON_FRONT = { width: 677, height: 891 }
 export const SALT_LEMON_BACK = { width: 588, height: 726 }
@@ -38,7 +38,7 @@ const STYLESHEET = 'https://fonts.googleapis.com/css2?display=block&family=Kosug
 
 /** Loads the fonts of SALT_LEMON_FONTS, once for all parts on a page. */
 export function useSaltLemonFonts() {
-  useHead({ link: [{ key: 'salt-lemon-fonts', rel: 'stylesheet', href: STYLESHEET }] })
+  useStylesheets(() => [STYLESHEET])
 }
 
 /** The place of a part in its parent: the origin of the part and its scale. */

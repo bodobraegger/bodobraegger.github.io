@@ -3,13 +3,13 @@
 // All places are in the pixels of the faces of the photos,
 // reference/packages/hokkaido-milk-<face>.png. tools/fits/packages/hokkaido-milk.mjs
 // fits the layout against them and writes hokkaido-milk-layout.json.
-import { useHead } from '@unhead/vue'
 import layout from './hokkaido-milk-layout.json'
 import can from '~/assets/suzuno/packages/hokkaido-milk-can.webp'
 import cow from '~/assets/suzuno/packages/hokkaido-milk-cow.webp'
 import farm from '~/assets/suzuno/packages/hokkaido-milk-farm.webp'
 import mascot from '~/assets/suzuno/packages/hokkaido-milk-mascot.webp'
 import type { BandLayout, TableRow } from '~/lib/suzuno/packages/almond-caramel'
+import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
 export const HOKKAIDO_MILK_FACES = {
   front: { width: 526, height: 733 },
@@ -39,7 +39,7 @@ export const HOKKAIDO_MILK_FONTS = {
 
 /** Loads the fonts of the bag and the candy, once for a page. */
 export function useHokkaidoMilkFonts() {
-  useHead({ link: [{ key: 'hokkaido-milk-fonts', rel: 'stylesheet', href: HOKKAIDO_MILK_FONTS.stylesheet }] })
+  useStylesheets(() => [HOKKAIDO_MILK_FONTS.stylesheet])
 }
 
 /** The place of a part in face pixels; the part is drawn around its own origin. */

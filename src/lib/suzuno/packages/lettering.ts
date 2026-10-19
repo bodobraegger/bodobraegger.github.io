@@ -2,7 +2,8 @@
 // src/lib/suzuno/packages/font-metrics.ts, so that the server render already puts a
 // box behind a word or a word after another word.
 import { useHead } from '@unhead/vue'
-import { computed } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
+import { computed, inject } from 'vue'
 import type { FontMetrics } from '~/lib/suzuno/packages/font-metrics'
 import { FIRST_CHARACTER, FIRST_KANA, FIRST_WIDE_CHARACTER } from '~/lib/suzuno/packages/font-metrics'
 
@@ -14,10 +15,25 @@ export interface LetteringFont {
   metrics: FontMetrics
 }
 
-/** Loads the stylesheets of the fonts that a getter gives, once for each stylesheet on a page. */
+/**
+ * The characters that a face shows. A face of bbo.do provides them, so that
+ * the Google Fonts stylesheets of its parts load only these glyphs.
+ */
+export const FACE_GLYPHS: InjectionKey<Ref<string>> = Symbol('face glyphs')
+
+/** Loads stylesheets, once for each address on a page, with only the glyphs of the face when the face gives them. */
+export function useStylesheets(hrefs: () => string[]) {
+  const glyphs = inject(FACE_GLYPHS, undefined)
+  const links = computed(() => [...new Set(hrefs())].map((stylesheet) => {
+    const href = glyphs?.value ? `${stylesheet}&text=${encodeURIComponent(glyphs.value)}` : stylesheet
+    return { key: href, rel: 'stylesheet', href }
+  }))
+  useHead({ link: links })
+}
+
+/** Loads the stylesheets of the fonts that a getter gives. */
 export function useWebFonts(fonts: () => Pick<LetteringFont, 'stylesheet'>[]) {
-  const stylesheets = computed(() => [...new Set(fonts().map(font => font.stylesheet))])
-  useHead({ link: computed(() => stylesheets.value.map(href => ({ key: href, rel: 'stylesheet', href }))) })
+  useStylesheets(() => fonts().map(font => font.stylesheet))
 }
 
 /** The cap height of the lettering parts in their own coordinates. */
