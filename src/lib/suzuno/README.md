@@ -1,35 +1,67 @@
-# Suzuno difference faces
+# Suzuno faces
 
-The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. `src/components/suzuno/SuzunoDifference.vue` lays one face of a recreation over its reference image with the colour difference. A markdown page uses it without an import:
+The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. Four components show a face of a recreation on its reference image. A markdown page uses them without an import:
 
 ```html
-<SuzunoDifference item="almond-caramel" face="front" :texts="{ name: 'WALNUT' }" />
+<SuzunoBag item="almond-caramel" :texts="{ name: 'WALNUT' }" />
 ```
 
-## Props of SuzunoDifference
+- `SuzunoBag`: the big bags.
+- `SuzunoWrapper`: the wrapped candies.
+- `SuzunoMarukawa`: the MARUKAWA bubble gum boxes.
+- `SuzunoFinancial`: the cover of the Suzuno Financial Holdings brochure.
 
-- `item`: `cover`, `almond-caramel`, `hokkaido-milk`, `salt-lemon`, `marukawa-melon`, `marukawa-strawberry` or `marukawa-orange`.
-- `face`: `front` (the default), `back`, `wrapper-front` or `wrapper-back`, as the item has them. The list below gives the faces of each item.
-- `texts`: the texts that replace the texts of the print. An object merges key by key with the default texts, so `{ stamp: { middle: '濃厚抹茶' } }` keeps the other lines of the stamp. A string, a number or a list replaces the default as a whole. A key that the face does not have causes an `UnknownTextError` in the browser console, and the face disappears from the page. An item or a face that does not exist stops the build with an `UnknownFaceError`.
-- `overrides`: further props of the recreation component, such as colours or images. They replace the props that the face gives. For example, `:overrides="{ version: 'domestic' }"` shows the Japanese version of a MARUKAWA box. That version has no reference image, so use it with `recreation-only`.
-- `recreation-only`: shows the recreation alone, without the reference image and without the difference.
+`SuzunoFace.vue` is the common part of the four components. A page does not use it directly.
 
-The face is as wide as the prose column and at most as high as the window. The reference image loads lazily as WebP. The fonts and the images of a recreation are large, so the recreation mounts only when its face is less than one window height away from the visible part of the page. The fonts come from Google Fonts.
+## Options
 
-## Faces and texts
+Each component takes these options. Its own section gives `item` and `face`.
 
-The values in parentheses are the default texts of the print. A list gives its lines. The constants in `src/lib/suzuno/` hold the full default texts.
+- `texts`: the texts of the print. Without `texts`, the face shows the texts of the print.
+  - An object replaces some texts: `:texts="{ name: 'WALNUT' }"`. It merges key by key with the texts of the print, so `{ stamp: { middle: '濃厚抹茶' } }` keeps the other lines of the stamp. A string, a number or a list replaces the default as a whole.
+  - `texts=""` removes all texts. The shapes, the patterns and the images of the recreation stay; the lettering goes, also the lettering that the print draws as shapes, such as the traced 北海道 and the drawn カトウ. The barcodes keep their bars and lose their digits.
+  - A key that the face does not have causes an `UnknownTextError`, and a string with text, such as `texts="WALNUT"`, causes an `InvalidOptionError`. `pnpm build` prints the error and still writes the page, without its content. In the browser, the console shows the error, and the face does not show.
+- `difference`: the colour difference of the recreation and the reference, on black, where the recreation matches the reference. `true` is the default. With `false`, `off` or `0`, the face is an overlay: the recreation lies on the reference with its opacity.
+- `opacity`: the opacity of the recreation, in percent from 0 to 100. The default is 50 in the overlay and 100 in the difference. An opacity in the difference mixes the difference with the reference. Another value causes an `InvalidOptionError`, as for the texts. An item or a face that does not exist causes an `UnknownFaceError` in the same way.
+- `class` and `style`: the size and the place of the face, such as `class="w-16"` or `class="float-right w-24 ml-4"`. Set the width; the height follows from the face.
 
-### cover
+The overlay with the texts of the print and the default opacity shows the face as on the photo: `<SuzunoBag item="almond-caramel" difference="false" />`. The salt lemon bag is the exception. Its recreation has the size of the flat artwork of the maker (677 × 891), and its photo (590 × 750) stretches to that box, so the lower half of its overlay shows the lettering twice.
 
-The face `front` of `SuzunoCover.vue`.
+### Forms of the attributes
 
-- `title` ("Suzuno Financial Holdings"). The fitted offsets of the glyphs apply only to the default title.
-- `banner` ("すずのフィナンシャルHD").
+A markdown tag gives an attribute without a colon as a string, and an attribute with a colon as a JavaScript value. These forms work:
+
+- `difference="false"`, `difference="off"` and `:difference="false"`.
+- `opacity="30"`, `opacity="30%"` and `:opacity="30"`.
+- `texts=""` and `:texts="''"` for no texts.
+
+`:texts=""` does not work: the Vue compiler stops with "v-bind is missing expression", and the page does not build. Use `texts=""`.
+
+### Size
+
+Without a class or a style, a face on a line of its own is as wide as the prose column and at most as high as the window. In a paragraph, in a list item or in a table cell, a face is an inline block in the line of text, so a small candy can stand among the words:
+
+```html
+Some text <SuzunoWrapper item="hokkaido-milk" class="w-16" /> more text.
+```
+
+The rules of the default size have no specificity, so any class or style on the tag wins over them. The lightbox of the site does not open a face.
+
+### Loading
+
+A face mounts its recreation and its reference image only when it is less than one window height away from the visible part of the page. The reference image is a WebP copy at the width of the face (160, 320, 660, 990 or 1320 pixels, or the width of the original when it is narrower). A face narrower than 160 pixels takes copies of the photos in its recreation that are 320 pixels wide.
+
+The fonts come from Google Fonts. The stylesheets of a face ask only for the glyphs of its texts, so a font file holds only these glyphs. Faces with the same texts share their stylesheets.
+
+## SuzunoBag
+
+`item`: `almond-caramel`, `hokkaido-milk` or `salt-lemon`. `face`: `front` (the default) or `back`; the salt lemon bag has only `front`.
+
+The values in parentheses are the texts of the print. A list gives its lines. The constants in `src/lib/suzuno/` hold the full texts.
 
 ### almond-caramel
 
-The faces `front` and `back` of `AlmondCaramelBag.vue`, with the texts `ALMOND_CARAMEL_TEXTS` of `packages/almond-caramel.ts`. Both sides show the oval label and the ribbon:
+`AlmondCaramelBag.vue`, with the texts `ALMOND_CARAMEL_TEXTS` of `packages/almond-caramel.ts`. Both faces show the oval label and the ribbon:
 
 - `intro` (["WE PROUDLY PRESENT YOU", "CHIKUHO CARAMEL,"]).
 - `name` ("ALMOND").
@@ -53,20 +85,13 @@ The back also shows:
 - `nutritionNote` ("この表示値は目安です").
 - `recycling` (["外袋：PP", "内袋：PP, PET"]).
 - `sorting`, 3 lines from "包材の分別区分：袋 プラスチック".
-- `barcode` ("4902013500477"). It must have 13 digits and a correct check digit. Another value causes an `Ean13Error` in the browser console.
+- `barcode` ("4902013500477"). It must have 13 digits and a correct check digit. Another value causes an `Ean13Error` in the browser console, and the barcode does not show.
 - `footnote`, 3 lines from "※ごくまれに、小包装にキャラメルが入っ".
 - `homepage` (["筑豊製菓ホームページ", "http://www.chikuho-seika.co.jp"]).
 
-The faces `wrapper-front` and `wrapper-back` of `AlmondCaramelPiece.vue`, with the texts `ALMOND_CARAMEL_PIECE_TEXTS`:
-
-- `name` ("ALMOND"), front.
-- `spaced` ("CARAMEL"), front.
-- `lines` ([]), small lines below the spaced word on the front.
-- `columns` (["アーモンドキャラメル", "筑豊製菓株式会社", "福岡県飯塚市津島408-1"]), back, from right to left.
-
 ### hokkaido-milk
 
-The faces `front` and `back` of `HokkaidoMilkBag.vue`, with the texts `HOKKAIDO_MILK_TEXTS` and `HOKKAIDO_MILK_BACK_TEXTS` of `packages/hokkaido-milk.ts`:
+`HokkaidoMilkBag.vue`, with the texts `HOKKAIDO_MILK_TEXTS` and `HOKKAIDO_MILK_BACK_TEXTS` of `packages/hokkaido-milk.ts`:
 
 - `brand` ("RIBON"), front. A disc replaces the letter O.
 - `title` ("北海道"). The default is the traced lettering of the print; another text is set in Noto Serif JP.
@@ -77,15 +102,9 @@ The faces `front` and `back` of `HokkaidoMilkBag.vue`, with the texts `HOKKAIDO_
 - `weight` ("49g"), back, in the row 内容量 of the label.
 - `back`, the small print of the back: `opening`, `bestBefore` (`label` "賞味期限", `date` "2027年04月/SB3"), `calciumHeading` ("カルシウム強化"), `calciumText`, `nutrition` (`heading`, `serving`, `rows`, `note`), `afterOpening`, `label` (`heading`, `rows`, `weightRow`, `rowsAfterWeight`), `notice`, `address`, `illustration` ("イラストはイメージです"), `barcode` ("4903316443409"), `homepage` and `recycling` (`mark` "プラ", `parts`, `text`).
 
-The faces `wrapper-front` and `wrapper-back` of `HokkaidoMilkCandy.vue`, with the texts `HOKKAIDO_MILK_CANDY_TEXTS`:
-
-- `subtitle` ("ミルクソフトキャンディ").
-- `title` ("北海道").
-- `recycling` ("プラ"), back.
-
 ### salt-lemon
 
-The face `front` of `SaltLemonFront.vue`, with the texts of `packages/salt-lemon.ts`:
+`SaltLemonFront.vue`, with the texts of `packages/salt-lemon.ts`:
 
 - `kanji` ("塩"), `ruby` ("しお"), `name` ("レモン") and `kind` ("キャンディ"), the title panel.
 - `banner` ("気軽に塩分補給").
@@ -95,15 +114,43 @@ The face `front` of `SaltLemonFront.vue`, with the texts of `packages/salt-lemon
 - `saltBadge` (["鳴門の塩", "使用"]).
 - `acidBadge`: `label` ("クエン酸"), `amount` ("(1袋あたり{mg}mg)", where {mg} stands for `mg`), `mg` (830) and `spheres` ([{ symbol: "Na", caption: "ナトリウム" }, { symbol: "C6H8O7", caption: "クエン酸" }]).
 
-### marukawa-melon, marukawa-strawberry, marukawa-orange
+## SuzunoWrapper
 
-The face `front` of `MarukawaBox.vue`, the export version of the photos. The front and the back of a box carry the same print, so one face stands for both.
+`item`: `almond-caramel` or `hokkaido-milk`. `face`: `front` (the default) or `back`. The reference photos show the whole wrapper on a transparent ground.
+
+### almond-caramel
+
+`AlmondCaramelPiece.vue`, with the texts `ALMOND_CARAMEL_PIECE_TEXTS`:
+
+- `name` ("ALMOND"), front.
+- `spaced` ("CARAMEL"), front.
+- `lines` ([]), small lines below the spaced word on the front.
+- `columns` (["アーモンドキャラメル", "筑豊製菓株式会社", "福岡県飯塚市津島408-1"]), back, from right to left.
+
+### hokkaido-milk
+
+`HokkaidoMilkCandy.vue`, with the texts `HOKKAIDO_MILK_CANDY_TEXTS`:
+
+- `subtitle` ("ミルクソフトキャンディ").
+- `title` ("北海道").
+- `recycling` ("プラ"), back.
+
+## SuzunoMarukawa
+
+`item`: `melon`, `strawberry` or `orange`. The front and the back of a box carry the same print, so a box has one face. `MarukawaBox.vue` shows the export version of the photos:
 
 - `brand` ("MARUKAWA").
 - `flavour` ("melon", "Strawberry" or "orange").
 - `tagline` ("ARTIFICIALLY FLAVORED").
 - `bubble` ("BUBBLE") and `gum` ("GUM").
 - `label`, orange only: `heading` ("Made in"), `badge` ("JAPAN") and `lines` (["4pcs. (5.4 g)", "MARBLE BUBBLE GUM"]).
+
+## SuzunoFinancial
+
+The cover of the brochure, `SuzunoCover.vue`. It has no `item` and no `face`.
+
+- `title` ("Suzuno Financial Holdings"). The fitted offsets of the glyphs apply only to the default title.
+- `banner` ("すずのフィナンシャルHD").
 
 ## Source
 
@@ -113,17 +160,18 @@ The files are a copy from the Suzuno project at the commit `9a3602c33d0d4b2d80b0
 - `src/lib/suzuno/` holds `cover-typography.ts`, `ornament.ts` and `reference-images.ts` from `src/lib/`, the folder `packages/` from `src/lib/packages/` and the folder `patterns/` from `src/lib/patterns/`.
 - `src/assets/suzuno/` holds the images, `ornament-cover.json` and `SOURCES.md` from `assets/`, and in `reference/` the reference images of the faces from `reference/`.
 
-The comments of the copied files name the folders `assets/`, `reference/` and `tools/` of the Suzuno project. `faces.ts`, `SuzunoDifference.vue` and this file are not in the Suzuno project.
+The comments of the copied files name the folders `assets/`, `reference/` and `tools/` of the Suzuno project. `faces.ts`, `SuzunoFace.vue`, `SuzunoBag.vue`, `SuzunoWrapper.vue`, `SuzunoMarukawa.vue`, `SuzunoFinancial.vue` and this file are not in the Suzuno project.
 
 ### Changes to the copy
 
 - The imports and the paths in the comments point to the suzuno folders of bbo.do.
-- `reference-images.ts` reads the images in `src/assets/suzuno/reference/`, makes copies at the widths of the markdown images (660, 990 and 1320 pixels) and gives no link to the originals.
+- `reference-images.ts` reads the images in `src/assets/suzuno/reference/`, makes small copies (160 and 320 pixels) and copies at the widths of the markdown images (660, 990 and 1320 pixels) and gives no link to the originals.
 - `SuzunoCover.vue` has the prop `texts`. Its Google Fonts stylesheets load the glyphs of the texts that their families set. The fonts of the print apply only when they are installed, because bbo.do has no `fonts/` folder. The class `sheet` is gone, because bbo.do has no style for it.
 - `cover-typography.ts` has `CoverTexts` and `COVER_TEXTS`.
 - `hokkaido-milk.ts` keeps the layout as a plain object, without the hook for the fit tools of the Suzuno project.
 - `ornament-cover.json` has the indentation of the lint rules of bbo.do. Its data does not change.
 - `salt-lemon.ts` has `FRONT_PART_TEXTS`, `AcidBadgeTexts`, `ACID_BADGE_TEXTS` and `ACID_BADGE_SPHERES`, which `CitricAcidBadge.vue` and `SaltLemonFront.vue` take as defaults. `SaltLemonFront.vue` has the props `logoName` and `acidBadge`, which it gives to the logo and to the citric acid badge.
+- `lettering.ts` has `FACE_GLYPHS` and `useStylesheets`. The font loaders of `lettering.ts`, `hokkaido-milk.ts` and `salt-lemon.ts` use `useStylesheets`, which adds the glyphs that a face provides to each stylesheet.
 
 The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of the attributify utilities, because the faces set the size of their text with it.
 
@@ -152,7 +200,7 @@ The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of th
 3. Change the imports of the changed files to the suzuno folders, as in the list above, and run `pnpm lint --fix`.
 4. When a face gets a new text, add it to `faces.ts` and to the list in this file.
 5. Write the new commit into the section "Source".
-6. Check every face with the draft note `pages/notes/2610-suzuno-difference-components.md` in `pnpm dev`, and run `pnpm build`.
+6. Check the faces with the draft note `pages/notes/2610-suzuno-difference-components.md` in `pnpm dev`, and run `pnpm build`.
 
 ## Licences
 

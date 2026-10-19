@@ -8,27 +8,31 @@ draft: true
 plum: false
 ---
 
-Each face below is a recreation of the Suzuno project on its reference image, with the colour difference. The texts are not the texts of the print, so they show as bright areas. A note shows a face with one line:
+Each face below is a recreation of the Suzuno project on its reference image. Where the recreation matches the photo, the colour difference is black, so texts that are not the texts of the print show as bright areas. A note shows a face with one tag:
 
 ```html
-<SuzunoDifference item="almond-caramel" face="front" :texts="{ name: 'WALNUT' }" />
+<SuzunoBag item="hokkaido-milk" :texts="{ title: '東京都' }" />
 ```
 
-`src/lib/suzuno/README.md` lists the items, their faces and their texts.
+`src/lib/suzuno/README.md` lists the components, their items and faces, their texts and their options.
 
-<SuzunoDifference item="cover" :texts="{ title: 'bbo.do Financial Holdings', banner: 'ぼどフィナンシャルHD' }" />
+<SuzunoFinancial :texts="{ title: 'bbo.do Financial Holdings', banner: 'ぼどフィナンシャルHD' }" />
 
-<SuzunoDifference item="almond-caramel" face="front" :texts="{ name: 'WALNUT', spaced: 'TOFFEE', ribbon: 'ウォルナットトフィー', weight: '個包装紙込み 120 g' }" />
+<SuzunoBag item="hokkaido-milk" :texts="{ title: '東京都', subtitle: 'ミルクハードキャンデー', tagline: 'Tokyo Hard', stamp: { middle: '濃厚抹茶' } }" />
 
-<SuzunoDifference item="hokkaido-milk" face="front" :texts="{ title: '東京都', subtitle: 'ミルクハードキャンデー', tagline: 'Tokyo Hard', stamp: { middle: '濃厚抹茶' } }" />
+<SuzunoWrapper item="almond-caramel" :texts="{ name: 'WALNUT', spaced: 'TOFFEE' }" />
 
-<SuzunoDifference item="salt-lemon" :texts="{ kanji: '梅', ruby: 'うめ', name: 'ライム', banner: '気軽にビタミン補給', acidBadge: { mg: 500 } }" />
+<SuzunoMarukawa item="orange" :texts="{ flavour: 'lemon', label: { badge: 'BRAZIL', lines: ['6pcs. (8.1 g)', 'MARBLE BUBBLE GUM'] } }" />
 
-<SuzunoDifference item="marukawa-melon" :texts="{ flavour: 'kiwi', bubble: 'CHEWING' }" />
+With `difference="false"`, the recreation lies on the photo at half opacity. With the texts of the print, the face then looks like the photo, for context:
 
-<SuzunoDifference item="marukawa-strawberry" :texts="{ flavour: 'Raspberry', tagline: 'NATURALLY FLAVORED' }" />
+<SuzunoBag item="almond-caramel" difference="false" />
 
-<SuzunoDifference item="marukawa-orange" :texts="{ flavour: 'lemon', label: { badge: 'BRAZIL', lines: ['6pcs. (8.1 g)', 'MARBLE BUBBLE GUM'] } }" />
+With `texts=""`, the recreation has no texts. The texts of the photo then show in the difference:
+
+<SuzunoBag item="hokkaido-milk" texts="" />
+
+A face with a width class can stand in a line of text, such as a wrapped milk candy <SuzunoWrapper item="hokkaido-milk" class="w-16" :difference="false" :opacity="100" />, an almond caramel <SuzunoWrapper item="almond-caramel" class="w-14" :difference="false" :opacity="100" :texts="{ name: 'BODO' }" />, a melon box <SuzunoMarukawa item="melon" class="w-10" :difference="false" :opacity="100" /> and a strawberry box in the difference <SuzunoMarukawa item="strawberry" class="w-10" />.
 
 ## Image credits
 

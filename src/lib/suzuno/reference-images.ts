@@ -20,12 +20,13 @@ interface Copies {
 }
 
 const REFERENCE_FOLDER = '/src/assets/suzuno/reference'
-// The widths of the markdown images (scripts/markdown-images.ts): the prose
-// column at 1x, 1.5x and 2x. An image keeps its width when it is narrower.
-// A lower quality shows as noise in the difference.
+// Small copies for a candy in a line of text, and the widths of the markdown
+// images (scripts/markdown-images.ts): the prose column at 1x, 1.5x and 2x.
+// An image keeps its width when it is narrower. A lower quality shows as
+// noise in the difference.
 const COPIES = import.meta.glob<Copies>(
   '/src/assets/suzuno/reference/**/*.png',
-  { eager: true, query: { w: '660;990;1320', format: 'webp', quality: '90', as: 'img' }, import: 'default' },
+  { eager: true, query: { w: '160;320;660;990;1320', format: 'webp', quality: '90', as: 'img' }, import: 'default' },
 )
 
 export class UnknownReferenceError extends Error {
