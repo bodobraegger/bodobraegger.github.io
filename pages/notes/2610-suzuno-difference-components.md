@@ -16,9 +16,11 @@ Each face below is a recreation of the Suzuno project on its reference image. Wh
 
 `src/lib/suzuno/README.md` lists the components, their items and faces, their texts and their options.
 
-<SuzunoFinancial :texts="{ title: 'bbo.do Financial Holdings', banner: 'ぼどフィナンシャルHD' }" />
+<SuzunoFinancial :texts="{ title: 'bbo.do Financial Holdings', banner: 'now in HD!' }" />
 
-<SuzunoBag item="hokkaido-milk" :texts="{ title: '東京都', subtitle: 'ミルクハードキャンデー', tagline: 'Tokyo Hard', stamp: { middle: '濃厚抹茶' } }" />
+<SuzunoBag item="hokkaido-milk" :texts="{ title: 'bbodo', subtitle: 'rio de janeiro hard and software', tagline: 'Tokyo Hard', stamp: { middle: 'secret' } }" />
+
+<SuzunoBag item="almond-caramel" :texts="{ name: 'YOURS', spaced: 'TRULY', ribbon: 'no more kanji man', weight: '個包装紙込み 120 g' }" />
 
 <SuzunoWrapper item="almond-caramel" :texts="{ name: 'WALNUT', spaced: 'TOFFEE' }" />
 
