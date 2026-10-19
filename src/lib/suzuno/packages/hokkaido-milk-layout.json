@@ -1,0 +1,345 @@
+{
+  "front": {
+    "parts": {
+      "topSeal": {
+        "x": 0,
+        "y": 6,
+        "scale": 0.94
+      },
+      "bottomSeal": {
+        "x": 0,
+        "y": 682,
+        "scale": 1.165
+      },
+      "hole": {
+        "x": 280,
+        "y": 42,
+        "scale": 1.14
+      },
+      "map": {
+        "x": 264.8,
+        "y": 242.4,
+        "scale": 3.033
+      },
+      "logo": {
+        "x": 103,
+        "y": 91,
+        "scale": 0.245
+      },
+      "stamp": {
+        "x": 434.5,
+        "y": 120.5,
+        "scale": 0.528,
+        "rotate": -20.75
+      },
+      "tagline": {
+        "x": 267.5,
+        "y": 170,
+        "scale": 0.178
+      },
+      "title": {
+        "x": 265.8,
+        "y": 304.5,
+        "scale": 1.24
+      },
+      "subtitle": {
+        "x": 267.5,
+        "y": 336.5,
+        "scale": 0.21
+      },
+      "canLeft": {
+        "x": 102.5,
+        "y": 347,
+        "scale": 0.57
+      },
+      "canMiddle": {
+        "x": 267,
+        "y": 344,
+        "scale": 0.493
+      },
+      "canRight": {
+        "x": 433.5,
+        "y": 346,
+        "scale": 0.485
+      },
+      "badgeLeft": {
+        "x": 101,
+        "y": 410.5,
+        "scale": 0.178
+      },
+      "badgeMiddle": {
+        "x": 265,
+        "y": 394,
+        "scale": 0.185
+      },
+      "badgeRight": {
+        "x": 428,
+        "y": 390.5,
+        "scale": 0.175
+      },
+      "sky": {
+        "x": 126,
+        "y": 646.8,
+        "scale": 3.54
+      },
+      "farm": {
+        "x": 117,
+        "y": 555,
+        "scale": 3.1
+      },
+      "cow": {
+        "x": 76.5,
+        "y": 442.5,
+        "scale": 3.168,
+        "squeeze": 1.15
+      }
+    },
+    "spacings": {
+      "tagline": 41,
+      "subtitle": 3
+    },
+    "inks": {
+      "film": "#f4f5f6",
+      "hole": "#e4e6e8",
+      "seal-light": "#ffffff",
+      "seal-dark": "#9a9da1",
+      "logo": "#c8161d",
+      "stamp": "#a8862f",
+      "tagline": "#232323",
+      "title": "#141414",
+      "title-shine": "#5b5d60",
+      "subtitle": "#1a1a1a",
+      "map": "#9fd4f2",
+      "map-strokes": "#3aa6e0",
+      "badgeLeft:badge": "#1d3f8f",
+      "badgeMiddle:badge": "#c41c24",
+      "badgeRight:badge": "#1d3f8f",
+      "badge-edge": "#ffffff",
+      "badge-shadow": "#9aa0a6",
+      "sky": "#cfe6f4"
+    }
+  },
+  "back": {
+    "parts": {
+      "topSeal": {
+        "x": 0,
+        "y": 1,
+        "scale": 1
+      },
+      "bottomSeal": {
+        "x": 0,
+        "y": 675,
+        "scale": 1
+      },
+      "finSeal": {
+        "x": 266,
+        "y": 75,
+        "scale": 1,
+        "rotate": 90
+      },
+      "hole": {
+        "x": 252,
+        "y": 35,
+        "scale": 1.4
+      },
+      "opening": {
+        "x": 48,
+        "y": 52,
+        "scale": 1
+      },
+      "map": {
+        "x": 95,
+        "y": 160,
+        "scale": 1.4
+      },
+      "tagline": {
+        "x": 112,
+        "y": 122,
+        "scale": 0.08
+      },
+      "title": {
+        "x": 112,
+        "y": 186,
+        "scale": 0.58
+      },
+      "subtitle": {
+        "x": 110,
+        "y": 202,
+        "scale": 0.09
+      },
+      "badges": {
+        "x": 0,
+        "y": 205,
+        "scale": 1
+      },
+      "calcium": {
+        "x": 48,
+        "y": 270,
+        "scale": 1
+      },
+      "nutrition": {
+        "x": 35,
+        "y": 350,
+        "scale": 1
+      },
+      "notice": {
+        "x": 22,
+        "y": 497,
+        "scale": 1
+      },
+      "address": {
+        "x": 22,
+        "y": 618,
+        "scale": 1
+      },
+      "bestBefore": {
+        "x": 310,
+        "y": 130,
+        "scale": 1
+      },
+      "afterOpening": {
+        "x": 505,
+        "y": 237,
+        "scale": 1
+      },
+      "label": {
+        "x": 270,
+        "y": 245,
+        "scale": 1
+      },
+      "illustrationNote": {
+        "x": 302,
+        "y": 499,
+        "scale": 1
+      },
+      "barcode": {
+        "x": 340,
+        "y": 520,
+        "scale": 1
+      },
+      "homepage": {
+        "x": 316,
+        "y": 598,
+        "scale": 1
+      },
+      "recycling": {
+        "x": 300,
+        "y": 640,
+        "scale": 1
+      }
+    },
+    "spacings": {
+      "tagline": 38,
+      "subtitle": 2
+    },
+    "inks": {
+      "film": "#f4f5f6",
+      "hole": "#e4e6e8",
+      "seal-light": "#ffffff",
+      "seal-dark": "#9a9da1",
+      "text": "#2b2b2f",
+      "date": "#7d7f84",
+      "blue": "#1f6fc0",
+      "tagline": "#232323",
+      "title": "#141414",
+      "title-shine": "#5b5d60",
+      "subtitle": "#1a1a1a",
+      "map": "#9fd4f2",
+      "map-strokes": "#3aa6e0",
+      "badgeLeft:badge": "#1d3f8f",
+      "badgeMiddle:badge": "#c41c24",
+      "badgeRight:badge": "#1d3f8f",
+      "badge-edge": "#ffffff",
+      "badge-shadow": "#9aa0a6"
+    }
+  },
+  "candyFront": {
+    "parts": {
+      "body": {
+        "x": 0,
+        "y": 0,
+        "scale": 1
+      },
+      "leftEnd": {
+        "x": 40,
+        "y": 17,
+        "scale": 1,
+        "squeeze": -1
+      },
+      "rightEnd": {
+        "x": 198,
+        "y": 15,
+        "scale": 1
+      },
+      "subtitle": {
+        "x": 118,
+        "y": 60,
+        "scale": 0.07
+      },
+      "title": {
+        "x": 120,
+        "y": 95,
+        "scale": 0.22
+      },
+      "cow": {
+        "x": 98,
+        "y": 103,
+        "scale": 0.4
+      }
+    },
+    "inks": {
+      "film": "#f3f4f5",
+      "shade": "#c9cbce",
+      "seal-light": "#ffffff",
+      "seal-dark": "#a6a9ad",
+      "text": "#1e1e20"
+    }
+  },
+  "candyBack": {
+    "parts": {
+      "body": {
+        "x": 0,
+        "y": 0,
+        "scale": 1
+      },
+      "leftEnd": {
+        "x": 50,
+        "y": 15,
+        "scale": 1,
+        "squeeze": -1
+      },
+      "rightEnd": {
+        "x": 205,
+        "y": 15,
+        "scale": 1
+      },
+      "subtitle": {
+        "x": 128,
+        "y": 75,
+        "scale": 0.07
+      },
+      "title": {
+        "x": 132,
+        "y": 108,
+        "scale": 0.22
+      },
+      "recycling": {
+        "x": 180,
+        "y": 41,
+        "scale": 1
+      },
+      "fin": {
+        "x": 50,
+        "y": 112,
+        "scale": 1
+      }
+    },
+    "inks": {
+      "film": "#f3f4f5",
+      "shade": "#c9cbce",
+      "seal-light": "#ffffff",
+      "seal-dark": "#a6a9ad",
+      "text": "#1e1e20"
+    }
+  }
+}

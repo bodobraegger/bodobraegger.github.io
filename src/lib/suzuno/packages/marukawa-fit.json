@@ -1,0 +1,276 @@
+{
+  "export-melon": {
+    "layout": {
+      "logo": {
+        "x": 32.25,
+        "y": 17.875,
+        "size": 6.5,
+        "squeeze": 1.04,
+        "gap": 0.3,
+        "markScale": 1.025
+      },
+      "flavour": {
+        "x": 74.563,
+        "y": 44.063,
+        "size": 18.888,
+        "squeeze": 1,
+        "maxWidth": 120
+      },
+      "tagline": {
+        "x": 22,
+        "y": 56,
+        "size": 3.969,
+        "squeeze": 0.962
+      },
+      "bubbleGum": {
+        "x": 24,
+        "y": 70.95,
+        "size": 9.325,
+        "squeeze": 0.855,
+        "gumScale": 1.05,
+        "gumGap": 0.3
+      }
+    },
+    "colours": {
+      "flavourColor": "#30792c",
+      "flavourOutline": null,
+      "highlight": "#d9d250",
+      "bubbleColor": "#3e3918",
+      "gumColor": "#98201e",
+      "gumOutline": "#6e171c",
+      "ink": "#586a60",
+      "paper": "#f6f5f2"
+    }
+  },
+  "export-strawberry": {
+    "layout": {
+      "logo": {
+        "x": 19.5,
+        "y": 11.675,
+        "size": 6.7,
+        "squeeze": 1,
+        "gap": 0.4,
+        "markScale": 1.019
+      },
+      "flavour": {
+        "x": 76.25,
+        "y": 30,
+        "size": 13.144,
+        "squeeze": 0.95,
+        "maxWidth": 132
+      },
+      "tagline": {
+        "x": 19.5,
+        "y": 42.5,
+        "size": 7,
+        "squeeze": 0.943
+      },
+      "bubbleGum": {
+        "x": 16.513,
+        "y": 59.5,
+        "size": 11.5,
+        "squeeze": 0.855,
+        "gumScale": 1.125,
+        "gumGap": 0.481
+      }
+    },
+    "colours": {
+      "flavourColor": "#be2823",
+      "flavourOutline": "#422b26",
+      "highlight": null,
+      "bubbleColor": "#1c2218",
+      "gumColor": "#742821",
+      "gumOutline": "#421b1e",
+      "ink": "#464a44",
+      "paper": "#f6f5f2"
+    }
+  },
+  "export-orange": {
+    "layout": {
+      "logo": {
+        "x": 26.25,
+        "y": 14.138,
+        "size": 7.875,
+        "squeeze": 0.99,
+        "gap": 0.3,
+        "markScale": 0.988
+      },
+      "flavour": {
+        "x": 68.25,
+        "y": 34,
+        "size": 16.85,
+        "squeeze": 1.02,
+        "maxWidth": 124
+      },
+      "tagline": {
+        "x": 26.25,
+        "y": 52.7,
+        "size": 6.731,
+        "squeeze": 0.9
+      },
+      "bubbleGum": {
+        "x": 19,
+        "y": 66.5,
+        "size": 9,
+        "squeeze": 0.85,
+        "gumScale": 1.1,
+        "gumGap": 0.3
+      },
+      "label": {
+        "x": 45.5,
+        "y": 100.5,
+        "width": 55.125,
+        "height": 27
+      }
+    },
+    "colours": {
+      "flavourColor": "#2c0f12",
+      "flavourOutline": null,
+      "highlight": null,
+      "bubbleColor": "#591427",
+      "gumColor": "#84301c",
+      "gumOutline": null,
+      "ink": "#5c140c",
+      "paper": "#f6f5f2"
+    }
+  },
+  "domestic-melon": {
+    "layout": {
+      "logo": {
+        "x": 6.5,
+        "y": 28.5,
+        "size": 10.6,
+        "squeeze": 1,
+        "gap": 0.35,
+        "markScale": 0.98
+      },
+      "flavour": {
+        "x": 74,
+        "y": 59,
+        "size": 20,
+        "squeeze": 1.3,
+        "maxWidth": 100
+      },
+      "tagline": {
+        "x": 71,
+        "y": 90,
+        "size": 6.5,
+        "squeeze": 1
+      },
+      "bubbleGum": {
+        "x": 66,
+        "y": 78,
+        "size": 7.5,
+        "squeeze": 1,
+        "gumScale": 1.3,
+        "gumGap": 0.4
+      }
+    },
+    "colours": {
+      "flavourColor": "#1d5a2c",
+      "flavourOutline": "#e8d636",
+      "highlight": null,
+      "bubbleColor": "#e8621a",
+      "gumColor": "#e8621a",
+      "gumOutline": "#3a1a10",
+      "ink": "#221e1f",
+      "paper": "#ffffff"
+    }
+  },
+  "domestic-strawberry": {
+    "layout": {
+      "logo": {
+        "x": 7,
+        "y": 15.2,
+        "size": 8.1,
+        "squeeze": 1,
+        "gap": 0.4,
+        "markScale": 1.44
+      },
+      "flavour": {
+        "x": 69,
+        "y": 38,
+        "size": 17.4,
+        "squeeze": 2.0,
+        "maxWidth": 126
+      },
+      "tagline": {
+        "x": 36,
+        "y": 70,
+        "size": 7,
+        "squeeze": 1
+      },
+      "bubbleGum": {
+        "x": 36,
+        "y": 55,
+        "size": 10.5,
+        "squeeze": 1,
+        "gumScale": 1.53,
+        "gumGap": 0.4
+      },
+      "registered": {
+        "x": 124,
+        "y": 10.75,
+        "radius": 6
+      }
+    },
+    "colours": {
+      "flavourColor": "#eb1c24",
+      "flavourOutline": null,
+      "highlight": null,
+      "bubbleColor": "#06a450",
+      "gumColor": "#e20b19",
+      "gumOutline": null,
+      "ink": "#221e1f",
+      "paper": "#ffffff"
+    }
+  },
+  "domestic-orange": {
+    "layout": {
+      "logo": {
+        "x": 7.25,
+        "y": 22.3,
+        "size": 11.6,
+        "squeeze": 1,
+        "gap": 0.24,
+        "markScale": 1.11
+      },
+      "flavour": {
+        "x": 72.5,
+        "y": 52.5,
+        "size": 26,
+        "squeeze": 1.15,
+        "maxWidth": 131
+      },
+      "tagline": {
+        "x": 23,
+        "y": 83,
+        "size": 7,
+        "squeeze": 1
+      },
+      "bubbleGum": {
+        "x": 29,
+        "y": 72,
+        "size": 12,
+        "squeeze": 1,
+        "gumScale": 1.15,
+        "gumGap": 0.6
+      },
+      "registered": {
+        "x": 128.7,
+        "y": 14.2,
+        "radius": 6.6
+      }
+    },
+    "colours": {
+      "flavourColor": "#140402",
+      "flavourOutline": null,
+      "highlight": null,
+      "bubbleColor": "#140402",
+      "gumColor": "#140402",
+      "gumOutline": null,
+      "ink": "#221e1f",
+      "paper": "#ffffff"
+    }
+  }
+}

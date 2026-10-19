@@ -1,0 +1,166 @@
+{
+  "bag": {
+    "front": {
+      "layout": {
+        "topBand": {
+          "top": 0,
+          "bottom": 31.47,
+          "lines": [{ "y": 21.411, "width": 3.5, "color": "bandInk" }, { "y": 33.28, "width": 0.5, "color": "bandGreen" }]
+        },
+        "bottomBand": {
+          "top": 715,
+          "bottom": 777,
+          "lines": [{ "y": 749, "width": 1.125, "color": "bandGreen" }, { "y": 761, "width": 3.125, "color": "bandInk" }]
+        },
+        "hole": { "x": 278, "y": 9.95, "radius": 7.25 },
+        "panel": { "top": 30.38, "bottom": 403 },
+        "windows": [],
+        "damask": { "x": 68.856, "y": 92.82, "scaleX": 0.98, "scaleY": 1.08, "stroke": 1.125 },
+        "label": {
+          "x": 273,
+          "y": 216,
+          "rotate": 0,
+          "scale": 1,
+          "rx": 184.638,
+          "ry": 111.15,
+          "outline": 3.5,
+          "gap": 4.375,
+          "inner": 1.075,
+          "intro": { "x": 2.625, "y": -81.34, "size": 5.875, "squeeze": 1.04, "tracking": -0.3, "leading": 12.622 },
+          "name": { "x": 2.625, "y": -6.125, "size": 51.798, "squeeze": 0.98, "tracking": -0.2 },
+          "spaced": { "x": -108.347, "y": 12.364, "size": 12.368, "squeeze": 0.97, "tracking": -0.1, "pitch": 37.996, "dot": 2.325 },
+          "rule": { "y": 21.555, "left": -143, "right": 140, "width": 1.475 },
+          "sentence": { "x": 4.125, "y": 36.571, "size": 6.3, "squeeze": 1.17, "tracking": -0.1, "leading": 13.72 }
+        },
+        "ribbon": {
+          "x": 278,
+          "y": 287,
+          "rotate": 0,
+          "scale": 0.89,
+          "width": 216,
+          "height": 32.142,
+          "arch": 11.5,
+          "reach": 63.968,
+          "drop": 53.043,
+          "tail": 39.626,
+          "notch": 35.792,
+          "fold": 17.13,
+          "outline": 1.6,
+          "text": { "size": 22.753, "dy": 25.354, "tracking": -1.4, "slant": -11 }
+        },
+        "almonds": { "x": 380, "y": 249, "width": 105.6, "height": 70.4, "rotate": 0 },
+        "window": { "x": 0, "y": 394, "width": 562, "height": 322 },
+        "stamp": { "x": 35.679, "y": 297, "width": 70.48, "height": 63.648, "radius": 4.5, "stroke": 3, "size": 24.48 },
+        "dates": { "x": 36.952, "y": 77.432, "size": 12.5, "squeeze": 1.22, "tracking": 0.8, "leading": 18 }
+      },
+      "colors": { "ground": "#e6cb4a", "seal": "#ba9a02", "damask": "#a1840e", "label": "#dbc02d", "ink": "#1f0b00", "green": "#496500", "bandInk": "#190d00", "bandGreen": "#374600", "ribbon": "#297605", "ribbonFold": "#183a00", "ribbonText": "#b8db60", "stamp": "#4f6e00", "date": "#3e2800", "hole": "#240c00" }
+    },
+    "back": {
+      "layout": {
+        "topBand": {
+          "top": 0.25,
+          "bottom": 32.34,
+          "lines": [{ "y": 21.56, "width": 1.5, "color": "bandInk" }, { "y": 27, "width": 1.5, "color": "bandGreen" }]
+        },
+        "bottomBand": {
+          "top": 716,
+          "bottom": 777,
+          "lines": [{ "y": 746, "width": 1.75, "color": "bandGreen" }, { "y": 761, "width": 1.5, "color": "bandInk" }]
+        },
+        "hole": { "x": 259, "y": 21.6, "radius": 1 },
+        "panel": { "top": 32.34, "bottom": 690 },
+        "windows": [{ "x": 200, "y": 398, "width": 66, "height": 288 }, { "x": 482, "y": 398, "width": 76, "height": 288 }],
+        "plain": [{ "x": 0.25, "y": 242, "width": 326, "height": 160 }, { "x": -0.25, "y": 341, "width": 550, "height": 341 }],
+        "damask": { "x": 85.33, "y": 64.4, "scaleX": 1.06, "scaleY": 0.98, "stroke": 1 },
+        "label": {
+          "x": 374,
+          "y": 172,
+          "rotate": 0,
+          "scale": 0.75,
+          "rx": 181,
+          "ry": 117,
+          "outline": 3.5,
+          "gap": 3,
+          "inner": 1.2,
+          "intro": { "x": 1, "y": -83, "size": 5.5, "squeeze": 1, "tracking": 0.3, "leading": 14 },
+          "name": { "x": 1, "y": -5, "size": 51.5, "squeeze": 1, "tracking": 0 },
+          "spaced": { "x": -114, "y": 14, "size": 12, "squeeze": 1, "tracking": 0, "pitch": 38, "dot": 2.2 },
+          "rule": { "y": 22.5, "left": -143, "right": 140, "width": 1.6 },
+          "sentence": { "x": 1, "y": 37, "size": 5.5, "squeeze": 1, "tracking": 0.3, "leading": 14 }
+        },
+        "ribbon": {
+          "x": 372,
+          "y": 225,
+          "rotate": 0,
+          "scale": 0.75,
+          "width": 232,
+          "height": 30,
+          "arch": 10,
+          "reach": 62,
+          "drop": 62,
+          "tail": 26,
+          "notch": 12,
+          "fold": 16,
+          "outline": 1.6,
+          "text": { "size": 19, "dy": 23, "tracking": 0, "slant": -8 }
+        },
+        "almonds": { "x": 400.25, "y": 193.75, "width": 84.15, "height": 60, "rotate": 0 },
+        "window": { "x": 0, "y": 398, "width": 558, "height": 322 },
+        "greeting": { "x": 7.75, "y": 258, "size": 11.75, "squeeze": 0.96, "tracking": 0.2, "leading": 13.426 },
+        "ingredients": {
+          "x": 3.5,
+          "y": 424,
+          "width": 190,
+          "headingWidth": 42.48,
+          "rowHeight": 17.28,
+          "leading": 13.5,
+          "rule": 0,
+          "size": 8,
+          "title": { "dy": -5, "size": 9 }
+        },
+        "nutrition": {
+          "x": 290,
+          "y": 367,
+          "width": 176.4,
+          "headingWidth": 90,
+          "rowHeight": 18.2,
+          "leading": 13.26,
+          "rule": 0.25,
+          "size": 8,
+          "title": { "dy": -5, "size": 10 },
+          "note": { "x": 302, "y": 469, "size": 10, "squeeze": 0.9, "tracking": 0.8 }
+        },
+        "recycling": {
+          "mark": { "x": 326, "y": 479, "width": 1.68, "height": 23.04 },
+          "lines": { "x": 348, "y": 478, "size": 7.5, "squeeze": 1, "tracking": 1.2, "leading": 12 },
+          "sorting": { "x": 296, "y": 507, "size": 8, "squeeze": 0.88, "tracking": 1.4, "leading": 13.75 }
+        },
+        "barcode": { "x": 320, "y": 583, "width": 134.32, "height": 6.4, "size": 9 },
+        "footnote": { "x": 282, "y": 650, "size": 9.25, "squeeze": 1.06, "tracking": 0.2, "leading": 12.25 },
+        "homepage": { "x": 24.48, "y": 648, "size": 8, "squeeze": 0.24, "tracking": 2, "leading": 14 }
+      },
+      "colors": { "ground": "#eace49", "seal": "#fcf15d", "damask": "#a28417", "label": "#dbc02d", "ink": "#614600", "green": "#496500", "bandInk": "#1e1102", "bandGreen": "#4f710b", "ribbon": "#297605", "ribbonFold": "#183a00", "ribbonText": "#b8db60", "stamp": "#4f6e00", "date": "#3e2800", "hole": "#73811e" }
+    }
+  },
+  "piece": {
+    "front": {
+      "layout": {
+        "window": { "x": 96.04, "y": 58.28, "rx": 250.32, "ry": 68.32, "outline": 0.05 },
+        "grid": { "x": 0.25, "y": 0.75, "cell": 5.5, "line": 10.5 },
+        "name": { "x": 90, "y": 57.24, "size": 23.8, "squeeze": 0.96, "tracking": 0.4 },
+        "spaced": { "x": 40.8, "y": 76, "size": 3.5, "squeeze": 1.06, "tracking": 0, "pitch": 18.5, "dot": 1.35 },
+        "lines": { "x": 100, "y": 84, "size": 4, "squeeze": 1, "tracking": 0, "leading": 10 }
+      },
+      "colors": { "film": "#a49ab4", "window": "#b89166", "grid": "#86603c", "ink": "#50301c" }
+    },
+    "back": {
+      "layout": {
+        "window": { "x": 44.02, "y": -4, "width": 39.48, "height": 95.04 },
+        "grid": { "x": -0.25, "y": 0.75, "cell": 7.25, "line": 1.2 },
+        "frame": { "x": 12.75, "y": 17.5, "width": 46, "height": 79.56, "stroke": 0.075 },
+        "columns": { "x": 47.04, "y": 17, "size": 8.25, "pitch": 12 }
+      },
+      "colors": { "film": "#835e36", "window": "#997048", "grid": "#765824", "ink": "#764418" }
+    }
+  }
+}

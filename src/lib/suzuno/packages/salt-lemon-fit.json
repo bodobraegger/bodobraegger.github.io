@@ -1,0 +1,59 @@
+{
+  "front": {
+    "layout": {
+      "print": { "x": 14, "y": 17, "width": 649, "height": 858 },
+      "hangHole": { "x": 341, "y": 56, "radius": 24 },
+      "notches": { "y": 118, "depth": 10, "height": 12 },
+      "title": { "x": 289, "y": 227, "width": 101, "height": 440 },
+      "logo": { "x": 116.5, "y": 120.36, "scale": 0.44 },
+      "saltBadge": { "x": 543.5, "y": 90.27, "scale": 0.87 },
+      "acidBadge": { "x": 543.5, "y": 165, "scale": 0.945 },
+      "banner": { "x": 335, "y": 704, "scale": 0.36 },
+      "tagline": { "x": 339, "y": 752, "size": 20, "edge": 3.5 },
+      "notes": {
+        "left": { "x": 45.9, "y": 834.5, "size": 10.5 },
+        "right": { "x": 587, "y": 832.5, "size": 14.84 }
+      }
+    },
+    "parts": {
+      "title": {
+        "frameInset": 4.5,
+        "frameWidth": 2.25,
+        "divider": 94.08,
+        "kanji": { "x": 50.5, "y": 51, "size": 76 },
+        "name": { "x": 52.43, "y": 107.1, "size": 61, "spacing": -2 },
+        "kind": { "x": 49.5, "y": 291, "size": 26, "spacing": -1 },
+        "ruby": { "x": 110.88, "y": 28, "size": 15.3, "spacing": -1, "outline": 2.55 }
+      },
+      "logo": {
+        "ring": 6.75,
+        "tagline": { "y": 72.8, "size": 22, "width": 197, "halo": 8 }
+      },
+      "saltBadge": [{ "y": 1.75, "size": 17, "width": 71.4 }, { "y": 24, "size": 17, "width": 39.2 }],
+      "acidBadge": {
+        "radiusY": 110,
+        "rimWidth": 3.75,
+        "label": { "y": -10.6, "size": 42.32, "width": 151.2 },
+        "amount": { "y": 21.836, "size": 17, "width": 147.98 },
+        "spheres": { "y": 61, "spacing": 36, "radius": 26.4, "size": 23.32, "captionSize": 8, "captionY": -13 },
+        "glow": 1.75
+      },
+      "banner": {
+        "edgeWidth": 0.12,
+        "tracking": 0.12,
+        "dashes": { "length": 0.95, "gap": 0.7, "thickness": 0.1 }
+      }
+    },
+    "colors": {
+      "film": "#f1f2f4",
+      "panel": ["#2e4650", "#1f3540"],
+      "ink": "#ffffff",
+      "logoRed": "#d7141e",
+      "saltDisc": "#1a2f6e",
+      "saltWaves": "#e9c55c",
+      "acidDisc": ["#bfe5f6", "#7fc4e6"],
+      "edge": "#1f5ca8",
+      "notes": "#231815"
+    }
+  }
+}
