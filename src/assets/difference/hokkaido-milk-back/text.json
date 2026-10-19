@@ -1,0 +1,14 @@
+{
+  "width": 518,
+  "height": 712,
+  "boxes": [
+    { "id": "title", "text": "北海道", "x": 14, "y": 128, "width": 190, "height": 60, "angle": 0, "font": "serif", "color": "#1d2023" },
+    { "id": "candy", "text": "ミルクソフトキャンデー", "x": 57, "y": 189, "width": 115, "height": 13, "angle": 0, "font": "sans", "color": "#3f4a4e", "background": "#d8e3e5" },
+    { "id": "best-before", "text": "賞味期限", "x": 312, "y": 131, "width": 45, "height": 13, "angle": 0, "font": "sans", "color": "#87867a", "background": "#e6e5e1" },
+    { "id": "date", "text": "2027年04月/SB3", "x": 312, "y": 153, "width": 147, "height": 17, "angle": 0, "font": "sans", "color": "#84837a", "background": "#e6e5e1" },
+    { "id": "weight", "text": "PESO LÍQ.: 49g", "x": 271, "y": 357, "width": 131, "height": 33, "angle": 0, "font": "sans", "color": "#454252", "background": "#e8e7e8" },
+    { "id": "net-weight", "text": "PESO LÍQ.: 49 g", "x": 327, "y": 446, "width": 100, "height": 18, "angle": 0, "font": "sans", "color": "#4b4857", "background": "#e8e7e8" },
+    { "id": "illustration", "text": "イラストはイメージです", "x": 304, "y": 487, "width": 120, "height": 12, "angle": 0, "font": "sans", "color": "#605e5c", "background": "#e6e6e2" },
+    { "id": "barcode", "text": "4 903316 443409", "x": 330, "y": 575, "width": 135, "height": 12, "angle": 0, "font": "sans", "color": "#4f4e51", "background": "#e4e3e2" }
+  ]
+}
