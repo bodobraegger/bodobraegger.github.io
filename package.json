@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "compress": "esno scripts/img-compress-staged.ts",
+    "check:orchid": "esno scripts/check-orchid.ts",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
