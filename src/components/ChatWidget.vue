@@ -37,6 +37,7 @@ const open = ref(false)
 const messages = ref<ChatMessage[]>([])
 const onlineCount = ref(0)
 const canLoadEarlier = ref(false)
+const loadingEarlier = ref(false)
 
 const draftBody = ref('')
 const editing = ref<ChatMessage | null>(null)
@@ -159,10 +160,11 @@ watch(open, isOpen => document.documentElement.classList.toggle('chat-open', isO
 
 async function loadEarlier() {
   const oldest = messages.value[0]
-  if (!oldest)
+  if (!oldest || loadingEarlier.value)
     return
   const el = listEl.value
   const previousScrollHeight = el?.scrollHeight ?? 0
+  loadingEarlier.value = true
   try {
     const fetched = await fetchMessages(CHAT_PAGE_SIZE, oldest.createdAt)
     messages.value = [...fetched, ...messages.value]
@@ -173,6 +175,9 @@ async function loadEarlier() {
   }
   catch {
     // Leave the list as it was; the link stays for another try.
+  }
+  finally {
+    loadingEarlier.value = false
   }
 }
 
@@ -321,8 +326,8 @@ onUnmounted(() => {
     >
       <div v-if="open" class="chat-widget-box">
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite">
-          <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
-            ↑ earlier messages
+          <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" :disabled="loadingEarlier" @click="loadEarlier">
+            {{ loadingEarlier ? 'loading...' : '↑ earlier messages' }}
           </button>
           <p v-for="message in messages" :key="message.id" class="chat-widget-message" :class="{ mine: message.userId === userId }">
             <span
@@ -457,6 +462,10 @@ onUnmounted(() => {
   color: var(--fg-muted);
   font: inherit;
   cursor: pointer;
+}
+
+.chat-widget-earlier:disabled {
+  cursor: progress;
 }
 
 .chat-widget-list {
