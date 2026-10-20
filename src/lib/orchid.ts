@@ -45,21 +45,24 @@ export interface BudShape {
   weight?: number
 }
 
-/** A placed tip: its centre, and the growth length at which it opens. */
+/** A placed tip: its centre, the growth length at which it opens, and the index of the stem that carries it. */
 interface Placed {
   x: number
   y: number
   start?: number
+  stem?: number
 }
 
 export type Flower = FlowerShape & Placed
 export type Bud = BudShape & Placed
 
+/** A stem: its nodes, and its growth order with the index of the stem that it sprouts from. */
 export interface Stem {
   points: Point[]
   tension?: number
   start?: number
   length?: number
+  parent?: number
 }
 
 export interface Spec {
@@ -272,20 +275,22 @@ export function budPath({ x, y, radiusX, radiusY, rotation = 0, gap = 0, weight 
   return { d: `${ribbonPath(points, extra)}${gap || extra ? '' : 'Z'}`, filled: extra > 0 }
 }
 
-/** The line of a stem, and its place in the growth order. */
+/** The line of a stem, its place in the growth order, and the index of the stem that it sprouts from. */
 interface StemPart {
   points: Point[]
   start: number
   length: number
+  parent?: number
 }
 
-/** The shapes of a tip, its centre, its place in the growth order, and the farthest distance of its ink from its centre. */
+/** The shapes of a tip, its centre, its place in the growth order, the farthest distance of its ink from its centre, and the index of the stem that carries it. */
 interface TipPart {
   shapes: Shape[]
   x: number
   y: number
   start: number
   radius: number
+  stem?: number
 }
 
 export interface Parts {
@@ -306,11 +311,11 @@ export function parts(ornament: Ornament): Parts {
   const spec = isPlant(ornament) ? develop(ornament) : ornament
   // The ink of a tip ends within its outline and the width of its widest line
   const tip = (shapes: Shape[], shape: Flower | Bud, flower: boolean): TipPart => {
-    const { x, y, start = 0, weight = 0 } = shape
+    const { x, y, start = 0, weight = 0, stem } = shape
     const radius = Math.max(...outline(shape, flower).map(point => distance(point, [x, y]))) + spec.strokeWidth * (1 + weight)
-    return { shapes, x, y, start, radius }
+    return { shapes, x, y, start, radius, stem }
   }
-  const stems: StemPart[] = spec.stems.map(stem => ({ points: stemPoints(stem), start: stem.start ?? 0, length: stem.length ?? 0 }))
+  const stems: StemPart[] = spec.stems.map(stem => ({ points: stemPoints(stem), start: stem.start ?? 0, length: stem.length ?? 0, parent: stem.parent }))
   const tips = [
     ...spec.flowers.map(flower => tip(flowerPath(flower, spec.strokeWidth), flower, true)),
     ...spec.buds.map(bud => tip([budPath(bud, spec.strokeWidth)], bud, false)),
@@ -332,11 +337,19 @@ const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))
 const EDGE_MARGIN = 2
 const clamp = (value: number) => Math.min(1, Math.max(0, value))
 
-/** The growth of the stems, in canvas units per second. */
-const GROWTH_SPEED = 18
+/** The growth of the stems at their middle pace, in canvas units per second. */
+const GROWTH_SPEED = 20
+// A growing stem rests with PAUSE_CHANCE per frame, and a resting stem goes
+// on with RESUME_CHANCE, so that the tips grow in fits and starts, as those
+// of Plum do. While it grows, a stem takes a pace between PACE_LOW and
+// PACE_HIGH times the middle pace in each frame.
+const PAUSE_CHANCE = 0.04
+const RESUME_CHANCE = 0.12
+const PACE_LOW = 0.5
+const PACE_HIGH = 1.5
 // The time between two drawn frames, 30 frames per second as Plum draws on a
 // 60 Hz screen, less a slack for the jitter of the animation frames. At this
-// rate a stem grows 0.6 pixels per frame. A hidden tab gets no animation
+// rate a stem grows at most a pixel per frame. A hidden tab gets no animation
 // frames, so the growth waits there, and one frame grows at most
 // LONGEST_FRAME, so it goes on from the same place when the tab comes back.
 const FRAME_INTERVAL = 1000 / 30
@@ -360,7 +373,8 @@ const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + b
  * A stem in the growth: the distances of its points from its start, its
  * length, the distance of its growth so far, the distance in the committed
  * drawing and the distance drawn on the canvas, each with the point that
- * ends the segment of that distance.
+ * ends the segment of that distance. Its lag is the growth length that it
+ * fell behind by its pauses and its pace, those of its parent included.
  */
 interface GrowingStem extends StemPart {
   distances: number[]
@@ -370,6 +384,10 @@ interface GrowingStem extends StemPart {
   committedCursor: number
   shown: number
   shownCursor: number
+  parentStem?: GrowingStem
+  started: boolean
+  resting: boolean
+  lag: number
 }
 
 /**
@@ -383,6 +401,7 @@ interface GrowingTip extends TipPart {
   opening: number
   area: Area
   open: boolean
+  carrier?: GrowingStem
 }
 
 export interface Growth {
@@ -455,9 +474,9 @@ const byStart = (a: { start: number }, b: { start: number }) => a.start - b.star
 /**
  * Grows drawings of ornaments (from `parts`, given with `add`) in one
  * animation loop on a canvas. The stems of an ornament grow in the order of
- * its genome at one speed, each side branch sprouts when its parent reaches
- * its node, and each tip opens when its branch arrives, scaled up from its
- * centre. The loop rests when all stems and tips are
+ * its genome, each at an uneven pace, each side branch sprouts when its
+ * parent reaches its node, and each tip opens when its branch arrives, scaled
+ * up from its centre. The loop rests when all stems and tips are
  * complete, and `add` wakes it. With reduced motion, `add` draws the end
  * state at once. Lines are at least one device pixel wide, and the context
  * takes the scale of its canvas before the call.
@@ -477,6 +496,9 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const tips: GrowingTip[] = []
   let nextStem = 0
   let nextTip = 0
+  // The stems and tips whose time has come, but whose stem has not yet reached them
+  let waitingStems: GrowingStem[] = []
+  let waitingTips: GrowingTip[] = []
   let growingStems: GrowingStem[] = []
   let openingTips: GrowingTip[] = []
   let reached = 0
@@ -522,6 +544,8 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     view.restore()
   }
 
+  // Whether the stem that carries a stem or a tip has reached its place
+  const arrived = ({ start }: { start: number }, carrier?: GrowingStem) => !carrier || (carrier.started && reached - carrier.lag >= start)
   const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, lineWidth / 2 + EDGE_MARGIN)
   // Draws the stems on a context from the distance drawn there to their fronts
   const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
@@ -546,22 +570,43 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     frame = requestAnimationFrame(step)
     if (now - last < FRAME_INTERVAL - FRAME_SLACK)
       return
-    reached += GROWTH_SPEED * Math.min(now - last, LONGEST_FRAME) / 1000
+    const growth = GROWTH_SPEED * Math.min(now - last, LONGEST_FRAME) / 1000
+    reached += growth
     last = now
     frameCount++
     const tipFrame = frameCount % TIP_FRAMES === 0
     const commit = frameCount % COMMIT_FRAMES === 0
     for (; nextStem < stems.length && stems[nextStem].start <= reached; nextStem++)
-      growingStems.push(stems[nextStem])
-    for (const stem of growingStems)
-      stem.front = stem.total * (stem.length ? clamp((reached - stem.start) / stem.length) : 1)
+      waitingStems.push(stems[nextStem])
+    waitingStems = waitingStems.filter((stem) => {
+      if (!arrived(stem, stem.parentStem))
+        return true
+      stem.started = true
+      stem.lag = stem.parentStem?.lag ?? 0
+      growingStems.push(stem)
+      return false
+    })
+    for (const stem of growingStems) {
+      if (Math.random() < (stem.resting ? RESUME_CHANCE : PAUSE_CHANCE))
+        stem.resting = !stem.resting
+      const pace = stem.resting ? 0 : PACE_LOW + Math.random() * (PACE_HIGH - PACE_LOW)
+      stem.lag += growth * (1 - pace)
+      stem.front = stem.total * (stem.length ? clamp((reached - stem.start - stem.lag) / stem.length) : 1)
+    }
     if (!tipFrame) {
       drawStems(view, growingStems, stem => [stem.shown, stem.shownCursor])
       return
     }
 
     for (; nextTip < tips.length && tips[nextTip].start <= reached; nextTip++)
-      openingTips.push(tips[nextTip])
+      waitingTips.push(tips[nextTip])
+    waitingTips = waitingTips.filter((tip) => {
+      if (!arrived(tip, tip.carrier))
+        return true
+      tip.start = reached
+      openingTips.push(tip)
+      return false
+    })
     const progress = new Map(openingTips.map(tip => [tip, clamp((reached - tip.start) / tip.opening)]))
     store.lineCap = 'round'
     for (const tip of openingTips) {
@@ -613,7 +658,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
       if (progress.get(tip)! > 0)
         drawTip(view, tip, easeOutBack(progress.get(tip)!))
     }
-    if (nextStem === stems.length && nextTip === tips.length && !growingStems.length && !openingTips.length) {
+    if (nextStem === stems.length && nextTip === tips.length && !waitingStems.length && !waitingTips.length && !growingStems.length && !openingTips.length) {
       cancelAnimationFrame(frame)
       frame = 0
     }
@@ -626,8 +671,9 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     const offset = Math.max(reached, delay * GROWTH_SPEED / 1000)
     const newStems: GrowingStem[] = drawing.stems.map((stem) => {
       const distances = distancesAlong(stem.points)
-      return { ...stem, start: offset + stem.start, distances, total: distances.at(-1)!, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1 }
+      return { ...stem, start: offset + stem.start, distances, total: distances.at(-1)!, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0 }
     })
+    newStems.forEach((stem, index) => stem.parentStem = newStems[drawing.stems[index].parent ?? -1])
     const newTips: GrowingTip[] = drawing.tips.map((tip) => {
       const reach = tip.radius * LARGEST_SCALE + EDGE_MARGIN
       const area: Area = [tip.x - reach, tip.y - reach, 2 * reach, 2 * reach]
@@ -638,7 +684,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
           fillPath.addPath(path)
         strokePath.addPath(path)
       }
-      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false }
+      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1] }
     })
     if (reduced) {
       for (const stem of newStems)
@@ -717,7 +763,7 @@ function unfold(plant: Plant) {
   const spec: Spec = { strokeWidth: plant.strokeWidth, stems: [], flowers: [], buds: [] }
   const blossoms: Blossom[] = []
   const stems = new Map<BranchBody, Stem>()
-  const walk = (branch: BranchBody, origin: Point, heading: number, start: number) => {
+  const walk = (branch: BranchBody, origin: Point, heading: number, start: number, parent?: number) => {
     const nodes: Point[] = [origin]
     const headings = [heading]
     const distances = [start]
@@ -732,13 +778,16 @@ function unfold(plant: Plant) {
       nodes.push(node)
       headings.push(heading)
     }
+    // The stem of this branch, or the stem that carries a branch without steps
+    let own = parent
     if (nodes.length > 1) {
-      const stem = { points: nodes, start, length: distances.at(-1)! - start }
+      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent }
       spec.stems.push(stem)
       stems.set(branch, stem)
+      own = spec.stems.length - 1
     }
     for (const child of branch.branches ?? [])
-      walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at])
+      walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at], own)
     const { flower, bud } = branch.tip ?? {}
     const tip = flower ?? bud
     if (!tip)
@@ -746,7 +795,7 @@ function unfold(plant: Plant) {
     const { offset = [0, 0], ...shape } = tip
     const [endX, endY] = nodes.at(-1)!
     const end = radians(headings.at(-1)!)
-    const placed = { ...shape, x: endX + tip.radiusX * Math.cos(end) + offset[0], y: endY + tip.radiusX * Math.sin(end) + offset[1], start: distances.at(-1) }
+    const placed = { ...shape, x: endX + tip.radiusX * Math.cos(end) + offset[0], y: endY + tip.radiusX * Math.sin(end) + offset[1], start: distances.at(-1), stem: own }
     if (flower)
       spec.flowers.push(placed)
     else
