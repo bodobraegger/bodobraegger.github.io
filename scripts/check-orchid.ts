@@ -13,7 +13,7 @@ let failures = 0
 for (const [width, height] of WINDOWS) {
   for (let seed = 1; seed <= SEEDS; seed++) {
     const begin = performance.now()
-    const plants = vines(width, height, seed)
+    const plants = [...vines(width, height, seed)]
     const time = performance.now() - begin
     const found = plants.flatMap((plant, index) => collisions(plant, {}, plants.slice(0, index)))
     for (const { blossom, other } of found)

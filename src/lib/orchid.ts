@@ -319,46 +319,75 @@ export function parts(ornament: Ornament): Parts {
 }
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-// The share of the growth length that a tip takes to open, and the delay of
-// each further shape of a tip (petal or stamens), as a share of its opening
-const OPENING_SHARE = 0.18
-const SHAPE_DELAY = 0.12
+// The growth length over which a tip opens, in radii of the tip. The shapes
+// of a tip open together: on the page a tip is only a few pixels wide, and
+// one path per tip costs a sixth of the raster of one path per shape.
+const OPENING_RADII = 4
 // The overshoot of the opening, as in the common "ease out back" curve
 const OVERSHOOT = 1.6
 const easeOutBack = (progress: number) => 1 + (OVERSHOOT + 1) * (progress - 1) ** 3 + OVERSHOOT * (progress - 1) ** 2
 // The largest scale of an opening tip, at the top of the overshoot, and the
-// margin of antialiased pixels around the ink of a tip
+// margin of antialiased pixels around the ink of a line or a tip
 const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))
 const EDGE_MARGIN = 2
 const clamp = (value: number) => Math.min(1, Math.max(0, value))
 
 /** The growth of the stems, in canvas units per second. */
-const GROWTH_SPEED = 20
-// The least time between two frames, and the most time that one frame grows.
-// Each frame that changes a canvas costs the browser a copy of it. At 15
-// frames per second, the two canvases cost about as much as the one canvas of
-// Plum at 40. A hidden tab gets no animation frames, so the growth waits
-// there and goes on from the same place when the tab comes back.
-const FRAME_INTERVAL = 1000 / 15
+const GROWTH_SPEED = 18
+// The time between two drawn frames, 30 frames per second as Plum draws on a
+// 60 Hz screen, less a slack for the jitter of the animation frames. At this
+// rate a stem grows 0.6 pixels per frame. A hidden tab gets no animation
+// frames, so the growth waits there, and one frame grows at most
+// LONGEST_FRAME, so it goes on from the same place when the tab comes back.
+const FRAME_INTERVAL = 1000 / 30
+const FRAME_SLACK = 4
 const LONGEST_FRAME = 100
-// The shortest piece of a stem that a frame adds. Each piece ends in a seam,
-// so a stem adds no piece shorter than a pixel.
-const PIECE_LENGTH = 1
+// A frame adds the new ends of the stems to the canvas. Every TIP_FRAMES
+// frames, the tips that are open join the committed drawing, and the canvas
+// takes it back in the areas of the opening tips and draws these tips again.
+// Every COMMIT_FRAMES frames, the stems join the committed drawing, and the
+// canvas takes it back in the areas of the ends of the stems, which so lose
+// the seams between their small pieces. An opening tip grows by much less
+// than a pixel between two of its frames.
+const TIP_FRAMES = 3
+const COMMIT_FRAMES = 12
 
-/** A stem in the growth: the distance of each of its points from its start, and the distance drawn so far. */
+type Area = [number, number, number, number]
+
+const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + bw && bx < ax + aw && ay < by + bh && by < ay + ah
+
+/**
+ * A stem in the growth: the distances of its points from its start, its
+ * length, the distance of its growth so far, the distance in the committed
+ * drawing and the distance drawn on the canvas, each with the point that
+ * ends the segment of that distance.
+ */
 interface GrowingStem extends StemPart {
   distances: number[]
-  drawn: number
+  total: number
+  front: number
+  committed: number
+  committedCursor: number
+  shown: number
+  shownCursor: number
 }
 
-/** A tip in the growth: its shapes as canvas paths, the growth length of its opening, and whether it is open. */
+/**
+ * A tip in the growth: its filled shapes and all its shapes as one canvas
+ * path each, the growth length of its opening, the area of its ink at the
+ * top of the overshoot, and whether it is in the committed drawing.
+ */
 interface GrowingTip extends TipPart {
-  paths: Path2D[]
+  fillPath: Path2D
+  strokePath: Path2D
   opening: number
+  area: Area
   open: boolean
 }
 
 export interface Growth {
+  /** Grows a drawing (from `parts`), which starts after a delay in milliseconds from the start of the growth, but not before the current growth. */
+  add: (drawing: Parts, delay: number) => void
   /** Draws the growth so far again, in another paint. */
   repaint: (paint: string) => void
   stop: () => void
@@ -372,153 +401,281 @@ function distancesAlong(points: Point[]) {
   return distances
 }
 
-/** The point of a line at a distance from its start. */
-function pointAt({ points, distances }: GrowingStem, along: number): Point {
-  const index = Math.max(1, distances.findIndex(reached => reached >= along))
+/** The point of the line of a stem at a distance from its start, on the segment that ends at point `index`. */
+function pointOn({ points, distances }: GrowingStem, along: number, index: number): Point {
   const [before, after] = [points[index - 1], points[index]]
   const share = (along - distances[index - 1]) / (distances[index] - distances[index - 1] || 1)
   return [before[0] + (after[0] - before[0]) * share, before[1] + (after[1] - before[1]) * share]
 }
 
-/** Adds the piece of the line of a stem between two distances to the path of the context. */
-function addPiece(context: CanvasRenderingContext2D, stem: GrowingStem, from: number, to: number) {
-  context.moveTo(...pointAt(stem, from))
-  stem.distances.forEach((along, index) => {
-    if (along > from && along < to)
-      context.lineTo(...stem.points[index])
-  })
-  context.lineTo(...pointAt(stem, to))
+/**
+ * The line of a stem between two distances, which starts on the segment
+ * that ends at point `first`, and the point that ends its last segment.
+ */
+function piece(stem: GrowingStem, from: number, to: number, first: number) {
+  const line = [pointOn(stem, from, first)]
+  let index = first
+  for (; index < stem.points.length - 1 && stem.distances[index] < to; index++)
+    line.push(stem.points[index])
+  line.push(pointOn(stem, to, index))
+  return { line, last: index }
 }
 
-/** Draws a shape of a tip, scaled from the centre of the tip. */
-function drawShape(context: CanvasRenderingContext2D, tip: GrowingTip, index: number, scale: number) {
+function addLine(context: CanvasRenderingContext2D, [start, ...rest]: Point[]) {
+  context.moveTo(...start)
+  for (const point of rest)
+    context.lineTo(...point)
+}
+
+/** The area of a line, with a margin. */
+function area(line: Point[], margin: number): Area {
+  let [left, top, right, bottom] = [Infinity, Infinity, -Infinity, -Infinity]
+  for (const [x, y] of line) {
+    left = Math.min(left, x)
+    top = Math.min(top, y)
+    right = Math.max(right, x)
+    bottom = Math.max(bottom, y)
+  }
+  return [left - margin, top - margin, right - left + 2 * margin, bottom - top + 2 * margin]
+}
+
+/** Draws a tip, scaled from its centre. */
+function drawTip(context: CanvasRenderingContext2D, tip: GrowingTip, scale: number) {
   context.save()
   context.translate(tip.x, tip.y)
   context.scale(scale, scale)
   context.translate(-tip.x, -tip.y)
-  if (tip.shapes[index].filled)
-    context.fill(tip.paths[index])
-  context.stroke(tip.paths[index])
+  context.fill(tip.fillPath)
+  context.stroke(tip.strokePath)
   context.restore()
 }
 
+const byStart = (a: { start: number }, b: { start: number }) => a.start - b.start
+
 /**
- * Grows the drawings of ornaments (from `parts`) in one animation loop. The
- * stems of an ornament grow in the order of its genome at one speed, each
- * side branch sprouts when its parent reaches its node, and each tip opens
- * when its branch arrives, shape by shape, scaled up from its centre. A frame
- * adds the new pieces of the growing stems to `base`, and draws the opening
- * tips on `overlay`. There it clears only the area of each opening tip, so
- * that the browser repaints little of the window. An open tip moves to
- * `base`. The loop ends when all stems and tips are complete. With reduced
- * motion, the end state is drawn at once. `delays` holds the time before
- * each drawing starts to grow, in milliseconds. The drawings share the stroke
- * width of the first, and both contexts take the scale of their canvas
- * before the call.
+ * Grows drawings of ornaments (from `parts`, given with `add`) in one
+ * animation loop on a canvas. The stems of an ornament grow in the order of
+ * its genome at one speed, each side branch sprouts when its parent reaches
+ * its node, and each tip opens when its branch arrives, scaled up from its
+ * centre. The loop rests when all stems and tips are
+ * complete, and `add` wakes it. With reduced motion, `add` draws the end
+ * state at once. Lines are at least one device pixel wide, and the context
+ * takes the scale of its canvas before the call.
  */
-export function animate(base: CanvasRenderingContext2D, overlay: CanvasRenderingContext2D, drawings: Parts[], paint: string, delays: number[] = []): Growth {
+export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
+  const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches
+  const ratio = view.getTransform().a
+  let lineWidth = 1 / ratio
+  // The committed drawing, on a canvas outside the page: the browser copies
+  // each changed canvas of the page in each frame, but never this one
+  const storeCanvas = document.createElement('canvas')
+  storeCanvas.width = view.canvas.width
+  storeCanvas.height = view.canvas.height
+  const store = storeCanvas.getContext('2d')!
+  store.setTransform(view.getTransform())
   const stems: GrowingStem[] = []
   const tips: GrowingTip[] = []
-  drawings.forEach(({ stems: ownStems, tips: ownTips }, index) => {
-    const offset = (delays[index] ?? 0) * GROWTH_SPEED / 1000
-    const opening = Math.max(...ownStems.map(stem => stem.start + stem.length), ...ownTips.map(tip => tip.start), 1) * OPENING_SHARE
-    for (const stem of ownStems)
-      stems.push({ ...stem, start: offset + stem.start, distances: distancesAlong(stem.points), drawn: 0 })
-    for (const tip of ownTips)
-      tips.push({ ...tip, start: offset + tip.start, paths: tip.shapes.map(shape => new Path2D(shape.d)), opening, open: false })
-  })
-  stems.sort((a, b) => a.start - b.start)
-  tips.sort((a, b) => a.start - b.start)
-  const strokeWidth = drawings[0]?.strokeWidth ?? 1
-  const style = (context: CanvasRenderingContext2D) => {
-    context.strokeStyle = paint
-    context.fillStyle = paint
-    context.lineWidth = strokeWidth
-    context.lineJoin = 'round'
-  }
-
-  const repaint = (newPaint: string) => {
-    paint = newPaint
-    for (const context of [base, overlay])
-      style(context)
-    base.clearRect(0, 0, base.canvas.width, base.canvas.height)
-    base.lineCap = 'butt'
-    base.beginPath()
-    for (const stem of stems) {
-      if (stem.drawn > 0)
-        addPiece(base, stem, 0, stem.drawn)
-    }
-    base.stroke()
-    base.lineCap = 'round'
-    for (const tip of tips) {
-      if (tip.open)
-        tip.shapes.forEach((_, shape) => drawShape(base, tip, shape, 1))
-    }
-  }
-
-  if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
-    for (const stem of stems)
-      stem.drawn = stem.distances.at(-1)!
-    for (const tip of tips)
-      tip.open = true
-    repaint(paint)
-    return { repaint, stop: () => {} }
-  }
-
-  repaint(paint)
   let nextStem = 0
   let nextTip = 0
   let growingStems: GrowingStem[] = []
   let openingTips: GrowingTip[] = []
   let reached = 0
-  let last = performance.now()
+  let last = 0
   let frame = 0
+  let frameCount = 0
+
+  const style = (context: CanvasRenderingContext2D) => {
+    context.strokeStyle = paint
+    context.fillStyle = paint
+    context.lineWidth = lineWidth
+    context.lineJoin = 'round'
+  }
+  // Draws the stems up to their committed distance, and the open tips
+  const drawCommitted = (context: CanvasRenderingContext2D, someStems: GrowingStem[], someTips: GrowingTip[]) => {
+    context.lineCap = 'butt'
+    context.beginPath()
+    for (const stem of someStems) {
+      if (stem.committed > 0)
+        addLine(context, piece(stem, 0, stem.committed, 1).line)
+    }
+    context.stroke()
+    context.lineCap = 'round'
+    for (const tip of someTips) {
+      if (tip.open)
+        drawTip(context, tip, 1)
+    }
+  }
+  // Takes back the committed drawing in areas, in whole device pixels, so that the copy is exact
+  const restore = (areas: Area[]) => {
+    view.save()
+    view.setTransform(1, 0, 0, 1, 0, 0)
+    for (const [x, y, width, height] of areas) {
+      const left = Math.max(0, Math.floor(x * ratio))
+      const top = Math.max(0, Math.floor(y * ratio))
+      const right = Math.min(storeCanvas.width, Math.ceil((x + width) * ratio))
+      const bottom = Math.min(storeCanvas.height, Math.ceil((y + height) * ratio))
+      if (right <= left || bottom <= top)
+        continue
+      view.clearRect(left, top, right - left, bottom - top)
+      view.drawImage(storeCanvas, left, top, right - left, bottom - top, left, top, right - left, bottom - top)
+    }
+    view.restore()
+  }
+
+  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, lineWidth / 2 + EDGE_MARGIN)
+  // Draws the stems on a context from the distance drawn there to their fronts
+  const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
+    context.lineCap = 'butt'
+    context.beginPath()
+    let drawn = false
+    for (const stem of someStems) {
+      const [distance, cursor] = from(stem)
+      if (stem.front > distance) {
+        const { line, last: next } = piece(stem, distance, stem.front, cursor)
+        addLine(context, line)
+        drawn = true
+        stem.shown = stem.front
+        stem.shownCursor = next
+      }
+    }
+    if (drawn)
+      context.stroke()
+  }
+
   const step = (now: number) => {
     frame = requestAnimationFrame(step)
-    if (now - last < FRAME_INTERVAL)
+    if (now - last < FRAME_INTERVAL - FRAME_SLACK)
       return
     reached += GROWTH_SPEED * Math.min(now - last, LONGEST_FRAME) / 1000
     last = now
+    frameCount++
+    const tipFrame = frameCount % TIP_FRAMES === 0
+    const commit = frameCount % COMMIT_FRAMES === 0
     for (; nextStem < stems.length && stems[nextStem].start <= reached; nextStem++)
       growingStems.push(stems[nextStem])
+    for (const stem of growingStems)
+      stem.front = stem.total * (stem.length ? clamp((reached - stem.start) / stem.length) : 1)
+    if (!tipFrame) {
+      drawStems(view, growingStems, stem => [stem.shown, stem.shownCursor])
+      return
+    }
+
     for (; nextTip < tips.length && tips[nextTip].start <= reached; nextTip++)
       openingTips.push(tips[nextTip])
-
-    base.lineCap = 'butt'
-    base.beginPath()
-    growingStems = growingStems.filter((stem) => {
-      const total = stem.distances.at(-1)!
-      const target = total * (stem.length ? clamp((reached - stem.start) / stem.length) : 1)
-      if (target - stem.drawn >= PIECE_LENGTH || (target === total && target > stem.drawn)) {
-        addPiece(base, stem, stem.drawn, target)
-        stem.drawn = target
-      }
-      return stem.drawn < total
-    })
-    base.stroke()
-
-    if (openingTips.length) {
-      for (const { x, y, radius } of openingTips) {
-        const reach = radius * LARGEST_SCALE + EDGE_MARGIN
-        overlay.clearRect(x - reach, y - reach, 2 * reach, 2 * reach)
-      }
-      base.lineCap = 'round'
-      overlay.lineCap = 'round'
-      openingTips = openingTips.filter((tip) => {
-        const progress = tip.shapes.map((_, shape) => clamp((reached - tip.start - shape * SHAPE_DELAY * tip.opening) / tip.opening))
-        tip.open = progress.every(share => share === 1)
-        progress.forEach((share, shape) => {
-          if (share > 0)
-            drawShape(tip.open ? base : overlay, tip, shape, tip.open ? 1 : easeOutBack(share))
-        })
-        return !tip.open
-      })
+    const progress = new Map(openingTips.map(tip => [tip, clamp((reached - tip.start) / tip.opening)]))
+    store.lineCap = 'round'
+    for (const tip of openingTips) {
+      tip.open = progress.get(tip) === 1
+      if (tip.open)
+        drawTip(store, tip, 1)
     }
-    if (nextStem === stems.length && nextTip === tips.length && !growingStems.length && !openingTips.length)
+    const tipAreas = openingTips.map(tip => tip.area)
+    if (commit) {
+      // The committed drawing takes the stems up to their fronts, and the
+      // canvas takes it back where it differs
+      const ends = growingStems.filter(stem => stem.front > stem.committed)
+      const endAreas = ends.map(stem => endArea(stem, stem.front))
+      drawStems(store, ends, stem => [stem.committed, stem.committedCursor])
+      for (const stem of ends) {
+        stem.committed = stem.front
+        stem.committedCursor = stem.shownCursor
+      }
+      restore([...endAreas, ...tipAreas])
+      growingStems = growingStems.filter(stem => stem.committed < stem.total)
+    }
+    else {
+      // Taking back an area cuts the ends of the stems in it, so these ends
+      // are taken back and drawn again in one piece, and so on
+      const ends = growingStems.filter(stem => stem.shown > stem.committed).map(stem => ({ stem, end: endArea(stem, stem.shown) }))
+      const restored = [...tipAreas]
+      const cut: GrowingStem[] = []
+      for (let found = true; found;) {
+        found = false
+        for (const { stem, end } of ends) {
+          if (!cut.includes(stem) && restored.some(other => overlaps(other, end))) {
+            cut.push(stem)
+            restored.push(end)
+            found = true
+          }
+        }
+      }
+      restore(restored)
+      for (const stem of cut) {
+        stem.shown = stem.committed
+        stem.shownCursor = stem.committedCursor
+      }
+      drawStems(view, growingStems, stem => [stem.shown, stem.shownCursor])
+    }
+
+    openingTips = openingTips.filter(tip => !tip.open)
+    view.lineCap = 'round'
+    for (const tip of openingTips) {
+      if (progress.get(tip)! > 0)
+        drawTip(view, tip, easeOutBack(progress.get(tip)!))
+    }
+    if (nextStem === stems.length && nextTip === tips.length && !growingStems.length && !openingTips.length) {
       cancelAnimationFrame(frame)
+      frame = 0
+    }
   }
-  frame = requestAnimationFrame(step)
-  return { repaint, stop: () => cancelAnimationFrame(frame) }
+
+  const add = (drawing: Parts, delay: number) => {
+    lineWidth = Math.max(drawing.strokeWidth, 1 / ratio)
+    style(view)
+    style(store)
+    const offset = Math.max(reached, delay * GROWTH_SPEED / 1000)
+    const newStems: GrowingStem[] = drawing.stems.map((stem) => {
+      const distances = distancesAlong(stem.points)
+      return { ...stem, start: offset + stem.start, distances, total: distances.at(-1)!, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1 }
+    })
+    const newTips: GrowingTip[] = drawing.tips.map((tip) => {
+      const reach = tip.radius * LARGEST_SCALE + EDGE_MARGIN
+      const area: Area = [tip.x - reach, tip.y - reach, 2 * reach, 2 * reach]
+      const [fillPath, strokePath] = [new Path2D(), new Path2D()]
+      for (const shape of tip.shapes) {
+        const path = new Path2D(shape.d)
+        if (shape.filled)
+          fillPath.addPath(path)
+        strokePath.addPath(path)
+      }
+      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false }
+    })
+    if (reduced) {
+      for (const stem of newStems)
+        stem.committed = stem.total
+      for (const tip of newTips)
+        tip.open = true
+      for (const context of [view, store])
+        drawCommitted(context, newStems, newTips)
+    }
+    // A new stem or tip starts no earlier than the growth so far, so the
+    // ones that have started keep their places in the order
+    stems.push(...newStems)
+    stems.sort(byStart)
+    tips.push(...newTips)
+    tips.sort(byStart)
+    if (reduced || frame)
+      return
+    last = performance.now()
+    frame = requestAnimationFrame(step)
+  }
+
+  // The ends of the stems since the last commit and the opening tips come
+  // back with the next frame of the tips
+  const repaint = (newPaint: string) => {
+    paint = newPaint
+    style(view)
+    style(store)
+    store.clearRect(0, 0, storeCanvas.width, storeCanvas.height)
+    drawCommitted(store, stems, tips)
+    restore([[0, 0, storeCanvas.width / ratio, storeCanvas.height / ratio]])
+    for (const stem of growingStems) {
+      stem.shown = stem.committed
+      stem.shownCursor = stem.committedCursor
+    }
+  }
+
+  return { add, repaint, stop: () => cancelAnimationFrame(frame) }
 }
 
 /** A small, fast, seeded random generator (mulberry32). */
@@ -1123,9 +1280,10 @@ interface VineBox {
 
 /**
  * Vines that grow into a window of the given size from its bottom and its
- * sides, in the order of a seeded shuffle. All of their blossoms keep apart.
+ * sides, one after the other in the order of a seeded shuffle. All of their
+ * blossoms keep apart.
  */
-export function vines(width: number, height: number, seed: number): Plant[] {
+export function* vines(width: number, height: number, seed: number): Generator<Plant> {
   const next = random(seed)
   const boxes: VineBox[] = []
   const bottomCount = Math.max(1, Math.round(width / BOTTOM_SPACING))
@@ -1142,13 +1300,13 @@ export function vines(width: number, height: number, seed: number): Plant[] {
   }
   boxes.sort(() => next() - 0.5)
   const plants: Plant[] = []
-  boxes.forEach(({ box, direction }, index) => {
+  for (const [index, { box, direction }] of boxes.entries()) {
     const [, , boxWidth, boxHeight] = box
     // `grow` sizes the blossoms by the width of the box before it turns
     const growingWidth = direction === -90 ? boxWidth : boxHeight
     const sizeScale = VINE_SCALE * GROWTH.box[2] / growingWidth
     const area = boxWidth * boxHeight
-    plants.push(grow(seed + index + 1, {
+    const plant = grow(seed + index + 1, {
       box,
       direction,
       strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
@@ -1158,7 +1316,8 @@ export function vines(width: number, height: number, seed: number): Plant[] {
       budSize: [GROWTH.budSize[0] * sizeScale, GROWTH.budSize[1] * sizeScale],
       flowers: Math.round(area / FLOWER_AREA),
       buds: Math.round(area / BUD_AREA),
-    }, plants))
-  })
-  return plants
+    }, plants)
+    plants.push(plant)
+    yield plant
+  }
 }
