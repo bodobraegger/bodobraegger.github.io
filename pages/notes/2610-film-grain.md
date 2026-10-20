@@ -7,16 +7,11 @@ type: note
 draft: true
 ---
 
-<div class="relative">
-
 ![The village of Alquézar on a rock above a river valley, Huesca, Spain (Antonio Moreno Nadal, Wikimedia Commons, CC0)](../../src/assets/images/notes/2610-film-grain/alquezar.webp)
 
-The grain on this note comes from the `FilmGrain` component. It is the grain of a scanned 35 mm photo on Kodak Portra 400, as it looks when the frame fills the screen. The short side of the frame then covers about 1200 device pixels, so each device pixel shows about 20 µm of film, and the grain is about as large as one device pixel.
+Every page of this site has this grain, from the `FilmGrain` component. It is the grain of a scanned 35 mm photo on Kodak Portra 400, as it looks when the frame fills the screen. The short side of the frame then covers about 1200 device pixels, so each device pixel shows about 20 µm of film, and the grain is about as large as one device pixel.
 
-The grain is strongest in the darker midtones of the photo and weak in the highlights, like in the scans. The white of the page stays clean like a bright sky, and the black of the page gets a little grain. The grain belongs to the note and moves with it when the page scrolls, like the grain of a print. A positioned box around the note holds it.
-
-<FilmGrain />
-</div>
+The grain is strongest in the darker midtones of the photo and weak in the highlights, like in the scans. The white of the page stays clean like a bright sky, and the black of the page gets a little grain. The grain lies over the whole page and moves with it when the page scrolls, like the grain of a print. `grain: tri-x-400` in the frontmatter of a page chooses another film, and `grain: false` removes the grain.
 
 ## Use
 
