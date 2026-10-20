@@ -365,6 +365,24 @@ const LONGEST_FRAME = 100
 const TIP_FRAMES = 3
 const COMMIT_FRAMES = 12
 
+// The ink of a stem changes with the share of the growth of its vine: at
+// the foot a line is FOOT_WIDTH times the stroke width at FOOT_ALPHA, at the
+// tips TIP_WIDTH times at TIP_ALPHA, but at least a device pixel wide. The
+// ink takes INK_LEVELS steps, so that a frame draws the new ends of the stems
+// with one stroke per level. A blossom takes an alpha between BLOSSOM_ALPHA
+// and 1. Strokes of less than full alpha darken where they cross.
+const FOOT_WIDTH = 2
+const TIP_WIDTH = 0.8
+const FOOT_ALPHA = 0.95
+const TIP_ALPHA = 0.45
+const INK_LEVELS = 8
+const BLOSSOM_ALPHA = 0.75
+
+interface Ink {
+  width: number
+  alpha: number
+}
+
 type Area = [number, number, number, number]
 
 const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + bw && bx < ax + aw && ay < by + bh && by < ay + ah
@@ -388,6 +406,9 @@ interface GrowingStem extends StemPart {
   started: boolean
   resting: boolean
   lag: number
+  /** The share of the growth of its vine at the start of the stem, and per unit of its length. */
+  inkStart: number
+  inkScale: number
 }
 
 /**
@@ -402,6 +423,7 @@ interface GrowingTip extends TipPart {
   area: Area
   open: boolean
   carrier?: GrowingStem
+  alpha: number
 }
 
 export interface Growth {
@@ -461,6 +483,7 @@ function area(line: Point[], margin: number): Area {
 /** Draws a tip, scaled from its centre. */
 function drawTip(context: CanvasRenderingContext2D, tip: GrowingTip, scale: number) {
   context.save()
+  context.globalAlpha = tip.alpha
   context.translate(tip.x, tip.y)
   context.scale(scale, scale)
   context.translate(-tip.x, -tip.y)
@@ -485,6 +508,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches
   const ratio = view.getTransform().a
   let lineWidth = 1 / ratio
+  let inks: Ink[] = []
   // The committed drawing, on a canvas outside the page: the browser copies
   // each changed canvas of the page in each frame, but never this one
   const storeCanvas = document.createElement('canvas')
@@ -512,15 +536,40 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     context.lineWidth = lineWidth
     context.lineJoin = 'round'
   }
-  // Draws the stems up to their committed distance, and the open tips
+  // The pieces of the line of a stem between two distances, split where the
+  // ink changes, each with its ink level, and the point that ends the last
+  const inkPieces = (stem: GrowingStem, from: number, to: number, first: number) => {
+    const pieces: { line: Point[], level: number }[] = []
+    let cursor = first
+    while (from < to) {
+      const level = Math.min(INK_LEVELS - 1, Math.max(0, Math.floor((stem.inkStart + from * stem.inkScale) * INK_LEVELS)))
+      const boundary = ((level + 1) / INK_LEVELS - stem.inkStart) / stem.inkScale
+      const end = boundary > from ? Math.min(to, boundary) : to
+      const { line, last: next } = piece(stem, from, end, cursor)
+      pieces.push({ line, level })
+      cursor = next
+      from = end
+    }
+    return { pieces, last: cursor }
+  }
+  const strokeLines = (context: CanvasRenderingContext2D, lines: Point[][], { width, alpha }: Ink) => {
+    context.lineWidth = width
+    context.globalAlpha = alpha
+    context.beginPath()
+    for (const line of lines)
+      addLine(context, line)
+    context.stroke()
+  }
+  // Draws the stems up to their committed distance, and the open tips, each
+  // piece of a stem in a stroke of its own, so that crossings darken
   const drawCommitted = (context: CanvasRenderingContext2D, someStems: GrowingStem[], someTips: GrowingTip[]) => {
     context.lineCap = 'butt'
-    context.beginPath()
     for (const stem of someStems) {
-      if (stem.committed > 0)
-        addLine(context, piece(stem, 0, stem.committed, 1).line)
+      for (const { line, level } of inkPieces(stem, 0, stem.committed, 1).pieces)
+        strokeLines(context, [line], inks[level])
     }
-    context.stroke()
+    context.globalAlpha = 1
+    context.lineWidth = lineWidth
     context.lineCap = 'round'
     for (const tip of someTips) {
       if (tip.open)
@@ -531,6 +580,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const restore = (areas: Area[]) => {
     view.save()
     view.setTransform(1, 0, 0, 1, 0, 0)
+    view.globalAlpha = 1
     for (const [x, y, width, height] of areas) {
       const left = Math.max(0, Math.floor(x * ratio))
       const top = Math.max(0, Math.floor(y * ratio))
@@ -546,24 +596,33 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
 
   // Whether the stem that carries a stem or a tip has reached its place
   const arrived = ({ start }: { start: number }, carrier?: GrowingStem) => !carrier || (carrier.started && reached - carrier.lag >= start)
-  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, lineWidth / 2 + EDGE_MARGIN)
-  // Draws the stems on a context from the distance drawn there to their fronts
+  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, inks[0].width / 2 + EDGE_MARGIN)
+  // Draws the stems on a context from the distance drawn there to their
+  // fronts: on the canvas of the page one stroke per ink level, and in the
+  // committed drawing one stroke per piece, so that crossings darken there
   const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
     context.lineCap = 'butt'
-    context.beginPath()
-    let drawn = false
+    const levels = new Map<number, Point[][]>()
     for (const stem of someStems) {
       const [distance, cursor] = from(stem)
       if (stem.front > distance) {
-        const { line, last: next } = piece(stem, distance, stem.front, cursor)
-        addLine(context, line)
-        drawn = true
+        const { pieces, last: next } = inkPieces(stem, distance, stem.front, cursor)
+        for (const { line, level } of pieces) {
+          if (context === store)
+            strokeLines(context, [line], inks[level])
+          else if (levels.has(level))
+            levels.get(level)!.push(line)
+          else
+            levels.set(level, [line])
+        }
         stem.shown = stem.front
         stem.shownCursor = next
       }
     }
-    if (drawn)
-      context.stroke()
+    for (const [level, lines] of levels)
+      strokeLines(context, lines, inks[level])
+    context.globalAlpha = 1
+    context.lineWidth = lineWidth
   }
 
   const step = (now: number) => {
@@ -666,12 +725,24 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
 
   const add = (drawing: Parts, delay: number) => {
     lineWidth = Math.max(drawing.strokeWidth, 1 / ratio)
+    inks = Array.from({ length: INK_LEVELS }, (_, level) => {
+      const share = (level + 0.5) / INK_LEVELS
+      return {
+        width: Math.max(drawing.strokeWidth * (FOOT_WIDTH + (TIP_WIDTH - FOOT_WIDTH) * share), 1 / ratio),
+        alpha: FOOT_ALPHA + (TIP_ALPHA - FOOT_ALPHA) * share,
+      }
+    })
     style(view)
     style(store)
     const offset = Math.max(reached, delay * GROWTH_SPEED / 1000)
+    // The growth length of the vine from its foot to its farthest tip
+    const extent = Math.max(...drawing.stems.map(stem => stem.start + stem.length), 1)
     const newStems: GrowingStem[] = drawing.stems.map((stem) => {
       const distances = distancesAlong(stem.points)
-      return { ...stem, start: offset + stem.start, distances, total: distances.at(-1)!, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0 }
+      const total = distances.at(-1)!
+      // The ink follows the growth length, and the drawn line of a stem is a little longer than its growth length
+      const inkScale = stem.length / (total || 1) / extent
+      return { ...stem, start: offset + stem.start, distances, total, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0, inkStart: stem.start / extent, inkScale }
     })
     newStems.forEach((stem, index) => stem.parentStem = newStems[drawing.stems[index].parent ?? -1])
     const newTips: GrowingTip[] = drawing.tips.map((tip) => {
@@ -684,7 +755,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
           fillPath.addPath(path)
         strokePath.addPath(path)
       }
-      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1] }
+      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random() }
     })
     if (reduced) {
       for (const stem of newStems)
