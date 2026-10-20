@@ -334,11 +334,8 @@ if (frontmatter.hydra) {
       This is a draft, the content may be incomplete. Please check back later.
     </p>
   </div>
-  <!-- With `grain: <stock>`, such as `grain: portra-400`, the grain of that
-       film lies over the article and moves with it, like the grain of a print -->
-  <article ref="content" :class="{ relative: frontmatter.grain }">
+  <article ref="content">
     <slot />
-    <FilmGrain v-if="frontmatter.grain" :stock="frontmatter.grain === true ? undefined : frontmatter.grain" />
   </article>
   <div v-if="route.path !== '/'" class="prose m-auto mt-8 mb-8 animate-delay-500 print:hidden font-mono op50">
     <br>

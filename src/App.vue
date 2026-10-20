@@ -7,6 +7,11 @@ const ChatWidget = defineAsyncComponent(() => import('./components/ChatWidget.vu
 
 const route = useRoute()
 
+// `grain: <stock>` in the frontmatter, such as `grain: portra-400`
+const grain = computed(() => route.meta.frontmatter?.grain)
+// Above the sticky NavBar (z-40)
+const GRAIN_LAYER = 41
+
 // Strip the leading year and month prefix, "2403-", from a slug
 function stripDate(segment: string) {
   return segment.replace(/^\d{4}-/, '')
@@ -37,7 +42,7 @@ useHead({
 
 <template>
   <div class="page-background" />
-  <div class="flex flex-col justify-start min-h-screen xl-mx-auto xl:max-w-500">
+  <div class="flex flex-col justify-start min-h-screen xl-mx-auto xl:max-w-500" :class="{ relative: grain }">
     <NavBar />
     <main class="px-7 of-x-hidden">
       <!-- The wrapper lives here, not as the markdown wrapperComponent: Vue
@@ -48,6 +53,13 @@ useHead({
       </WrapperPost>
     </main>
     <Footer />
+    <!-- The grain lies over the whole page, the nav and the title included,
+         and moves with it like the grain of a print -->
+    <FilmGrain
+      v-if="grain"
+      :stock="grain === true ? undefined : grain"
+      :style="{ '--film-grain-layer': GRAIN_LAYER }"
+    />
   </div>
   <Lightbox />
   <ClientOnly>
