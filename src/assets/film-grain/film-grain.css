@@ -1,0 +1,110 @@
+/* The grain of a 35 mm film photo over the box of a positioned parent, or
+   over the window. The layer needs no script and no framework:
+     <div class="film-grain film-grain--portra-400"></div>                      last child of a positioned box
+     <div class="film-grain film-grain--portra-400 film-grain--fixed"></div>    anywhere, covers the window
+   Stocks (stocks.css): film-grain--ektar-100, --portra-400, --gold-200,
+   --superia-400, --tri-x-400, --hp5. Each element needs one stock. A stock
+   sets the tiles (fine or clumped grain, colour or monochrome) and the
+   strength. These variables apply on the element or on an ancestor:
+     --film-grain-strength  0 to 1, replaces the strength of the stock
+     --film-grain-size      the enlargement of the grain (1). At 1 the grain
+                            looks like that of a frame that fills the
+                            screen. Whole numbers keep the grain sharp.
+   scripts/film-grain.ts makes the tiles and stocks.css. */
+@import './stocks.css';
+
+/* One texel of a tile is one device pixel, so the grain stays as sharp as
+   the grain of a scan that the browser scales down. */
+.film-grain {
+  --film-grain-pixel: 1px;
+
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (resolution >= 1.125dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 1.25);
+  }
+}
+
+@media (resolution >= 1.375dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 1.5);
+  }
+}
+
+@media (resolution >= 1.75dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 2);
+  }
+}
+
+@media (resolution >= 2.25dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 2.5);
+  }
+}
+
+@media (resolution >= 2.56dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 2.625);
+  }
+}
+
+@media (resolution >= 2.69dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 2.75);
+  }
+}
+
+@media (resolution >= 2.875dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 3);
+  }
+}
+
+@media (resolution >= 3.25dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 3.5);
+  }
+}
+
+@media (resolution >= 3.75dppx) {
+  .film-grain {
+    --film-grain-pixel: calc(1px / 4);
+  }
+}
+
+/* Without a box of its own, the element makes no stacking context, so the
+   blend of the layer reaches the page behind it. */
+.film-grain--fixed {
+  display: contents;
+}
+
+/* The prime tile (241 texels) over the main tile (256 texels) repeats only
+   after 61696 texels. The soft-light blend changes a pixel most in the dark
+   midtones and little in the highlights, like the grain of the scans. */
+.film-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size:
+    calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 241),
+    calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 256);
+  mix-blend-mode: soft-light;
+}
+
+.film-grain--fixed::after {
+  position: fixed;
+  z-index: 2147483647;
+}
+
+@media print {
+  .film-grain {
+    display: none;
+  }
+}

@@ -267,14 +267,17 @@ if (frontmatter.hydra) {
 </script>
 
 <template>
-  <!-- Both backgrounds sit at the same depth as the page background, so the
-       order here decides which draws on top. Plum is a few faint lines on a
-       clear canvas, so it goes last and reads over the hydra wash. -->
+  <!-- The backgrounds sit at the same depth as the page background, so the
+       order here decides which draws on top. Plum and Orchid are a few faint
+       lines on a clear layer, so they go last and read over the hydra wash. -->
   <ClientOnly v-if="frontmatter.hydraBackground">
     <HydraBackground />
   </ClientOnly>
   <ClientOnly v-if="frontmatter.plum">
     <Plum />
+  </ClientOnly>
+  <ClientOnly v-if="frontmatter.orchid">
+    <Orchid />
   </ClientOnly>
   <!-- The home page opens with its own hero, which already carries the name,
        so the title block is left to every other page. -->

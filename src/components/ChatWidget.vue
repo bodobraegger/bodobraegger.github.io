@@ -37,6 +37,7 @@ const open = ref(false)
 const messages = ref<ChatMessage[]>([])
 const onlineCount = ref(0)
 const canLoadEarlier = ref(false)
+const loadingEarlier = ref(false)
 
 const draftBody = ref('')
 const editing = ref<ChatMessage | null>(null)
@@ -159,10 +160,11 @@ watch(open, isOpen => document.documentElement.classList.toggle('chat-open', isO
 
 async function loadEarlier() {
   const oldest = messages.value[0]
-  if (!oldest)
+  if (!oldest || loadingEarlier.value)
     return
   const el = listEl.value
   const previousScrollHeight = el?.scrollHeight ?? 0
+  loadingEarlier.value = true
   try {
     const fetched = await fetchMessages(CHAT_PAGE_SIZE, oldest.createdAt)
     messages.value = [...fetched, ...messages.value]
@@ -173,6 +175,9 @@ async function loadEarlier() {
   }
   catch {
     // Leave the list as it was; the link stays for another try.
+  }
+  finally {
+    loadingEarlier.value = false
   }
 }
 
@@ -320,9 +325,14 @@ onUnmounted(() => {
       @paste="sendImage($event.clipboardData?.files)"
     >
       <div v-if="open" class="chat-widget-box">
+        <button class="chat-widget-close" aria-label="Close chat" @click="closeBox">
+          <svg class="chat-widget-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+            <path d="M2 2 L10 10 M10 2 L2 10" fill="none" stroke="currentColor" stroke-width="1" />
+          </svg>
+        </button>
         <div ref="listEl" class="chat-widget-list" role="log" aria-live="polite">
-          <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" @click="loadEarlier">
-            ↑ earlier messages
+          <button v-if="canLoadEarlier" class="chat-widget-message chat-widget-earlier" :disabled="loadingEarlier" @click="loadEarlier">
+            {{ loadingEarlier ? 'loading...' : '↑ earlier messages' }}
           </button>
           <p v-for="message in messages" :key="message.id" class="chat-widget-message" :class="{ mine: message.userId === userId }">
             <span
@@ -375,7 +385,7 @@ onUnmounted(() => {
         >
         <!-- The picker is for phones, where nothing can be dropped; it steps away while text is typed -->
         <label v-if="!draftBody && !sending" class="chat-widget-pick" aria-label="Send an image">
-          <svg class="chat-widget-pick-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <svg class="chat-widget-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
             <rect x="1" y="1" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1" />
             <path d="M1 9 L4 6 L6 8 L8 5 L11 9" fill="none" stroke="currentColor" stroke-width="1" />
             <circle cx="8" cy="3.5" r="0.8" fill="currentColor" />
@@ -442,6 +452,8 @@ onUnmounted(() => {
 }
 
 .chat-widget-box {
+  --chat-close-size: 15px;
+  position: relative;
   display: flex;
   flex-direction: column;
   max-height: 50vh;
@@ -459,11 +471,59 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
+.chat-widget-earlier:disabled {
+  cursor: progress;
+}
+
+/* A see-through square in the top right corner, above the top end of the
+   scrollbar. */
+.chat-widget-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--chat-close-size);
+  height: var(--chat-close-size);
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed var(--fg);
+  border-left: 1px dashed var(--fg);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.chat-widget-close:hover {
+  color: var(--fg);
+}
+
+.chat-widget-close .chat-widget-icon {
+  width: 9px;
+  height: 9px;
+}
+
 .chat-widget-list {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   padding: 0.3rem 0.5rem;
+}
+
+/* scrollbar-color (main.css) turns off the ::-webkit-scrollbar rules. Without
+   it, Chromium and Safari draw the thin scrollbar of main.css, whose track can
+   start below the close square. Firefox keeps scrollbar-color, so there the
+   square lies over the top of the scrollbar. */
+@supports selector(::-webkit-scrollbar) {
+  .chat-widget-list {
+    scrollbar-color: auto;
+  }
+}
+
+.chat-widget-list::-webkit-scrollbar-track {
+  margin-top: var(--chat-close-size);
 }
 
 .chat-widget-message {
@@ -633,7 +693,7 @@ html.dark .chat-widget-image {
 }
 
 /* Drawn, not from a font: no icon set is installed and the glyph must match everywhere. */
-.chat-widget-pick-icon {
+.chat-widget-icon {
   display: block;
   width: 13px;
   height: 13px;

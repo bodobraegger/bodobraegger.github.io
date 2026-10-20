@@ -4,7 +4,7 @@ place: Rio de Janeiro, Brasil
 date: 2026-10-19T09:00:00-03:00
 lang: en
 type: note
-plum: false
+orchid: true
 ---
 
 ![The cover of the Suzuno brochure](../../src/assets/images/notes/2610-suzuno-differences/cover-01-cover.png)
