@@ -9,8 +9,6 @@ const route = useRoute()
 
 // `grain: <stock>` in the frontmatter, such as `grain: portra-400`
 const grain = computed(() => route.meta.frontmatter?.grain)
-// Above the sticky NavBar (z-40)
-const GRAIN_LAYER = 41
 
 // Strip the leading year and month prefix, "2403-", from a slug
 function stripDate(segment: string) {
@@ -53,13 +51,9 @@ useHead({
       </WrapperPost>
     </main>
     <Footer />
-    <!-- The grain lies over the whole page, the nav and the title included,
-         and moves with it like the grain of a print -->
-    <FilmGrain
-      v-if="grain"
-      :stock="grain === true ? undefined : grain"
-      :style="{ '--film-grain-layer': GRAIN_LAYER }"
-    />
+    <!-- The grain lies over everything, the nav, the chat and the lightbox
+         included, and moves with the page like the grain of a print -->
+    <FilmGrain v-if="grain" class="film-grain--top" :stock="grain === true ? undefined : grain" />
   </div>
   <Lightbox />
   <ClientOnly>

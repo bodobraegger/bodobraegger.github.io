@@ -10,7 +10,8 @@
      --film-grain-size      the enlargement of the grain (1). At 1 the grain
                             looks like that of a frame that fills the
                             screen. Whole numbers keep the grain sharp.
-     --film-grain-layer     the z-index of the grain over the page (auto)
+   With film-grain--top, the grain of a box lies over everything else on the
+   page, as the window grain does.
    scripts/film-grain.ts makes the tiles and stocks.css. */
 @import './stocks.css';
 
@@ -97,14 +98,16 @@
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 241),
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 256);
   mix-blend-mode: soft-light;
-  /* --film-grain-layer lifts the grain above positioned content such as a
-     sticky header. It goes on the pseudo-element: a z-index on .film-grain
-     would make a stacking context and cut the blend off from the page. */
-  z-index: var(--film-grain-layer, auto);
 }
 
 .film-grain--fixed::after {
   position: fixed;
+}
+
+/* The z-index goes on the pseudo-element: on .film-grain it would make a
+   stacking context and cut the blend off from the page. */
+.film-grain--fixed::after,
+.film-grain--top::after {
   z-index: 2147483647;
 }
 
