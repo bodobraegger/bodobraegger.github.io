@@ -6,7 +6,9 @@ lang: en
 type: note+blog
 duration:
 plum:
+orchid:
 hydraBackground:
+grain:
 ---
 
 ...
