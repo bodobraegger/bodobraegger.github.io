@@ -454,7 +454,8 @@ onUnmounted(() => {
   transition: border-color 0.3s;
 }
 
-.chat-widget-panel:hover {
+.chat-widget-panel:hover,
+.chat-widget-close:hover {
   border-style: solid;
 }
 
