@@ -903,6 +903,8 @@ export interface GrowthParameters {
   stretch: Range
   depth: Range
   petalSize: Range
+  twist: number
+  petalChange: number
   petalReach: Range
   weight: Range
   blossomGap: number
@@ -945,6 +947,10 @@ export const GROWTH: GrowthParameters = {
   stretch: [1, 1.3],
   depth: [0.65, 0.95],
   petalSize: [0.7, 1.15],
+  // The largest turn of a flower in degrees, and the chance of a flower with
+  // a missing or an extra petal
+  twist: 25,
+  petalChange: 0,
   petalReach: [-0.1, 0.2],
   weight: [0.8, 1.5],
   // The least gap between the lines of two blossoms and the tips of their
@@ -1335,15 +1341,17 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 
   const flowerTip = (): Tip => {
     const size = width * pick(growth.flowerSize)
+    const petals = growth.petalChange && next() < growth.petalChange ? (next() < 0.5 ? 4 : 6) : 5
     return {
       flower: {
         radiusX: size,
         radiusY: size * pick(growth.stretch) * between(1, 1.3),
-        rotation: between(-25, 25),
+        rotation: between(-growth.twist, growth.twist),
         phase: between(-36, 36),
         depth: pick(growth.depth),
         stretch: pick(growth.stretch),
-        sizes: Array.from({ length: 5 }, () => pick(growth.petalSize)),
+        petals,
+        sizes: Array.from({ length: petals }, () => pick(growth.petalSize)),
         reach: pick(growth.petalReach),
         weight: pick(growth.weight),
         centre: between(0.5, 1.5),
@@ -1390,7 +1398,11 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 // line is STROKE_SCALE times as wide. A vine branches with BRANCHING. Its
 // steps wander more than in the default growth: they vary in length by
 // STEP_VARIATION, turn by up to SPREAD degrees, and join in a curve of
-// TENSION, nearly straight lines as those of Plum.
+// TENSION, nearly straight lines as those of Plum. Its blossoms vary more
+// than those of the default growth: flowers and buds take sizes in the
+// ranges FLOWER_SIZE and BUD_SIZE (times VINE_SCALE), petals in the range
+// PETAL_SIZE, flowers turn by up to TWIST degrees, and PETAL_CHANGE of them
+// have a missing or an extra petal.
 //
 // The feet of the vines from the bottom stand BOTTOM_SPACING apart, and each
 // of these vines rises through a share of the window height in the range
@@ -1411,6 +1423,11 @@ const BRANCHING = 0.2
 const STEP_VARIATION = 0.6
 const SPREAD = 16
 const TENSION = 0.2
+const FLOWER_SIZE = [0.07, 0.16]
+const BUD_SIZE = [0.03, 0.065]
+const PETAL_SIZE: [number, number] = [0.6, 1.2]
+const TWIST = 180
+const PETAL_CHANGE = 0.25
 const BOTTOM_SPACING = 75
 const BOTTOM_RISE = [0.3, 0.7]
 const SIDE_SPACING = 110
@@ -1478,8 +1495,11 @@ export function* vines(width: number, height: number, seed: number): Generator<P
       curlSize: GROWTH.curlSize * curlScale,
       branching: BRANCHING,
       reach: [GROWTH.reach[0] * BRANCH_SCALE, GROWTH.reach[1] * BRANCH_SCALE],
-      flowerSize: [GROWTH.flowerSize[0] * sizeScale, GROWTH.flowerSize[1] * sizeScale],
-      budSize: [GROWTH.budSize[0] * sizeScale, GROWTH.budSize[1] * sizeScale],
+      flowerSize: [FLOWER_SIZE[0] * sizeScale, FLOWER_SIZE[1] * sizeScale],
+      budSize: [BUD_SIZE[0] * sizeScale, BUD_SIZE[1] * sizeScale],
+      petalSize: PETAL_SIZE,
+      twist: TWIST,
+      petalChange: PETAL_CHANGE,
       flowers: Math.round(area / FLOWER_AREA),
       buds: Math.round(area / BUD_AREA),
     }, plants)
