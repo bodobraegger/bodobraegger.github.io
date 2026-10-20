@@ -1,21 +1,24 @@
-// Generates the tiles of the film grain layer
+// Generates the tiles and the stock presets of the film grain layer
 // (src/assets/film-grain/film-grain.css) into src/assets/film-grain/:
 //   pnpm generate:grain
 // The output is the same on each run, because one seed drives all random
 // values.
 //
-// A tile is a periodic field of dye clouds: soft blobs with log-normal radii,
-// in clusters around random centres (a Neyman-Scott process). The model
-// follows the Boolean model of Newson et al., "Realistic Film Grain
-// Rendering" (IPOL 2017), but it adds the clouds instead of their union, like
-// the dye of a colour film. The parameters give the autocorrelation (lags of
-// 1 to 4 pixels: 0.64, 0.28, 0.13, 0.05), the skew and the kurtosis of a
-// 4000 ppi scan of a flat Kodak Ektar 100 negative (Wikimedia Commons,
-// KodakEktar100GrainScan02.jpg, CC0), with one texel for one scan pixel.
+// The grain is the grain of a 35 mm photo whose frame fills the screen: the
+// short side of the frame (24 mm) covers about 1200 device pixels, so a
+// device pixel shows about 20 µm of film. One texel of a tile is one device
+// pixel. At this scale, scans of Portra 400, Gold 200, Superia 400, Ektar
+// 100, Tri-X 400 and HP5 Plus (Wikimedia Commons) show a grain that is near
+// to white noise, with small correlations between neighbour pixels.
 //
-// The layer shows two tiles on top of each other: a main tile of 256 texels
-// and a prime tile of 241 texels. Their sum repeats only after 61696 texels,
-// so a still grain shows no pattern.
+// A tile is a periodic field of dye clouds or silver clumps: soft blobs with
+// log-normal radii, alone or in clusters (a Neyman-Scott process), after the
+// Boolean model of Newson et al., "Realistic Film Grain Rendering" (IPOL
+// 2017). Lab scanners sharpen, which gives the negative correlation at a
+// distance of two pixels that the scans show.
+//
+// The layer shows a prime tile of 241 texels over a main tile of 256 texels.
+// Their sum repeats only after 61696 texels, so the grain shows no pattern.
 import { mkdir, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 import { random } from '../src/lib/orchid'
@@ -38,36 +41,72 @@ interface CloudModel {
   clusterSpread: number
   /** The mean number of clouds for each texel */
   density: number
+  /** The amount of the unsharp mask of the scanner */
+  sharpen: number
 }
 
-const CLOUDS: CloudModel = { meanRadius: 0.3, radiusSpread: 0.5, blur: 0.2, clusterSize: 6, clusterSpread: 1.4, density: 6 }
+// The two structures that the scans show at the scale of a frame that fills
+// the screen, measured after a high-pass filter of 3 pixels: the correlation
+// of neighbours at a distance of 1, 2 and 3 pixels, and the kurtosis.
+const GRAINS = {
+  // Portra 400, Gold 200, Superia 400, Tri-X 400: 0.10, -0.13, 0.05; kurtosis 3.1
+  fine: { meanRadius: 0.15, radiusSpread: 0.5, blur: 0.2, clusterSize: 1, clusterSpread: 0, density: 6, sharpen: 1.5 },
+  // HP5 Plus: 0.42, -0.04, 0.03; kurtosis 3.3
+  clumped: { meanRadius: 0.3, radiusSpread: 0.5, blur: 0.2, clusterSize: 6, clusterSpread: 1.5, density: 6, sharpen: 1 },
+} satisfies Record<string, CloudModel>
+type Grain = keyof typeof GRAINS
+
+interface Stock {
+  grain: Grain
+  color: boolean
+  /**
+   * The standard deviation of the grain in the luma of a midtone (8-bit
+   * levels), in the flattest midtone areas of the scans. Kodak rates the
+   * graininess of Ektar 100 below that of Portra 400 (Print Grain Index under
+   * 25 and 37) and Portra 400 below Gold 200 (44).
+   */
+  deviation: number
+}
+
+const STOCKS: Record<string, Stock> = {
+  'ektar-100': { grain: 'fine', color: true, deviation: 4 },
+  'portra-400': { grain: 'fine', color: true, deviation: 6.3 },
+  'gold-200': { grain: 'fine', color: true, deviation: 8 },
+  'superia-400': { grain: 'fine', color: true, deviation: 11 },
+  'tri-x-400': { grain: 'fine', color: false, deviation: 14 },
+  'hp5': { grain: 'clumped', color: false, deviation: 11 },
+}
+
 /**
- * The scan has no correlation beyond 6 pixels. A tile has random blotches
- * at larger scales, which would show the repeat of the tile, so a high-pass
- * filter of this standard deviation (in texels) removes them.
+ * The scans have no correlation beyond a few pixels. A tile has random
+ * blotches at larger scales, which would show the repeat of the tile, so a
+ * high-pass filter of this standard deviation (in texels) removes them.
  */
 const HIGH_PASS_SIGMA = 8
+/** The width of the unsharp mask of the scanner, in texels */
+const SHARPEN_SIGMA = 1
 
-// In the scan, the grain of the red, green and blue channels correlates with
-// 0.61 (red, green), 0.34 (red, blue) and 0.43 (green, blue). A field that all
-// channels share, with these weights, gives the same correlations.
-const SHARED_WEIGHTS = [0.69, 0.88, 0.49]
-// The blue-sensitive layer of a colour negative has the coarsest grain
-// (Kodak VISION3 data sheets).
-const CHANNEL_GAINS = [1, 0.9, 1.2]
+// In the scans, the grain of the red, green and blue channels correlates
+// with about 0.88, and red and blue vary about 15 % more than green. The
+// colour tile shares a field between its channels with this weight; the
+// grey prime tile over it adds the rest of the correlation.
+const SHARED_WEIGHT = 0.87
+const CHANNEL_GAINS = [1.15, 1, 1.15]
 const LUMA_WEIGHTS = [0.2126, 0.7152, 0.0722]
 
 /**
- * The colour tile stores 128 + GREY_SCALE × the grain in standard deviations.
- * Each of the two tiles carries half of the variance, so ±5.6 σ fill the 8
- * bits.
+ * A grey or colour tile stores 128 + GREY_SCALE × the grain in standard
+ * deviations. Each of the two tiles carries half of the variance, so ±3.8 σ
+ * fill the 8 bits.
  */
-const GREY_SCALE = 32 / Math.SQRT2
+const GREY_SCALE = 48 / Math.SQRT2
 /** An alpha tile changes a pixel by alpha, a grey tile by twice the distance from 128, for the same effect. */
 const ALPHA_SCALE = 2 * GREY_SCALE
 /** 32 levels of 8 are enough for noise at the strength of a grain layer, and they halve the file size. */
 const LEVEL_STEP = 8
 const WEBP_OPTIONS = { lossless: true, effort: 6 }
+/** The grey of the midtone bin of the scans (90 to 160) */
+const MIDTONE = 125 / 255
 
 type Random = () => number
 
@@ -111,7 +150,7 @@ function blur(values: Float64Array, size: number, sigma: number) {
   return pass(pass(values, [1, 0]), [0, 1])
 }
 
-/** A periodic field of dye clouds with zero mean and unit variance. */
+/** A periodic field of clouds with zero mean and unit variance. */
 function cloudField(next: Random, model: CloudModel, size: number) {
   const field = new Float64Array(size * size)
   const logSpread = Math.sqrt(Math.log(1 + model.radiusSpread ** 2))
@@ -121,7 +160,7 @@ function cloudField(next: Random, model: CloudModel, size: number) {
   for (let cluster = 0; cluster < clusters; cluster++) {
     const centreX = next() * size
     const centreY = next() * size
-    const clouds = poisson(next, model.clusterSize)
+    const clouds = model.clusterSize === 1 ? 1 : poisson(next, model.clusterSize)
     for (let cloud = 0; cloud < clouds; cloud++) {
       const x = centreX + gaussian(next) * model.clusterSpread
       const y = centreY + gaussian(next) * model.clusterSpread
@@ -142,15 +181,17 @@ function cloudField(next: Random, model: CloudModel, size: number) {
     }
   }
   const low = blur(field, size, HIGH_PASS_SIGMA)
-  return standardize(field.map((value, index) => value - low[index]))
+  const grain = field.map((value, index) => value - low[index])
+  const soft = blur(grain, size, SHARPEN_SIGMA)
+  return standardize(grain.map((value, index) => value + model.sharpen * (value - soft[index])))
 }
 
 const quantize = (value: number) => Math.max(0, Math.min(255, Math.round(value / LEVEL_STEP) * LEVEL_STEP))
 
 /**
  * A tile that darkens with black and lightens with white, with the size of
- * the grain as alpha. Over the page it needs no blend mode, and in a layer
- * with the overlay blend mode it has the effect of a grey tile.
+ * the grain as alpha. Over the main tile it adds its grain to the grain of
+ * the main tile.
  */
 function alphaTile(grain: Float64Array) {
   const pixels = new Uint8Array(grain.length * 4)
@@ -161,31 +202,96 @@ function alphaTile(grain: Float64Array) {
   return pixels
 }
 
-function encode(pixels: Uint8Array, size: number, channels: 3 | 4) {
+function encode(pixels: Uint8Array, size: number, channels: 1 | 3 | 4) {
   return sharp(pixels, { raw: { width: size, height: size, channels } }).webp(WEBP_OPTIONS).toBuffer()
 }
 
-async function main() {
-  const next = random(SEED)
-  const shared = cloudField(next, CLOUDS, MAIN_TILE_SIZE)
-  const channels = SHARED_WEIGHTS.map((weight, channel) => {
-    const own = cloudField(next, CLOUDS, MAIN_TILE_SIZE)
-    return standardize(own.map((value, index) => weight * shared[index] + Math.sqrt(1 - weight ** 2) * value))
-      .map(value => value * CHANNEL_GAINS[channel])
+/** The soft-light blend mode of CSS (Compositing and Blending Level 1) */
+function softLight(backdrop: number, source: number) {
+  if (source <= 0.5)
+    return backdrop - (1 - 2 * source) * backdrop * (1 - backdrop)
+  const lighter = backdrop <= 0.25 ? ((16 * backdrop - 12) * backdrop + 4) * backdrop : Math.sqrt(backdrop)
+  return backdrop + (2 * source - 1) * (lighter - backdrop)
+}
+
+/**
+ * The standard deviation (8-bit levels) of the luma of a midtone grey under
+ * the layer at full opacity: the prime tile over the main tile, in the
+ * soft-light blend mode.
+ */
+function midtoneDeviation(main: Uint8Array, mainChannels: 1 | 3, prime: Uint8Array) {
+  const lumas: number[] = []
+  for (let y = 0; y < 2 * MAIN_TILE_SIZE; y++) {
+    for (let x = 0; x < 2 * MAIN_TILE_SIZE; x++) {
+      const mainIndex = ((y % MAIN_TILE_SIZE) * MAIN_TILE_SIZE + x % MAIN_TILE_SIZE) * mainChannels
+      const primeIndex = ((y % PRIME_TILE_SIZE) * PRIME_TILE_SIZE + x % PRIME_TILE_SIZE) * 4
+      const alpha = prime[primeIndex + 3] / 255
+      lumas.push(LUMA_WEIGHTS.reduce((sum, weight, channel) => {
+        const source = main[mainIndex + (mainChannels === 3 ? channel : 0)] / 255
+        const layer = source + alpha * (prime[primeIndex] / 255 - source)
+        return sum + weight * softLight(MIDTONE, layer)
+      }, 0))
+    }
+  }
+  const mean = lumas.reduce((sum, value) => sum + value, 0) / lumas.length
+  return 255 * Math.sqrt(lumas.reduce((sum, value) => sum + (value - mean) ** 2, 0) / lumas.length)
+}
+
+interface GrainTiles {
+  mono: Uint8Array
+  color: Uint8Array
+  prime: Uint8Array
+}
+
+function grainTiles(next: Random, model: CloudModel): GrainTiles {
+  const shared = cloudField(next, model, MAIN_TILE_SIZE)
+  const channels = CHANNEL_GAINS.map((gain) => {
+    const own = cloudField(next, model, MAIN_TILE_SIZE)
+    return standardize(own.map((value, index) => SHARED_WEIGHT * shared[index] + Math.sqrt(1 - SHARED_WEIGHT ** 2) * value))
+      .map(value => value * gain)
   })
   const luma = standardize(channels[0].map((_, index) => LUMA_WEIGHTS.reduce((sum, weight, channel) => sum + weight * channels[channel][index], 0)))
   const color = new Uint8Array(luma.length * 3)
   channels.forEach((values, channel) => values.forEach((value, index) => {
     color[index * 3 + channel] = quantize(128 + GREY_SCALE * value)
   }))
-  const prime = cloudField(next, CLOUDS, PRIME_TILE_SIZE)
+  return {
+    mono: Uint8Array.from(luma, value => quantize(128 + GREY_SCALE * value)),
+    color,
+    prime: alphaTile(cloudField(next, model, PRIME_TILE_SIZE)),
+  }
+}
 
+/** One rule for each stock: its tiles and its strength. */
+function stockRules(tiles: Record<Grain, GrainTiles>) {
+  const rules = Object.entries(STOCKS).map(([name, stock]) => {
+    const own = tiles[stock.grain]
+    const deviation = midtoneDeviation(stock.color ? own.color : own.mono, stock.color ? 3 : 1, own.prime)
+    const strength = Number((stock.deviation / deviation).toFixed(2))
+    const main = `grain-${stock.grain}-${stock.color ? 'color' : 'mono'}.webp`
+    return [
+      `.film-grain--${name}::after {`,
+      `  background-image: url('./grain-${stock.grain}-prime.webp'), url('./${main}');`,
+      `  opacity: var(--film-grain-strength, ${strength});`,
+      '}',
+    ].join('\n')
+  })
+  return ['/* Generated by scripts/film-grain.ts. Do not edit. */', ...rules, ''].join('\n')
+}
+
+async function main() {
+  const next = random(SEED)
+  const tiles = Object.fromEntries(Object.entries(GRAINS).map(([grain, model]) => [grain, grainTiles(next, model)])) as Record<Grain, GrainTiles>
   await mkdir(OUTPUT_DIRECTORY, { recursive: true })
-  const files: [string, Buffer][] = [
-    ['grain-mono.webp', await encode(alphaTile(luma), MAIN_TILE_SIZE, 4)],
-    ['grain-color.webp', await encode(color, MAIN_TILE_SIZE, 3)],
-    ['grain-prime.webp', await encode(alphaTile(prime), PRIME_TILE_SIZE, 4)],
-  ]
+  const files: [string, Buffer | string][] = [['stocks.css', stockRules(tiles)]]
+  for (const [grain, { mono, color, prime }] of Object.entries(tiles)) {
+    const stocks = Object.values(STOCKS).filter(stock => stock.grain === grain)
+    files.push([`grain-${grain}-prime.webp`, await encode(prime, PRIME_TILE_SIZE, 4)])
+    if (stocks.some(stock => !stock.color))
+      files.push([`grain-${grain}-mono.webp`, await encode(mono, MAIN_TILE_SIZE, 1)])
+    if (stocks.some(stock => stock.color))
+      files.push([`grain-${grain}-color.webp`, await encode(color, MAIN_TILE_SIZE, 3)])
+  }
   for (const [name, content] of files) {
     await writeFile(new URL(name, OUTPUT_DIRECTORY), content)
     console.log(`${name}: ${content.length} bytes`)
