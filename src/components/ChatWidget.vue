@@ -452,6 +452,8 @@ onUnmounted(() => {
 }
 
 .chat-widget-box {
+  --chat-close-size: 15px;
+  position: relative;
   display: flex;
   flex-direction: column;
   max-height: 50vh;
@@ -473,16 +475,18 @@ onUnmounted(() => {
   cursor: progress;
 }
 
-/* A square in the top right corner, on its own row: the list starts below it,
-   so the scrollbar of the list starts below it too. */
+/* A see-through square in the top right corner, above the top end of the
+   scrollbar. */
 .chat-widget-close {
-  flex: none;
-  align-self: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 21px;
-  height: 21px;
+  width: var(--chat-close-size);
+  height: var(--chat-close-size);
   padding: 0;
   border: 0;
   border-bottom: 1px dashed var(--fg);
@@ -496,11 +500,30 @@ onUnmounted(() => {
   color: var(--fg);
 }
 
+.chat-widget-close .chat-widget-icon {
+  width: 9px;
+  height: 9px;
+}
+
 .chat-widget-list {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   padding: 0.3rem 0.5rem;
+}
+
+/* scrollbar-color (main.css) turns off the ::-webkit-scrollbar rules. Without
+   it, Chromium and Safari draw the thin scrollbar of main.css, whose track can
+   start below the close square. Firefox keeps scrollbar-color, so there the
+   square lies over the top of the scrollbar. */
+@supports selector(::-webkit-scrollbar) {
+  .chat-widget-list {
+    scrollbar-color: auto;
+  }
+}
+
+.chat-widget-list::-webkit-scrollbar-track {
+  margin-top: var(--chat-close-size);
 }
 
 .chat-widget-message {
