@@ -93,6 +93,14 @@ export default defineConfig(({ mode }) => ({
       { find: '~/', replacement: `${resolve(__dirname, 'src')}/` },
     ],
   },
+  server: {
+    watch: {
+      // Thousands of files that no page imports: watching them uses up the inotify
+      // limit. Absolute paths, because a worktree in .claude/worktrees/ runs its
+      // own dev server, and a `**/.claude/**` glob would ignore all its files.
+      ignored: [resolve(__dirname, '.venv/**'), resolve(__dirname, '.claude/**')],
+    },
+  },
   optimizeDeps: {
     include: [
       'vue',
