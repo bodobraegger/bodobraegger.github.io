@@ -772,6 +772,7 @@ export interface GrowthParameters {
   decay: number
   levels: number
   curl: number
+  curlSize: number
   flowers: number
   buds: number
   flowerSize: Range
@@ -808,6 +809,8 @@ export const GROWTH: GrowthParameters = {
   levels: 2,
   // The chance that a branch end, or the foot of the vine, curls up
   curl: 0.5,
+  // The length of a curl step, as a share of the width of the box
+  curlSize: 0.035,
   flowers: 5,
   buds: 3,
   flowerSize: [0.1, 0.13],
@@ -1017,6 +1020,9 @@ const PLACEMENT_STREAM = 0x5BD1E995
 const PLACEMENT_ATTEMPTS = 12
 const PLACEMENT_SIZES = 3
 const PLACEMENT_SWING = 45
+// The most steps of the main stem in the default box and step length. A
+// higher box, or shorter steps, allow more in proportion.
+const ROOT_STEPS = 80
 
 /**
  * The rule of `grow`: blossoms keep `blossomGap` between their lines and the
@@ -1131,7 +1137,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
     const turns = between(0.7, 1.1)
     return Array.from({ length: count }, (_, index) => {
       const share = (outwards ? index : count - 1 - index) / count
-      return { length: width * 0.035 * (0.4 + share), turn: direction * turns * 360 / count }
+      return { length: width * growth.curlSize * (0.4 + share), turn: direction * turns * 360 / count }
     })
   }
 
@@ -1188,7 +1194,8 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
   // The rise: towards straight up, plus the sway, the random turn and the steering
   const waves = pick(growth.waves)
   const phase = between(0, 360)
-  while (state.y > top + height * 0.1 && root.steps.length < 80) {
+  const rootSteps = Math.round(ROOT_STEPS * (height / GROWTH.box[3]) * (GROWTH.segment / growth.segment))
+  while (state.y > top + height * 0.1 && root.steps.length < rootSteps) {
     const share = (root.origin[1] - state.y) / height
     const target = -90 + growth.sway * Math.sin(radians(phase + share * 360 * waves))
     const towards = Math.atan2(Math.sin(radians(target - state.heading)), Math.cos(radians(target - state.heading))) * 180 / Math.PI
@@ -1251,24 +1258,31 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 }
 
 // The vines of a page background. The blossoms of a vine are VINE_SCALE
-// times the size of the default growth, its steps are STEP_SCALE times as
-// long, and its line is STROKE_SCALE times as wide. A vine branches with
-// BRANCHING. The vines from the bottom stand BOTTOM_SPACING apart, and each
-// rises through a share of the window height in the range BOTTOM_RISE. The
-// vines from a side stand SIDE_SPACING apart and reach SIDE_REACH of the
-// window width into it, but at least SIDE_REACH_MINIMUM. A vine sets one
-// flower per FLOWER_AREA of its box and one bud per BUD_AREA.
-const VINE_SCALE = 0.4
-const STEP_SCALE = 0.55
-const STROKE_SCALE = 0.35
+// times the size of the default growth, its steps and its curls are
+// STEP_SCALE times as long, its branches BRANCH_SCALE times as long, and its
+// line is STROKE_SCALE times as wide. A vine branches with BRANCHING.
+//
+// The feet of the vines from the bottom stand BOTTOM_SPACING apart, and each
+// of these vines rises through a share of the window height in the range
+// BOTTOM_RISE. The feet of the vines from a side stand SIDE_SPACING apart,
+// and these vines reach SIDE_REACH of the window width into it, but at least
+// SIDE_REACH_MINIMUM. The box of a vine keeps the proportions of the
+// default box, so the boxes of neighbours overlap: `grow` steers a vine back
+// towards the middle of its box, and a narrower box holds a vine at its
+// middle height. A vine sets one flower per FLOWER_AREA and one bud per
+// BUD_AREA of the area between its neighbours.
+const VINE_SCALE = 0.2
+const STEP_SCALE = 0.275
+const BRANCH_SCALE = 0.5
+const STROKE_SCALE = 0.25
 const BRANCHING = 0.2
-const BOTTOM_SPACING = 150
-const BOTTOM_RISE = [0.35, 0.8]
-const SIDE_SPACING = 220
-const SIDE_REACH = 0.4
-const SIDE_REACH_MINIMUM = 200
-const FLOWER_AREA = 18000
-const BUD_AREA = 27000
+const BOTTOM_SPACING = 75
+const BOTTOM_RISE = [0.3, 0.7]
+const SIDE_SPACING = 110
+const SIDE_REACH = 0.36
+const SIDE_REACH_MINIMUM = 260
+const FLOWER_AREA = 12000
+const BUD_AREA = 18000
 // The share of its box that a vine reaches beyond its foot, as `grow` sets
 // its foot at a tenth of the box from the edge
 const FOOT_SHARE = 0.9
@@ -1276,7 +1290,10 @@ const FOOT_SHARE = 0.9
 interface VineBox {
   box: GrowthParameters['box']
   direction: number
+  area: number
 }
+
+const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
 
 /**
  * Vines that grow into a window of the given size from its bottom and its
@@ -1288,30 +1305,35 @@ export function* vines(width: number, height: number, seed: number): Generator<P
   const boxes: VineBox[] = []
   const bottomCount = Math.max(1, Math.round(width / BOTTOM_SPACING))
   for (let index = 0; index < bottomCount; index++) {
+    const foot = (index + 0.5) * width / bottomCount
     const rise = height * (BOTTOM_RISE[0] + (BOTTOM_RISE[1] - BOTTOM_RISE[0]) * next())
-    boxes.push({ box: [index * width / bottomCount, height - rise, width / bottomCount, rise / FOOT_SHARE], direction: -90 })
+    const across = rise / FOOT_SHARE * BOX_PROPORTION
+    boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise })
   }
   const sideCount = Math.max(1, Math.round(height / SIDE_SPACING))
   const reach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
+  const across = reach * BOX_PROPORTION
   for (let index = 0; index < sideCount; index++) {
-    const band: [number, number] = [index * height / sideCount, height / sideCount]
-    boxes.push({ box: [reach * (FOOT_SHARE - 1), band[0], reach, band[1]], direction: 0 })
-    boxes.push({ box: [width - reach * FOOT_SHARE, band[0], reach, band[1]], direction: 180 })
+    const foot = (index + 0.5) * height / sideCount
+    const area = SIDE_SPACING * reach * FOOT_SHARE
+    boxes.push({ box: [reach * (FOOT_SHARE - 1), foot - across / 2, reach, across], direction: 0, area })
+    boxes.push({ box: [width - reach * FOOT_SHARE, foot - across / 2, reach, across], direction: 180, area })
   }
   boxes.sort(() => next() - 0.5)
   const plants: Plant[] = []
-  for (const [index, { box, direction }] of boxes.entries()) {
-    const [, , boxWidth, boxHeight] = box
-    // `grow` sizes the blossoms by the width of the box before it turns
-    const growingWidth = direction === -90 ? boxWidth : boxHeight
-    const sizeScale = VINE_SCALE * GROWTH.box[2] / growingWidth
-    const area = boxWidth * boxHeight
+  for (const [index, { box, direction, area }] of boxes.entries()) {
+    // `grow` sizes the blossoms and the curls by the width of the box across the rise
+    const across = direction === -90 ? box[2] : box[3]
+    const sizeScale = VINE_SCALE * GROWTH.box[2] / across
+    const curlScale = STEP_SCALE * GROWTH.box[2] / across
     const plant = grow(seed + index + 1, {
       box,
       direction,
       strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
       segment: GROWTH.segment * STEP_SCALE,
+      curlSize: GROWTH.curlSize * curlScale,
       branching: BRANCHING,
+      reach: [GROWTH.reach[0] * BRANCH_SCALE, GROWTH.reach[1] * BRANCH_SCALE],
       flowerSize: [GROWTH.flowerSize[0] * sizeScale, GROWTH.flowerSize[1] * sizeScale],
       budSize: [GROWTH.budSize[0] * sizeScale, GROWTH.budSize[1] * sizeScale],
       flowers: Math.round(area / FLOWER_AREA),

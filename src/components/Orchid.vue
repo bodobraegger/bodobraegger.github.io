@@ -6,7 +6,7 @@ import { whenIdle } from '~/logics/idle'
 
 // The time between the starts of two vines, so that the page fills from
 // several edges in turn
-const VINE_STAGGER_MS = 1000
+const VINE_STAGGER_MS = 100
 const SEED_RANGE = 2 ** 32
 // The canvas and the committed drawing behind it, at twice the window pixels,
 // take less memory than the one canvas of Plum on a phone with three device
