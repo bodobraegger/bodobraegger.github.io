@@ -103,6 +103,8 @@ export interface Plant {
   strokeWidth: number
   root: RootBranch
   tension?: number
+  /** From 0, near, to 1, far. */
+  depth?: number
 }
 
 export type Ornament = Plant | Spec
@@ -298,6 +300,7 @@ export interface Parts {
   strokeWidth: number
   stems: StemPart[]
   tips: TipPart[]
+  depth: number
 }
 
 const isPlant = (ornament: Ornament): ornament is Plant => 'root' in ornament
@@ -321,7 +324,7 @@ export function parts(ornament: Ornament): Parts {
     ...spec.flowers.map(flower => tip(flowerPath(flower, spec.strokeWidth), flower, true)),
     ...spec.buds.map(bud => tip([budPath(bud, spec.strokeWidth)], bud, false)),
   ]
-  return { strokeWidth: spec.strokeWidth, stems, tips }
+  return { strokeWidth: spec.strokeWidth, stems, tips, depth: isPlant(ornament) ? ornament.depth ?? 0 : 0 }
 }
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
@@ -378,10 +381,14 @@ const FOOT_ALPHA = 0.95
 const TIP_ALPHA = 0.45
 const INK_LEVELS = 8
 const BLOSSOM_ALPHA = 0.75
+// The ink of a vine at depth 1, far, has FAR_ALPHA times the alpha of the
+// ink of a vine at depth 0, near
+const FAR_ALPHA = 0.4
 
 interface Ink {
   width: number
   alpha: number
+  depth: number
 }
 
 type Area = [number, number, number, number]
@@ -407,6 +414,8 @@ interface GrowingStem extends StemPart {
   started: boolean
   resting: boolean
   lag: number
+  /** The ink of each level along the stem. */
+  inks: Ink[]
   /** The share of the growth of its vine at the start of the stem, and per unit of its length. */
   inkStart: number
   inkScale: number
@@ -425,6 +434,7 @@ interface GrowingTip extends TipPart {
   open: boolean
   carrier?: GrowingStem
   alpha: number
+  lineWidth: number
 }
 
 export interface Growth {
@@ -485,6 +495,7 @@ function area(line: Point[], margin: number): Area {
 function drawTip(context: CanvasRenderingContext2D, tip: GrowingTip, scale: number) {
   context.save()
   context.globalAlpha = tip.alpha
+  context.lineWidth = tip.lineWidth
   context.translate(tip.x, tip.y)
   context.scale(scale, scale)
   context.translate(-tip.x, -tip.y)
@@ -509,7 +520,8 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches
   const ratio = view.getTransform().a
   let lineWidth = 1 / ratio
-  let inks: Ink[] = []
+  // The inks of the levels for each stroke width and depth
+  const inkTables = new Map<string, Ink[]>()
   // The committed drawing, on a canvas outside the page: the browser copies
   // each changed canvas of the page in each frame, but never this one
   const storeCanvas = document.createElement('canvas')
@@ -567,7 +579,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     context.lineCap = 'butt'
     for (const stem of someStems) {
       for (const { line, level } of inkPieces(stem, 0, stem.committed, 1).pieces)
-        strokeLines(context, [line], inks[level])
+        strokeLines(context, [line], stem.inks[level])
     }
     context.globalAlpha = 1
     context.lineWidth = lineWidth
@@ -597,29 +609,31 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
 
   // Whether the stem that carries a stem or a tip has reached its place
   const arrived = ({ start }: { start: number }, carrier?: GrowingStem) => !carrier || (carrier.started && reached - carrier.lag >= start)
-  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, inks[0].width / 2 + EDGE_MARGIN)
+  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, stem.inks[0].width / 2 + EDGE_MARGIN)
   // Draws the stems on a context from the distance drawn there to their
-  // fronts, in one stroke per ink level. A new piece darkens where it
-  // crosses the ink before it, and the new pieces of one frame seldom cross.
+  // fronts, in one stroke per ink, the far inks first. A new piece darkens
+  // where it crosses the ink before it, and the new pieces of one frame
+  // seldom cross.
   const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
     context.lineCap = 'butt'
-    const levels = new Map<number, Point[][]>()
+    const batches = new Map<Ink, Point[][]>()
     for (const stem of someStems) {
       const [distance, cursor] = from(stem)
       if (stem.front > distance) {
         const { pieces, last: next } = inkPieces(stem, distance, stem.front, cursor)
         for (const { line, level } of pieces) {
-          if (levels.has(level))
-            levels.get(level)!.push(line)
+          const ink = stem.inks[level]
+          if (batches.has(ink))
+            batches.get(ink)!.push(line)
           else
-            levels.set(level, [line])
+            batches.set(ink, [line])
         }
         stem.shown = stem.front
         stem.shownCursor = next
       }
     }
-    for (const [level, lines] of levels)
-      strokeLines(context, lines, inks[level])
+    for (const [ink, lines] of [...batches].sort(([a], [b]) => b.depth - a.depth))
+      strokeLines(context, lines, ink)
     context.globalAlpha = 1
     context.lineWidth = lineWidth
   }
@@ -723,14 +737,21 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   }
 
   const add = (drawing: Parts, delay: number) => {
-    lineWidth = Math.max(drawing.strokeWidth, 1 / ratio)
-    inks = Array.from({ length: INK_LEVELS }, (_, level) => {
-      const share = (level + 0.5) / INK_LEVELS
-      return {
-        width: Math.max(drawing.strokeWidth * (FOOT_WIDTH + (TIP_WIDTH - FOOT_WIDTH) * share), 1 / ratio),
-        alpha: FOOT_ALPHA + (TIP_ALPHA - FOOT_ALPHA) * share,
-      }
-    })
+    const { strokeWidth, depth } = drawing
+    lineWidth = Math.max(strokeWidth, 1 / ratio)
+    const depthAlpha = 1 + (FAR_ALPHA - 1) * depth
+    const inkKey = `${strokeWidth} ${depth}`
+    if (!inkTables.has(inkKey)) {
+      inkTables.set(inkKey, Array.from({ length: INK_LEVELS }, (_, level) => {
+        const share = (level + 0.5) / INK_LEVELS
+        return {
+          width: Math.max(strokeWidth * (FOOT_WIDTH + (TIP_WIDTH - FOOT_WIDTH) * share), 1 / ratio),
+          alpha: (FOOT_ALPHA + (TIP_ALPHA - FOOT_ALPHA) * share) * depthAlpha,
+          depth,
+        }
+      }))
+    }
+    const inks = inkTables.get(inkKey)!
     style(view)
     style(store)
     const offset = Math.max(reached, delay * GROWTH_SPEED / 1000)
@@ -741,7 +762,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
       const total = distances.at(-1)!
       // The ink follows the growth length, and the drawn line of a stem is a little longer than its growth length
       const inkScale = stem.length / (total || 1) / extent
-      return { ...stem, start: offset + stem.start, distances, total, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0, inkStart: stem.start / extent, inkScale }
+      return { ...stem, start: offset + stem.start, distances, total, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0, inkStart: stem.start / extent, inkScale, inks }
     })
     newStems.forEach((stem, index) => stem.parentStem = newStems[drawing.stems[index].parent ?? -1])
     const newTips: GrowingTip[] = drawing.tips.map((tip) => {
@@ -754,7 +775,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
           fillPath.addPath(path)
         strokePath.addPath(path)
       }
-      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random() }
+      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: (BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random()) * depthAlpha, lineWidth }
     })
     if (reduced) {
       for (const stem of newStems)
@@ -1426,6 +1447,12 @@ const BUD_SIZE = [0.03, 0.065]
 const PETAL_SIZE: [number, number] = [0.6, 1.2]
 const TWIST = 180
 const PETAL_CHANGE = 0.25
+// Each vine stands at one of DEPTH_LEVELS depths, from near (0) to far (1).
+// A far vine has FAR_SIZE times the line width and the blossom size, a near
+// vine NEAR_SIZE times, and the far vines grow first.
+const DEPTH_LEVELS = 4
+const NEAR_SIZE = 1.15
+const FAR_SIZE = 0.75
 const BOTTOM_SPACING = 75
 const BOTTOM_RISE = [0.3, 0.72]
 const SIDE_SPACING = 110
@@ -1443,6 +1470,7 @@ interface VineBox {
   box: GrowthParameters['box']
   direction: number
   area: number
+  depth: number
 }
 
 const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
@@ -1462,7 +1490,7 @@ export function* vines(width: number, height: number, seed: number): Generator<P
     const foot = (index + 0.5 + jitter()) * width / bottomCount
     const rise = height * between(BOTTOM_RISE)
     const across = rise / FOOT_SHARE * BOX_PROPORTION
-    boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise })
+    boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise, depth: 0 })
   }
   const sideCount = Math.max(1, Math.round(height / SIDE_SPACING))
   const sideReach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
@@ -1472,20 +1500,23 @@ export function* vines(width: number, height: number, seed: number): Generator<P
       const reach = sideReach * between(REACH_VARIATION)
       const across = reach * BOX_PROPORTION
       const left = direction ? width - reach * FOOT_SHARE : reach * (FOOT_SHARE - 1)
-      boxes.push({ box: [left, foot - across / 2, reach, across], direction, area: SIDE_SPACING * reach * FOOT_SHARE })
+      boxes.push({ box: [left, foot - across / 2, reach, across], direction, area: SIDE_SPACING * reach * FOOT_SHARE, depth: 0 })
     }
   }
-  boxes.sort(() => next() - 0.5)
+  for (const vine of boxes)
+    vine.depth = Math.floor(next() * DEPTH_LEVELS) / (DEPTH_LEVELS - 1)
+  boxes.sort((a, b) => b.depth - a.depth)
   const plants: Plant[] = []
-  for (const [index, { box, direction, area }] of boxes.entries()) {
+  for (const [index, { box, direction, area, depth }] of boxes.entries()) {
+    const near = NEAR_SIZE + (FAR_SIZE - NEAR_SIZE) * depth
     // `grow` sizes the blossoms and the curls by the width of the box across the rise
     const across = direction === -90 ? box[2] : box[3]
-    const sizeScale = VINE_SCALE * GROWTH.box[2] / across
+    const sizeScale = VINE_SCALE * near * GROWTH.box[2] / across
     const curlScale = STEP_SCALE * GROWTH.box[2] / across
     const plant = grow(seed + index + 1, {
       box,
       direction,
-      strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
+      strokeWidth: GROWTH.strokeWidth * STROKE_SCALE * near,
       segment: GROWTH.segment * STEP_SCALE,
       stepVariation: STEP_VARIATION,
       spread: SPREAD,
@@ -1501,6 +1532,7 @@ export function* vines(width: number, height: number, seed: number): Generator<P
       flowers: Math.round(area / FLOWER_AREA),
       buds: Math.round(area / BUD_AREA),
     }, plants)
+    plant.depth = depth
     plants.push(plant)
     yield plant
   }

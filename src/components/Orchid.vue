@@ -71,7 +71,7 @@ function startGrowth() {
        their roots at the bottom edge when a phone hides its address bar. -->
   <div
     ref="container"
-    class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden op-20 text-[var(--fg)]"
+    class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden op-25 text-[var(--fg)]"
     style="z-index: -1; mask-image: radial-gradient(circle, transparent, black); -webkit-mask-image: radial-gradient(circle, transparent, black)"
   >
     <canvas ref="canvas" class="absolute bottom-0 left-0" />
