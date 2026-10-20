@@ -19,11 +19,15 @@
 //
 // The layer shows a prime tile of 241 texels over a main tile of 256 texels.
 // Their sum repeats only after 61696 texels, so the grain shows no pattern.
+//
+// The script also makes the two noise tiles of the Suzuno recreations in
+// src/assets/suzuno/ (see suzunoTiles).
 import { mkdir, writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 import { random } from '../src/lib/orchid'
 
 const OUTPUT_DIRECTORY = new URL('../src/assets/film-grain/', import.meta.url)
+const SUZUNO_DIRECTORY = new URL('../src/assets/suzuno/', import.meta.url)
 const SEED = 35
 const MAIN_TILE_SIZE = 256
 const PRIME_TILE_SIZE = 241
@@ -262,6 +266,175 @@ function grainTiles(next: Random, model: CloudModel): GrainTiles {
   }
 }
 
+// The noise of feTurbulence with the type fractalNoise, after the reference
+// code of the SVG 1.1 specification (15.25.13), which the browsers follow
+const PERLIN_OFFSET = 4096
+const LATTICE_SIZE = 256
+const LATTICE_MASK = 255
+const RANDOM_MODULUS = 2147483647
+const RANDOM_MULTIPLIER = 16807
+const RANDOM_QUOTIENT = 127773
+const RANDOM_REMAINDER = 2836
+/** Chromium samples the noise of a pixel one unit after its corner; the tiles match its pixels with this offset */
+const BROWSER_SAMPLE_OFFSET = 1
+
+interface Lattice {
+  selector: Int32Array
+  /** For each channel, the x and the y of each gradient */
+  gradients: Float64Array[]
+}
+
+/** The random lattice of feTurbulence for a seed */
+function turbulenceLattice(seed: number): Lattice {
+  let state = seed <= 0 ? -(seed % (RANDOM_MODULUS - 1)) + 1 : Math.min(seed, RANDOM_MODULUS - 1)
+  const next = () => {
+    state = RANDOM_MULTIPLIER * (state % RANDOM_QUOTIENT) - RANDOM_REMAINDER * Math.floor(state / RANDOM_QUOTIENT)
+    if (state <= 0)
+      state += RANDOM_MODULUS
+    return state
+  }
+  const length = 2 * LATTICE_SIZE + 2
+  const selector = new Int32Array(length)
+  const gradients = Array.from({ length: 4 }, () => new Float64Array(2 * length))
+  for (const gradient of gradients) {
+    for (let index = 0; index < LATTICE_SIZE; index++) {
+      selector[index] = index
+      const x = (next() % (2 * LATTICE_SIZE) - LATTICE_SIZE) / LATTICE_SIZE
+      const y = (next() % (2 * LATTICE_SIZE) - LATTICE_SIZE) / LATTICE_SIZE
+      const norm = Math.hypot(x, y)
+      gradient[2 * index] = x / norm
+      gradient[2 * index + 1] = y / norm
+    }
+  }
+  for (let index = LATTICE_SIZE - 1; index > 0; index--) {
+    const other = next() % LATTICE_SIZE
+    ;[selector[index], selector[other]] = [selector[other], selector[index]]
+  }
+  for (let index = 0; index < LATTICE_SIZE + 2; index++) {
+    selector[LATTICE_SIZE + index] = selector[index]
+    for (const gradient of gradients) {
+      gradient[2 * (LATTICE_SIZE + index)] = gradient[2 * index]
+      gradient[2 * (LATTICE_SIZE + index) + 1] = gradient[2 * index + 1]
+    }
+  }
+  return { selector, gradients }
+}
+
+/** The lattice period of a tile that the noise repeats over, and the lattice cell where the wrap starts */
+interface Stitch {
+  width: number
+  height: number
+  wrapX: number
+  wrapY: number
+}
+
+const sCurve = (value: number) => value * value * (3 - 2 * value)
+const mix = (amount: number, from: number, to: number) => from + amount * (to - from)
+
+function perlinNoise({ selector, gradients }: Lattice, channel: number, x: number, y: number, stitch: Stitch) {
+  const shiftedX = x + PERLIN_OFFSET
+  const shiftedY = y + PERLIN_OFFSET
+  let left = Math.trunc(shiftedX)
+  let right = left + 1
+  let top = Math.trunc(shiftedY)
+  let bottom = top + 1
+  const fractionX = shiftedX - left
+  const fractionY = shiftedY - top
+  if (left >= stitch.wrapX)
+    left -= stitch.width
+  if (right >= stitch.wrapX)
+    right -= stitch.width
+  if (top >= stitch.wrapY)
+    top -= stitch.height
+  if (bottom >= stitch.wrapY)
+    bottom -= stitch.height
+  const column0 = selector[left & LATTICE_MASK]
+  const column1 = selector[right & LATTICE_MASK]
+  const gradient = gradients[channel]
+  const dot = (corner: number, offsetX: number, offsetY: number) => offsetX * gradient[2 * corner] + offsetY * gradient[2 * corner + 1]
+  const sx = sCurve(fractionX)
+  const upper = mix(sx, dot(selector[column0 + (top & LATTICE_MASK)], fractionX, fractionY), dot(selector[column1 + (top & LATTICE_MASK)], fractionX - 1, fractionY))
+  const lower = mix(sx, dot(selector[column0 + (bottom & LATTICE_MASK)], fractionX, fractionY - 1), dot(selector[column1 + (bottom & LATTICE_MASK)], fractionX - 1, fractionY - 1))
+  return mix(sCurve(fractionY), upper, lower)
+}
+
+/** The frequency nearest to the base frequency that fits a whole number of periods into the tile */
+function stitchedFrequency(frequency: number, size: number) {
+  const lower = Math.floor(size * frequency) / size
+  const upper = Math.ceil(size * frequency) / size
+  return frequency / lower < upper / frequency ? lower : upper
+}
+
+interface NoiseTile {
+  seed: number
+  baseFrequency: number
+  octaves: number
+  /** The width and the height of the tile, in texels and in user units of the SVG */
+  size: number
+}
+
+/**
+ * The four channels of fractalNoise, from 0 to 1, over a square tile that
+ * repeats without a seam (stitchTiles="stitch"): an array for each channel.
+ */
+function fractalNoiseTile({ seed, baseFrequency, octaves, size }: NoiseTile) {
+  const lattice = turbulenceLattice(seed)
+  const frequency = stitchedFrequency(baseFrequency, size)
+  const period = Math.trunc(size * frequency + 0.5)
+  return Array.from({ length: 4 }, (_, channel) => {
+    const values = new Float64Array(size * size)
+    for (let row = 0; row < size; row++) {
+      for (let column = 0; column < size; column++) {
+        const stitch = { width: period, height: period, wrapX: PERLIN_OFFSET + period, wrapY: PERLIN_OFFSET + period }
+        let x = (column + BROWSER_SAMPLE_OFFSET) * frequency
+        let y = (row + BROWSER_SAMPLE_OFFSET) * frequency
+        let sum = 0
+        for (let octave = 0, ratio = 1; octave < octaves; octave++, ratio *= 2) {
+          sum += perlinNoise(lattice, channel, x, y, stitch) / ratio
+          x *= 2
+          y *= 2
+          stitch.width *= 2
+          stitch.height *= 2
+          stitch.wrapX = 2 * stitch.wrapX - PERLIN_OFFSET
+          stitch.wrapY = 2 * stitch.wrapY - PERLIN_OFFSET
+        }
+        values[row * size + column] = Math.max(0, Math.min(1, (sum + 1) / 2))
+      }
+    }
+    return values
+  })
+}
+
+/**
+ * The grain of the paper of the Suzuno cover (paper-grain.ts): black, with
+ * the alpha channel of the noise as its alpha. The cover draws it at an
+ * opacity of 0.07, one texel for each unit of the sheet.
+ */
+const PAPER_GRAIN: NoiseTile = { seed: 0, baseFrequency: 0.25, octaves: 2, size: 240 }
+
+/**
+ * The texture of the paper that breaks up the ink of the plum vine of the
+ * cover (plum-vine.ts): the share of the ink that the paper keeps, as grey,
+ * from a fit to the print: level - absorption × (the sum of the red, green
+ * and blue channels).
+ */
+const INK_TEXTURE: NoiseTile & { level: number, absorption: number } = { seed: 3, baseFrequency: 0.52, octaves: 2, size: 160, level: 1.32, absorption: 0.3467 }
+
+async function suzunoTiles(): Promise<[URL, Buffer][]> {
+  const [, , , paperAlpha] = fractalNoiseTile(PAPER_GRAIN)
+  const paper = new Uint8Array(paperAlpha.length * 4)
+  paperAlpha.forEach((value, index) => {
+    paper[index * 4 + 3] = quantize(value * 255)
+  })
+  const [red, green, blue] = fractalNoiseTile(INK_TEXTURE)
+  const ink = Uint8Array.from(red, (value, index) =>
+    quantize(255 * Math.max(0, Math.min(1, INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index])))))
+  return [
+    [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size, 4)],
+    [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size, 1)],
+  ]
+}
+
 /** One rule for each stock: its tiles and its strength. */
 function stockRules(tiles: Record<Grain, GrainTiles>) {
   const rules = Object.entries(STOCKS).map(([name, stock]) => {
@@ -283,18 +456,20 @@ async function main() {
   const next = random(SEED)
   const tiles = Object.fromEntries(Object.entries(GRAINS).map(([grain, model]) => [grain, grainTiles(next, model)])) as Record<Grain, GrainTiles>
   await mkdir(OUTPUT_DIRECTORY, { recursive: true })
-  const files: [string, Buffer | string][] = [['stocks.css', stockRules(tiles)]]
+  const output = (name: string) => new URL(name, OUTPUT_DIRECTORY)
+  const files: [URL, Buffer | string][] = [[output('stocks.css'), stockRules(tiles)]]
   for (const [grain, { mono, color, prime }] of Object.entries(tiles)) {
     const stocks = Object.values(STOCKS).filter(stock => stock.grain === grain)
-    files.push([`grain-${grain}-prime.webp`, await encode(prime, PRIME_TILE_SIZE, 4)])
+    files.push([output(`grain-${grain}-prime.webp`), await encode(prime, PRIME_TILE_SIZE, 4)])
     if (stocks.some(stock => !stock.color))
-      files.push([`grain-${grain}-mono.webp`, await encode(mono, MAIN_TILE_SIZE, 1)])
+      files.push([output(`grain-${grain}-mono.webp`), await encode(mono, MAIN_TILE_SIZE, 1)])
     if (stocks.some(stock => stock.color))
-      files.push([`grain-${grain}-color.webp`, await encode(color, MAIN_TILE_SIZE, 3)])
+      files.push([output(`grain-${grain}-color.webp`), await encode(color, MAIN_TILE_SIZE, 3)])
   }
-  for (const [name, content] of files) {
-    await writeFile(new URL(name, OUTPUT_DIRECTORY), content)
-    console.log(`${name}: ${content.length} bytes`)
+  files.push(...await suzunoTiles())
+  for (const [file, content] of files) {
+    await writeFile(file, content)
+    console.log(`${file.pathname.split('/src/assets/')[1]}: ${content.length} bytes`)
   }
 }
 
