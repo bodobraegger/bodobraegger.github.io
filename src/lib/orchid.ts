@@ -102,6 +102,7 @@ export interface RootBranch extends BranchBody {
 export interface Plant {
   strokeWidth: number
   root: RootBranch
+  tension?: number
 }
 
 export type Ornament = Plant | Spec
@@ -852,7 +853,7 @@ function unfold(plant: Plant) {
     // The stem of this branch, or the stem that carries a branch without steps
     let own = parent
     if (nodes.length > 1) {
-      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent }
+      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent, tension: plant.tension }
       spec.stems.push(stem)
       stems.set(branch, stem)
       own = spec.stems.length - 1
@@ -883,6 +884,8 @@ export interface GrowthParameters {
   box: [number, number, number, number]
   strokeWidth: number
   segment: number
+  stepVariation: number
+  tension: number
   spread: number
   sway: number
   waves: Range
@@ -914,8 +917,12 @@ export interface GrowthParameters {
 export const GROWTH: GrowthParameters = {
   box: [0, 0, 240, 560],
   strokeWidth: 2.4,
-  // Mean step length, and the random turn of a step, in degrees
+  // Mean step length, its variation as a share of it, the tension of the
+  // curve through the nodes (0 draws straight lines between them), and the
+  // random turn of a step, in degrees
   segment: 16,
+  stepVariation: 0.3,
+  tension: 0.5,
   spread: 9,
   // The sway of the main stem: its amplitude in degrees and its waves over the height
   sway: 28,
@@ -1292,7 +1299,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
       const count = Math.max(1, Math.round(pick(growth.reach) * height * growth.decay ** (level - 1) / growth.segment))
       const arch = side * between(0, growth.spread)
       for (let index = 0; index < count; index++) {
-        const step = { length: growth.segment * between(0.7, 1.3), turn: arch + between(-growth.spread, growth.spread) + steer(child.x, child.y, child.heading) }
+        const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: arch + between(-growth.spread, growth.spread) + steer(child.x, child.y, child.heading) }
         branch.steps.push(step)
         advance(child, step)
       }
@@ -1319,7 +1326,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
     const share = (root.origin[1] - state.y) / height
     const target = -90 + growth.sway * Math.sin(radians(phase + share * 360 * waves))
     const towards = Math.atan2(Math.sin(radians(target - state.heading)), Math.cos(radians(target - state.heading))) * 180 / Math.PI
-    const step = { length: growth.segment * between(0.7, 1.3), turn: towards * 0.4 + between(-growth.spread, growth.spread) + steer(state.x, state.y, state.heading) }
+    const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: towards * 0.4 + between(-growth.spread, growth.spread) + steer(state.x, state.y, state.heading) }
     root.steps.push(step)
     advance(state, step)
   }
@@ -1372,7 +1379,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
       shape.rotation = (shape.rotation ?? 0) + turn
     }
   }
-  const plant = { strokeWidth: growth.strokeWidth, root }
+  const plant = { strokeWidth: growth.strokeWidth, root, tension: growth.tension }
   separate(plant, blossoming, growth, random(seed ^ PLACEMENT_STREAM), blossomsOf(neighbours))
   return plant
 }
@@ -1380,13 +1387,18 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 // The vines of a page background. The blossoms of a vine are VINE_SCALE
 // times the size of the default growth, its steps and its curls are
 // STEP_SCALE times as long, its branches BRANCH_SCALE times as long, and its
-// line is STROKE_SCALE times as wide. A vine branches with BRANCHING.
+// line is STROKE_SCALE times as wide. A vine branches with BRANCHING. Its
+// steps wander more than in the default growth: they vary in length by
+// STEP_VARIATION, turn by up to SPREAD degrees, and join in a curve of
+// TENSION, nearly straight lines as those of Plum.
 //
 // The feet of the vines from the bottom stand BOTTOM_SPACING apart, and each
 // of these vines rises through a share of the window height in the range
 // BOTTOM_RISE. The feet of the vines from a side stand SIDE_SPACING apart,
 // and these vines reach SIDE_REACH of the window width into it, but at least
-// SIDE_REACH_MINIMUM. The box of a vine keeps the proportions of the
+// SIDE_REACH_MINIMUM, times a share in the range REACH_VARIATION. Each foot
+// moves along its edge by up to FOOT_JITTER of the spacing, so that the
+// vines do not stand in a row. The box of a vine keeps the proportions of the
 // default box, so the boxes of neighbours overlap: `grow` steers a vine back
 // towards the middle of its box, and a narrower box holds a vine at its
 // middle height. A vine sets one flower per FLOWER_AREA and one bud per
@@ -1396,11 +1408,16 @@ const STEP_SCALE = 0.275
 const BRANCH_SCALE = 0.5
 const STROKE_SCALE = 0.25
 const BRANCHING = 0.2
+const STEP_VARIATION = 0.6
+const SPREAD = 16
+const TENSION = 0.2
 const BOTTOM_SPACING = 75
 const BOTTOM_RISE = [0.3, 0.7]
 const SIDE_SPACING = 110
 const SIDE_REACH = 0.36
 const SIDE_REACH_MINIMUM = 260
+const REACH_VARIATION = [0.75, 1.1]
+const FOOT_JITTER = 0.45
 const FLOWER_AREA = 12000
 const BUD_AREA = 18000
 // The share of its box that a vine reaches beyond its foot, as `grow` sets
@@ -1422,22 +1439,26 @@ const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
  */
 export function* vines(width: number, height: number, seed: number): Generator<Plant> {
   const next = random(seed)
+  const between = ([low, high]: number[]) => low + (high - low) * next()
+  const jitter = () => between([-FOOT_JITTER, FOOT_JITTER])
   const boxes: VineBox[] = []
   const bottomCount = Math.max(1, Math.round(width / BOTTOM_SPACING))
   for (let index = 0; index < bottomCount; index++) {
-    const foot = (index + 0.5) * width / bottomCount
-    const rise = height * (BOTTOM_RISE[0] + (BOTTOM_RISE[1] - BOTTOM_RISE[0]) * next())
+    const foot = (index + 0.5 + jitter()) * width / bottomCount
+    const rise = height * between(BOTTOM_RISE)
     const across = rise / FOOT_SHARE * BOX_PROPORTION
     boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise })
   }
   const sideCount = Math.max(1, Math.round(height / SIDE_SPACING))
-  const reach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
-  const across = reach * BOX_PROPORTION
+  const sideReach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
   for (let index = 0; index < sideCount; index++) {
-    const foot = (index + 0.5) * height / sideCount
-    const area = SIDE_SPACING * reach * FOOT_SHARE
-    boxes.push({ box: [reach * (FOOT_SHARE - 1), foot - across / 2, reach, across], direction: 0, area })
-    boxes.push({ box: [width - reach * FOOT_SHARE, foot - across / 2, reach, across], direction: 180, area })
+    for (const direction of [0, 180]) {
+      const foot = (index + 0.5 + jitter()) * height / sideCount
+      const reach = sideReach * between(REACH_VARIATION)
+      const across = reach * BOX_PROPORTION
+      const left = direction ? width - reach * FOOT_SHARE : reach * (FOOT_SHARE - 1)
+      boxes.push({ box: [left, foot - across / 2, reach, across], direction, area: SIDE_SPACING * reach * FOOT_SHARE })
+    }
   }
   boxes.sort(() => next() - 0.5)
   const plants: Plant[] = []
@@ -1451,6 +1472,9 @@ export function* vines(width: number, height: number, seed: number): Generator<P
       direction,
       strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
       segment: GROWTH.segment * STEP_SCALE,
+      stepVariation: STEP_VARIATION,
+      spread: SPREAD,
+      tension: TENSION,
       curlSize: GROWTH.curlSize * curlScale,
       branching: BRANCHING,
       reach: [GROWTH.reach[0] * BRANCH_SCALE, GROWTH.reach[1] * BRANCH_SCALE],
