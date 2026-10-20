@@ -5,6 +5,7 @@ date: 2026-10-19T18:00:00-03:00
 lang: en
 type: note
 draft: true
+grain: portra-400
 plum: false
 ---
 
