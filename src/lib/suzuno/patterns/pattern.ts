@@ -134,8 +134,3 @@ export function fitInto(frame: Box, box: Box, markup: string) {
 export function defaults<Parameters extends object>(schemas: ParameterSchemas<Parameters>): Parameters {
   return Object.fromEntries(Object.entries(schemas).map(([name, schema]) => [name, (schema as ParameterSchema).default])) as Parameters
 }
-
-/** A colour #rrggbb as red, green and blue from 0 to 1. */
-export function colorChannels(color: string) {
-  return [1, 3, 5].map(start => Number.parseInt(color.slice(start, start + 2), 16) / 255)
-}

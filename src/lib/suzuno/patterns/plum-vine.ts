@@ -3,7 +3,9 @@
 // that fades from grey to blue downwards, and the paper breaks the soft lines
 // up. Seed 0 draws the fitted vine of the cover (assets/ornament-cover.json)
 // in its frame on the sheet, fitted into the box; other seeds grow a new vine
-// that fills the box, with the growth parameters.
+// that fills the box, with the growth parameters. The texture of the paper is
+// a tile of the fitted feTurbulence noise, which scripts/film-grain.ts writes.
+import inkTextureTile from '~/assets/suzuno/ink-texture.webp'
 import coverPlant from '~/assets/suzuno/ornament-cover.json'
 import type { Ornament, Plant } from '~/lib/suzuno/ornament'
 import { GROWTH, MASK_PAINT, animate, grow, toSvg } from '~/lib/suzuno/ornament'
@@ -15,7 +17,7 @@ export interface PlumVineParameters {
   top: string
   middle: string
   bottom: string
-  /** The blur of the lines, and how much of their ink the paper takes away. */
+  /** The blur of the lines, and how much of the texture of the print the paper shows: 1 is the fitted texture. */
   softness: number
   texture: number
   strokeWidth: number
@@ -37,9 +39,8 @@ export const COVER_VINE_BOX: Box = { x: 1150, y: 250, width: 264, height: 620 }
 const INK_START = (300 - COVER_VINE_BOX.y) / COVER_VINE_BOX.height
 const INK_END = (840 - COVER_VINE_BOX.y) / COVER_VINE_BOX.height
 const COVER_PLANT = coverPlant as unknown as Plant
-// The level of the ink before the texture of the paper takes some away, and the seed of that texture
-const PRINT_LEVEL = 1.32
-const PRINT_SEED = 3
+/** The texels of the texture tile, one for each unit of the sheet */
+const TEXTURE_TEXELS = 160
 
 function growth(name: keyof typeof GROWTH & keyof PlumVineParameters, label: string, min: number, max: number, step: number) {
   return { type: 'number', label, min, max, step, default: GROWTH[name] as number } as const
@@ -52,7 +53,7 @@ const PARAMETERS: ParameterSchemas<PlumVineParameters> = {
   bottom: { type: 'color', label: 'Ink at the foot', default: '#b7d5ec' },
   // Fitted by tools/fit-ornament-texture.mjs
   softness: { type: 'number', label: 'Softness', min: 0, max: 4, step: 0.025, default: 0.675 },
-  texture: { type: 'number', label: 'Paper texture', min: 0, max: 1, step: 0.0001, default: 0.3467 },
+  texture: { type: 'number', label: 'Paper texture', min: 0, max: 1, step: 0.01, default: 1 },
   strokeWidth: growth('strokeWidth', 'Line width', 0.5, 10, 0.1),
   segment: growth('segment', 'Step length', 4, 60, 1),
   spread: growth('spread', 'Random turn', 0, 40, 1),
@@ -78,26 +79,27 @@ function plant(seed: number, parameters: PlumVineParameters, box: Box): Plant {
  * `<g data-ornament>`, which `animate` grows.
  */
 export function vineMarkup(ornament: Ornament, { top, middle, bottom, softness, texture }: PlumVineParameters, frame: Box, id: string) {
-  const ids = { ink: `${id}-ink`, print: `${id}-print`, mask: `${id}-mask` }
+  const ids = { ink: `${id}-ink`, soft: `${id}-soft`, lines: `${id}-lines`, paper: `${id}-paper`, texture: `${id}-texture` }
   const region = `x="${frame.x}" y="${frame.y}" width="${frame.width}" height="${frame.height}"`
-  const absorbed = -texture
   return [
     '<defs>',
     `<linearGradient id="${ids.ink}" gradientUnits="userSpaceOnUse" x1="0" y1="${frame.y + frame.height * INK_START}" x2="0" y2="${frame.y + frame.height * INK_END}">`,
     `<stop offset="0" stop-color="${top}" /><stop offset="0.55" stop-color="${middle}" /><stop offset="1" stop-color="${bottom}" />`,
     '</linearGradient>',
-    // The paper breaks the ink up: the soft lines keep only as much ink as a
-    // noise allows, alpha = level - texture * (sum of the noise channels)
-    `<filter id="${ids.print}" filterUnits="userSpaceOnUse" ${region} color-interpolation-filters="sRGB">`,
-    `<feGaussianBlur in="SourceGraphic" stdDeviation="${softness}" result="soft" />`,
-    `<feTurbulence type="fractalNoise" baseFrequency="0.52" numOctaves="2" seed="${PRINT_SEED}" result="noise" />`,
-    `<feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  ${absorbed} ${absorbed} ${absorbed} 0 ${PRINT_LEVEL}" result="texture" />`,
-    '<feComposite in="soft" in2="texture" operator="in" />',
-    '</filter>',
-    // The softness and the texture are in the mask, because a filter on the masked rect runs before the mask
-    `<mask id="${ids.mask}" maskUnits="userSpaceOnUse" ${region}><g filter="url(#${ids.print})" data-ornament="">${toSvg(ornament)}</g></mask>`,
+    `<filter id="${ids.soft}" filterUnits="userSpaceOnUse" ${region} color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="${softness}" /></filter>`,
+    // The softness is in the mask, because a filter on the masked rect runs before the mask
+    `<mask id="${ids.lines}" maskUnits="userSpaceOnUse" ${region}><g filter="url(#${ids.soft})" data-ornament="">${toSvg(ornament)}</g></mask>`,
+    // The paper breaks the ink up: its grey is the share of the ink that it
+    // keeps, between white (no texture) and the texture of the print. Without
+    // smoothing, each pixel shows one texel, as the noise filter of the print
+    // showed the noise at one point of each pixel.
+    `<pattern id="${ids.texture}" patternUnits="userSpaceOnUse" x="${frame.x}" y="${frame.y}" width="${TEXTURE_TEXELS}" height="${TEXTURE_TEXELS}">`,
+    `<rect width="${TEXTURE_TEXELS}" height="${TEXTURE_TEXELS}" fill="#fff" />`,
+    `<image href="${inkTextureTile}" width="${TEXTURE_TEXELS}" height="${TEXTURE_TEXELS}" opacity="${texture}" image-rendering="pixelated" />`,
+    '</pattern>',
+    `<mask id="${ids.paper}" maskUnits="userSpaceOnUse" ${region}>${rectangle(frame, `fill="url(#${ids.texture})"`)}</mask>`,
     '</defs>',
-    rectangle(frame, `fill="url(#${ids.ink})" mask="url(#${ids.mask})"`),
+    `<g mask="url(#${ids.paper})">${rectangle(frame, `fill="url(#${ids.ink})" mask="url(#${ids.lines})"`)}</g>`,
   ].join('')
 }
 

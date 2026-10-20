@@ -171,6 +171,8 @@ The comments of the copied files name the folders `assets/`, `reference/` and `t
 - `hokkaido-milk.ts` keeps the layout as a plain object, without the hook for the fit tools of the Suzuno project.
 - `ornament-cover.json` has the indentation of the lint rules of bbo.do. Its data does not change.
 - `salt-lemon.ts` has `FRONT_PART_TEXTS`, `AcidBadgeTexts`, `ACID_BADGE_TEXTS` and `ACID_BADGE_SPHERES`, which `CitricAcidBadge.vue` and `SaltLemonFront.vue` take as defaults. `SaltLemonFront.vue` has the props `logoName` and `acidBadge`, which it gives to the logo and to the citric acid badge.
+- `paper-grain.ts` and `plum-vine.ts` draw their noise from tiles in `src/assets/suzuno/` (`paper-grain.webp` and `ink-texture.webp`) instead of feTurbulence filters. `scripts/film-grain.ts` computes the tiles with the noise of the browser. The paper grain has no `color`, `frequency` and `octaves` any more, and a seed moves its tile. The `texture` of the vine is now the strength of the texture of the print, from 0 to 1.
+- `pattern.ts` has no `colorChannels`, which only the paper grain used.
 - `lettering.ts` has `FACE_GLYPHS` and `useStylesheets`. The font loaders of `lettering.ts`, `hokkaido-milk.ts` and `salt-lemon.ts` use `useStylesheets`, which adds the glyphs that a face provides to each stylesheet.
 
 The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of the attributify utilities, because the faces set the size of their text with it.
