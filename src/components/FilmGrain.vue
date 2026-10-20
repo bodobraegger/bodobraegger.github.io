@@ -11,17 +11,15 @@ withDefaults(defineProps<{
   size?: number
   /** Colour grain instead of monochrome grain */
   color?: boolean
-  /** New grain 24 times a second, like film. Reduced motion stops it. */
-  animated?: boolean
   /** Cover the window instead of the parent */
   fixed?: boolean
-}>(), { strength: 0.25, size: 1, color: false, animated: true, fixed: false })
+}>(), { strength: 0.25, size: 1, color: false, fixed: false })
 </script>
 
 <template>
   <div
     class="film-grain"
-    :class="{ 'film-grain--fixed': fixed, 'film-grain--color': color, 'film-grain--still': !animated }"
+    :class="{ 'film-grain--fixed': fixed, 'film-grain--color': color }"
     :style="{ '--film-grain-strength': strength, '--film-grain-size': size }"
     aria-hidden="true"
   />
