@@ -1,0 +1,21 @@
+{
+  "width": 526,
+  "height": 733,
+  "boxes": [
+    { "id": "brand", "text": "RIBON", "x": 55, "y": 66, "width": 110, "height": 22, "angle": 0, "font": "serif", "color": "#a3262a", "background": "#e2e0dc" },
+    { "id": "stamp", "text": "濃厚ミルク味", "x": 377, "y": 106, "width": 96, "height": 18, "angle": -28, "font": "serif", "color": "#5e5236", "background": "#dedbd2" },
+    { "id": "hokkaido", "text": "Hokkaido", "x": 147, "y": 153, "width": 152, "height": 16, "angle": 0, "font": "serif", "color": "#2a2c2d", "background": "#e4e6e4" },
+    { "id": "soft", "text": "Soft", "x": 327, "y": 150, "width": 80, "height": 17, "angle": 0, "font": "serif", "color": "#2a2c2d", "background": "#e4e6e4" },
+    { "id": "north", "text": "北", "x": 65, "y": 185, "width": 115, "height": 119, "angle": 0, "font": "serif", "color": "#1b1c1c" },
+    { "id": "sea", "text": "海", "x": 202, "y": 182, "width": 131, "height": 124, "angle": 0, "font": "serif", "color": "#1b1c1c" },
+    { "id": "road", "text": "道", "x": 341, "y": 184, "width": 126, "height": 118, "angle": 0, "font": "serif", "color": "#1b1c1c" },
+    { "id": "candy", "text": "ミルクソフトキャンデー", "x": 137, "y": 316, "width": 268, "height": 24, "angle": 0, "font": "sans", "color": "#202127", "background": "#d4e0e4" },
+    { "id": "oligo", "text": "オリゴ糖配合!", "x": 40, "y": 393, "width": 126, "height": 26, "angle": 0, "font": "serif", "color": "#233063", "background": "#d9dbe2" },
+    { "id": "origin", "text": "北海道産", "x": 220, "y": 368, "width": 89, "height": 23, "angle": 0, "font": "serif", "color": "#a8302a", "background": "#e4d6d2" },
+    { "id": "butter", "text": "練乳・バター", "x": 194, "y": 391, "width": 134, "height": 23, "angle": 0, "font": "serif", "color": "#a8302a", "background": "#e4d6d2" },
+    { "id": "cream", "text": "生クリーム使用", "x": 193, "y": 415, "width": 140, "height": 25, "angle": 0, "font": "serif", "color": "#a8302a", "background": "#e4d6d2" },
+    { "id": "calcium", "text": "カルシウム強化!", "x": 354, "y": 370, "width": 147, "height": 26, "angle": 0, "font": "serif", "color": "#233063", "background": "#d9dbe2" },
+    { "id": "per-bag", "text": "1袋あたり", "x": 397, "y": 401, "width": 62, "height": 14, "angle": 0, "font": "serif", "color": "#233063", "background": "#d9dbe2" },
+    { "id": "amount", "text": "120mg", "x": 382, "y": 418, "width": 91, "height": 24, "angle": 0, "font": "serif", "color": "#233063", "background": "#d9dbe2" }
+  ]
+}
