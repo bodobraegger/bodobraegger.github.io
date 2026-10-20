@@ -599,8 +599,8 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const arrived = ({ start }: { start: number }, carrier?: GrowingStem) => !carrier || (carrier.started && reached - carrier.lag >= start)
   const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, inks[0].width / 2 + EDGE_MARGIN)
   // Draws the stems on a context from the distance drawn there to their
-  // fronts: on the canvas of the page one stroke per ink level, and in the
-  // committed drawing one stroke per piece, so that crossings darken there
+  // fronts, in one stroke per ink level. A new piece darkens where it
+  // crosses the ink before it, and the new pieces of one frame seldom cross.
   const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
     context.lineCap = 'butt'
     const levels = new Map<number, Point[][]>()
@@ -609,9 +609,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
       if (stem.front > distance) {
         const { pieces, last: next } = inkPieces(stem, distance, stem.front, cursor)
         for (const { line, level } of pieces) {
-          if (context === store)
-            strokeLines(context, [line], inks[level])
-          else if (levels.has(level))
+          if (levels.has(level))
             levels.get(level)!.push(line)
           else
             levels.set(level, [line])
