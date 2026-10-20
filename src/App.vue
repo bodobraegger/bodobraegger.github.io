@@ -7,8 +7,9 @@ const ChatWidget = defineAsyncComponent(() => import('./components/ChatWidget.vu
 
 const route = useRoute()
 
-// `grain: <stock>` in the frontmatter, such as `grain: portra-400`
-const grain = computed(() => route.meta.frontmatter?.grain)
+// Every page has film grain. `grain: <stock>` in the frontmatter, such as
+// `grain: tri-x-400`, chooses the film, and `grain: false` removes it.
+const grain = computed(() => route.meta.frontmatter?.grain ?? true)
 
 // Strip the leading year and month prefix, "2403-", from a slug
 function stripDate(segment: string) {
