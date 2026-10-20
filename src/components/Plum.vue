@@ -38,14 +38,12 @@ function polar2cart(x = 0, y = 0, r = 0, theta = 0) {
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 onMounted(() => {
-  if (window.matchMedia(REDUCED_MOTION_QUERY).matches)
-    return
   // Draw only after hydration and font swaps have settled so the animation
   // never competes with the page's own first paint
-  whenIdle(startDrawing)
+  whenIdle(() => startDrawing(!window.matchMedia(REDUCED_MOTION_QUERY).matches))
 })
 
-function startDrawing() {
+function startDrawing(animated: boolean) {
   const canvas = el.value
   if (!canvas)
     return
@@ -91,20 +89,10 @@ function startDrawing() {
 
   let controls: ReturnType<typeof useRafFn>
 
-  const frame = () => {
-    if (performance.now() - lastTime < interval)
-      return
-
+  // Execute all the steps from the previous frame
+  const advance = () => {
     prevSteps = steps
     steps = []
-    lastTime = performance.now()
-
-    if (!prevSteps.length) {
-      controls.pause()
-      stopped = true
-    }
-
-    // Execute all the steps from the previous frame
     prevSteps.forEach((i) => {
       // 50% chance to keep the step for the next frame, to create a more organic look
       if (random() < 0.5)
@@ -112,6 +100,20 @@ function startDrawing() {
       else
         i()
     })
+  }
+
+  const frame = () => {
+    if (performance.now() - lastTime < interval)
+      return
+
+    lastTime = performance.now()
+
+    if (!steps.length) {
+      controls.pause()
+      stopped = true
+    }
+
+    advance()
   }
 
   controls = useRafFn(frame, { immediate: false })
@@ -149,6 +151,14 @@ function startDrawing() {
   }
 
   start()
+
+  // Without motion the whole drawing appears at once, as the orchid does
+  if (!animated) {
+    controls.pause()
+    stopped = true
+    while (steps.length)
+      advance()
+  }
 }
 </script>
 
