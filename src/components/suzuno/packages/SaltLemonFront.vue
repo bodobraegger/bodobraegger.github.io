@@ -46,15 +46,15 @@ const notchPaths = [
       </mask>
     </defs>
     <g :mask="`url(#${ids.cut})`">
-      <rect :width="FACE.width" :height="FACE.height" :fill="colors.film" data-ink="film" />
+      <rect :width="FACE.width" :height="FACE.height" :fill="colors.film" />
       <svg v-bind="layout.print" :viewBox="`${layout.print.x} ${layout.print.y} ${layout.print.width} ${layout.print.height}`">
-        <image :href="photo" v-bind="layout.print" preserveAspectRatio="xMidYMid slice" data-part="photo" />
+        <image :href="photo" v-bind="layout.print" preserveAspectRatio="xMidYMid slice" />
       </svg>
-      <SaltLemonTitle v-bind="layout.title" :texts="texts" data-part="title" />
-      <KatoLogo :transform="placePart(layout.logo)" :name="texts.logo.name" :tagline="texts.logo.tagline" data-part="logo" />
-      <CitricAcidBadge :transform="placePart(layout.acidBadge)" :texts="texts.acidBadge" data-part="acid-badge" />
-      <SaltBadge :transform="placePart(layout.saltBadge)" :lines="texts.saltBadge" data-part="salt-badge" />
-      <SaltLemonBanner :transform="placePart(layout.banner)" :text="texts.banner" data-part="banner" />
+      <SaltLemonTitle v-bind="layout.title" :texts="texts" />
+      <KatoLogo :transform="placePart(layout.logo)" :name="texts.logo.name" :tagline="texts.logo.tagline" />
+      <CitricAcidBadge :transform="placePart(layout.acidBadge)" :texts="texts.acidBadge" />
+      <SaltBadge :transform="placePart(layout.saltBadge)" :lines="texts.saltBadge" />
+      <SaltLemonBanner :transform="placePart(layout.banner)" :text="texts.banner" />
       <text
         :x="layout.tagline.x"
         :y="layout.tagline.y"
@@ -68,11 +68,10 @@ const notchPaths = [
         :stroke-width="layout.tagline.edge"
         stroke-linejoin="round"
         paint-order="stroke"
-        data-part="tagline"
       >
         {{ texts.tagline }}
       </text>
-      <g :font-family="SALT_LEMON_FONTS.gothic.family" :fill="colors.notes" dominant-baseline="central" data-part="notes">
+      <g :font-family="SALT_LEMON_FONTS.gothic.family" :fill="colors.notes" dominant-baseline="central">
         <text :x="layout.notes.left.x" :y="layout.notes.left.y" :font-size="layout.notes.left.size">{{ texts.notes[0] }}</text>
         <text :x="layout.notes.right.x" :y="layout.notes.right.y" :font-size="layout.notes.right.size" text-anchor="end">{{ texts.notes[1] }}</text>
       </g>

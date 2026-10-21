@@ -43,8 +43,8 @@ function crescent(crest: typeof CRESTS[number]) {
         <circle :r="RADIUS" />
       </clipPath>
     </defs>
-    <circle :r="RADIUS" :fill="disc" data-ink="salt-badge" />
-    <g :clip-path="`url(#${clipId})`" :fill="waves" data-ink="salt-badge-waves">
+    <circle :r="RADIUS" :fill="disc" />
+    <g :clip-path="`url(#${clipId})`" :fill="waves">
       <rect :x="-RADIUS" :y="BAND.top" :width="2 * RADIUS" :height="BAND.bottom - BAND.top" />
       <path v-for="(crest, index) in CRESTS" :key="index" :d="crescent(crest)" fill-rule="evenodd" />
       <circle v-for="(dot, index) in [...SPRAY, ...STARS]" :key="`dot-${index}`" :cx="dot.x" :cy="dot.y" :r="dot.radius" />
@@ -61,7 +61,6 @@ function crescent(crest: typeof CRESTS[number]) {
       :textLength="layout[index].width"
       lengthAdjust="spacing"
       :fill="INK"
-      data-ink="salt-badge-lettering"
     >
       {{ line }}
     </text>

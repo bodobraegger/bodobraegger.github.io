@@ -65,7 +65,7 @@ const textTransform = computed(() => {
       <path :d="item.tail" :fill="color" />
       <path :d="item.fold" :fill="fold" />
     </g>
-    <path :d="band" :fill="color" data-part="band" />
+    <path :d="band" :fill="color" />
     <text
       :transform="textTransform"
       :font-family="font.family"

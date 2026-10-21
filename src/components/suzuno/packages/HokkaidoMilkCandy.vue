@@ -64,7 +64,7 @@ const titleId = `${id}-title`
       <stop offset="0.85" :stop-color="inks.film" />
       <stop offset="1" :stop-color="inks.shade" />
     </linearGradient>
-    <g :transform="placePart(parts.body)" data-part="body">
+    <g :transform="placePart(parts.body)">
       <path :d="outline" :fill="`url(#${shadeId})`" />
     </g>
     <SerratedEdge
@@ -74,7 +74,6 @@ const titleId = `${id}-title`
       :film="inks.film"
       :light="inks['seal-light']"
       :dark="inks['seal-dark']"
-      data-part="leftEnd"
     />
     <SerratedEdge
       :transform="placePart(parts.rightEnd)"
@@ -83,11 +82,10 @@ const titleId = `${id}-title`
       :film="inks.film"
       :light="inks['seal-light']"
       :dark="inks['seal-dark']"
-      data-part="rightEnd"
     />
     <g :font-family="HOKKAIDO_MILK_FONTS.mincho" font-weight="900" text-anchor="middle" :font-size="MINCHO_SIZE" :fill="inks.text">
-      <text :transform="placePart(parts.subtitle)" data-part="subtitle">{{ texts.subtitle }}</text>
-      <text :transform="placePart(parts.title)" data-part="title">{{ texts.title }}</text>
+      <text :transform="placePart(parts.subtitle)">{{ texts.subtitle }}</text>
+      <text :transform="placePart(parts.title)">{{ texts.title }}</text>
     </g>
     <image
       v-if="face === 'front' && illustration"
@@ -96,11 +94,10 @@ const titleId = `${id}-title`
       :width="COW.width"
       :height="COW.height"
       style="filter: grayscale(1) contrast(1.6)"
-      data-part="cow"
     />
-    <g v-if="face === 'back'" :transform="placePart(parts.recycling)" data-part="recycling">
+    <g v-if="face === 'back'" :transform="placePart(parts.recycling)">
       <RecyclingMark :box="RECYCLING_MARK" :material="texts.recycling" :color="inks.text" />
     </g>
-    <SealBand v-if="face === 'back'" :transform="placePart(parts.fin)" :layout="FIN.ridges" :width="FIN.length" :fill="inks.film" :colors="inks" data-part="fin" />
+    <SealBand v-if="face === 'back'" :transform="placePart(parts.fin)" :layout="FIN.ridges" :width="FIN.length" :fill="inks.film" :colors="inks" />
   </svg>
 </template>

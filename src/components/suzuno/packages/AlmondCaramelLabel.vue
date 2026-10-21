@@ -44,20 +44,20 @@ const spacedDots = computed(() => {
 
 <template>
   <g>
-    <ellipse :rx="layout.rx" :ry="layout.ry" :fill="fill" :stroke="ink" :stroke-width="layout.outline" data-ink="label" />
+    <ellipse :rx="layout.rx" :ry="layout.ry" :fill="fill" :stroke="ink" :stroke-width="layout.outline" />
     <ellipse v-bind="innerOval" fill="none" :stroke="ink" :stroke-width="layout.inner" />
     <g text-anchor="middle" :fill="ink">
       <text v-for="(line, index) in intro" :key="`intro-${index}`" v-bind="textAttributes(introLines[index], lineFont)">
         {{ line }}
       </text>
-      <text v-bind="textAttributes(layout.name, nameFont)" data-part="name">
+      <text v-bind="textAttributes(layout.name, nameFont)">
         {{ name }}
       </text>
       <text v-for="(line, index) in sentence" :key="`sentence-${index}`" v-bind="textAttributes(sentenceLines[index], lineFont)">
         {{ line }}
       </text>
     </g>
-    <g :fill="green" text-anchor="middle" data-part="spaced">
+    <g :fill="green" text-anchor="middle">
       <text v-for="(item, index) in spacedLetters" :key="index" v-bind="textAttributes({ ...layout.spaced, x: item.x }, spacedFont)">
         {{ item.letter }}
       </text>

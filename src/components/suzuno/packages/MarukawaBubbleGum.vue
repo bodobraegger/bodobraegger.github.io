@@ -33,7 +33,7 @@ const gumX = computed(() => letteringWidth(props.bubble, bubbleFont) + props.gum
 
 <template>
   <g>
-    <text :font-family="bubbleFont.family" :font-weight="bubbleFont.weight" :font-size="bubbleSize" :fill="bubbleColor" data-ink="bubble">
+    <text :font-family="bubbleFont.family" :font-weight="bubbleFont.weight" :font-size="bubbleSize" :fill="bubbleColor">
       {{ bubble }}
     </text>
     <text
@@ -46,7 +46,6 @@ const gumX = computed(() => letteringWidth(props.bubble, bubbleFont) + props.gum
       :stroke-width="gumOutline ? 2 * GUM_OUTLINE_WIDTH * CAP_HEIGHT : undefined"
       stroke-linejoin="round"
       paint-order="stroke"
-      data-ink="gum"
     >
       {{ gum }}
     </text>

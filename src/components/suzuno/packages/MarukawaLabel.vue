@@ -42,11 +42,11 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
 
 <template>
   <g :transform="`translate(${x} ${y}) scale(${width / BOX.width} ${height / BOX.height})`" :font-family="helvetica.family">
-    <rect :width="BOX.width" :height="BOX.height" :fill="PAPER" data-ink="label-paper" />
-    <text :x="MARGIN" :y="HEADING.baseline" font-weight="700" :font-size="headingSize" :fill="color" data-ink="label">
+    <rect :width="BOX.width" :height="BOX.height" :fill="PAPER" />
+    <text :x="MARGIN" :y="HEADING.baseline" font-weight="700" :font-size="headingSize" :fill="color">
       {{ text.heading }}
     </text>
-    <rect v-bind="badge" :rx="badge.height / 2" :fill="color" data-ink="label" />
+    <rect v-bind="badge" :rx="badge.height / 2" :fill="color" />
     <text
       :x="badge.x + badge.width / 2"
       :y="HEADING.baseline"
@@ -69,7 +69,6 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
       :fill="color"
       :textLength="lineLength(line)"
       lengthAdjust="spacingAndGlyphs"
-      data-ink="label"
     >
       {{ line }}
     </text>

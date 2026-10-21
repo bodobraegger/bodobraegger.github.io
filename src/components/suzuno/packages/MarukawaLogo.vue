@@ -35,7 +35,7 @@ const nameX = computed(() => 2 * MARK_RADIUS * props.markScale + props.gap * CAP
 <template>
   <g>
     <!-- The mark is centred on the capitals -->
-    <g :transform="`translate(${MARK_RADIUS * markScale} ${-CAP_HEIGHT / 2}) scale(${markScale})`" :stroke="color" fill="none" data-ink="logo">
+    <g :transform="`translate(${MARK_RADIUS * markScale} ${-CAP_HEIGHT / 2}) scale(${markScale})`" :stroke="color" fill="none">
       <circle :r="MARK_RADIUS - MARK_RING / 2" :stroke-width="MARK_RING" />
       <path
         v-for="stroke in STROKES"
@@ -46,7 +46,7 @@ const nameX = computed(() => 2 * MARK_RADIUS * props.markScale + props.gap * CAP
         stroke-linecap="round"
       />
     </g>
-    <text :x="nameX" :font-family="font.family" :font-weight="font.weight" :font-size="fontSize" :fill="color" data-ink="logo">
+    <text :x="nameX" :font-family="font.family" :font-weight="font.weight" :font-size="fontSize" :fill="color">
       {{ name }}
     </text>
   </g>

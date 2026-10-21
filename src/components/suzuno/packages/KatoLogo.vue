@@ -30,8 +30,8 @@ const NAME = { width: 184, size: 52, slant: -12 }
 
 <template>
   <g>
-    <ellipse :rx="OVAL.rx" :ry="OVAL.ry" :fill="red" :stroke="WHITE" :stroke-width="layout.ring" data-ink="logo" />
-    <path v-if="name === undefined" :d="LETTERS" :fill="WHITE" data-ink="logo-letters" />
+    <ellipse :rx="OVAL.rx" :ry="OVAL.ry" :fill="red" :stroke="WHITE" :stroke-width="layout.ring" />
+    <path v-if="name === undefined" :d="LETTERS" :fill="WHITE" />
     <text
       v-else
       :transform="`skewX(${NAME.slant})`"
@@ -44,7 +44,6 @@ const NAME = { width: 184, size: 52, slant: -12 }
       :textLength="NAME.width"
       lengthAdjust="spacingAndGlyphs"
       :fill="WHITE"
-      data-ink="logo-letters"
     >
       {{ name }}
     </text>
@@ -62,7 +61,6 @@ const NAME = { width: 184, size: 52, slant: -12 }
       :stroke-width="layout.tagline.halo"
       stroke-linejoin="round"
       paint-order="stroke"
-      data-ink="logo-tagline"
     >
       {{ tagline }}
     </text>

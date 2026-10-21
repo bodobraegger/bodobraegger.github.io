@@ -27,7 +27,7 @@ const dashBoxes = computed(() => {
 </script>
 
 <template>
-  <g :fill="ink" :stroke="edge" :stroke-width="layout.edgeWidth * FONT_SIZE" stroke-linejoin="round" paint-order="stroke" data-ink="banner">
+  <g :fill="ink" :stroke="edge" :stroke-width="layout.edgeWidth * FONT_SIZE" stroke-linejoin="round" paint-order="stroke">
     <rect v-for="(dash, index) in dashBoxes" :key="index" v-bind="dash" />
     <!-- The spacing after the last character would move the line off the middle -->
     <text

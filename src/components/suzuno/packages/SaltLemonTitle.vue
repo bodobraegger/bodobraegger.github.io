@@ -42,12 +42,12 @@ const columns = computed(() => [
         <stop offset="1" :stop-color="panel[1]" />
       </linearGradient>
     </defs>
-    <rect :width="TITLE_PANEL.width" :height="TITLE_PANEL.height" :fill="`url(#${gradientId})`" data-ink="title-panel" />
-    <g fill="none" :stroke="ink" :stroke-width="layout.frameWidth" data-ink="title-frame">
+    <rect :width="TITLE_PANEL.width" :height="TITLE_PANEL.height" :fill="`url(#${gradientId})`" />
+    <g fill="none" :stroke="ink" :stroke-width="layout.frameWidth">
       <rect v-bind="frame" />
       <line :x1="frame.x" :x2="frame.x + frame.width" :y1="layout.divider" :y2="layout.divider" />
     </g>
-    <g :fill="ink" data-ink="title-lettering">
+    <g :fill="ink">
       <text :x="layout.kanji.x" :y="layout.kanji.y" :font-size="layout.kanji.size" text-anchor="middle" dominant-baseline="central">
         {{ texts.kanji }}
       </text>
@@ -74,7 +74,6 @@ const columns = computed(() => [
       :stroke-width="layout.ruby.outline"
       stroke-linejoin="round"
       paint-order="stroke"
-      data-ink="title-ruby"
     >
       {{ texts.ruby }}
     </text>

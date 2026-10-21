@@ -47,8 +47,8 @@ const skyId = `${useId()}-sky`
 
 <template>
   <g>
-    <HokkaidoMap :transform="placePart(parts.map)" :color="inks.map" :strokes="inks['map-strokes']" data-part="map" />
-    <RibonLogo :transform="placePart(parts.logo)" :name="texts.brand" :color="inks.logo" data-part="logo" />
+    <HokkaidoMap :transform="placePart(parts.map)" :color="inks.map" :strokes="inks['map-strokes']" />
+    <RibonLogo :transform="placePart(parts.logo)" :name="texts.brand" :color="inks.logo" />
     <MilkStamp
       :transform="placePart(parts.stamp)"
       :top="texts.stamp.top"
@@ -57,7 +57,6 @@ const skyId = `${useId()}-sky`
       :bottom="texts.stamp.bottom"
       :color="inks.stamp"
       :paper="inks.film"
-      data-part="stamp"
     />
     <text
       :transform="placePart(parts.tagline)"
@@ -67,11 +66,10 @@ const skyId = `${useId()}-sky`
       :font-size="TIMES_SIZE"
       :letter-spacing="spacings.tagline"
       :fill="inks.tagline"
-      data-part="tagline"
     >
       {{ texts.tagline }}
     </text>
-    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
+    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" />
     <text
       :transform="placePart(parts.subtitle)"
       text-anchor="middle"
@@ -80,7 +78,6 @@ const skyId = `${useId()}-sky`
       :font-size="MINCHO_SIZE"
       :letter-spacing="spacings.subtitle"
       :fill="inks.subtitle"
-      data-part="subtitle"
     >
       {{ texts.subtitle }}
     </text>
@@ -93,7 +90,6 @@ const skyId = `${useId()}-sky`
       :width="IMAGE_WIDTH"
       :height="CAN_HEIGHT"
       preserveAspectRatio="xMidYMin meet"
-      :data-part="can"
     />
     <HokkaidoBadge
       v-for="(badge, index) in BADGES"
@@ -103,16 +99,15 @@ const skyId = `${useId()}-sky`
       :color="inks[`${badge}:badge`]"
       :edge="inks['badge-edge']"
       :shadow="inks['badge-shadow']"
-      :data-part="badge"
     />
-    <g :transform="placePart(parts.sky)" data-part="sky">
+    <g :transform="placePart(parts.sky)">
       <radialGradient :id="skyId">
         <stop offset="0" :stop-color="inks.sky" />
         <stop offset="1" :stop-color="inks.sky" stop-opacity="0" />
       </radialGradient>
       <ellipse :cx="IMAGE_WIDTH / 2" cy="0" :rx="IMAGE_WIDTH / 2" :ry="SKY_HEIGHT" :fill="`url(#${skyId})`" />
     </g>
-    <image :transform="placePart(parts.farm)" :href="landscape" :width="IMAGE_WIDTH" :height="FARM_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="farm" />
-    <image :transform="placePart(parts.cow)" :href="illustration" :width="IMAGE_WIDTH" :height="COW_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="cow" />
+    <image :transform="placePart(parts.farm)" :href="landscape" :width="IMAGE_WIDTH" :height="FARM_HEIGHT" preserveAspectRatio="xMidYMax meet" />
+    <image :transform="placePart(parts.cow)" :href="illustration" :width="IMAGE_WIDTH" :height="COW_HEIGHT" preserveAspectRatio="xMidYMax meet" />
   </g>
 </template>

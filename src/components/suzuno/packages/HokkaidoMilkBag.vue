@@ -42,9 +42,9 @@ const titleId = `${useId()}-title`
     <rect :width="size.width" :height="size.height" :fill="inks.film" />
     <HokkaidoMilkBagFront v-if="face === 'front'" :texts="texts" :layout="layout" :illustration="illustration" :landscape="landscape" />
     <HokkaidoMilkBagBack v-else :texts="texts" :layout="layout" />
-    <SealBand :transform="placePart(parts.topSeal)" :layout="seals.top" :width="size.width / parts.topSeal.scale" :fill="inks.film" :colors="inks" data-part="topSeal" />
-    <SealBand :transform="placePart(parts.bottomSeal)" :layout="seals.bottom" :width="size.width / parts.bottomSeal.scale" :fill="inks.film" :colors="inks" data-part="bottomSeal" />
-    <SealBand v-if="'fin' in seals" :transform="placePart(parts.finSeal)" :layout="seals.fin" :width="FIN_LENGTH / parts.finSeal.scale" :fill="inks.film" :colors="inks" data-part="finSeal" />
-    <circle :transform="placePart(parts.hole)" :r="HOLE_RADIUS" :fill="inks.hole" data-part="hole" />
+    <SealBand :transform="placePart(parts.topSeal)" :layout="seals.top" :width="size.width / parts.topSeal.scale" :fill="inks.film" :colors="inks" />
+    <SealBand :transform="placePart(parts.bottomSeal)" :layout="seals.bottom" :width="size.width / parts.bottomSeal.scale" :fill="inks.film" :colors="inks" />
+    <SealBand v-if="'fin' in seals" :transform="placePart(parts.finSeal)" :layout="seals.fin" :width="FIN_LENGTH / parts.finSeal.scale" :fill="inks.film" :colors="inks" />
+    <circle :transform="placePart(parts.hole)" :r="HOLE_RADIUS" :fill="inks.hole" />
   </svg>
 </template>

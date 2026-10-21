@@ -68,16 +68,16 @@ const homepageLines = computed(() => layout.value.homepage && blockLines(layout.
         <path :d="panelPath" clip-rule="evenodd" />
       </clipPath>
     </defs>
-    <g data-part="window">
+    <g>
       <image :href="windowImage ?? WINDOW_IMAGES[side]" v-bind="layout.window" preserveAspectRatio="none" />
     </g>
-    <g :clip-path="`url(#${ids.panel})`" data-part="panel">
+    <g :clip-path="`url(#${ids.panel})`">
       <path :d="panelPath" fill-rule="evenodd" :fill="colors.ground" />
-      <path :d="panelPath" fill-rule="evenodd" :fill="`url(#${ids.damask})`" data-part="damask" />
+      <path :d="panelPath" fill-rule="evenodd" :fill="`url(#${ids.damask})`" />
       <rect v-for="(box, index) in layout.plain" :key="index" v-bind="box" :fill="colors.ground" />
     </g>
-    <SealBand :layout="layout.topBand" :width="ALMOND_CARAMEL_BAG.width" :fill="colors.seal" :colors="colors" data-part="top-band" />
-    <SealBand :layout="layout.bottomBand" :width="ALMOND_CARAMEL_BAG.width" :fill="colors.seal" :colors="colors" data-part="bottom-band" />
+    <SealBand :layout="layout.topBand" :width="ALMOND_CARAMEL_BAG.width" :fill="colors.seal" :colors="colors" />
+    <SealBand :layout="layout.bottomBand" :width="ALMOND_CARAMEL_BAG.width" :fill="colors.seal" :colors="colors" />
     <circle :cx="layout.hole.x" :cy="layout.hole.y" :r="layout.hole.radius" :fill="colors.hole" />
 
     <AlmondCaramelLabel
@@ -90,7 +90,6 @@ const homepageLines = computed(() => layout.value.homepage && blockLines(layout.
       :fill="colors.label"
       :ink="colors.ink"
       :green="colors.green"
-      data-part="label"
     />
     <RibbonBanner
       :transform="placementTransform(layout.ribbon)"
@@ -100,37 +99,36 @@ const homepageLines = computed(() => layout.value.homepage && blockLines(layout.
       :fold="colors.ribbonFold"
       :outline="colors.ink"
       :text-color="colors.ribbonText"
-      data-part="ribbon"
     />
-    <image :href="almondsPhoto" v-bind="layout.almonds" :transform="imageTransform(layout.almonds)" preserveAspectRatio="none" data-part="almonds" />
+    <image :href="almondsPhoto" v-bind="layout.almonds" :transform="imageTransform(layout.almonds)" preserveAspectRatio="none" />
 
     <template v-if="side === 'front'">
-      <VerticalStamp v-if="layout.stamp" :layout="layout.stamp" :columns="texts.stamp" :color="colors.stamp" data-part="stamp" />
-      <g v-if="dateLines" :fill="colors.date" data-part="dates">
+      <VerticalStamp v-if="layout.stamp" :layout="layout.stamp" :columns="texts.stamp" :color="colors.stamp" />
+      <g v-if="dateLines" :fill="colors.date">
         <text v-bind="textAttributes(dateLines[0], fonts.gothic)">{{ texts.bestBefore }}</text>
         <text v-bind="textAttributes(dateLines[1], fonts.gothic)">{{ texts.weight }}</text>
       </g>
     </template>
 
     <g v-else :fill="colors.ink">
-      <g v-if="greetingLines" data-part="greeting">
+      <g v-if="greetingLines">
         <text v-for="(line, index) in texts.greeting" :key="index" v-bind="textAttributes(greetingLines[index], fonts.gothic)">{{ line }}</text>
       </g>
-      <LabelTable v-if="layout.ingredients" :layout="layout.ingredients" :title="texts.ingredientsTitle" :rows="texts.ingredients" :color="colors.ink" data-part="ingredients" />
+      <LabelTable v-if="layout.ingredients" :layout="layout.ingredients" :title="texts.ingredientsTitle" :rows="texts.ingredients" :color="colors.ink" />
       <template v-if="layout.nutrition">
-        <LabelTable :layout="layout.nutrition" :title="texts.nutritionTitle" :rows="texts.nutrition" :color="colors.ink" data-part="nutrition" />
+        <LabelTable :layout="layout.nutrition" :title="texts.nutritionTitle" :rows="texts.nutrition" :color="colors.ink" />
         <text v-bind="textAttributes(layout.nutrition.note, fonts.gothic)">{{ texts.nutritionNote }}</text>
       </template>
-      <g v-if="layout.recycling && recyclingLines && sortingLines" data-part="recycling">
+      <g v-if="layout.recycling && recyclingLines && sortingLines">
         <RecyclingMark :box="layout.recycling.mark" :color="colors.ink" />
         <text v-for="(line, index) in texts.recycling" :key="`r${index}`" v-bind="textAttributes(recyclingLines[index], fonts.gothic)">{{ line }}</text>
         <text v-for="(line, index) in texts.sorting" :key="`s${index}`" v-bind="textAttributes(sortingLines[index], fonts.gothic)">{{ line }}</text>
       </g>
-      <Ean13Barcode v-if="layout.barcode" :layout="layout.barcode" :digits="texts.barcode" :color="colors.ink" data-part="barcode" />
-      <g v-if="footnoteLines" data-part="footnote">
+      <Ean13Barcode v-if="layout.barcode" :layout="layout.barcode" :digits="texts.barcode" :color="colors.ink" />
+      <g v-if="footnoteLines">
         <text v-for="(line, index) in texts.footnote" :key="index" v-bind="textAttributes(footnoteLines[index], fonts.gothic)">{{ line }}</text>
       </g>
-      <g v-if="homepageLines" data-part="homepage">
+      <g v-if="homepageLines">
         <text v-for="(line, index) in texts.homepage" :key="index" v-bind="textAttributes(homepageLines[index], fonts.gothic)">{{ line }}</text>
       </g>
     </g>

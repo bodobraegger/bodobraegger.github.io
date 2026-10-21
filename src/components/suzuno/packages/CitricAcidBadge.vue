@@ -53,8 +53,8 @@ function formulaParts(formula: string) {
         <stop offset="1" :stop-color="sphere.colors[1]" />
       </radialGradient>
     </defs>
-    <ellipse rx="100" :ry="layout.radiusY" :fill="`url(#${discId})`" :stroke="RIM" :stroke-width="layout.rimWidth" data-ink="acid-badge" />
-    <g :fill="INK" :stroke="glow" :stroke-width="layout.glow" stroke-linejoin="round" paint-order="stroke" text-anchor="middle" dominant-baseline="central" data-ink="acid-badge-lettering">
+    <ellipse rx="100" :ry="layout.radiusY" :fill="`url(#${discId})`" :stroke="RIM" :stroke-width="layout.rimWidth" />
+    <g :fill="INK" :stroke="glow" :stroke-width="layout.glow" stroke-linejoin="round" paint-order="stroke" text-anchor="middle" dominant-baseline="central">
       <text :y="layout.label.y" :font-size="layout.label.size" :textLength="layout.label.width" lengthAdjust="spacingAndGlyphs">
         {{ texts.label }}
       </text>
@@ -62,7 +62,7 @@ function formulaParts(formula: string) {
         {{ amount }}
       </text>
     </g>
-    <g v-for="(sphere, index) in spheres" :key="index" :transform="`translate(${sphereXs[index]} ${layout.spheres.y})`" data-ink="acid-badge-sphere">
+    <g v-for="(sphere, index) in spheres" :key="index" :transform="`translate(${sphereXs[index]} ${layout.spheres.y})`">
       <circle :r="layout.spheres.radius" :fill="`url(#${sphereIds[index]})`" :stroke="RIM" :stroke-width="layout.rimWidth / 2" />
       <text
         :y="layout.spheres.captionY"
@@ -94,7 +94,7 @@ function formulaParts(formula: string) {
         </tspan>
       </text>
     </g>
-    <text :y="layout.spheres.y" text-anchor="middle" dominant-baseline="central" :font-size="layout.spheres.size * 0.8" :fill="INK" data-ink="acid-badge-lettering">
+    <text :y="layout.spheres.y" text-anchor="middle" dominant-baseline="central" :font-size="layout.spheres.size * 0.8" :fill="INK">
       +
     </text>
   </g>

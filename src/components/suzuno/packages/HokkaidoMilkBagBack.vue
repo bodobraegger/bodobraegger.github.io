@@ -50,13 +50,13 @@ const labelRows = computed(() => {
 
 <template>
   <g :font-family="HOKKAIDO_MILK_FONTS.gothic" :fill="inks.text">
-    <g :transform="placePart(parts.opening)" :font-size="8.6" data-part="opening">
+    <g :transform="placePart(parts.opening)" :font-size="8.6">
       <text v-for="(line, index) in back.opening" :key="line" :x="index ? 9 : 0" :y="index * 15">
         {{ line }}
       </text>
     </g>
 
-    <HokkaidoMap :transform="placePart(parts.map)" :color="inks.map" :strokes="inks['map-strokes']" data-part="map" />
+    <HokkaidoMap :transform="placePart(parts.map)" :color="inks.map" :strokes="inks['map-strokes']" />
     <text
       :transform="placePart(parts.tagline)"
       text-anchor="middle"
@@ -65,11 +65,10 @@ const labelRows = computed(() => {
       :font-size="TIMES_SIZE"
       :letter-spacing="spacings.tagline"
       :fill="inks.tagline"
-      data-part="tagline"
     >
       {{ texts.tagline }}
     </text>
-    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
+    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" />
     <text
       :transform="placePart(parts.subtitle)"
       text-anchor="middle"
@@ -78,19 +77,18 @@ const labelRows = computed(() => {
       :font-size="MINCHO_SIZE"
       :letter-spacing="spacings.subtitle"
       :fill="inks.subtitle"
-      data-part="subtitle"
     >
       {{ texts.subtitle }}
     </text>
 
-    <g :transform="placePart(parts.badges)" data-part="badges">
+    <g :transform="placePart(parts.badges)">
       <g v-for="(badge, index) in SMALL_BADGES" :key="badge.x">
         <image :href="milkCan" :x="badge.x - SMALL_CAN.width / 2" :y="SMALL_CAN.y" :width="SMALL_CAN.width" :height="SMALL_CAN.height" />
         <HokkaidoBadge :transform="`translate(${badge.x} 16) scale(${badge.scale})`" :lines="texts.badges[index] ?? []" :color="inks[`${BADGES[index]}:badge`]" :edge="inks['badge-edge']" :shadow="inks['badge-shadow']" />
       </g>
     </g>
 
-    <g :transform="placePart(parts.calcium)" data-part="calcium">
+    <g :transform="placePart(parts.calcium)">
       <rect :width="CALCIUM.width" :height="CALCIUM.height" :rx="CALCIUM.height / 2" :fill="inks.blue" />
       <text :x="CALCIUM.width / 2" :y="CALCIUM.height - 4.5" text-anchor="middle" font-weight="700" :font-size="11" fill="#fff">
         {{ back.calciumHeading }}
@@ -106,20 +104,20 @@ const labelRows = computed(() => {
       </text>
     </g>
 
-    <g :transform="placePart(parts.nutrition)" data-part="nutrition">
+    <g :transform="placePart(parts.nutrition)">
       <LabelTable :layout="NUTRITION" title="" :spans="[back.nutrition.heading, back.nutrition.serving]" :rows="back.nutrition.rows" :color="inks.text" />
       <text :x="NUTRITION.width / 2 + 10" :y="nutritionBottom + 12" text-anchor="middle" :font-size="NOTE_SIZE">
         {{ back.nutrition.note }}
       </text>
     </g>
 
-    <g :transform="placePart(parts.notice)" :font-size="NOTICE.fontSize" data-part="notice">
+    <g :transform="placePart(parts.notice)" :font-size="NOTICE.fontSize">
       <text v-for="(line, index) in back.notice" :key="line" :y="(index + 1) * NOTICE.lineHeight">
         {{ line }}
       </text>
     </g>
 
-    <g :transform="placePart(parts.address)" data-part="address">
+    <g :transform="placePart(parts.address)">
       <text :y="9" :font-size="9.4">
         {{ back.address[0] }}
       </text>
@@ -138,7 +136,7 @@ const labelRows = computed(() => {
       </text>
     </g>
 
-    <g :transform="placePart(parts.bestBefore)" :fill="inks.date" data-part="bestBefore">
+    <g :transform="placePart(parts.bestBefore)" :fill="inks.date">
       <text :y="10" :font-size="10">
         {{ back.bestBefore.label }}
       </text>
@@ -147,7 +145,7 @@ const labelRows = computed(() => {
       </text>
     </g>
 
-    <text :transform="placePart(parts.afterOpening)" text-anchor="end" :font-size="9.5" data-part="afterOpening">
+    <text :transform="placePart(parts.afterOpening)" text-anchor="end" :font-size="9.5">
       {{ back.afterOpening }}
     </text>
 
@@ -159,16 +157,15 @@ const labelRows = computed(() => {
       span-align="start"
       :rows="labelRows"
       :color="inks.text"
-      data-part="label"
     />
 
-    <text :transform="placePart(parts.illustrationNote)" :font-size="11" data-part="illustrationNote">
+    <text :transform="placePart(parts.illustrationNote)" :font-size="11">
       {{ back.illustration }}
     </text>
 
-    <Ean13Barcode :transform="placePart(parts.barcode)" :layout="BARCODE" :digits="back.barcode" :color="inks.text" data-part="barcode" />
+    <Ean13Barcode :transform="placePart(parts.barcode)" :layout="BARCODE" :digits="back.barcode" :color="inks.text" />
 
-    <g :transform="placePart(parts.homepage)" data-part="homepage">
+    <g :transform="placePart(parts.homepage)">
       <rect x="22" y="3" width="140" height="23" rx="7" :fill="inks.blue" fill-opacity="0.35" />
       <image :href="mascot" width="37" height="32" />
       <text x="38" y="13" :font-size="7.8">
@@ -179,7 +176,7 @@ const labelRows = computed(() => {
       </text>
     </g>
 
-    <g :transform="placePart(parts.recycling)" data-part="recycling">
+    <g :transform="placePart(parts.recycling)">
       <RecyclingMark :box="RECYCLING_MARK" :material="back.recycling.mark" :color="inks.text" />
       <text v-for="(part, index) in back.recycling.parts" :key="part" x="31" :y="8 + index * 10" :font-size="7.6">
         {{ part }}

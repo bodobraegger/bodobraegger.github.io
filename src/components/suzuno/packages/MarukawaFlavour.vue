@@ -37,7 +37,7 @@ const box = computed(() => {
 
 <template>
   <g>
-    <rect v-if="highlight" v-bind="box" :fill="highlight" data-ink="highlight" />
+    <rect v-if="highlight" v-bind="box" :fill="highlight" />
     <text
       :transform="`scale(${narrowing} 1)`"
       text-anchor="middle"
@@ -49,7 +49,6 @@ const box = computed(() => {
       :stroke-width="outline ? 2 * OUTLINE_WIDTH * CAP_HEIGHT : undefined"
       stroke-linejoin="round"
       paint-order="stroke"
-      data-ink="flavour"
     >
       {{ text }}
     </text>

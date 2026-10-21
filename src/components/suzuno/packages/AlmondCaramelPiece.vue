@@ -64,12 +64,11 @@ const columns = computed(() => {
         :fill="paperFill"
         :stroke="colors.ink"
         :stroke-width="front.window.outline"
-        data-part="window"
       />
-      <text v-bind="textAttributes(front.name, fonts.condensed)" text-anchor="middle" data-part="name">
+      <text v-bind="textAttributes(front.name, fonts.condensed)" text-anchor="middle">
         {{ texts.name }}
       </text>
-      <g data-part="spaced" text-anchor="middle">
+      <g text-anchor="middle">
         <text v-for="(item, index) in spacedLetters" :key="index" v-bind="textAttributes({ ...front.spaced, x: item.x }, fonts.extended)">
           {{ item.letter }}
         </text>
@@ -81,7 +80,7 @@ const columns = computed(() => {
     </g>
 
     <g v-else :fill="colors.ink">
-      <rect v-bind="back.window" :fill="paperFill" data-part="window" />
+      <rect v-bind="back.window" :fill="paperFill" />
       <rect
         :x="back.frame.x"
         :y="back.frame.y"
@@ -90,7 +89,6 @@ const columns = computed(() => {
         fill="none"
         :stroke="colors.ink"
         :stroke-width="back.frame.stroke"
-        data-part="frame"
       />
       <text
         v-for="column in columns"

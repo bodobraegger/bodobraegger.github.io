@@ -37,9 +37,9 @@ const titleId = `${useId()}-title`
 <template>
   <svg class="block h-auto w-full" :viewBox="`0 0 ${MARUKAWA_FACE.width} ${MARUKAWA_FACE.height}`" role="img" :aria-labelledby="titleId">
     <title :id="titleId">{{ texts.brand }} {{ texts.flavour }} {{ texts.bubble }} {{ texts.gum }}</title>
-    <rect :width="MARUKAWA_FACE.width" :height="MARUKAWA_FACE.height" :fill="colours.paper" data-ink="paper" />
-    <image :href="illustration ?? MARUKAWA_ILLUSTRATIONS[preset]" x="0" y="0" :width="MARUKAWA_FACE.width" :height="MARUKAWA_FACE.height" preserveAspectRatio="xMidYMid meet" data-part="illustration" />
-    <MarukawaLogo :transform="placeLettering(layout.logo)" :name="texts.brand" :color="colours.ink" :gap="layout.logo.gap" :mark-scale="layout.logo.markScale" data-part="logo" />
+    <rect :width="MARUKAWA_FACE.width" :height="MARUKAWA_FACE.height" :fill="colours.paper" />
+    <image :href="illustration ?? MARUKAWA_ILLUSTRATIONS[preset]" x="0" y="0" :width="MARUKAWA_FACE.width" :height="MARUKAWA_FACE.height" preserveAspectRatio="xMidYMid meet" />
+    <MarukawaLogo :transform="placeLettering(layout.logo)" :name="texts.brand" :color="colours.ink" :gap="layout.logo.gap" :mark-scale="layout.logo.markScale" />
     <MarukawaFlavour
       :transform="placeLettering(layout.flavour)"
       :text="texts.flavour"
@@ -47,7 +47,6 @@ const titleId = `${useId()}-title`
       :outline="colours.flavourOutline"
       :highlight="colours.highlight"
       :max-width="flavourMaxWidth"
-      data-part="flavour"
     />
     <text
       :transform="placeLettering(layout.tagline)"
@@ -55,8 +54,6 @@ const titleId = `${useId()}-title`
       :font-weight="taglineFont.weight"
       :font-size="taglineSize"
       :fill="colours.ink"
-      data-part="tagline"
-      data-ink="tagline"
     >
       {{ texts.tagline }}
     </text>
@@ -69,8 +66,7 @@ const titleId = `${useId()}-title`
       :gum-outline="colours.gumOutline"
       :gum-scale="layout.bubbleGum.gumScale"
       :gum-gap="layout.bubbleGum.gumGap"
-      data-part="bubble-gum"
     />
-    <MarukawaLabel v-if="texts.label && layout.label" :text="texts.label" v-bind="layout.label" :color="colours.ink" data-part="label" />
+    <MarukawaLabel v-if="texts.label && layout.label" :text="texts.label" v-bind="layout.label" :color="colours.ink" />
   </svg>
 </template>
