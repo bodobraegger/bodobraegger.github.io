@@ -5,9 +5,9 @@
 // are from Media/Sprites/menue.png of the game.
 import type { Area } from '~/lib/orchid'
 import { takeBackAreas } from '~/lib/orchid'
-import flowerUrl from '~/assets/mistyrose/flower.png'
-import leafUrl from '~/assets/mistyrose/leaf.png'
-import stemUrl from '~/assets/mistyrose/stem.png'
+import flowerUrl from '~/assets/mistyrose/flower.webp'
+import leafUrl from '~/assets/mistyrose/leaf.webp'
+import stemUrl from '~/assets/mistyrose/stem.webp'
 
 /** A point in game units, where a full stem segment is STEM_LENGTH long. */
 export interface Seed {
