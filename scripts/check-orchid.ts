@@ -15,7 +15,7 @@ for (const [width, height] of WINDOWS) {
     const begin = performance.now()
     const plants = [...vines(width, height, seed)]
     const time = performance.now() - begin
-    const found = plants.flatMap((plant, index) => collisions(plant, {}, plants.slice(0, index)))
+    const found = plants.flatMap((plant, index) => collisions(plant, plants.slice(0, index)))
     for (const { blossom, other } of found)
       console.error(`${width} x ${height}, seed ${seed}: the blossom at ${point(blossom)} collides with the blossom or stem at ${point(other)}`)
     failures += found.length

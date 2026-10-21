@@ -1,86 +1,72 @@
-// Plum-blossom vine ornaments, drawn as line art: a copy of ornament.ts, the
-// vine generator of the Suzuno Financial recreation, with its rule that
-// blossoms keep apart. This copy adds the direction of a vine, keeps the
-// blossoms of several vines apart, grows all vines of a page on a canvas in
-// one loop, and lays the vines out along the edges of a window (`vines`).
+// Plum-blossom vines in line art for the background of a page. The generator
+// comes from the vine ornament of the Suzuno Financial recreation, with its
+// rule that blossoms keep apart.
 //
 // A plant is a genome: a root branch that grows from an origin step by step
 // (each step a length and a turn), with side branches at its nodes and a tip
-// at the end of every branch (a flower, a bud, or nothing). `grow(seed,
-// parameters)` grows a new plant. In the source project, a fitter adjusts the
-// values of a plant (and per-node shifts) to match a print. `develop(plant)`
-// turns a plant into a flat spec: stems (smooth curves through points),
+// at the end of every branch (a flower, a bud, or nothing). `vines` lays out
+// plants along the edges of a window and grows each with `grow`. `parts`
+// turns a plant into the lines of its stems and the SVG path data of its
 // flowers (petals as brush arcs around a stamen dot) and buds (small,
-// optionally open, ellipses). `parts(spec)` turns a spec or a plant into the
-// lines of its stems and the SVG path data of its tips, in the order of its
-// growth, and `animate` grows them on a canvas.
+// optionally open, ellipses), in the order of its growth, and `animate` grows
+// them on a canvas.
 
-export type Point = [number, number]
+type Point = [number, number]
 
-export interface Shape {
+interface Shape {
   d: string
   filled: boolean
 }
 
-export interface FlowerShape {
+interface FlowerShape {
   radiusX: number
   radiusY: number
-  rotation?: number
-  petals?: number
-  phase?: number
-  depth?: number
-  stretch?: number
-  sizes?: number[]
-  reach?: number
-  reaches?: number[]
-  weight?: number
-  centre?: number
+  rotation: number
+  petals: number
+  phase: number
+  depth: number
+  stretch: number
+  sizes: number[]
+  reach: number
+  weight: number
+  centre: number
 }
 
-export interface BudShape {
+interface BudShape {
   radiusX: number
   radiusY: number
-  rotation?: number
-  gap?: number
-  weight?: number
+  rotation: number
+  gap: number
+  weight: number
 }
 
 /** A placed tip: its centre, the growth length at which it opens, and the index of the stem that carries it. */
 interface Placed {
   x: number
   y: number
-  start?: number
-  stem?: number
+  start: number
+  stem: number
 }
 
-export type Flower = FlowerShape & Placed
-export type Bud = BudShape & Placed
+type Flower = FlowerShape & Placed
+type Bud = BudShape & Placed
 
-/** A stem: its nodes, and its growth order with the index of the stem that it sprouts from. */
-export interface Stem {
+/** A stem: its nodes, or the points of its line, and its growth order with the index of the stem that it sprouts from. */
+interface Stem {
   points: Point[]
-  tension?: number
-  start?: number
-  length?: number
+  start: number
+  length: number
   parent?: number
 }
 
-export interface Spec {
-  strokeWidth: number
-  stems: Stem[]
-  flowers: Flower[]
-  buds: Bud[]
-}
-
-export interface Step {
+interface Step {
   length: number
   turn: number
-  shift?: Point
 }
 
-export interface Tip {
-  flower?: FlowerShape & { offset?: Point }
-  bud?: BudShape & { offset?: Point }
+interface Tip {
+  flower?: FlowerShape
+  bud?: BudShape
 }
 
 interface BranchBody {
@@ -89,27 +75,27 @@ interface BranchBody {
   branches?: SideBranch[]
 }
 
-export interface SideBranch extends BranchBody {
+interface SideBranch extends BranchBody {
   at: number
   angle: number
 }
 
-export interface RootBranch extends BranchBody {
+interface RootBranch extends BranchBody {
   origin: Point
   heading: number
 }
 
-export interface Plant {
+interface Plant {
   strokeWidth: number
   root: RootBranch
-  tension?: number
   /** From 0, near, to 1, far. */
-  depth?: number
+  depth: number
 }
 
-export type Ornament = Plant | Spec
-
 const TAU = Math.PI * 2
+const radians = (degrees: number) => degrees * Math.PI / 180
+/** The turn in degrees, between -180 and 180, from a heading to a target heading. */
+const turnTowards = (target: number, heading: number) => Math.atan2(Math.sin(radians(target - heading)), Math.cos(radians(target - heading))) * 180 / Math.PI
 
 function round(value: number) {
   return Math.round(value * 100) / 100
@@ -120,26 +106,23 @@ function round(value: number) {
 const distance = ([ax, ay]: Point, [bx, by]: Point) => Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
 
 // Points per Bezier segment of the line of a stem, for the rule of `grow` and
-// for the canvas
+// for the canvas, and the tension of the curve through the nodes of a stem: 0
+// draws straight lines between them, and the low tension of the vines draws
+// nearly straight lines, like those of Plum
 const STEM_SAMPLES = 8
+const TENSION = 0.2
 
-/** The cubic Bezier segments of a Catmull-Rom spline through the points: start, two controls, end. */
-function stemSegments(points: Point[], tension: number): Point[][] {
-  const factor = tension / 3
-  return points.slice(0, -1).map((start, i) => {
-    const before = points[Math.max(0, i - 1)]
-    const end = points[i + 1]
-    const after = points[Math.min(points.length - 1, i + 2)]
+/** Points along the line of a stem: a Catmull-Rom spline through its nodes, in cubic Bezier segments of STEM_SAMPLES points. */
+function stemPoints(nodes: Point[]): Point[] {
+  const factor = TENSION / 3
+  const line: Point[] = [nodes[0]]
+  for (let index = 0; index < nodes.length - 1; index++) {
+    const before = nodes[Math.max(0, index - 1)]
+    const start = nodes[index]
+    const end = nodes[index + 1]
+    const after = nodes[Math.min(nodes.length - 1, index + 2)]
     const control1: Point = [start[0] + (end[0] - before[0]) * factor, start[1] + (end[1] - before[1]) * factor]
     const control2: Point = [end[0] - (after[0] - start[0]) * factor, end[1] - (after[1] - start[1]) * factor]
-    return [start, control1, control2, end]
-  })
-}
-
-/** Points along the line of a stem: a Catmull-Rom spline through its nodes, STEM_SAMPLES points per segment. */
-function stemPoints({ points, tension = 0.5 }: Stem): Point[] {
-  const line: Point[] = [points[0]]
-  for (const [start, control1, control2, end] of stemSegments(points, tension)) {
     for (let sample = 1; sample <= STEM_SAMPLES; sample++) {
       const t = sample / STEM_SAMPLES
       const weight0 = (1 - t) ** 3
@@ -160,7 +143,7 @@ function stemPoints({ points, tension = 0.5 }: Stem): Point[] {
  * the stroke in its middle and as wide as the stroke at its ends. The ribbon
  * is filled and stroked, so the stroke width still sets the thinnest line.
  */
-export function ribbonPath(points: Point[], extra: number) {
+function ribbonPath(points: Point[], extra: number) {
   if (!extra)
     return `M${points.map(([px, py]) => `${round(px)} ${round(py)}`).join('L')}`
   const last = points.length - 1
@@ -186,19 +169,18 @@ interface PetalEllipse {
 }
 
 /** The petal ellipses of a flower, in the unit circle of its outline. */
-function petalEllipses({ petals = 5, phase = 0, depth = 0.8, stretch = 1, sizes = [] }: FlowerShape): PetalEllipse[] {
+function petalEllipses({ petals, phase, depth, stretch, sizes }: FlowerShape): PetalEllipse[] {
   const half = Math.PI / petals
   return Array.from({ length: petals }, (_, petal) => {
-    const middle = (phase * Math.PI / 180) - Math.PI / 2 + petal * 2 * half
-    const size = sizes[petal] ?? 1
-    const distance = size / (1 + depth * stretch)
+    const middle = radians(phase) - Math.PI / 2 + petal * 2 * half
+    const distance = sizes[petal] / (1 + depth * stretch)
     return { middle, centre: [distance * Math.cos(middle), distance * Math.sin(middle)], width: distance * depth, length: distance * depth * stretch }
   })
 }
 
 /** Maps the unit circle of a flower onto its slanted outline in the plane. */
-function blossomTransform({ x, y, radiusX, radiusY, rotation = 0 }: Flower) {
-  const angle = rotation * Math.PI / 180
+function blossomTransform({ x, y, radiusX, radiusY, rotation }: Flower) {
+  const angle = radians(rotation)
   return ([u, v]: Point): Point => {
     const px = u * radiusX
     const py = v * radiusY
@@ -207,20 +189,19 @@ function blossomTransform({ x, y, radiusX, radiusY, rotation = 0 }: Flower) {
 }
 
 /**
- * A blossom in line art, as printed: each petal is an open arc of its own
- * ellipse, a brush line that is heaviest at the petal tip. The petal ellipses
- * sit around the centre; `depth` is their half width over the distance of
- * their centres, so smaller values cut deeper notches, and `stretch` is their
- * length over their width. `sizes` scales single petals, for a blossom seen at
- * a slant, and `phase` (degrees) turns the petals within the slanted outline.
- * `reach` (radians) carries each arc past the notch into the blossom, or with
- * negative values stops it short, and `reaches` adds to it for single petals,
- * so that small petals beside large ones can close their outline. `weight` is
- * the extra line width at the tip, relative to the stroke, and `centre` the
- * radius of the dot of the stamens.
+ * A blossom in line art: each petal is an open arc of its own ellipse, a
+ * brush line that is heaviest at the petal tip. The petal ellipses sit around
+ * the centre; `depth` is their half width over the distance of their centres,
+ * so smaller values cut deeper notches, and `stretch` is their length over
+ * their width. `sizes` scales single petals, for a blossom seen at a slant,
+ * and `phase` (degrees) turns the petals within the slanted outline. `reach`
+ * (radians) carries each arc past the notch into the blossom, or with
+ * negative values stops it short. `weight` is the extra line width at the
+ * tip, relative to the stroke, and `centre` the radius of the dot of the
+ * stamens.
  */
-export function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
-  const { x, y, petals = 5, reach = 0, reaches = [], weight = 0, centre = 0 } = flower
+function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
+  const { x, y, petals, reach, weight, centre } = flower
   const half = Math.PI / petals
   const transform = blossomTransform(flower)
   const ellipses = petalEllipses(flower)
@@ -248,7 +229,7 @@ export function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
           break
         turn += step
       }
-      return direction * Math.max(0, turn + reach + (reaches[petal] ?? 0))
+      return direction * Math.max(0, turn + reach)
     }
     const from = open(-1)
     const to = open(1)
@@ -256,34 +237,27 @@ export function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
     const points = Array.from({ length: steps + 1 }, (_, index) => transform(pointOn(ellipse, from + (to - from) * index / steps)))
     return { d: ribbonPath(points, weight * strokeWidth), filled: weight > 0 }
   })
-  if (centre > 0)
-    shapes.push({ d: budPath({ x, y, radiusX: centre, radiusY: centre }).d, filled: true })
+  shapes.push({ d: `${ribbonPath(ellipsePoints(x, y, centre, centre, 0, TAU), 0)}Z`, filled: true })
   return shapes
+}
+
+const ELLIPSE_STEPS = 24
+
+/** Points on an ellipse, from an angle over a span, both in radians. */
+function ellipsePoints(x: number, y: number, radiusX: number, radiusY: number, from: number, span: number) {
+  return Array.from({ length: ELLIPSE_STEPS + 1 }, (_, step): Point => {
+    const t = from + span * step / ELLIPSE_STEPS
+    return [x + radiusX * Math.cos(t), y + radiusY * Math.sin(t)]
+  })
 }
 
 /**
  * A small ellipse; `gap` in degrees leaves it open, like a curled bud, and
  * `weight` thickens its middle like `flowerPath`.
  */
-export function budPath({ x, y, radiusX, radiusY, rotation = 0, gap = 0, weight = 0 }: Bud, strokeWidth = 0): Shape {
-  const steps = 24
-  const angle = rotation * Math.PI / 180
-  const span = TAU - gap * Math.PI / 180
-  const points: Point[] = []
-  for (let step = 0; step <= steps; step++) {
-    const t = angle + gap * Math.PI / 360 + span * step / steps
-    points.push([x + radiusX * Math.cos(t), y + radiusY * Math.sin(t)])
-  }
+function budPath({ x, y, radiusX, radiusY, rotation, gap, weight }: Bud, strokeWidth: number): Shape {
   const extra = weight * strokeWidth
-  return { d: `${ribbonPath(points, extra)}${gap || extra ? '' : 'Z'}`, filled: extra > 0 }
-}
-
-/** The line of a stem, its place in the growth order, and the index of the stem that it sprouts from. */
-interface StemPart {
-  points: Point[]
-  start: number
-  length: number
-  parent?: number
+  return { d: ribbonPath(ellipsePoints(x, y, radiusX, radiusY, radians(rotation) + gap * Math.PI / 360, TAU - radians(gap)), extra), filled: extra > 0 }
 }
 
 /** The shapes of a tip, its centre, its place in the growth order, the farthest distance of its ink from its centre, and the index of the stem that carries it. */
@@ -293,38 +267,36 @@ interface TipPart {
   y: number
   start: number
   radius: number
-  stem?: number
+  stem: number
 }
 
 export interface Parts {
   strokeWidth: number
-  stems: StemPart[]
+  stems: Stem[]
   tips: TipPart[]
   depth: number
 }
 
-const isPlant = (ornament: Ornament): ornament is Plant => 'root' in ornament
-
 /**
- * The drawing of an ornament (a spec or a plant): the line of each stem, and
- * per tip (flowers, then buds) the SVG path data of its shapes around its
- * centre. Stems and tips keep their `start` of the growth order (0 for a spec
- * without one).
+ * The drawing of a plant: the line of each stem, and per tip (flowers, then
+ * buds) the SVG path data of its shapes around its centre.
  */
-export function parts(ornament: Ornament): Parts {
-  const spec = isPlant(ornament) ? develop(ornament) : ornament
+export function parts(plant: Plant): Parts {
+  const { strokeWidth, depth } = plant
+  const { stems, blossoms } = unfold(plant)
   // The ink of a tip ends within its outline and the width of its widest line
-  const tip = (shapes: Shape[], shape: Flower | Bud, flower: boolean): TipPart => {
-    const { x, y, start = 0, weight = 0, stem } = shape
-    const radius = Math.max(...outline(shape, flower).map(point => distance(point, [x, y]))) + spec.strokeWidth * (1 + weight)
+  const tip = (blossom: Blossom): TipPart => {
+    const { x, y, start, weight, stem } = blossom.shape
+    const shapes = blossom.flower ? flowerPath(blossom.shape, strokeWidth) : [budPath(blossom.shape, strokeWidth)]
+    const radius = Math.max(...outline(blossom).map(point => distance(point, [x, y]))) + strokeWidth * (1 + weight)
     return { shapes, x, y, start, radius, stem }
   }
-  const stems: StemPart[] = spec.stems.map(stem => ({ points: stemPoints(stem), start: stem.start ?? 0, length: stem.length ?? 0, parent: stem.parent }))
-  const tips = [
-    ...spec.flowers.map(flower => tip(flowerPath(flower, spec.strokeWidth), flower, true)),
-    ...spec.buds.map(bud => tip([budPath(bud, spec.strokeWidth)], bud, false)),
-  ]
-  return { strokeWidth: spec.strokeWidth, stems, tips, depth: isPlant(ornament) ? ornament.depth ?? 0 : 0 }
+  return {
+    strokeWidth,
+    stems: stems.map(stem => ({ ...stem, points: stemPoints(stem.points) })),
+    tips: [...blossoms.filter(blossom => blossom.flower), ...blossoms.filter(blossom => !blossom.flower)].map(tip),
+    depth,
+  }
 }
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
@@ -402,7 +374,7 @@ const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + b
  * ends the segment of that distance. Its lag is the growth length that it
  * fell behind by its pauses and its pace, those of its parent included.
  */
-interface GrowingStem extends StemPart {
+interface GrowingStem extends Stem {
   distances: number[]
   total: number
   front: number
@@ -827,159 +799,104 @@ export function random(seed: number) {
   }
 }
 
-const radians = (degrees: number) => degrees * Math.PI / 180
+/** A blossom of a plant, with the branch that carries it. */
+type Blossom = { branch: BranchBody } & ({ flower: true, shape: Flower } | { flower: false, shape: Bud })
 
 /**
- * The flat spec of a plant. A step turns the heading by `turn` degrees and
- * then goes `length` forward; `shift` moves its node only, not the nodes after
- * it. A branch starts at node `at` of its parent, turned by `angle` degrees.
- * A tip sits ahead of the last node, by its radiusX along the heading, and
- * then by its `offset`. Each stem and tip records the growth order for
- * `animate`: `start` is the length of stem grown from the origin to where it
- * sprouts, and a stem's `length` is the length of its own line.
+ * The stems of a plant, with their nodes as points, its blossoms, and the
+ * stem of each branch that has steps. A step turns the heading by `turn`
+ * degrees and then goes `length` forward. A branch starts at node `at` of its
+ * parent, turned by `angle` degrees. A tip sits ahead of the last node, by
+ * its radiusX along the heading. Each stem and tip records the growth order
+ * for `animate`: `start` is the length of stem grown from the origin to where
+ * it sprouts, and a stem's `length` is the length of its own line.
  */
-export function develop(plant: Plant): Spec {
-  return unfold(plant).spec
-}
-
-/** A blossom of a plant, with the branch that carries it. */
-interface Blossom {
-  branch: BranchBody
-  shape: Flower | Bud
-  flower: boolean
-}
-
-/** The spec of a plant, its blossoms, and the stem of each branch that has one. */
 function unfold(plant: Plant) {
-  const spec: Spec = { strokeWidth: plant.strokeWidth, stems: [], flowers: [], buds: [] }
+  const stems: Stem[] = []
   const blossoms: Blossom[] = []
-  const stems = new Map<BranchBody, Stem>()
+  const branchStems = new Map<BranchBody, Stem>()
   const walk = (branch: BranchBody, origin: Point, heading: number, start: number, parent?: number) => {
     const nodes: Point[] = [origin]
     const headings = [heading]
     const distances = [start]
     let [x, y] = origin
-    for (const { length, turn, shift = [0, 0] } of branch.steps) {
+    for (const { length, turn } of branch.steps) {
       heading += turn
       x += length * Math.cos(radians(heading))
       y += length * Math.sin(radians(heading))
-      const node: Point = [x + shift[0], y + shift[1]]
-      const [lastX, lastY] = nodes.at(-1)!
-      distances.push(distances.at(-1)! + Math.sqrt((node[0] - lastX) ** 2 + (node[1] - lastY) ** 2))
-      nodes.push(node)
+      distances.push(distances.at(-1)! + distance([x, y], nodes.at(-1)!))
+      nodes.push([x, y])
       headings.push(heading)
     }
     // The stem of this branch, or the stem that carries a branch without steps
     let own = parent
     if (nodes.length > 1) {
-      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent, tension: plant.tension }
-      spec.stems.push(stem)
-      stems.set(branch, stem)
-      own = spec.stems.length - 1
+      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent }
+      stems.push(stem)
+      branchStems.set(branch, stem)
+      own = stems.length - 1
     }
     for (const child of branch.branches ?? [])
       walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at], own)
     const { flower, bud } = branch.tip ?? {}
-    const tip = flower ?? bud
-    if (!tip)
+    const shape = flower ?? bud
+    if (!shape)
       return
-    const { offset = [0, 0], ...shape } = tip
     const [endX, endY] = nodes.at(-1)!
     const end = radians(headings.at(-1)!)
-    const placed = { ...shape, x: endX + tip.radiusX * Math.cos(end) + offset[0], y: endY + tip.radiusX * Math.sin(end) + offset[1], start: distances.at(-1), stem: own }
-    if (flower)
-      spec.flowers.push(placed)
-    else
-      spec.buds.push(placed)
-    blossoms.push({ branch, shape: placed, flower: Boolean(flower) })
+    // The root always has steps, so each tip has a stem
+    const placed = { x: endX + shape.radiusX * Math.cos(end), y: endY + shape.radiusX * Math.sin(end), start: distances.at(-1)!, stem: own! }
+    blossoms.push(flower ? { branch, flower: true, shape: { ...flower, ...placed } } : { branch, flower: false, shape: { ...bud!, ...placed } })
   }
   walk(plant.root, plant.root.origin, plant.root.heading, 0)
-  return { spec, blossoms, stems }
+  return { stems, blossoms, branchStems }
 }
 
 type Range = [number, number]
 
-export interface GrowthParameters {
-  box: [number, number, number, number]
-  strokeWidth: number
-  segment: number
-  stepVariation: number
-  tension: number
-  spread: number
-  sway: number
-  waves: Range
-  branching: number
-  angle: Range
-  reach: Range
-  decay: number
-  levels: number
-  curl: number
-  curlSize: number
-  flowers: number
-  buds: number
-  flowerSize: Range
-  budSize: Range
-  stretch: Range
-  depth: Range
-  petalSize: Range
-  twist: number
-  petalChange: number
-  petalReach: Range
-  weight: Range
-  blossomGap: number
-  stemCrossing: boolean
-  direction: number
-}
-
-/**
- * The default growth: a vine about the size of the cover ornament. Ranges are
- * [low, high]; the flower shape ranges are those of the fitted cover flowers.
- */
-export const GROWTH: GrowthParameters = {
-  box: [0, 0, 240, 560],
-  strokeWidth: 2.4,
-  // Mean step length, its variation as a share of it, the tension of the
-  // curve through the nodes (0 draws straight lines between them), and the
-  // random turn of a step, in degrees
-  segment: 16,
-  stepVariation: 0.3,
-  tension: 0.5,
-  spread: 9,
-  // The sway of the main stem: its amplitude in degrees and its waves over the height
-  sway: 28,
-  waves: [0.8, 1.4],
-  // The chance of a side branch at a node, the branch angle, the length of
-  // a branch over the height, its shrinking per level, and the deepest level
-  branching: 0.14,
-  angle: [25, 60],
-  reach: [0.08, 0.22],
-  decay: 0.5,
-  levels: 2,
-  // The chance that a branch end, or the foot of the vine, curls up
-  curl: 0.5,
-  // The length of a curl step, as a share of the width of the box
-  curlSize: 0.035,
-  flowers: 5,
-  buds: 3,
-  flowerSize: [0.1, 0.13],
-  budSize: [0.04, 0.055],
-  stretch: [1, 1.3],
-  depth: [0.65, 0.95],
-  petalSize: [0.7, 1.15],
-  // The largest turn of a flower in degrees, and the chance of a flower with
-  // a missing or an extra petal
-  twist: 25,
-  petalChange: 0,
-  petalReach: [-0.1, 0.2],
-  weight: [0.8, 1.5],
-  // The least gap between the lines of two blossoms and the tips of their
-  // stalks, and whether stems may run through blossoms
-  blossomGap: 2,
-  stemCrossing: false,
-  // The direction of the rise in degrees, a multiple of 90: -90 rises from
-  // the foot of the box, 0 grows from its left side to the right
-  direction: -90,
-}
+// The growth of a vine, in pixels and degrees. A step of a stem is SEGMENT
+// long on average, varies in length by STEP_VARIATION of that, and turns by
+// up to SPREAD at random. The main stem sways by SWAY in WAVES waves over the
+// height of its box, and takes at most one step per ROOT_STEP_HEIGHT of that
+// height. At a node, a side branch sprouts with the chance BRANCHING, at an
+// angle in ANGLE, and reaches a share of the height of the box in REACH. Each
+// level of branches has DECAY times the chance and the reach of the level
+// before it, down to LEVELS levels. A branch end without a blossom, and the
+// foot of the vine, curl up with the chance CURL, in CURL_STEPS steps from
+// 0.4 to 1.4 times CURL_STEP long.
+const SEGMENT = 4.4
+const STEP_VARIATION = 0.6
+const SPREAD = 16
+const SWAY = 28
+const WAVES: Range = [0.8, 1.4]
+const ROOT_STEP_HEIGHT = 1.925
+const BRANCHING = 0.2
+const ANGLE: Range = [25, 60]
+const REACH: Range = [0.04, 0.11]
+const DECAY = 0.5
+const LEVELS = 2
+const CURL = 0.5
+const CURL_STEPS = 8
+const CURL_STEP = 2.31
+// The ink and the blossoms of a vine, before the scale of its depth. Its
+// line is STROKE_WIDTH wide. A flower has a radius in FLOWER_RADIUS, a stretch
+// in STRETCH, petals of a size in PETAL_SIZE, with notches of PETAL_DEPTH and
+// arcs that reach PETAL_REACH past them, and it turns by up to TWIST.
+// PETAL_CHANGE of the flowers have a missing or an extra petal. A bud has a
+// radius in BUD_RADIUS. The lines of both are WEIGHT times the stroke wider
+// at the tip of a petal or the middle of a bud. Blossoms keep BLOSSOM_GAP
+// between their lines and the tips of their stalks.
+const STROKE_WIDTH = 0.6
+const FLOWER_RADIUS: Range = [3.36, 7.68]
+const STRETCH: Range = [1, 1.3]
+const PETAL_SIZE: Range = [0.6, 1.2]
+const PETAL_DEPTH: Range = [0.65, 0.95]
+const PETAL_REACH: Range = [-0.1, 0.2]
+const TWIST = 180
+const PETAL_CHANGE = 0.25
+const BUD_RADIUS: Range = [1.44, 3.12]
+const WEIGHT: Range = [0.8, 1.5]
+const BLOSSOM_GAP = 2
 
 // The points of the outline of a blossom, for the rule of `grow`
 const OUTLINE_POINTS = 72
@@ -998,7 +915,7 @@ function petalExtent({ middle, centre: [cx, cy], width, length }: PetalEllipse, 
 }
 
 /** The drawn outline of a blossom as a polygon: the outer edge of the petals of a flower, or the ellipse of a bud. */
-function outline(shape: Flower | Bud, flower: boolean): Point[] {
+function outline({ flower, shape }: Blossom): Point[] {
   const directions = Array.from({ length: OUTLINE_POINTS }, (_, index) => TAU * index / OUTLINE_POINTS)
   if (!flower)
     return directions.map(t => [shape.x + shape.radiusX * Math.cos(t), shape.y + shape.radiusY * Math.sin(t)])
@@ -1034,7 +951,7 @@ function signedDistance(polygon: Point[], point: Point) {
  * centre, half its widest line, the last step of its stalk, and the farthest
  * distance of the outline and that step from the centre.
  */
-interface Measured extends Blossom {
+type Measured = Blossom & {
   centre: Point
   outline: Point[]
   radius: number
@@ -1046,7 +963,7 @@ interface Measured extends Blossom {
 /** A blossom measured, with the line of its stalk if it has one. */
 function measure(blossom: Blossom, strokeWidth: number, stalk?: Point[]): Measured {
   const centre: Point = [blossom.shape.x, blossom.shape.y]
-  const points = outline(blossom.shape, blossom.flower)
+  const points = outline(blossom)
   const radius = Math.max(...points.map(point => distance(point, centre)))
   const stalkTip = stalk?.slice(-STEM_SAMPLES - 1) ?? []
   return {
@@ -1054,25 +971,25 @@ function measure(blossom: Blossom, strokeWidth: number, stalk?: Point[]): Measur
     centre,
     outline: points,
     radius,
-    ink: strokeWidth * (1 + (blossom.shape.weight ?? 0)) / 2,
+    ink: strokeWidth * (1 + blossom.shape.weight) / 2,
     stalkTip,
     extent: Math.max(radius, ...stalkTip.map(point => distance(point, centre))),
   }
 }
 
 /** Whether the ink of a line of the given half width through the points keeps the gap from the ink of a blossom. */
-function clear(blossom: Measured, points: Point[], half: number, gap: number) {
-  const margin = blossom.ink + half + gap
+function clear(blossom: Measured, points: Point[], half: number) {
+  const margin = blossom.ink + half + BLOSSOM_GAP
   // Far from the blossom, the distance from its centre is enough
   return points.every(point => distance(point, blossom.centre) >= blossom.radius + margin || signedDistance(blossom.outline, point) >= margin)
 }
 
 /** Whether two blossoms, and the tips of their stalks, keep the gap between their lines. */
-function apart(a: Measured, b: Measured, strokeWidth: number, gap: number) {
+function apart(a: Measured, b: Measured, strokeWidth: number) {
   // Out of the extent of each other, the lines keep the gap, as the ink of a blossom is at least half the stroke
-  if (distance(a.centre, b.centre) >= a.extent + b.extent + a.ink + b.ink + gap)
+  if (distance(a.centre, b.centre) >= a.extent + b.extent + a.ink + b.ink + BLOSSOM_GAP)
     return true
-  return clear(a, b.outline, b.ink, gap) && clear(b, a.outline, a.ink, gap) && clear(a, b.stalkTip, strokeWidth / 2, gap) && clear(b, a.stalkTip, strokeWidth / 2, gap)
+  return clear(a, b.outline, b.ink) && clear(b, a.outline, a.ink) && clear(a, b.stalkTip, strokeWidth / 2) && clear(b, a.stalkTip, strokeWidth / 2)
 }
 
 /** The first point of a line that runs through a blossom: inside its outline, past the ink of the outline. */
@@ -1080,18 +997,16 @@ function crossing(blossom: Measured, points: Point[]) {
   return points.find(point => distance(point, blossom.centre) < blossom.radius && signedDistance(blossom.outline, point) < -blossom.ink)
 }
 
-type Rules = Pick<GrowthParameters, 'strokeWidth' | 'blossomGap' | 'stemCrossing'>
-
 /**
  * The first conflict of a blossom with the blossoms placed before it, and
  * with the lines of the stems of all branches: the centre of a blossom too
  * close, or a point of a stem that runs through it or through which its own
  * stalk runs.
  */
-function conflict(blossom: Measured, placed: Measured[], lines: Map<BranchBody, Point[]>, { strokeWidth, blossomGap, stemCrossing }: Rules): Point | undefined {
-  const close = placed.find(other => !apart(blossom, other, strokeWidth, blossomGap))
-  if (close || stemCrossing)
-    return close?.centre
+function conflict(blossom: Measured, placed: Measured[], lines: Map<BranchBody, Point[]>, strokeWidth: number): Point | undefined {
+  const close = placed.find(other => !apart(blossom, other, strokeWidth))
+  if (close)
+    return close.centre
   for (const [branch, points] of lines) {
     const point = branch === blossom.branch ? undefined : crossing(blossom, points)
     if (point)
@@ -1103,12 +1018,12 @@ function conflict(blossom: Measured, placed: Measured[], lines: Map<BranchBody, 
 
 /** The measured blossoms of a plant, and the line of the stem of each branch. */
 function survey(plant: Plant, included = (_blossom: Blossom) => true) {
-  const { blossoms, stems } = unfold(plant)
-  const lines = new Map([...stems].map(([branch, stem]) => [branch, stemPoints(stem)]))
+  const { blossoms, branchStems } = unfold(plant)
+  const lines = new Map([...branchStems].map(([branch, stem]) => [branch, stemPoints(stem.points)]))
   return { lines, blossoms: blossoms.filter(included).map(blossom => measure(blossom, plant.strokeWidth, lines.get(blossom.branch))) }
 }
 
-export interface Collision {
+interface Collision {
   /** The centre of the blossom that breaks the rule. */
   blossom: Point
   /** The centre of the other blossom, or the point of the stem that crosses. */
@@ -1130,14 +1045,13 @@ function blossomsOf(plants: Plant[]) {
 /**
  * The blossoms of a plant that break the rule of `grow`: each with its first
  * conflict, against the blossoms of the neighbour plants and the blossoms
- * before it in the order of `develop`.
+ * before it in the order of `unfold`.
  */
-export function collisions(plant: Plant, { blossomGap = GROWTH.blossomGap, stemCrossing = GROWTH.stemCrossing }: Partial<Omit<Rules, 'strokeWidth'>> = {}, neighbours: Plant[] = []): Collision[] {
+export function collisions(plant: Plant, neighbours: Plant[]): Collision[] {
   const { lines, blossoms } = survey(plant)
-  const rules = { strokeWidth: plant.strokeWidth, blossomGap, stemCrossing }
   const others = blossomsOf(neighbours)
   return blossoms.flatMap((blossom, index) => {
-    const other = conflict(blossom, [...others, ...blossoms.slice(0, index)], lines, rules)
+    const other = conflict(blossom, [...others, ...blossoms.slice(0, index)], lines, plant.strokeWidth)
     return other ? [{ blossom: blossom.centre, other }] : []
   })
 }
@@ -1154,10 +1068,10 @@ interface GrowingState extends Node {
 
 type Draw = (low: number, high: number) => number
 
-/** A bud in the ranges of the growth, with values from `between`. */
-function budTip({ box, budSize, weight }: GrowthParameters, between: Draw): Tip {
-  const size = box[2] * between(...budSize)
-  return { bud: { radiusX: size, radiusY: size * between(1, 1.3), rotation: between(0, 360), gap: between(0, 1) < 0.4 ? between(40, 90) : 0, weight: between(...weight) } }
+/** A bud, with values from `between`, at the scale of the depth of its vine. */
+function budTip(scale: number, between: Draw): Tip {
+  const size = scale * between(...BUD_RADIUS)
+  return { bud: { radiusX: size, radiusY: size * between(1, 1.3), rotation: between(0, 360), gap: between(0, 1) < 0.4 ? between(40, 90) : 0, weight: between(...WEIGHT) } }
 }
 
 /** The angle of a blossom on a node of the main stem, to either side. */
@@ -1172,32 +1086,27 @@ const PLACEMENT_STREAM = 0x5BD1E995
 const PLACEMENT_ATTEMPTS = 12
 const PLACEMENT_SIZES = 3
 const PLACEMENT_SWING = 45
-// The most steps of the main stem in the default box and step length. A
-// higher box, or shorter steps, allow more in proportion.
-const ROOT_STEPS = 80
 
 /**
- * The rule of `grow`: blossoms keep `blossomGap` between their lines and the
- * tips of their stalks, and stems do not run through them unless
- * `stemCrossing` allows it. Each blossom in turn, against those placed before
- * it, tries other places along its branch (other ends of the branch and turns
- * of its last step, or other nodes and angles on the main stem), then smaller
- * sizes, then a bud for a flower, and else drops off. The blossoms of the
- * neighbour plants count as placed.
+ * The rule of `grow`: blossoms keep BLOSSOM_GAP between their lines and the
+ * tips of their stalks, and stems do not run through them. Each blossom in
+ * turn, against those placed before it, tries other places along its branch
+ * (other ends of the branch and turns of its last step, or other nodes and
+ * angles on the main stem), then smaller sizes, then a bud for a flower, and
+ * else drops off. The blossoms of the neighbour plants count as placed.
  */
-function separate(plant: Plant, blossoming: BranchBody[], growth: GrowthParameters, next: () => number, neighbours: Measured[]) {
+function separate(plant: Plant, blossoming: BranchBody[], scale: number, next: () => number, neighbours: Measured[]) {
   const between = (low: number, high: number) => low + (high - low) * next()
   const { root } = plant
-  const width = growth.box[2]
   const placed = new Set<BranchBody>()
   // The drawn tip, then smaller ones down to the low end of its size range
   const sizes = (tip: Tip): Tip[] => {
     const shape = (tip.flower ?? tip.bud)!
-    const smallest = Math.min(shape.radiusX, width * (tip.flower ? growth.flowerSize : growth.budSize)[0])
+    const smallest = Math.min(shape.radiusX, scale * (tip.flower ? FLOWER_RADIUS : BUD_RADIUS)[0])
     return Array.from({ length: PLACEMENT_SIZES }, (_, index) => {
-      const scale = 1 + (smallest / shape.radiusX - 1) * index / (PLACEMENT_SIZES - 1)
-      const scaled = { ...shape, radiusX: shape.radiusX * scale, radiusY: shape.radiusY * scale }
-      return tip.flower ? { flower: scaled } : { bud: scaled }
+      const factor = 1 + (smallest / shape.radiusX - 1) * index / (PLACEMENT_SIZES - 1)
+      const scaled = { ...shape, radiusX: shape.radiusX * factor, radiusY: shape.radiusY * factor }
+      return (tip.flower ? { flower: scaled } : { bud: scaled }) as Tip
     })
   }
   for (const branch of blossoming) {
@@ -1205,14 +1114,14 @@ function separate(plant: Plant, blossoming: BranchBody[], growth: GrowthParamete
     const { lines, blossoms } = survey(plant, blossom => placed.has(blossom.branch))
     const others = [...neighbours, ...blossoms]
     const fits = () => {
-      const { blossoms, stems } = unfold(plant)
-      const stem = stems.get(branch)
+      const { blossoms, branchStems } = unfold(plant)
+      const stem = branchStems.get(branch)
       if (stem)
-        lines.set(branch, stemPoints(stem))
+        lines.set(branch, stemPoints(stem.points))
       else
         lines.delete(branch)
       const blossom = measure(blossoms.find(blossom => blossom.branch === branch)!, plant.strokeWidth, lines.get(branch))
-      return !conflict(blossom, others, lines, growth)
+      return !conflict(blossom, others, lines, plant.strokeWidth)
     }
     const node = branch as SideBranch
     const { steps, tip } = branch
@@ -1233,7 +1142,7 @@ function separate(plant: Plant, blossoming: BranchBody[], growth: GrowthParamete
       }
     }
     const settle = () => {
-      for (const form of tip!.flower ? [tip!, budTip(growth, between)] : [tip!]) {
+      for (const form of tip!.flower ? [tip!, budTip(scale, between)] : [tip!]) {
         for (const sized of sizes(form)) {
           branch.tip = sized
           for (let attempt = 0; attempt < PLACEMENT_ATTEMPTS; attempt++) {
@@ -1256,49 +1165,86 @@ function separate(plant: Plant, blossoming: BranchBody[], growth: GrowthParamete
   }
 }
 
+// The layout of the vines in a window. The feet of the vines from the bottom
+// stand BOTTOM_SPACING apart, and each of these vines rises through a share
+// of the window height in the range BOTTOM_RISE. The feet of the vines from a
+// side stand SIDE_SPACING apart, and these vines reach SIDE_REACH of the
+// window width into it, but at least SIDE_REACH_MINIMUM, times a share in the
+// range REACH_VARIATION. Each foot moves along its edge by up to FOOT_JITTER
+// of the spacing, so that the vines do not stand in a row. The box of a vine
+// is BOX_PROPORTION as wide as it is high, so the boxes of neighbours
+// overlap: `grow` steers a vine back towards the middle of its box, and a
+// narrower box holds a vine at its middle height. A vine sets one flower per
+// FLOWER_AREA and one bud per BUD_AREA of the area between its neighbours.
+const BOTTOM_SPACING = 75
+const BOTTOM_RISE = [0.3, 0.72]
+const SIDE_SPACING = 110
+const SIDE_REACH = 0.36
+const SIDE_REACH_MINIMUM = 260
+const REACH_VARIATION = [0.85, 1.15]
+const FOOT_JITTER = 0.45
+const BOX_PROPORTION = 3 / 7
+const FLOWER_AREA = 12000
+const BUD_AREA = 18000
+// The share of its box that a vine reaches beyond its foot: its foot stands
+// a tenth of the box from the edge
+const FOOT_SHARE = 0.9
+// Each vine stands at one of DEPTH_LEVELS depths, from near (0) to far (1).
+// A far vine has FAR_SIZE times the line width and the blossom size, a near
+// vine NEAR_SIZE times, and the far vines grow first.
+const DEPTH_LEVELS = 4
+const NEAR_SIZE = 1.15
+const FAR_SIZE = 0.75
+
+interface Vine {
+  /** Left, top, width and height. */
+  box: [number, number, number, number]
+  /** The direction of the rise in degrees: -90 rises from the foot of the box, 0 grows from its left side to the right. */
+  direction: number
+  /** The area between the neighbours of the vine. */
+  area: number
+  depth: number
+}
+
 /**
- * Grows a plant like a vine: the main stem rises from a curl at the foot of
- * the box and sways from side to side; at each node a side branch may sprout,
- * and branches sprout branches of their own, shorter each level. Flowers and
- * buds take the branch ends; when there are fewer ends than blossoms, the rest
- * sit on the stems. Free branch ends may curl up. `parameters` override GROWTH.
- * A vine with another `direction` grows upwards in the box turned to it, and
+ * Grows a vine: the main stem rises from a curl at the foot of its box and
+ * sways from side to side; at each node a side branch may sprout, and
+ * branches sprout branches of their own, shorter each level. Flowers and buds
+ * take the branch ends; when there are fewer ends than blossoms, the rest sit
+ * on the main stem. Free branch ends may curl up. A vine with another
+ * direction grows upwards in its box turned back from that direction, and
  * then turns with its box. Its blossoms keep apart from the blossoms of the
  * `neighbours`.
  */
-export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, neighbours: Plant[] = []): Plant {
-  const settings = { ...GROWTH, ...parameters }
+function grow(seed: number, { box, direction, area, depth }: Vine, neighbours: Plant[]): Plant {
   const next = random(seed)
   const between = (low: number, high: number) => low + (high - low) * next()
   const pick = ([low, high]: Range) => between(low, high)
-  // The vine grows upwards in its box turned back from the direction
-  const turn = settings.direction - GROWTH.direction
+  const scale = NEAR_SIZE + (FAR_SIZE - NEAR_SIZE) * depth
+  const turn = direction + 90
   const sideways = Math.abs(Math.sin(radians(turn))) > 0.5
-  const [boxLeft, boxTop, boxWidth, boxHeight] = settings.box
+  const [boxLeft, boxTop, boxWidth, boxHeight] = box
   const middle: Point = [boxLeft + boxWidth / 2, boxTop + boxHeight / 2]
   const [width, height] = sideways ? [boxHeight, boxWidth] : [boxWidth, boxHeight]
   const left = middle[0] - width / 2
   const top = middle[1] - height / 2
-  const growth: GrowthParameters = { ...settings, box: [left, top, width, height] }
   const right = left + width
   const bottom = top + height
 
   // Curl steps: a constant turn with growing (or shrinking) steps is a spiral
   const curlSteps = (direction: number, outwards: boolean): Step[] => {
-    const count = 8
     const turns = between(0.7, 1.1)
-    return Array.from({ length: count }, (_, index) => {
-      const share = (outwards ? index : count - 1 - index) / count
-      return { length: width * growth.curlSize * (0.4 + share), turn: direction * turns * 360 / count }
+    return Array.from({ length: CURL_STEPS }, (_, index) => {
+      const share = (outwards ? index : CURL_STEPS - 1 - index) / CURL_STEPS
+      return { length: CURL_STEP * (0.4 + share), turn: direction * turns * 360 / CURL_STEPS }
     })
   }
 
-  // Grows the steps of one branch, steered back into the box near its edges
+  // The turn that steers a stem back into the box near its edges
   const steer = (x: number, y: number, heading: number) => {
     const margin = width * 0.12
-    const towards = Math.atan2(top + height / 2 - y, left + width / 2 - x) * 180 / Math.PI
     const outside = x < left + margin || x > right - margin || y < top + margin || y > bottom - margin
-    return outside ? Math.atan2(Math.sin(radians(towards - heading)), Math.cos(radians(towards - heading))) * 180 / Math.PI * 0.3 : 0
+    return outside ? turnTowards(Math.atan2(top + height / 2 - y, left + width / 2 - x) * 180 / Math.PI, heading) * 0.3 : 0
   }
   const advance = (state: GrowingState, step: Step) => {
     state.heading += step.turn
@@ -1306,37 +1252,40 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
     state.y += step.length * Math.sin(radians(state.heading))
     state.nodes.push({ x: state.x, y: state.y, heading: state.heading })
   }
+  // Adds a random step to a branch, which turns by `bias` and the steering besides
+  const extend = (branch: BranchBody, state: GrowingState, bias: number) => {
+    const step = { length: SEGMENT * between(1 - STEP_VARIATION, 1 + STEP_VARIATION), turn: bias + between(-SPREAD, SPREAD) + steer(state.x, state.y, state.heading) }
+    branch.steps.push(step)
+    advance(state, step)
+  }
 
   const ends: { branch: BranchBody, side: number }[] = []
   // `firstNode` skips the foot curl at the start of the root
   const branchOut = (parent: BranchBody, state: GrowingState, level: number, firstNode = 1) => {
-    if (level > growth.levels)
+    if (level > LEVELS)
       return
     let side = next() < 0.5 ? -1 : 1
     for (let at = firstNode; at < state.nodes.length - 1; at++) {
-      if (next() >= growth.branching * growth.decay ** (level - 1))
+      if (next() >= BRANCHING * DECAY ** (level - 1))
         continue
       side = next() < 0.7 ? -side : side
       const node = state.nodes[at]
-      const angle = side * pick(growth.angle)
+      const angle = side * pick(ANGLE)
       const branch: SideBranch = { at, angle, steps: [], tip: null, branches: [] }
       const child: GrowingState = { x: node.x, y: node.y, heading: node.heading + angle, nodes: [{ ...node, heading: node.heading + angle }] }
-      const count = Math.max(1, Math.round(pick(growth.reach) * height * growth.decay ** (level - 1) / growth.segment))
-      const arch = side * between(0, growth.spread)
-      for (let index = 0; index < count; index++) {
-        const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: arch + between(-growth.spread, growth.spread) + steer(child.x, child.y, child.heading) }
-        branch.steps.push(step)
-        advance(child, step)
-      }
+      const count = Math.max(1, Math.round(pick(REACH) * height * DECAY ** (level - 1) / SEGMENT))
+      const arch = side * between(0, SPREAD)
+      for (let index = 0; index < count; index++)
+        extend(branch, child, arch)
       parent.branches!.push(branch)
       ends.push({ branch, side })
       branchOut(branch, child, level + 1)
     }
   }
 
-  const root: RootBranch = { origin: [left + width * between(0.4, 0.6), top + height * 0.9], heading: between(-180, 180), steps: [], tip: null, branches: [] }
+  const root: RootBranch = { origin: [left + width * between(0.4, 0.6), top + height * FOOT_SHARE], heading: between(-180, 180), steps: [], tip: null, branches: [] }
   const state: GrowingState = { x: root.origin[0], y: root.origin[1], heading: root.heading, nodes: [{ x: root.origin[0], y: root.origin[1], heading: root.heading }] }
-  if (next() < growth.curl) {
+  if (next() < CURL) {
     for (const step of curlSteps(next() < 0.5 ? -1 : 1, true)) {
       root.steps.push(step)
       advance(state, step)
@@ -1344,40 +1293,37 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
   }
   const firstNode = state.nodes.length
   // The rise: towards straight up, plus the sway, the random turn and the steering
-  const waves = pick(growth.waves)
+  const waves = pick(WAVES)
   const phase = between(0, 360)
-  const rootSteps = Math.round(ROOT_STEPS * (height / GROWTH.box[3]) * (GROWTH.segment / growth.segment))
+  const rootSteps = Math.round(height / ROOT_STEP_HEIGHT)
   while (state.y > top + height * 0.1 && root.steps.length < rootSteps) {
     const share = (root.origin[1] - state.y) / height
-    const target = -90 + growth.sway * Math.sin(radians(phase + share * 360 * waves))
-    const towards = Math.atan2(Math.sin(radians(target - state.heading)), Math.cos(radians(target - state.heading))) * 180 / Math.PI
-    const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: towards * 0.4 + between(-growth.spread, growth.spread) + steer(state.x, state.y, state.heading) }
-    root.steps.push(step)
-    advance(state, step)
+    const target = -90 + SWAY * Math.sin(radians(phase + share * 360 * waves))
+    extend(root, state, turnTowards(target, state.heading) * 0.4)
   }
   ends.push({ branch: root, side: next() < 0.5 ? -1 : 1 })
   branchOut(root, state, 1, firstNode)
 
   const flowerTip = (): Tip => {
-    const size = width * pick(growth.flowerSize)
-    const petals = growth.petalChange && next() < growth.petalChange ? (next() < 0.5 ? 4 : 6) : 5
+    const size = scale * pick(FLOWER_RADIUS)
+    const petals = next() < PETAL_CHANGE ? (next() < 0.5 ? 4 : 6) : 5
     return {
       flower: {
         radiusX: size,
-        radiusY: size * pick(growth.stretch) * between(1, 1.3),
-        rotation: between(-growth.twist, growth.twist),
+        radiusY: size * pick(STRETCH) * between(1, 1.3),
+        rotation: between(-TWIST, TWIST),
         phase: between(-36, 36),
-        depth: pick(growth.depth),
-        stretch: pick(growth.stretch),
+        depth: pick(PETAL_DEPTH),
+        stretch: pick(STRETCH),
         petals,
-        sizes: Array.from({ length: petals }, () => pick(growth.petalSize)),
-        reach: pick(growth.petalReach),
-        weight: pick(growth.weight),
+        sizes: Array.from({ length: petals }, () => pick(PETAL_SIZE)),
+        reach: pick(PETAL_REACH),
+        weight: pick(WEIGHT),
         centre: between(0.5, 1.5),
       },
     }
   }
-  const tips = [...Array.from({ length: growth.flowers }, flowerTip), ...Array.from({ length: growth.buds }, () => budTip(growth, between))]
+  const tips = [...Array.from({ length: Math.round(area / FLOWER_AREA) }, flowerTip), ...Array.from({ length: Math.round(area / BUD_AREA) }, () => budTip(scale, between))]
   // The branches with a blossom, flowers first
   const blossoming: BranchBody[] = []
   ends.sort(() => next() - 0.5)
@@ -1386,7 +1332,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
       branch.tip = tips.shift()
       blossoming.push(branch)
     }
-    else if (next() < growth.curl) {
+    else if (next() < CURL) {
       branch.steps.push(...curlSteps(side, false))
     }
   }
@@ -1403,77 +1349,13 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
     root.heading += turn
     for (const { tip } of blossoming) {
       const shape = (tip!.flower ?? tip!.bud)!
-      shape.rotation = (shape.rotation ?? 0) + turn
+      shape.rotation += turn
     }
   }
-  const plant = { strokeWidth: growth.strokeWidth, root, tension: growth.tension }
-  separate(plant, blossoming, growth, random(seed ^ PLACEMENT_STREAM), blossomsOf(neighbours))
+  const plant = { strokeWidth: STROKE_WIDTH * scale, root, depth }
+  separate(plant, blossoming, scale, random(seed ^ PLACEMENT_STREAM), blossomsOf(neighbours))
   return plant
 }
-
-// The vines of a page background. The blossoms of a vine are VINE_SCALE
-// times the size of the default growth, its steps and its curls are
-// STEP_SCALE times as long, its branches BRANCH_SCALE times as long, and its
-// line is STROKE_SCALE times as wide. A vine branches with BRANCHING. Its
-// steps wander more than in the default growth: they vary in length by
-// STEP_VARIATION, turn by up to SPREAD degrees, and join in a curve of
-// TENSION, nearly straight lines as those of Plum. Its blossoms vary more
-// than those of the default growth: flowers and buds take sizes in the
-// ranges FLOWER_SIZE and BUD_SIZE (times VINE_SCALE), petals in the range
-// PETAL_SIZE, flowers turn by up to TWIST degrees, and PETAL_CHANGE of them
-// have a missing or an extra petal.
-//
-// The feet of the vines from the bottom stand BOTTOM_SPACING apart, and each
-// of these vines rises through a share of the window height in the range
-// BOTTOM_RISE. The feet of the vines from a side stand SIDE_SPACING apart,
-// and these vines reach SIDE_REACH of the window width into it, but at least
-// SIDE_REACH_MINIMUM, times a share in the range REACH_VARIATION. Each foot
-// moves along its edge by up to FOOT_JITTER of the spacing, so that the
-// vines do not stand in a row. The box of a vine keeps the proportions of the
-// default box, so the boxes of neighbours overlap: `grow` steers a vine back
-// towards the middle of its box, and a narrower box holds a vine at its
-// middle height. A vine sets one flower per FLOWER_AREA and one bud per
-// BUD_AREA of the area between its neighbours.
-const VINE_SCALE = 0.2
-const STEP_SCALE = 0.275
-const BRANCH_SCALE = 0.5
-const STROKE_SCALE = 0.25
-const BRANCHING = 0.2
-const STEP_VARIATION = 0.6
-const SPREAD = 16
-const TENSION = 0.2
-const FLOWER_SIZE = [0.07, 0.16]
-const BUD_SIZE = [0.03, 0.065]
-const PETAL_SIZE: [number, number] = [0.6, 1.2]
-const TWIST = 180
-const PETAL_CHANGE = 0.25
-// Each vine stands at one of DEPTH_LEVELS depths, from near (0) to far (1).
-// A far vine has FAR_SIZE times the line width and the blossom size, a near
-// vine NEAR_SIZE times, and the far vines grow first.
-const DEPTH_LEVELS = 4
-const NEAR_SIZE = 1.15
-const FAR_SIZE = 0.75
-const BOTTOM_SPACING = 75
-const BOTTOM_RISE = [0.3, 0.72]
-const SIDE_SPACING = 110
-const SIDE_REACH = 0.36
-const SIDE_REACH_MINIMUM = 260
-const REACH_VARIATION = [0.85, 1.15]
-const FOOT_JITTER = 0.45
-const FLOWER_AREA = 12000
-const BUD_AREA = 18000
-// The share of its box that a vine reaches beyond its foot, as `grow` sets
-// its foot at a tenth of the box from the edge
-const FOOT_SHARE = 0.9
-
-interface VineBox {
-  box: GrowthParameters['box']
-  direction: number
-  area: number
-  depth: number
-}
-
-const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
 
 /**
  * Vines that grow into a window of the given size from its bottom and its
@@ -1484,7 +1366,7 @@ export function* vines(width: number, height: number, seed: number): Generator<P
   const next = random(seed)
   const between = ([low, high]: number[]) => low + (high - low) * next()
   const jitter = () => between([-FOOT_JITTER, FOOT_JITTER])
-  const boxes: VineBox[] = []
+  const boxes: Vine[] = []
   const bottomCount = Math.max(1, Math.round(width / BOTTOM_SPACING))
   for (let index = 0; index < bottomCount; index++) {
     const foot = (index + 0.5 + jitter()) * width / bottomCount
@@ -1507,32 +1389,8 @@ export function* vines(width: number, height: number, seed: number): Generator<P
     vine.depth = Math.floor(next() * DEPTH_LEVELS) / (DEPTH_LEVELS - 1)
   boxes.sort((a, b) => b.depth - a.depth)
   const plants: Plant[] = []
-  for (const [index, { box, direction, area, depth }] of boxes.entries()) {
-    const near = NEAR_SIZE + (FAR_SIZE - NEAR_SIZE) * depth
-    // `grow` sizes the blossoms and the curls by the width of the box across the rise
-    const across = direction === -90 ? box[2] : box[3]
-    const sizeScale = VINE_SCALE * near * GROWTH.box[2] / across
-    const curlScale = STEP_SCALE * GROWTH.box[2] / across
-    const plant = grow(seed + index + 1, {
-      box,
-      direction,
-      strokeWidth: GROWTH.strokeWidth * STROKE_SCALE * near,
-      segment: GROWTH.segment * STEP_SCALE,
-      stepVariation: STEP_VARIATION,
-      spread: SPREAD,
-      tension: TENSION,
-      curlSize: GROWTH.curlSize * curlScale,
-      branching: BRANCHING,
-      reach: [GROWTH.reach[0] * BRANCH_SCALE, GROWTH.reach[1] * BRANCH_SCALE],
-      flowerSize: [FLOWER_SIZE[0] * sizeScale, FLOWER_SIZE[1] * sizeScale],
-      budSize: [BUD_SIZE[0] * sizeScale, BUD_SIZE[1] * sizeScale],
-      petalSize: PETAL_SIZE,
-      twist: TWIST,
-      petalChange: PETAL_CHANGE,
-      flowers: Math.round(area / FLOWER_AREA),
-      buds: Math.round(area / BUD_AREA),
-    }, plants)
-    plant.depth = depth
+  for (const [index, vine] of boxes.entries()) {
+    const plant = grow(seed + index + 1, vine, plants)
     plants.push(plant)
     yield plant
   }
