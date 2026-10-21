@@ -214,10 +214,7 @@ function start() {
 </script>
 
 <template>
-  <div
-    class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden"
-    style="z-index: -1; mask-image: radial-gradient(circle, transparent, black); -webkit-mask-image: radial-gradient(circle, transparent, black)"
-  >
+  <div class="background-layer">
     <!-- The first frame of a feedback sketch is a hard black square, and the
          picture only builds up over the seconds after it, so the canvas comes
          up as slowly as the sketch does. -->
