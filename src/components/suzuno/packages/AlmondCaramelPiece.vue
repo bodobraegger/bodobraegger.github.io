@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const fonts = ALMOND_CARAMEL_FONTS
-useWebFonts(() => [fonts.condensed, fonts.extended, fonts.serif, fonts.gothic])
+useWebFonts(fonts.condensed, fonts.extended, fonts.serif, fonts.gothic)
 
 const size = computed(() => ALMOND_CARAMEL_PIECE[props.side])
 const colors = computed(() => ALMOND_CARAMEL_PIECE_DESIGNS[props.side].colors)

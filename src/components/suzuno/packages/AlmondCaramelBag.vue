@@ -35,7 +35,7 @@ const layout = computed(() => ALMOND_CARAMEL_BAG_DESIGNS[props.side].layout)
 const colors = computed(() => ALMOND_CARAMEL_BAG_DESIGNS[props.side].colors)
 
 const fonts = ALMOND_CARAMEL_FONTS
-useWebFonts(() => [fonts.gothic])
+useWebFonts(fonts.gothic)
 
 const id = useId()
 const ids = { title: `${id}-title`, damask: `${id}-damask`, panel: `${id}-panel` }

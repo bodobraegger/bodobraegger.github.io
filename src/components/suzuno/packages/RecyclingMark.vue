@@ -15,7 +15,7 @@ withDefaults(defineProps<{
 })
 
 const font = ALMOND_CARAMEL_FONTS.gothicBold
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The mark in a box of 100 x 86: the loop runs clockwise from the arrowhead
 // at the top right round to a gap before it

@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
 })
 
 const font = ALMOND_CARAMEL_FONTS.gothic
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The headings fill this part of their column; the values start this far after the rule
 const HEADING_FILL = 0.72

@@ -8,9 +8,9 @@ import MarukawaBubbleGum from '~/components/suzuno/packages/MarukawaBubbleGum.vu
 import MarukawaFlavour from '~/components/suzuno/packages/MarukawaFlavour.vue'
 import MarukawaLabel from '~/components/suzuno/packages/MarukawaLabel.vue'
 import MarukawaLogo from '~/components/suzuno/packages/MarukawaLogo.vue'
-import { CAP_HEIGHT, fontSizeForCapHeight, placeLettering, useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 import type { MarukawaPreset, MarukawaTexts } from '~/lib/suzuno/packages/marukawa'
-import { MARUKAWA_DESIGNS, MARUKAWA_FACE, MARUKAWA_FONTS, MARUKAWA_ILLUSTRATIONS } from '~/lib/suzuno/packages/marukawa'
+import { CAP_HEIGHT, MARUKAWA_DESIGNS, MARUKAWA_FACE, MARUKAWA_FONTS, MARUKAWA_ILLUSTRATIONS, fontSizeForCapHeight, placeLettering } from '~/lib/suzuno/packages/marukawa'
 
 const props = defineProps<{
   preset: MarukawaPreset
@@ -22,7 +22,7 @@ const props = defineProps<{
 const layout = computed(() => MARUKAWA_DESIGNS[props.preset].layout)
 const colours = computed(() => MARUKAWA_DESIGNS[props.preset].colours)
 const taglineFont = MARUKAWA_FONTS.helvetica
-useWebFonts(() => [taglineFont])
+useWebFonts(taglineFont)
 
 /** The widest flavour, in cap heights of the flavour lettering. */
 const flavourMaxWidth = computed(() => {

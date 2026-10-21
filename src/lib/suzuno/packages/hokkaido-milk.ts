@@ -33,7 +33,7 @@ export const HOKKAIDO_MILK_FONTS = {
 
 /** Loads the fonts of the bag and the candy, once for a page. */
 export function useHokkaidoMilkFonts() {
-  useStylesheets(() => [HOKKAIDO_MILK_FONTS.stylesheet])
+  useStylesheets(HOKKAIDO_MILK_FONTS.stylesheet)
 }
 
 /** The place of a part in face pixels; the part is drawn around its own origin. */

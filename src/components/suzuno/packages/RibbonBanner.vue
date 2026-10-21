@@ -20,7 +20,7 @@ const props = defineProps<{
 }>()
 
 const font = ALMOND_CARAMEL_FONTS.rounded
-useWebFonts(() => [font])
+useWebFonts(font)
 
 const id = useId()
 const textPathId = `${id}-text`

@@ -37,7 +37,7 @@ const STYLESHEET = 'https://fonts.googleapis.com/css2?display=block&family=Kosug
 
 /** Loads the fonts of SALT_LEMON_FONTS, once for all parts on a page. */
 export function useSaltLemonFonts() {
-  useStylesheets(() => [STYLESHEET])
+  useStylesheets(STYLESHEET)
 }
 
 /** The place of a part in its parent: the origin of the part and its scale. */

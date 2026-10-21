@@ -3,9 +3,9 @@
 // "orange" in a fat Clarendon), with an optional dark edge and an optional
 // box behind it, like the yellow box of "melon". In its own coordinates: the
 // middle of the baseline at the origin, a cap height of CAP_HEIGHT. Place it
-// with placeLettering (src/lib/suzuno/packages/lettering.ts).
-import { CAP_HEIGHT, fontSizeForCapHeight, useWebFonts } from '~/lib/suzuno/packages/lettering'
-import { MARUKAWA_FONTS, letteringWidth } from '~/lib/suzuno/packages/marukawa'
+// with placeLettering (src/lib/suzuno/packages/marukawa.ts).
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { CAP_HEIGHT, MARUKAWA_FONTS, fontSizeForCapHeight, letteringWidth } from '~/lib/suzuno/packages/marukawa'
 
 const props = defineProps<{
   text: string
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const font = MARUKAWA_FONTS.clarendon
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The width of the edge, and the margins of the box around the letters (sides, top, bottom), in cap heights
 const OUTLINE_WIDTH = 0.07

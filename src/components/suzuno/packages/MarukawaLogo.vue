@@ -2,9 +2,9 @@
 // The logo line of the MARUKAWA boxes: the mark, 川 (kawa, river) in a circle
 // (maru), then the name MARUKAWA in Helvetica Bold. In its own coordinates:
 // the baseline at y 0, the mark from x 0, a cap height of CAP_HEIGHT. Place
-// it with placeLettering (src/lib/suzuno/packages/lettering.ts).
-import { CAP_HEIGHT, fontSizeForCapHeight, useWebFonts } from '~/lib/suzuno/packages/lettering'
-import { MARUKAWA_FONTS } from '~/lib/suzuno/packages/marukawa'
+// it with placeLettering (src/lib/suzuno/packages/marukawa.ts).
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { CAP_HEIGHT, MARUKAWA_FONTS, fontSizeForCapHeight } from '~/lib/suzuno/packages/marukawa'
 
 const props = defineProps<{
   name: string
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const font = MARUKAWA_FONTS.helveticaBold
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The mark is a little taller than the capitals
 const MARK_RADIUS = 0.58 * CAP_HEIGHT

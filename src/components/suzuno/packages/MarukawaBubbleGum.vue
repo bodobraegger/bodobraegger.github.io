@@ -3,9 +3,9 @@
 // Helvetica Bold and "GUM" larger in the fat Clarendon of the flavour, with an
 // optional dark edge. In its own coordinates: the start of the baseline at
 // the origin, a cap height of CAP_HEIGHT for the first word. Place it with
-// placeLettering (src/lib/suzuno/packages/lettering.ts).
-import { CAP_HEIGHT, fontSizeForCapHeight, useWebFonts } from '~/lib/suzuno/packages/lettering'
-import { MARUKAWA_FONTS, letteringWidth } from '~/lib/suzuno/packages/marukawa'
+// placeLettering (src/lib/suzuno/packages/marukawa.ts).
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { CAP_HEIGHT, MARUKAWA_FONTS, fontSizeForCapHeight, letteringWidth } from '~/lib/suzuno/packages/marukawa'
 
 const props = defineProps<{
   bubble: string
@@ -21,7 +21,7 @@ const props = defineProps<{
 }>()
 
 const { helveticaBold: bubbleFont, clarendon: gumFont } = MARUKAWA_FONTS
-useWebFonts(() => [bubbleFont, gumFont])
+useWebFonts(bubbleFont, gumFont)
 
 // The width of the edge of the second word, in cap heights of the first
 const GUM_OUTLINE_WIDTH = 0.08

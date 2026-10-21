@@ -15,7 +15,7 @@ const props = defineProps<{
 }>()
 
 const font = ALMOND_CARAMEL_FONTS.marker
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The characters fill the frame in equal cells; each sits in the middle of its cell
 const characters = computed(() => {

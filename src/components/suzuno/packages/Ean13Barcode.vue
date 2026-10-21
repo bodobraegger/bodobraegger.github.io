@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const font = ALMOND_CARAMEL_FONTS.gothic
-useWebFonts(() => [font])
+useWebFonts(font)
 
 // The digit groups, in modules: the first digit left of the start guard, and the two halves
 const GROUPS = [

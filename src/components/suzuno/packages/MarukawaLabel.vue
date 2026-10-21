@@ -2,9 +2,9 @@
 // The small white label at the bottom of the orange MARUKAWA export box: a
 // heading with a dark badge after it, and centred lines below, in Helvetica
 // (Arimo stands in). It fills the box x, y, width, height of its parent.
-import { fontSizeForCapHeight, textWidth, useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 import type { MarukawaLabelText } from '~/lib/suzuno/packages/marukawa'
-import { MARUKAWA_FONTS } from '~/lib/suzuno/packages/marukawa'
+import { MARUKAWA_FONTS, fontSizeForCapHeight, textWidth } from '~/lib/suzuno/packages/marukawa'
 
 const props = defineProps<{
   text: MarukawaLabelText
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const { helvetica, helveticaBold } = MARUKAWA_FONTS
-useWebFonts(() => [helvetica, helveticaBold])
+useWebFonts(helvetica, helveticaBold)
 
 // The label in its own units, scaled to its box
 const BOX = { width: 100, height: 60 }

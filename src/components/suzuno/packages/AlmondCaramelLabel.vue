@@ -22,7 +22,7 @@ const props = defineProps<{
 }>()
 
 const { condensed: nameFont, extended: spacedFont, serif: lineFont } = ALMOND_CARAMEL_FONTS
-useWebFonts(() => [nameFont, spacedFont, lineFont])
+useWebFonts(nameFont, spacedFont, lineFont)
 
 const innerOval = computed(() => {
   const { rx, ry, outline, gap, inner } = props.layout
