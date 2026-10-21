@@ -38,9 +38,9 @@ useMutationObserver(document.documentElement, () => growth?.repaint(paint()), { 
 </script>
 
 <template>
-  <!-- The canvas sits at the foot of the window, so that the vines keep
-       their roots at the bottom edge when a phone hides its address bar. -->
+  <!-- As the canvas of Plum, the canvas keeps its place at the top of the
+       window when a phone shows or hides its bars. -->
   <div class="background-layer op-25 text-[var(--fg)]">
-    <canvas ref="canvas" class="absolute bottom-0 left-0 w-full h-full" />
+    <canvas ref="canvas" class="w-screen h-full" />
   </div>
 </template>
