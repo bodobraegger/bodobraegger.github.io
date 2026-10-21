@@ -17,6 +17,8 @@ export default defineConfig({
     {
       'bg-base': 'bg-white dark:bg-black',
       'border-base': 'border-[#8884]',
+      // A full-window layer behind the page that fades out towards the middle
+      'background-layer': 'fixed inset-0 -z-1 pointer-events-none print:hidden [mask-image:radial-gradient(circle,transparent,black)]',
     },
     [/^btn-(\w+)$/, ([_, color]) => `op50 px2.5 py1 transition-all duration-200 ease-out no-underline! hover:(op100 text-${color} bg-${color}/10) border border-base! rounded`],
   ],

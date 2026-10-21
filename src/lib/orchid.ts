@@ -292,7 +292,6 @@ export function parts(plant: Plant): Parts {
   }
 }
 
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 // The growth length over which a tip opens, in radii of the tip. The shapes
 // of a tip open together: on the page a tip is only a few pixels wide, and
 // one path per tip costs a sixth of the raster of one path per shape.
@@ -550,12 +549,11 @@ const byStart = (a: { start: number }, b: { start: number }) => a.start - b.star
  * its genome, each at an uneven pace, each side branch sprouts when its
  * carrier reaches its node, and each tip opens when its branch arrives,
  * scaled up from its centre. The loop rests when all stems and tips are
- * complete, and `add` wakes it. With reduced motion, `add` draws the end
+ * complete, and `add` wakes it. Without `animated`, `add` draws the end
  * state at once. Lines are at least one device pixel wide, and the context
  * takes the scale of its canvas before the call.
  */
-export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
-  const animated = !window.matchMedia(REDUCED_MOTION_QUERY).matches
+export function animate(view: CanvasRenderingContext2D, paint: string, animated: boolean): Growth {
   const ratio = view.getTransform().a
   // The inks of the levels for each depth
   const inkTables = new Map<number, Ink[]>()
