@@ -1,6 +1,6 @@
 ---
 title: Notes
-plum: true
+orchid: true
 display: 'Notes'
 ---
 

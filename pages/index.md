@@ -1,7 +1,7 @@
 ---
 title: Bodo Braegger
 description: Bodo Braegger's Portfolio
-plum: true
+orchid: true
 ---
 
 <script setup>
