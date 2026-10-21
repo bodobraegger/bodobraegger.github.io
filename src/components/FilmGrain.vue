@@ -6,16 +6,16 @@ import '~/assets/film-grain/film-grain.css'
 
 type FilmStock = 'ektar-100' | 'portra-400' | 'gold-200' | 'superia-400' | 'tri-x-400' | 'hp5'
 
-withDefaults(defineProps<{
+const { stock = 'portra-400' } = defineProps<{
   /** The film: its grain, colour or monochrome, and its strength */
   stock?: FilmStock
   /** 0 to 1, replaces the strength of the stock */
   strength?: number
-  /** The enlargement of the grain. Whole numbers keep it sharp. */
+  /** The enlargement of the grain (1). Whole numbers keep it sharp. */
   size?: number
   /** Cover the window instead of the parent */
   fixed?: boolean
-}>(), { stock: 'portra-400', size: 1, fixed: false })
+}>()
 </script>
 
 <template>
