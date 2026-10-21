@@ -13,11 +13,6 @@
 
 type Point = [number, number]
 
-interface Shape {
-  d: string
-  filled: boolean
-}
-
 interface FlowerShape {
   radiusX: number
   radiusY: number
@@ -140,8 +135,8 @@ function stemPoints(nodes: Point[]): Point[] {
 
 /**
  * A line of varying weight: the points as a closed ribbon, `extra` wider than
- * the stroke in its middle and as wide as the stroke at its ends. The ribbon
- * is filled and stroked, so the stroke width still sets the thinnest line.
+ * the stroke in its middle and as wide as the stroke at its ends. A tip is
+ * filled and stroked, so the stroke width still sets the thinnest line.
  */
 function ribbonPath(points: Point[], extra: number) {
   if (!extra)
@@ -200,7 +195,7 @@ function blossomTransform({ x, y, radiusX, radiusY, rotation }: Flower) {
  * tip, relative to the stroke, and `centre` the radius of the dot of the
  * stamens.
  */
-function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
+function flowerPath(flower: Flower, strokeWidth: number) {
   const { x, y, petals, reach, weight, centre } = flower
   const half = Math.PI / petals
   const transform = blossomTransform(flower)
@@ -218,7 +213,7 @@ function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
   // From the tip, the arc runs both ways until it enters a neighbour petal or
   // crosses the line between two petals
   const step = Math.PI / 90
-  const shapes = ellipses.map((ellipse, petal) => {
+  const petalPaths = ellipses.map((ellipse, petal) => {
     const neighbours = [ellipses[(petal + petals - 1) % petals], ellipses[(petal + 1) % petals]]
     const open = (direction: number) => {
       let turn = 0
@@ -235,10 +230,9 @@ function flowerPath(flower: Flower, strokeWidth: number): Shape[] {
     const to = open(1)
     const steps = Math.max(2, Math.ceil((to - from) / step / 2))
     const points = Array.from({ length: steps + 1 }, (_, index) => transform(pointOn(ellipse, from + (to - from) * index / steps)))
-    return { d: ribbonPath(points, weight * strokeWidth), filled: weight > 0 }
+    return ribbonPath(points, weight * strokeWidth)
   })
-  shapes.push({ d: `${ribbonPath(ellipsePoints(x, y, centre, centre, 0, TAU), 0)}Z`, filled: true })
-  return shapes
+  return `${petalPaths.join('')}${ribbonPath(ellipsePoints(x, y, centre, centre, 0, TAU), 0)}Z`
 }
 
 const ELLIPSE_STEPS = 24
@@ -255,14 +249,13 @@ function ellipsePoints(x: number, y: number, radiusX: number, radiusY: number, f
  * A small ellipse; `gap` in degrees leaves it open, like a curled bud, and
  * `weight` thickens its middle like `flowerPath`.
  */
-function budPath({ x, y, radiusX, radiusY, rotation, gap, weight }: Bud, strokeWidth: number): Shape {
-  const extra = weight * strokeWidth
-  return { d: ribbonPath(ellipsePoints(x, y, radiusX, radiusY, radians(rotation) + gap * Math.PI / 360, TAU - radians(gap)), extra), filled: extra > 0 }
+function budPath({ x, y, radiusX, radiusY, rotation, gap, weight }: Bud, strokeWidth: number) {
+  return ribbonPath(ellipsePoints(x, y, radiusX, radiusY, radians(rotation) + gap * Math.PI / 360, TAU - radians(gap)), weight * strokeWidth)
 }
 
-/** The shapes of a tip, its centre, its place in the growth order, the farthest distance of its ink from its centre, and the index of the stem that carries it. */
+/** The SVG path data of a tip, its centre, its place in the growth order, the farthest distance of its ink from its centre, and the index of the stem that carries it. */
 interface TipPart {
-  shapes: Shape[]
+  d: string
   x: number
   y: number
   start: number
@@ -279,7 +272,7 @@ export interface Parts {
 
 /**
  * The drawing of a plant: the line of each stem, and per tip (flowers, then
- * buds) the SVG path data of its shapes around its centre.
+ * buds) its SVG path data around its centre.
  */
 export function parts(plant: Plant): Parts {
   const { strokeWidth, depth } = plant
@@ -287,9 +280,9 @@ export function parts(plant: Plant): Parts {
   // The ink of a tip ends within its outline and the width of its widest line
   const tip = (blossom: Blossom): TipPart => {
     const { x, y, start, weight, stem } = blossom.shape
-    const shapes = blossom.flower ? flowerPath(blossom.shape, strokeWidth) : [budPath(blossom.shape, strokeWidth)]
+    const d = blossom.flower ? flowerPath(blossom.shape, strokeWidth) : budPath(blossom.shape, strokeWidth)
     const radius = Math.max(...outline(blossom).map(point => distance(point, [x, y]))) + strokeWidth * (1 + weight)
-    return { shapes, x, y, start, radius, stem }
+    return { d, x, y, start, radius, stem }
   }
   return {
     strokeWidth,
@@ -394,13 +387,12 @@ interface GrowingStem extends Stem {
 }
 
 /**
- * A tip in the growth: its filled shapes and all its shapes as one canvas
- * path each, the growth length of its opening, the area of its ink at the
- * top of the overshoot, and whether it is in the committed drawing.
+ * A tip in the growth: its canvas path, the growth length of its opening,
+ * the area of its ink at the top of the overshoot, and whether it is in the
+ * committed drawing.
  */
 interface GrowingTip extends TipPart {
-  fillPath: Path2D
-  strokePath: Path2D
+  path: Path2D
   opening: number
   area: Area
   open: boolean
@@ -471,8 +463,8 @@ function drawTip(context: CanvasRenderingContext2D, tip: GrowingTip, scale: numb
   context.translate(tip.x, tip.y)
   context.scale(scale, scale)
   context.translate(-tip.x, -tip.y)
-  context.fill(tip.fillPath)
-  context.stroke(tip.strokePath)
+  context.fill(tip.path)
+  context.stroke(tip.path)
   context.restore()
 }
 
@@ -740,14 +732,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     const newTips: GrowingTip[] = drawing.tips.map((tip) => {
       const reach = tip.radius * LARGEST_SCALE + EDGE_MARGIN
       const area: Area = [tip.x - reach, tip.y - reach, 2 * reach, 2 * reach]
-      const [fillPath, strokePath] = [new Path2D(), new Path2D()]
-      for (const shape of tip.shapes) {
-        const path = new Path2D(shape.d)
-        if (shape.filled)
-          fillPath.addPath(path)
-        strokePath.addPath(path)
-      }
-      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: (BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random()) * depthAlpha, lineWidth }
+      return { ...tip, start: offset + tip.start, path: new Path2D(tip.d), opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: (BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random()) * depthAlpha, lineWidth }
     })
     if (reduced) {
       for (const stem of newStems)
