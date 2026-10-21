@@ -412,6 +412,17 @@ onUnmounted(() => {
   touch-action: manipulation;
 }
 
+/* The buttons of the chat look like the text around them. :where() keeps
+   this below every class rule. */
+:where(.chat-widget) button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
 /* A phone zooms into any input smaller than 16px; the rows are tall enough for it. */
 @media (hover: none) and (pointer: coarse) {
   .chat-widget input {
@@ -443,7 +454,8 @@ onUnmounted(() => {
   transition: border-color 0.3s;
 }
 
-.chat-widget-panel:hover {
+.chat-widget-panel:hover,
+.chat-widget-close:hover {
   border-style: solid;
 }
 
@@ -463,12 +475,7 @@ onUnmounted(() => {
 /* Sits in the list like a message, above the oldest one loaded. */
 .chat-widget-earlier {
   display: block;
-  padding: 0;
-  border: 0;
-  background: transparent;
   color: var(--fg-muted);
-  font: inherit;
-  cursor: pointer;
 }
 
 .chat-widget-earlier:disabled {
@@ -487,17 +494,9 @@ onUnmounted(() => {
   justify-content: center;
   width: var(--chat-close-size);
   height: var(--chat-close-size);
-  padding: 0;
-  border: 0;
   border-bottom: 1px dashed var(--fg);
   border-left: 1px dashed var(--fg);
-  background: transparent;
   color: var(--fg-muted);
-  cursor: pointer;
-}
-
-.chat-widget-close:hover {
-  color: var(--fg);
 }
 
 .chat-widget-close .chat-widget-icon {
@@ -547,14 +546,11 @@ onUnmounted(() => {
 
 .chat-widget-actions button {
   padding: 0 0.2em;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
 }
 
-.chat-widget-actions button:hover {
+.chat-widget-actions button:hover,
+.chat-widget-close:hover,
+.chat-widget-pick:hover {
   color: var(--fg);
 }
 
@@ -591,8 +587,12 @@ html.dark .chat-widget-image {
 .chat-widget-name-offer input {
   flex: 1 1 auto;
   min-width: 0;
-  background: transparent;
+}
+
+.chat-widget-name-offer input,
+.chat-widget-input {
   border: 0;
+  background: transparent;
   color: var(--fg);
   font: inherit;
 }
@@ -602,11 +602,7 @@ html.dark .chat-widget-image {
   align-items: stretch;
   height: 21px;
   width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
   color: var(--fg);
-  font: inherit;
   text-align: left;
   cursor: pointer;
 }
@@ -617,12 +613,8 @@ html.dark .chat-widget-image {
   align-items: center;
   justify-content: center;
   min-width: 21px;
-  padding: 0;
-  border: 0;
-  background: transparent;
   color: var(--fg);
   font-size: 0.7rem;
-  cursor: pointer;
 }
 
 /* Flex blockifies these regardless of their own display, which is what lets
@@ -639,10 +631,6 @@ html.dark .chat-widget-image {
 
 .chat-widget-input {
   padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
 }
 
 .chat-widget-ticker-track {
@@ -686,10 +674,6 @@ html.dark .chat-widget-image {
   padding: 0 0.2rem;
   color: var(--fg-muted);
   cursor: pointer;
-}
-
-.chat-widget-pick:hover {
-  color: var(--fg);
 }
 
 /* Drawn, not from a font: no icon set is installed and the glyph must match everywhere. */

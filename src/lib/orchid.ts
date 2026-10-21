@@ -45,21 +45,24 @@ export interface BudShape {
   weight?: number
 }
 
-/** A placed tip: its centre, and the growth length at which it opens. */
+/** A placed tip: its centre, the growth length at which it opens, and the index of the stem that carries it. */
 interface Placed {
   x: number
   y: number
   start?: number
+  stem?: number
 }
 
 export type Flower = FlowerShape & Placed
 export type Bud = BudShape & Placed
 
+/** A stem: its nodes, and its growth order with the index of the stem that it sprouts from. */
 export interface Stem {
   points: Point[]
   tension?: number
   start?: number
   length?: number
+  parent?: number
 }
 
 export interface Spec {
@@ -99,6 +102,9 @@ export interface RootBranch extends BranchBody {
 export interface Plant {
   strokeWidth: number
   root: RootBranch
+  tension?: number
+  /** From 0, near, to 1, far. */
+  depth?: number
 }
 
 export type Ornament = Plant | Spec
@@ -272,26 +278,29 @@ export function budPath({ x, y, radiusX, radiusY, rotation = 0, gap = 0, weight 
   return { d: `${ribbonPath(points, extra)}${gap || extra ? '' : 'Z'}`, filled: extra > 0 }
 }
 
-/** The line of a stem, and its place in the growth order. */
+/** The line of a stem, its place in the growth order, and the index of the stem that it sprouts from. */
 interface StemPart {
   points: Point[]
   start: number
   length: number
+  parent?: number
 }
 
-/** The shapes of a tip, its centre, its place in the growth order, and the farthest distance of its ink from its centre. */
+/** The shapes of a tip, its centre, its place in the growth order, the farthest distance of its ink from its centre, and the index of the stem that carries it. */
 interface TipPart {
   shapes: Shape[]
   x: number
   y: number
   start: number
   radius: number
+  stem?: number
 }
 
 export interface Parts {
   strokeWidth: number
   stems: StemPart[]
   tips: TipPart[]
+  depth: number
 }
 
 const isPlant = (ornament: Ornament): ornament is Plant => 'root' in ornament
@@ -306,16 +315,16 @@ export function parts(ornament: Ornament): Parts {
   const spec = isPlant(ornament) ? develop(ornament) : ornament
   // The ink of a tip ends within its outline and the width of its widest line
   const tip = (shapes: Shape[], shape: Flower | Bud, flower: boolean): TipPart => {
-    const { x, y, start = 0, weight = 0 } = shape
+    const { x, y, start = 0, weight = 0, stem } = shape
     const radius = Math.max(...outline(shape, flower).map(point => distance(point, [x, y]))) + spec.strokeWidth * (1 + weight)
-    return { shapes, x, y, start, radius }
+    return { shapes, x, y, start, radius, stem }
   }
-  const stems: StemPart[] = spec.stems.map(stem => ({ points: stemPoints(stem), start: stem.start ?? 0, length: stem.length ?? 0 }))
+  const stems: StemPart[] = spec.stems.map(stem => ({ points: stemPoints(stem), start: stem.start ?? 0, length: stem.length ?? 0, parent: stem.parent }))
   const tips = [
     ...spec.flowers.map(flower => tip(flowerPath(flower, spec.strokeWidth), flower, true)),
     ...spec.buds.map(bud => tip([budPath(bud, spec.strokeWidth)], bud, false)),
   ]
-  return { strokeWidth: spec.strokeWidth, stems, tips }
+  return { strokeWidth: spec.strokeWidth, stems, tips, depth: isPlant(ornament) ? ornament.depth ?? 0 : 0 }
 }
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
@@ -332,11 +341,19 @@ const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))
 const EDGE_MARGIN = 2
 const clamp = (value: number) => Math.min(1, Math.max(0, value))
 
-/** The growth of the stems, in canvas units per second. */
-const GROWTH_SPEED = 18
+/** The growth of the stems at their middle pace, in canvas units per second. */
+const GROWTH_SPEED = 20
+// A growing stem rests with PAUSE_CHANCE per frame, and a resting stem goes
+// on with RESUME_CHANCE, so that the tips grow in fits and starts, as those
+// of Plum do. While it grows, a stem takes a pace between PACE_LOW and
+// PACE_HIGH times the middle pace in each frame.
+const PAUSE_CHANCE = 0.04
+const RESUME_CHANCE = 0.12
+const PACE_LOW = 0.5
+const PACE_HIGH = 1.5
 // The time between two drawn frames, 30 frames per second as Plum draws on a
 // 60 Hz screen, less a slack for the jitter of the animation frames. At this
-// rate a stem grows 0.6 pixels per frame. A hidden tab gets no animation
+// rate a stem grows at most a pixel per frame. A hidden tab gets no animation
 // frames, so the growth waits there, and one frame grows at most
 // LONGEST_FRAME, so it goes on from the same place when the tab comes back.
 const FRAME_INTERVAL = 1000 / 30
@@ -352,6 +369,28 @@ const LONGEST_FRAME = 100
 const TIP_FRAMES = 3
 const COMMIT_FRAMES = 12
 
+// The ink of a stem changes with the share of the growth of its vine: at
+// the foot a line is FOOT_WIDTH times the stroke width at FOOT_ALPHA, at the
+// tips TIP_WIDTH times at TIP_ALPHA, but at least a device pixel wide. The
+// ink takes INK_LEVELS steps, so that a frame draws the new ends of the stems
+// with one stroke per level. A blossom takes an alpha between BLOSSOM_ALPHA
+// and 1. Strokes of less than full alpha darken where they cross.
+const FOOT_WIDTH = 2
+const TIP_WIDTH = 0.8
+const FOOT_ALPHA = 0.95
+const TIP_ALPHA = 0.45
+const INK_LEVELS = 8
+const BLOSSOM_ALPHA = 0.75
+// The ink of a vine at depth 1, far, has FAR_ALPHA times the alpha of the
+// ink of a vine at depth 0, near
+const FAR_ALPHA = 0.4
+
+interface Ink {
+  width: number
+  alpha: number
+  depth: number
+}
+
 type Area = [number, number, number, number]
 
 const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + bw && bx < ax + aw && ay < by + bh && by < ay + ah
@@ -360,7 +399,8 @@ const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + b
  * A stem in the growth: the distances of its points from its start, its
  * length, the distance of its growth so far, the distance in the committed
  * drawing and the distance drawn on the canvas, each with the point that
- * ends the segment of that distance.
+ * ends the segment of that distance. Its lag is the growth length that it
+ * fell behind by its pauses and its pace, those of its parent included.
  */
 interface GrowingStem extends StemPart {
   distances: number[]
@@ -370,6 +410,15 @@ interface GrowingStem extends StemPart {
   committedCursor: number
   shown: number
   shownCursor: number
+  parentStem?: GrowingStem
+  started: boolean
+  resting: boolean
+  lag: number
+  /** The ink of each level along the stem. */
+  inks: Ink[]
+  /** The share of the growth of its vine at the start of the stem, and per unit of its length. */
+  inkStart: number
+  inkScale: number
 }
 
 /**
@@ -383,6 +432,9 @@ interface GrowingTip extends TipPart {
   opening: number
   area: Area
   open: boolean
+  carrier?: GrowingStem
+  alpha: number
+  lineWidth: number
 }
 
 export interface Growth {
@@ -442,6 +494,8 @@ function area(line: Point[], margin: number): Area {
 /** Draws a tip, scaled from its centre. */
 function drawTip(context: CanvasRenderingContext2D, tip: GrowingTip, scale: number) {
   context.save()
+  context.globalAlpha = tip.alpha
+  context.lineWidth = tip.lineWidth
   context.translate(tip.x, tip.y)
   context.scale(scale, scale)
   context.translate(-tip.x, -tip.y)
@@ -455,9 +509,9 @@ const byStart = (a: { start: number }, b: { start: number }) => a.start - b.star
 /**
  * Grows drawings of ornaments (from `parts`, given with `add`) in one
  * animation loop on a canvas. The stems of an ornament grow in the order of
- * its genome at one speed, each side branch sprouts when its parent reaches
- * its node, and each tip opens when its branch arrives, scaled up from its
- * centre. The loop rests when all stems and tips are
+ * its genome, each at an uneven pace, each side branch sprouts when its
+ * parent reaches its node, and each tip opens when its branch arrives, scaled
+ * up from its centre. The loop rests when all stems and tips are
  * complete, and `add` wakes it. With reduced motion, `add` draws the end
  * state at once. Lines are at least one device pixel wide, and the context
  * takes the scale of its canvas before the call.
@@ -466,6 +520,8 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches
   const ratio = view.getTransform().a
   let lineWidth = 1 / ratio
+  // The inks of the levels for each stroke width and depth
+  const inkTables = new Map<string, Ink[]>()
   // The committed drawing, on a canvas outside the page: the browser copies
   // each changed canvas of the page in each frame, but never this one
   const storeCanvas = document.createElement('canvas')
@@ -477,6 +533,9 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const tips: GrowingTip[] = []
   let nextStem = 0
   let nextTip = 0
+  // The stems and tips whose time has come, but whose stem has not yet reached them
+  let waitingStems: GrowingStem[] = []
+  let waitingTips: GrowingTip[] = []
   let growingStems: GrowingStem[] = []
   let openingTips: GrowingTip[] = []
   let reached = 0
@@ -490,15 +549,40 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     context.lineWidth = lineWidth
     context.lineJoin = 'round'
   }
-  // Draws the stems up to their committed distance, and the open tips
+  // The pieces of the line of a stem between two distances, split where the
+  // ink changes, each with its ink level, and the point that ends the last
+  const inkPieces = (stem: GrowingStem, from: number, to: number, first: number) => {
+    const pieces: { line: Point[], level: number }[] = []
+    let cursor = first
+    while (from < to) {
+      const level = Math.min(INK_LEVELS - 1, Math.max(0, Math.floor((stem.inkStart + from * stem.inkScale) * INK_LEVELS)))
+      const boundary = ((level + 1) / INK_LEVELS - stem.inkStart) / stem.inkScale
+      const end = boundary > from ? Math.min(to, boundary) : to
+      const { line, last: next } = piece(stem, from, end, cursor)
+      pieces.push({ line, level })
+      cursor = next
+      from = end
+    }
+    return { pieces, last: cursor }
+  }
+  const strokeLines = (context: CanvasRenderingContext2D, lines: Point[][], { width, alpha }: Ink) => {
+    context.lineWidth = width
+    context.globalAlpha = alpha
+    context.beginPath()
+    for (const line of lines)
+      addLine(context, line)
+    context.stroke()
+  }
+  // Draws the stems up to their committed distance, and the open tips, each
+  // piece of a stem in a stroke of its own, so that crossings darken
   const drawCommitted = (context: CanvasRenderingContext2D, someStems: GrowingStem[], someTips: GrowingTip[]) => {
     context.lineCap = 'butt'
-    context.beginPath()
     for (const stem of someStems) {
-      if (stem.committed > 0)
-        addLine(context, piece(stem, 0, stem.committed, 1).line)
+      for (const { line, level } of inkPieces(stem, 0, stem.committed, 1).pieces)
+        strokeLines(context, [line], stem.inks[level])
     }
-    context.stroke()
+    context.globalAlpha = 1
+    context.lineWidth = lineWidth
     context.lineCap = 'round'
     for (const tip of someTips) {
       if (tip.open)
@@ -509,6 +593,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
   const restore = (areas: Area[]) => {
     view.save()
     view.setTransform(1, 0, 0, 1, 0, 0)
+    view.globalAlpha = 1
     for (const [x, y, width, height] of areas) {
       const left = Math.max(0, Math.floor(x * ratio))
       const top = Math.max(0, Math.floor(y * ratio))
@@ -522,46 +607,78 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
     view.restore()
   }
 
-  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, lineWidth / 2 + EDGE_MARGIN)
-  // Draws the stems on a context from the distance drawn there to their fronts
+  // Whether the stem that carries a stem or a tip has reached its place
+  const arrived = ({ start }: { start: number }, carrier?: GrowingStem) => !carrier || (carrier.started && reached - carrier.lag >= start)
+  const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, stem.inks[0].width / 2 + EDGE_MARGIN)
+  // Draws the stems on a context from the distance drawn there to their
+  // fronts, in one stroke per ink, the far inks first. A new piece darkens
+  // where it crosses the ink before it, and the new pieces of one frame
+  // seldom cross.
   const drawStems = (context: CanvasRenderingContext2D, someStems: GrowingStem[], from: (stem: GrowingStem) => [number, number]) => {
     context.lineCap = 'butt'
-    context.beginPath()
-    let drawn = false
+    const batches = new Map<Ink, Point[][]>()
     for (const stem of someStems) {
       const [distance, cursor] = from(stem)
       if (stem.front > distance) {
-        const { line, last: next } = piece(stem, distance, stem.front, cursor)
-        addLine(context, line)
-        drawn = true
+        const { pieces, last: next } = inkPieces(stem, distance, stem.front, cursor)
+        for (const { line, level } of pieces) {
+          const ink = stem.inks[level]
+          if (batches.has(ink))
+            batches.get(ink)!.push(line)
+          else
+            batches.set(ink, [line])
+        }
         stem.shown = stem.front
         stem.shownCursor = next
       }
     }
-    if (drawn)
-      context.stroke()
+    for (const [ink, lines] of [...batches].sort(([a], [b]) => b.depth - a.depth))
+      strokeLines(context, lines, ink)
+    context.globalAlpha = 1
+    context.lineWidth = lineWidth
   }
 
   const step = (now: number) => {
     frame = requestAnimationFrame(step)
     if (now - last < FRAME_INTERVAL - FRAME_SLACK)
       return
-    reached += GROWTH_SPEED * Math.min(now - last, LONGEST_FRAME) / 1000
+    const growth = GROWTH_SPEED * Math.min(now - last, LONGEST_FRAME) / 1000
+    reached += growth
     last = now
     frameCount++
     const tipFrame = frameCount % TIP_FRAMES === 0
     const commit = frameCount % COMMIT_FRAMES === 0
     for (; nextStem < stems.length && stems[nextStem].start <= reached; nextStem++)
-      growingStems.push(stems[nextStem])
-    for (const stem of growingStems)
-      stem.front = stem.total * (stem.length ? clamp((reached - stem.start) / stem.length) : 1)
+      waitingStems.push(stems[nextStem])
+    waitingStems = waitingStems.filter((stem) => {
+      if (!arrived(stem, stem.parentStem))
+        return true
+      stem.started = true
+      stem.lag = stem.parentStem?.lag ?? 0
+      growingStems.push(stem)
+      return false
+    })
+    for (const stem of growingStems) {
+      if (Math.random() < (stem.resting ? RESUME_CHANCE : PAUSE_CHANCE))
+        stem.resting = !stem.resting
+      const pace = stem.resting ? 0 : PACE_LOW + Math.random() * (PACE_HIGH - PACE_LOW)
+      stem.lag += growth * (1 - pace)
+      stem.front = stem.total * (stem.length ? clamp((reached - stem.start - stem.lag) / stem.length) : 1)
+    }
     if (!tipFrame) {
       drawStems(view, growingStems, stem => [stem.shown, stem.shownCursor])
       return
     }
 
     for (; nextTip < tips.length && tips[nextTip].start <= reached; nextTip++)
-      openingTips.push(tips[nextTip])
+      waitingTips.push(tips[nextTip])
+    waitingTips = waitingTips.filter((tip) => {
+      if (!arrived(tip, tip.carrier))
+        return true
+      tip.start = reached
+      openingTips.push(tip)
+      return false
+    })
     const progress = new Map(openingTips.map(tip => [tip, clamp((reached - tip.start) / tip.opening)]))
     store.lineCap = 'round'
     for (const tip of openingTips) {
@@ -613,21 +730,41 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
       if (progress.get(tip)! > 0)
         drawTip(view, tip, easeOutBack(progress.get(tip)!))
     }
-    if (nextStem === stems.length && nextTip === tips.length && !growingStems.length && !openingTips.length) {
+    if (nextStem === stems.length && nextTip === tips.length && !waitingStems.length && !waitingTips.length && !growingStems.length && !openingTips.length) {
       cancelAnimationFrame(frame)
       frame = 0
     }
   }
 
   const add = (drawing: Parts, delay: number) => {
-    lineWidth = Math.max(drawing.strokeWidth, 1 / ratio)
+    const { strokeWidth, depth } = drawing
+    lineWidth = Math.max(strokeWidth, 1 / ratio)
+    const depthAlpha = 1 + (FAR_ALPHA - 1) * depth
+    const inkKey = `${strokeWidth} ${depth}`
+    if (!inkTables.has(inkKey)) {
+      inkTables.set(inkKey, Array.from({ length: INK_LEVELS }, (_, level) => {
+        const share = (level + 0.5) / INK_LEVELS
+        return {
+          width: Math.max(strokeWidth * (FOOT_WIDTH + (TIP_WIDTH - FOOT_WIDTH) * share), 1 / ratio),
+          alpha: (FOOT_ALPHA + (TIP_ALPHA - FOOT_ALPHA) * share) * depthAlpha,
+          depth,
+        }
+      }))
+    }
+    const inks = inkTables.get(inkKey)!
     style(view)
     style(store)
     const offset = Math.max(reached, delay * GROWTH_SPEED / 1000)
+    // The growth length of the vine from its foot to its farthest tip
+    const extent = Math.max(...drawing.stems.map(stem => stem.start + stem.length), 1)
     const newStems: GrowingStem[] = drawing.stems.map((stem) => {
       const distances = distancesAlong(stem.points)
-      return { ...stem, start: offset + stem.start, distances, total: distances.at(-1)!, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1 }
+      const total = distances.at(-1)!
+      // The ink follows the growth length, and the drawn line of a stem is a little longer than its growth length
+      const inkScale = stem.length / (total || 1) / extent
+      return { ...stem, start: offset + stem.start, distances, total, front: 0, committed: 0, committedCursor: 1, shown: 0, shownCursor: 1, started: false, resting: false, lag: 0, inkStart: stem.start / extent, inkScale, inks }
     })
+    newStems.forEach((stem, index) => stem.parentStem = newStems[drawing.stems[index].parent ?? -1])
     const newTips: GrowingTip[] = drawing.tips.map((tip) => {
       const reach = tip.radius * LARGEST_SCALE + EDGE_MARGIN
       const area: Area = [tip.x - reach, tip.y - reach, 2 * reach, 2 * reach]
@@ -638,7 +775,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string): Growth {
           fillPath.addPath(path)
         strokePath.addPath(path)
       }
-      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false }
+      return { ...tip, start: offset + tip.start, fillPath, strokePath, opening: tip.radius * OPENING_RADII, area, open: false, carrier: newStems[tip.stem ?? -1], alpha: (BLOSSOM_ALPHA + (1 - BLOSSOM_ALPHA) * Math.random()) * depthAlpha, lineWidth }
     })
     if (reduced) {
       for (const stem of newStems)
@@ -717,7 +854,7 @@ function unfold(plant: Plant) {
   const spec: Spec = { strokeWidth: plant.strokeWidth, stems: [], flowers: [], buds: [] }
   const blossoms: Blossom[] = []
   const stems = new Map<BranchBody, Stem>()
-  const walk = (branch: BranchBody, origin: Point, heading: number, start: number) => {
+  const walk = (branch: BranchBody, origin: Point, heading: number, start: number, parent?: number) => {
     const nodes: Point[] = [origin]
     const headings = [heading]
     const distances = [start]
@@ -732,13 +869,16 @@ function unfold(plant: Plant) {
       nodes.push(node)
       headings.push(heading)
     }
+    // The stem of this branch, or the stem that carries a branch without steps
+    let own = parent
     if (nodes.length > 1) {
-      const stem = { points: nodes, start, length: distances.at(-1)! - start }
+      const stem = { points: nodes, start, length: distances.at(-1)! - start, parent, tension: plant.tension }
       spec.stems.push(stem)
       stems.set(branch, stem)
+      own = spec.stems.length - 1
     }
     for (const child of branch.branches ?? [])
-      walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at])
+      walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at], own)
     const { flower, bud } = branch.tip ?? {}
     const tip = flower ?? bud
     if (!tip)
@@ -746,7 +886,7 @@ function unfold(plant: Plant) {
     const { offset = [0, 0], ...shape } = tip
     const [endX, endY] = nodes.at(-1)!
     const end = radians(headings.at(-1)!)
-    const placed = { ...shape, x: endX + tip.radiusX * Math.cos(end) + offset[0], y: endY + tip.radiusX * Math.sin(end) + offset[1], start: distances.at(-1) }
+    const placed = { ...shape, x: endX + tip.radiusX * Math.cos(end) + offset[0], y: endY + tip.radiusX * Math.sin(end) + offset[1], start: distances.at(-1), stem: own }
     if (flower)
       spec.flowers.push(placed)
     else
@@ -763,6 +903,8 @@ export interface GrowthParameters {
   box: [number, number, number, number]
   strokeWidth: number
   segment: number
+  stepVariation: number
+  tension: number
   spread: number
   sway: number
   waves: Range
@@ -780,6 +922,8 @@ export interface GrowthParameters {
   stretch: Range
   depth: Range
   petalSize: Range
+  twist: number
+  petalChange: number
   petalReach: Range
   weight: Range
   blossomGap: number
@@ -794,8 +938,12 @@ export interface GrowthParameters {
 export const GROWTH: GrowthParameters = {
   box: [0, 0, 240, 560],
   strokeWidth: 2.4,
-  // Mean step length, and the random turn of a step, in degrees
+  // Mean step length, its variation as a share of it, the tension of the
+  // curve through the nodes (0 draws straight lines between them), and the
+  // random turn of a step, in degrees
   segment: 16,
+  stepVariation: 0.3,
+  tension: 0.5,
   spread: 9,
   // The sway of the main stem: its amplitude in degrees and its waves over the height
   sway: 28,
@@ -818,6 +966,10 @@ export const GROWTH: GrowthParameters = {
   stretch: [1, 1.3],
   depth: [0.65, 0.95],
   petalSize: [0.7, 1.15],
+  // The largest turn of a flower in degrees, and the chance of a flower with
+  // a missing or an extra petal
+  twist: 25,
+  petalChange: 0,
   petalReach: [-0.1, 0.2],
   weight: [0.8, 1.5],
   // The least gap between the lines of two blossoms and the tips of their
@@ -1172,7 +1324,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
       const count = Math.max(1, Math.round(pick(growth.reach) * height * growth.decay ** (level - 1) / growth.segment))
       const arch = side * between(0, growth.spread)
       for (let index = 0; index < count; index++) {
-        const step = { length: growth.segment * between(0.7, 1.3), turn: arch + between(-growth.spread, growth.spread) + steer(child.x, child.y, child.heading) }
+        const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: arch + between(-growth.spread, growth.spread) + steer(child.x, child.y, child.heading) }
         branch.steps.push(step)
         advance(child, step)
       }
@@ -1199,7 +1351,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
     const share = (root.origin[1] - state.y) / height
     const target = -90 + growth.sway * Math.sin(radians(phase + share * 360 * waves))
     const towards = Math.atan2(Math.sin(radians(target - state.heading)), Math.cos(radians(target - state.heading))) * 180 / Math.PI
-    const step = { length: growth.segment * between(0.7, 1.3), turn: towards * 0.4 + between(-growth.spread, growth.spread) + steer(state.x, state.y, state.heading) }
+    const step = { length: growth.segment * between(1 - growth.stepVariation, 1 + growth.stepVariation), turn: towards * 0.4 + between(-growth.spread, growth.spread) + steer(state.x, state.y, state.heading) }
     root.steps.push(step)
     advance(state, step)
   }
@@ -1208,15 +1360,17 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 
   const flowerTip = (): Tip => {
     const size = width * pick(growth.flowerSize)
+    const petals = growth.petalChange && next() < growth.petalChange ? (next() < 0.5 ? 4 : 6) : 5
     return {
       flower: {
         radiusX: size,
         radiusY: size * pick(growth.stretch) * between(1, 1.3),
-        rotation: between(-25, 25),
+        rotation: between(-growth.twist, growth.twist),
         phase: between(-36, 36),
         depth: pick(growth.depth),
         stretch: pick(growth.stretch),
-        sizes: Array.from({ length: 5 }, () => pick(growth.petalSize)),
+        petals,
+        sizes: Array.from({ length: petals }, () => pick(growth.petalSize)),
         reach: pick(growth.petalReach),
         weight: pick(growth.weight),
         centre: between(0.5, 1.5),
@@ -1252,7 +1406,7 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
       shape.rotation = (shape.rotation ?? 0) + turn
     }
   }
-  const plant = { strokeWidth: growth.strokeWidth, root }
+  const plant = { strokeWidth: growth.strokeWidth, root, tension: growth.tension }
   separate(plant, blossoming, growth, random(seed ^ PLACEMENT_STREAM), blossomsOf(neighbours))
   return plant
 }
@@ -1260,13 +1414,22 @@ export function grow(seed: number, parameters: Partial<GrowthParameters> = {}, n
 // The vines of a page background. The blossoms of a vine are VINE_SCALE
 // times the size of the default growth, its steps and its curls are
 // STEP_SCALE times as long, its branches BRANCH_SCALE times as long, and its
-// line is STROKE_SCALE times as wide. A vine branches with BRANCHING.
+// line is STROKE_SCALE times as wide. A vine branches with BRANCHING. Its
+// steps wander more than in the default growth: they vary in length by
+// STEP_VARIATION, turn by up to SPREAD degrees, and join in a curve of
+// TENSION, nearly straight lines as those of Plum. Its blossoms vary more
+// than those of the default growth: flowers and buds take sizes in the
+// ranges FLOWER_SIZE and BUD_SIZE (times VINE_SCALE), petals in the range
+// PETAL_SIZE, flowers turn by up to TWIST degrees, and PETAL_CHANGE of them
+// have a missing or an extra petal.
 //
 // The feet of the vines from the bottom stand BOTTOM_SPACING apart, and each
 // of these vines rises through a share of the window height in the range
 // BOTTOM_RISE. The feet of the vines from a side stand SIDE_SPACING apart,
 // and these vines reach SIDE_REACH of the window width into it, but at least
-// SIDE_REACH_MINIMUM. The box of a vine keeps the proportions of the
+// SIDE_REACH_MINIMUM, times a share in the range REACH_VARIATION. Each foot
+// moves along its edge by up to FOOT_JITTER of the spacing, so that the
+// vines do not stand in a row. The box of a vine keeps the proportions of the
 // default box, so the boxes of neighbours overlap: `grow` steers a vine back
 // towards the middle of its box, and a narrower box holds a vine at its
 // middle height. A vine sets one flower per FLOWER_AREA and one bud per
@@ -1276,11 +1439,27 @@ const STEP_SCALE = 0.275
 const BRANCH_SCALE = 0.5
 const STROKE_SCALE = 0.25
 const BRANCHING = 0.2
+const STEP_VARIATION = 0.6
+const SPREAD = 16
+const TENSION = 0.2
+const FLOWER_SIZE = [0.07, 0.16]
+const BUD_SIZE = [0.03, 0.065]
+const PETAL_SIZE: [number, number] = [0.6, 1.2]
+const TWIST = 180
+const PETAL_CHANGE = 0.25
+// Each vine stands at one of DEPTH_LEVELS depths, from near (0) to far (1).
+// A far vine has FAR_SIZE times the line width and the blossom size, a near
+// vine NEAR_SIZE times, and the far vines grow first.
+const DEPTH_LEVELS = 4
+const NEAR_SIZE = 1.15
+const FAR_SIZE = 0.75
 const BOTTOM_SPACING = 75
-const BOTTOM_RISE = [0.3, 0.7]
+const BOTTOM_RISE = [0.3, 0.72]
 const SIDE_SPACING = 110
 const SIDE_REACH = 0.36
 const SIDE_REACH_MINIMUM = 260
+const REACH_VARIATION = [0.85, 1.15]
+const FOOT_JITTER = 0.45
 const FLOWER_AREA = 12000
 const BUD_AREA = 18000
 // The share of its box that a vine reaches beyond its foot, as `grow` sets
@@ -1291,6 +1470,7 @@ interface VineBox {
   box: GrowthParameters['box']
   direction: number
   area: number
+  depth: number
 }
 
 const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
@@ -1302,43 +1482,57 @@ const BOX_PROPORTION = GROWTH.box[2] / GROWTH.box[3]
  */
 export function* vines(width: number, height: number, seed: number): Generator<Plant> {
   const next = random(seed)
+  const between = ([low, high]: number[]) => low + (high - low) * next()
+  const jitter = () => between([-FOOT_JITTER, FOOT_JITTER])
   const boxes: VineBox[] = []
   const bottomCount = Math.max(1, Math.round(width / BOTTOM_SPACING))
   for (let index = 0; index < bottomCount; index++) {
-    const foot = (index + 0.5) * width / bottomCount
-    const rise = height * (BOTTOM_RISE[0] + (BOTTOM_RISE[1] - BOTTOM_RISE[0]) * next())
+    const foot = (index + 0.5 + jitter()) * width / bottomCount
+    const rise = height * between(BOTTOM_RISE)
     const across = rise / FOOT_SHARE * BOX_PROPORTION
-    boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise })
+    boxes.push({ box: [foot - across / 2, height - rise, across, rise / FOOT_SHARE], direction: -90, area: BOTTOM_SPACING * rise, depth: 0 })
   }
   const sideCount = Math.max(1, Math.round(height / SIDE_SPACING))
-  const reach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
-  const across = reach * BOX_PROPORTION
+  const sideReach = Math.max(width * SIDE_REACH, SIDE_REACH_MINIMUM) / FOOT_SHARE
   for (let index = 0; index < sideCount; index++) {
-    const foot = (index + 0.5) * height / sideCount
-    const area = SIDE_SPACING * reach * FOOT_SHARE
-    boxes.push({ box: [reach * (FOOT_SHARE - 1), foot - across / 2, reach, across], direction: 0, area })
-    boxes.push({ box: [width - reach * FOOT_SHARE, foot - across / 2, reach, across], direction: 180, area })
+    for (const direction of [0, 180]) {
+      const foot = (index + 0.5 + jitter()) * height / sideCount
+      const reach = sideReach * between(REACH_VARIATION)
+      const across = reach * BOX_PROPORTION
+      const left = direction ? width - reach * FOOT_SHARE : reach * (FOOT_SHARE - 1)
+      boxes.push({ box: [left, foot - across / 2, reach, across], direction, area: SIDE_SPACING * reach * FOOT_SHARE, depth: 0 })
+    }
   }
-  boxes.sort(() => next() - 0.5)
+  for (const vine of boxes)
+    vine.depth = Math.floor(next() * DEPTH_LEVELS) / (DEPTH_LEVELS - 1)
+  boxes.sort((a, b) => b.depth - a.depth)
   const plants: Plant[] = []
-  for (const [index, { box, direction, area }] of boxes.entries()) {
+  for (const [index, { box, direction, area, depth }] of boxes.entries()) {
+    const near = NEAR_SIZE + (FAR_SIZE - NEAR_SIZE) * depth
     // `grow` sizes the blossoms and the curls by the width of the box across the rise
     const across = direction === -90 ? box[2] : box[3]
-    const sizeScale = VINE_SCALE * GROWTH.box[2] / across
+    const sizeScale = VINE_SCALE * near * GROWTH.box[2] / across
     const curlScale = STEP_SCALE * GROWTH.box[2] / across
     const plant = grow(seed + index + 1, {
       box,
       direction,
-      strokeWidth: GROWTH.strokeWidth * STROKE_SCALE,
+      strokeWidth: GROWTH.strokeWidth * STROKE_SCALE * near,
       segment: GROWTH.segment * STEP_SCALE,
+      stepVariation: STEP_VARIATION,
+      spread: SPREAD,
+      tension: TENSION,
       curlSize: GROWTH.curlSize * curlScale,
       branching: BRANCHING,
       reach: [GROWTH.reach[0] * BRANCH_SCALE, GROWTH.reach[1] * BRANCH_SCALE],
-      flowerSize: [GROWTH.flowerSize[0] * sizeScale, GROWTH.flowerSize[1] * sizeScale],
-      budSize: [GROWTH.budSize[0] * sizeScale, GROWTH.budSize[1] * sizeScale],
+      flowerSize: [FLOWER_SIZE[0] * sizeScale, FLOWER_SIZE[1] * sizeScale],
+      budSize: [BUD_SIZE[0] * sizeScale, BUD_SIZE[1] * sizeScale],
+      petalSize: PETAL_SIZE,
+      twist: TWIST,
+      petalChange: PETAL_CHANGE,
       flowers: Math.round(area / FLOWER_AREA),
       buds: Math.round(area / BUD_AREA),
     }, plants)
+    plant.depth = depth
     plants.push(plant)
     yield plant
   }
