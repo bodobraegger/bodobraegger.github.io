@@ -62,12 +62,6 @@
   }
 }
 
-/* Without a box of its own, the element makes no stacking context, so the
-   blend of the layer reaches the page behind it. */
-.film-grain--fixed {
-  display: contents;
-}
-
 /* The prime tile (241 texels) over the main tile (256 texels) repeats only
    after 61696 texels. The soft-light blend changes a pixel most in the dark
    midtones and little in the highlights, like the grain of the scans. */
