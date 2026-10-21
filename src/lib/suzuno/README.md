@@ -11,7 +11,7 @@ The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/`
 - `SuzunoMarukawa`: the MARUKAWA bubble gum boxes.
 - `SuzunoFinancial`: the cover of the Suzuno Financial Holdings brochure.
 
-`SuzunoFace.vue` is the common part of the four components. A page does not use it directly.
+`SuzunoFace.vue` is the common part of the four components. It puts the recreation into the slot of a `DifferenceFrame` (`src/components/DifferenceFrame.vue`) on the reference image. `faces.ts` lists the faces: their reference images, their recreations and the texts of the print.
 
 ## Options
 
@@ -49,7 +49,7 @@ The rules of the default size have no specificity, so any class or style on the 
 
 ### Loading
 
-A face mounts its recreation and its reference image only when it is less than one window height away from the visible part of the page. The reference image is a WebP copy at the width of the face (160, 320, 660, 990 or 1320 pixels, or the width of the original when it is narrower). A face narrower than 160 pixels takes copies of the photos in its recreation that are 320 pixels wide.
+The reference image loads lazily, as a WebP copy at the width of the face (160, 320, 660, 990 or 1320 pixels, or the width of the original when it is narrower). The recreation mounts when the face is less than half a window height away from the visible part of the page and its reference image has loaded. A face narrower than 160 pixels takes copies of the photos in its recreation that are 320 pixels wide.
 
 The fonts come from Google Fonts. The stylesheets of a face ask only for the glyphs of its texts, so a font file holds only these glyphs. Faces with the same texts share their stylesheets.
 
@@ -57,7 +57,7 @@ The fonts come from Google Fonts. The stylesheets of a face ask only for the gly
 
 `item`: `almond-caramel`, `hokkaido-milk` or `salt-lemon`. `face`: `front` (the default) or `back`; the salt lemon bag has only `front`.
 
-The values in parentheses are the texts of the print. A list gives its lines. The constants in `src/lib/suzuno/` hold the full texts.
+The values in parentheses are the texts of the print. A list gives its lines. The constants in `src/lib/suzuno/packages/` hold the full texts.
 
 ### almond-caramel
 
@@ -91,7 +91,7 @@ The back also shows:
 
 ### hokkaido-milk
 
-`HokkaidoMilkBag.vue`, with the texts `HOKKAIDO_MILK_TEXTS` and `HOKKAIDO_MILK_BACK_TEXTS` of `packages/hokkaido-milk.ts`:
+`HokkaidoMilkBag.vue`, with the texts `HOKKAIDO_MILK_BAG_TEXTS` of `packages/hokkaido-milk.ts`:
 
 - `brand` ("RIBON"), front. A disc replaces the letter O.
 - `title` ("北海道"). The default is the traced lettering of the print; another text is set in Noto Serif JP.
@@ -104,7 +104,7 @@ The back also shows:
 
 ### salt-lemon
 
-`SaltLemonFront.vue`, with the texts of `packages/salt-lemon.ts`:
+`SaltLemonFront.vue`, with the texts `SALT_LEMON_TEXTS` of `packages/salt-lemon.ts`:
 
 - `kanji` ("塩"), `ruby` ("しお"), `name` ("レモン") and `kind` ("キャンディ"), the title panel.
 - `banner` ("気軽に塩分補給").
@@ -137,7 +137,7 @@ The back also shows:
 
 ## SuzunoMarukawa
 
-`item`: `melon`, `strawberry` or `orange`. The front and the back of a box carry the same print, so a box has one face. `MarukawaBox.vue` shows the export version of the photos:
+`item`: `melon`, `strawberry` or `orange`. The front and the back of a box carry the same print, so a box has one face. `MarukawaBox.vue` shows the boxes of the photos, with the texts `MARUKAWA_TEXTS` of `packages/marukawa.ts`:
 
 - `brand` ("MARUKAWA").
 - `flavour` ("melon", "Strawberry" or "orange").
@@ -147,63 +147,30 @@ The back also shows:
 
 ## SuzunoFinancial
 
-The cover of the brochure, `SuzunoCover.vue`. It has no `item` and no `face`.
+The cover of the brochure, `SuzunoCover.vue`, with the texts `COVER_TEXTS` of `cover-typography.ts`. It has no `item` and no `face`.
 
 - `title` ("Suzuno Financial Holdings"). The fitted offsets of the glyphs apply only to the default title.
 - `banner` ("すずのフィナンシャルHD").
 
 ## Source
 
-The files are a copy from the Suzuno project at the commit `9a3602c33d0d4b2d80b066c81155443c1e163c94` (2026-10-19), and the build of bbo.do does not need that project. The copy has only the parts that the faces need:
+The recreations come from the Suzuno project at the commit `9a3602c33d0d4b2d80b066c81155443c1e163c94` (2026-10-19), and the build of bbo.do does not need that project. The comments name its tools in `tools/`, which fitted the layouts, the colours and the images.
 
-- `src/components/suzuno/` holds `SuzunoCover.vue`, `SuzunoLogo.vue` and `PatternFill.vue` from `src/components/`, and in `packages/` the parts of the packages from `src/components/packages/`.
-- `src/lib/suzuno/` holds `cover-typography.ts`, `ornament.ts` and `reference-images.ts` from `src/lib/`, the folder `packages/` from `src/lib/packages/` and the folder `patterns/` from `src/lib/patterns/`.
-- `src/assets/suzuno/` holds the images, `ornament-cover.json` and `SOURCES.md` from `assets/`, and in `reference/` the reference images of the faces from `reference/`.
+The copy has only what the four components show. It has no pattern generators and no ornament generator, no fit tools and no Japanese MARUKAWA boxes, and each recreation takes only the props that `faces.ts` sets. A change in the Suzuno project therefore goes into bbo.do by hand. These files differ most from their origin:
 
-The comments of the copied files name the folders `assets/`, `reference/` and `tools/` of the Suzuno project. `faces.ts`, `SuzunoFace.vue`, `SuzunoBag.vue`, `SuzunoWrapper.vue`, `SuzunoMarukawa.vue`, `SuzunoFinancial.vue` and this file are not in the Suzuno project.
+- The plum vine of the cover is the line art `src/assets/suzuno/ornament-cover.svg`, which the ornament generator draws from the fitted plant `assets/ornament-cover.json` of the Suzuno project. To draw it again, run this command in that project:
 
-### Changes to the copy
+  ```sh
+  node --input-type=module -e "import { toSvg } from './ornament.js'; import { readFileSync } from 'node:fs'; console.log(toSvg(JSON.parse(readFileSync('assets/ornament-cover.json', 'utf-8'))))"
+  ```
 
-- The imports and the paths in the comments point to the suzuno folders of bbo.do.
-- `reference-images.ts` reads the images in `src/assets/suzuno/reference/`, makes small copies (160 and 320 pixels) and copies at the widths of the markdown images (660, 990 and 1320 pixels) and gives no link to the originals.
-- `SuzunoCover.vue` has the prop `texts`. Its Google Fonts stylesheets load the glyphs of the texts that their families set. The fonts of the print apply only when they are installed, because bbo.do has no `fonts/` folder. The class `sheet` is gone, because bbo.do has no style for it.
-- `cover-typography.ts` has `CoverTexts` and `COVER_TEXTS`.
-- `hokkaido-milk.ts` keeps the layout as a plain object, without the hook for the fit tools of the Suzuno project.
-- `ornament-cover.json` has the indentation of the lint rules of bbo.do. Its data does not change.
-- `salt-lemon.ts` has `FRONT_PART_TEXTS`, `AcidBadgeTexts`, `ACID_BADGE_TEXTS` and `ACID_BADGE_SPHERES`, which `CitricAcidBadge.vue` and `SaltLemonFront.vue` take as defaults. `SaltLemonFront.vue` has the props `logoName` and `acidBadge`, which it gives to the logo and to the citric acid badge.
-- `paper-grain.ts` and `plum-vine.ts` draw their noise from tiles in `src/assets/suzuno/` (`paper-grain.webp` and `ink-texture.webp`) instead of feTurbulence filters. `scripts/film-grain.ts` computes the tiles with the noise of the browser. The paper grain has no `color`, `frequency` and `octaves` any more, and a seed moves its tile. The `texture` of the vine is now the strength of the texture of the print, from 0 to 1.
-- `pattern.ts` has no `colorChannels`, which only the paper grain used.
-- `lettering.ts` has `FACE_GLYPHS` and `useStylesheets`. The font loaders of `lettering.ts`, `hokkaido-milk.ts` and `salt-lemon.ts` use `useStylesheets`, which adds the glyphs that a face provides to each stylesheet.
+  Put its output into the `<svg>` element of `ornament-cover.svg`.
+
+- The paper grain and the texture of the vine are the tiles `paper-grain.webp` and `ink-texture.webp` in place of feTurbulence filters. `scripts/film-grain.ts` computes them with the noise of the browser.
+- `SuzunoCover.vue` and the Google Fonts stylesheets of the packages load only the glyphs of the texts (`FACE_GLYPHS` in `packages/lettering.ts`). The fonts of the print of the cover apply only when they are installed, because bbo.do has no `fonts/` folder.
 
 The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of the attributify utilities, because the faces set the size of their text with it.
 
-### Update the copy
-
-1. In the Suzuno project, write the changes since the commit above into a patch, for the source files of the copy:
-
-   ```sh
-   git diff --binary 9a3602c HEAD -- src/components/SuzunoCover.vue src/components/SuzunoLogo.vue src/components/PatternFill.vue src/components/packages src/lib/cover-typography.ts src/lib/ornament.ts src/lib/reference-images.ts src/lib/packages src/lib/patterns assets reference/cover-lit.png reference/packages > /tmp/suzuno.patch
-   ```
-
-2. Apply the patch to the copy in bbo.do. Change the paths of the patch to the suzuno folders first:
-
-   ```sh
-   sed -E -e 's#( [ab])/src/components/packages/#\1/src/components/suzuno/packages/#g' \
-     -e 's#( [ab])/src/components/(SuzunoCover|SuzunoLogo|PatternFill)\.vue#\1/src/components/suzuno/\2.vue#g' \
-     -e 's#( [ab])/src/lib/(packages|patterns)/#\1/src/lib/suzuno/\2/#g' \
-     -e 's#( [ab])/src/lib/([a-z-]+\.ts)#\1/src/lib/suzuno/\2#g' \
-     -e 's#( [ab])/assets/#\1/src/assets/suzuno/#g' \
-     -e 's#( [ab])/reference/#\1/src/assets/suzuno/reference/#g' \
-     /tmp/suzuno.patch | git apply --reject --binary
-   ```
-
-   The patch also has the files that the faces do not need. Remove their new copies, and solve the rejected parts by hand.
-
-3. Change the imports of the changed files to the suzuno folders, as in the list above, and run `pnpm lint --fix`.
-4. When a face gets a new text, add it to `faces.ts` and to the list in this file.
-5. Write the new commit into the section "Source".
-6. Check the faces with the draft note `pages/notes/2610-suzuno-difference-components.md` in `pnpm dev`, and run `pnpm build`.
-
 ## Licences
 
-`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits the images, as the draft note does. The reference images are the photos of the packages of the Suzuno project, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover.
+`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits its images. The reference images are the photos of the packages of the Suzuno project, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover.
