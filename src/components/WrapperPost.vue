@@ -281,8 +281,8 @@ if (frontmatter.hydra) {
   <ClientOnly v-if="frontmatter.orchid">
     <Orchid />
   </ClientOnly>
-  <ClientOnly v-if="frontmatter.mistyrose">
-    <MistyRose />
+  <ClientOnly v-if="frontmatter.mistyrose || frontmatter.mistyrosetitle">
+    <MistyRose :edges="!!frontmatter.mistyrose" />
   </ClientOnly>
   <!-- The home page opens with its own hero, which already carries the name,
        so the title block is left to every other page. -->

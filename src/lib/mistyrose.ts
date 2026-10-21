@@ -22,10 +22,6 @@ export interface Garden {
   maxTips: number
   /** A tip stops when its next segment would start outside this area, in game units. */
   bounds: Area
-  /** The range of the first radius of the curl of a tip, in game units. */
-  curl?: Range
-  /** The chance that a curl changes its direction at a new segment. */
-  flipChance?: number
 }
 
 // The fixed step of the game, and the growth per second of a stem segment
@@ -37,9 +33,9 @@ const STEM_LENGTH = 29
 const MIN_TIP_LENGTH = 0.1
 const TIP_LIMIT = 30
 // Each new segment of a tip shrinks the radius of its curl and its length.
-// The curl changes its direction with the chance GAME_FLIP_CHANCE.
+// The curl changes its direction with the chance CURL_FLIP_CHANCE.
 const CURL_SHRINK = 0.96
-const GAME_FLIP_CHANCE = 0.05
+const CURL_FLIP_CHANCE = 0.05
 const LENGTH_SHRINK: Range = [0.95, 0.98]
 const FORK_CHANCE = 0.25
 const FORK_CURL: Range = [0.92, 0.98]
@@ -56,7 +52,7 @@ const CLUSTER_LEAF_ANGLE: Range = [-1.75, 1.75]
 const ROSE_ANGLE: Range = [-0.75, 0.75]
 const ROSE_JITTER: Range = [-10, 10]
 const DECORATION_SIZE: Range = [0.2, 1]
-const GAME_CURL: Range = [50, 200]
+const FIRST_CURL: Range = [50, 200]
 
 // Frames as Orchid draws them: 30 per second less a slack for the jitter of
 // the animation frames, and at most LONGEST_FRAME of growth after a hidden tab
@@ -65,7 +61,7 @@ const FRAME_SLACK = 4
 const LONGEST_FRAME = 100
 const EDGE_MARGIN = 2
 
-export type Range = [number, number]
+type Range = [number, number]
 type SpriteName = 'stem' | 'leaf' | 'flower'
 
 // The hotspot of a sprite is the point that sits on the position of the item
@@ -92,7 +88,7 @@ interface Item {
 }
 
 /** The growth of the roses of a garden, one game step at a time. */
-function grower({ seeds, maxTips, bounds: [left, top, width, height], curl = GAME_CURL, flipChance = GAME_FLIP_CHANCE }: Garden, random: () => number) {
+function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden, random: () => number) {
   const between = ([low, high]: Range) => low + random() * (high - low)
   const items: Item[] = []
   // The items that grow, in the order of their creation
@@ -122,7 +118,7 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height], curl = GAM
   const tipLimit = Math.min(maxTips, TIP_LIMIT)
   for (const [index, { x, y, angle }] of seeds.slice(0, TIP_LIMIT).entries()) {
     tips.push(add('stem', x, y, angle, 1))
-    radii[index] = between(curl)
+    radii[index] = between(FIRST_CURL)
     lengths[index] = 1
   }
 
@@ -146,7 +142,7 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height], curl = GAM
     const angle = segment.angle + 2 * Math.asin(length / 2 / radius)
     segment.done = true
     tips[index] = add('stem', x, y, angle, 1)
-    radii[index] = radius * CURL_SHRINK * (random() < flipChance ? -1 : 1)
+    radii[index] = radius * CURL_SHRINK * (random() < CURL_FLIP_CHANCE ? -1 : 1)
     lengths[index] = tipLength * between(LENGTH_SHRINK)
 
     if (tips.length < tipLimit && random() < FORK_CHANCE) {
@@ -201,12 +197,11 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height], curl = GAM
   return { items, step, harvest, finish, growing: () => growing }
 }
 
-/** The count of the stem segments, leaves and roses of the full growth of a garden. */
-export function yieldOf(garden: Garden, random: () => number) {
-  const growth = grower(garden, random)
-  growth.finish()
-  return growth.items.length
-}
+/**
+ * The titles that MistyRoseTitle marks. The background plants a group of
+ * seeds at the middle of each, as the game does behind a chapter title.
+ */
+export const roseTitles = new Set<HTMLElement>()
 
 type Sprites = Record<SpriteName, HTMLImageElement>
 
