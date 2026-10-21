@@ -85,7 +85,7 @@ html {
   }
 
   div.page-background {
-    background: linear-gradient(var(--c-scrollbar-hover) 0%, var(--c-scrollbar) 30%, var(--c-bg) 100%);
+    background: linear-gradient(var(--c-scrollbar-hover) 0%, var(--c-scrollbar) 12%, var(--c-bg) 100%);
     position: fixed;
     z-index: -1;
     height: 100%;
