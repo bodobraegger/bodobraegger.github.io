@@ -5,6 +5,8 @@ date: 2026-10-19T09:00:00-03:00
 lang: en
 type: note
 orchid: true
+plum: true
+grain: ektar-100
 ---
 
 ![The cover of the Suzuno brochure](../../src/assets/images/notes/2610-suzuno-differences/cover-01-cover.png)
@@ -32,3 +34,22 @@ orchid: true
 ![The MARUKAWA strawberry bubble gum box](../../src/assets/images/notes/2610-suzuno-differences/marukawa-strawberry-01-front-and-back.png)
 
 ![The MARUKAWA orange bubble gum box](../../src/assets/images/notes/2610-suzuno-differences/marukawa-orange-01-front-and-back.png)
+
+
+
+
+<SuzunoFinancial difference="false" />
+
+<SuzunoBag item="hokkaido-milk" :texts="{ title: 'bbodo', subtitle: 'rio de janeiro hard and software', tagline: 'Botafogo Hard', stamp: { middle: 'secret' } }" />
+
+<SuzunoBag item="almond-caramel" :texts="{ name: 'YOURS', spaced: 'TRULY', ribbon: 'hugs and kisses', weight: 'mais ou menos 120 g' }" />
+
+<SuzunoWrapper item="almond-caramel" :texts="{ name: 'NAME', spaced: 'SPACE' }" />
+
+<SuzunoMarukawa item="orange" :texts="{ flavour: 'orange', label: { badge: 'BRAZIL', lines: ['6pcs. (8.1 g)', 'MARBLE BUBBLE GUM'] } }" />
+
+
+<SuzunoBag item="almond-caramel" difference="false" />
+
+
+<SuzunoBag item="hokkaido-milk" opacity="50" difference="false" texts="" />
