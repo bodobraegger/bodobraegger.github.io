@@ -174,7 +174,7 @@ if (Number.isNaN(translateX) || Number.isNaN(translateY))
 
 const isDifference = computed(() => isOn(props.difference))
 const opacity = computed(() => opacityOption(props.opacity, isDifference.value))
-// Read in setup, so that a wrong opacity stops the build of the page
+// Read in setup, so that the build prints a wrong opacity
 void opacity.value
 
 const selfStyle = computed(() => ({

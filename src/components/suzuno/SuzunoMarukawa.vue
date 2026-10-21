@@ -11,7 +11,8 @@ const props = defineProps<{
   item: MarukawaItem
 }>()
 
-const definition = computed(() => packageFace('SuzunoMarukawa', MARUKAWA_FACES, props.item, 'front'))
+// In setup, so that the build prints an unknown item and still writes the page
+const definition = packageFace('SuzunoMarukawa', MARUKAWA_FACES, props.item, 'front')
 </script>
 
 <template>
