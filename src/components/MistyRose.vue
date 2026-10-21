@@ -10,8 +10,9 @@ const SEED_SPACING = 300
 const MAX_SEEDS = 20
 const TIPS_PER_SEED = 1.5
 const SEED_SPREAD = 0.5
-// As Orchid, the canvas and the drawing behind it stay at twice the window pixels at most
-const PIXEL_RATIO_LIMIT = 2
+// The sprites are pixel art at one CSS pixel per pixel, so a denser canvas
+// adds no detail, only four times the pixels to store and to copy each frame
+const PIXEL_RATIO_LIMIT = 1
 
 const canvas = useMistyRose((width, height) => {
   const { random } = Math
