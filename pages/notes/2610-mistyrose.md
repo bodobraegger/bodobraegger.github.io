@@ -12,16 +12,8 @@ mistyrosetitle: true
 Between the levels of its story, [Hammerfight](https://en.wikipedia.org/wiki/Hammerfight) (Konstantin Koshutin, 2009) shows a black screen on which rose vines grow.
 <MistyRoseTitle>
 
-## A title with roses
+## we can also embellish titles...
 
-</MistyRoseTitle>
+```
 
-`<MistyRoseTitle>` puts a vine at each side of a title:
-
-```md
-<MistyRoseTitle>
-
-## A title with roses
-
-</MistyRoseTitle>
 ```
