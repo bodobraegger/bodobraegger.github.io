@@ -4,11 +4,11 @@
 // C-A-R-A-M-E-L with dots, a rule and the English sentence. In its own
 // coordinates: the middle of the oval at the origin, in face pixels at a
 // scale of 1. Place it with placementTransform (src/lib/suzuno/packages/almond-caramel.ts).
-import type { LabelLayout, PrintFont } from '~/lib/suzuno/packages/almond-caramel'
+import type { LabelLayout } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS, blockLines, textAttributes } from '~/lib/suzuno/packages/almond-caramel'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   layout: LabelLayout
   intro: string[]
   name: string
@@ -19,16 +19,10 @@ const props = withDefaults(defineProps<{
   ink: string
   /** The colour of the spaced word. */
   green: string
-  nameFont?: PrintFont
-  spacedFont?: PrintFont
-  lineFont?: PrintFont
-}>(), {
-  nameFont: () => ALMOND_CARAMEL_FONTS.condensed,
-  spacedFont: () => ALMOND_CARAMEL_FONTS.extended,
-  lineFont: () => ALMOND_CARAMEL_FONTS.serif,
-})
+}>()
 
-useWebFonts(() => [props.nameFont, props.spacedFont, props.lineFont])
+const { condensed: nameFont, extended: spacedFont, serif: lineFont } = ALMOND_CARAMEL_FONTS
+useWebFonts(nameFont, spacedFont, lineFont)
 
 const innerOval = computed(() => {
   const { rx, ry, outline, gap, inner } = props.layout
@@ -50,20 +44,20 @@ const spacedDots = computed(() => {
 
 <template>
   <g>
-    <ellipse :rx="layout.rx" :ry="layout.ry" :fill="fill" :stroke="ink" :stroke-width="layout.outline" data-ink="label" />
+    <ellipse :rx="layout.rx" :ry="layout.ry" :fill="fill" :stroke="ink" :stroke-width="layout.outline" />
     <ellipse v-bind="innerOval" fill="none" :stroke="ink" :stroke-width="layout.inner" />
     <g text-anchor="middle" :fill="ink">
       <text v-for="(line, index) in intro" :key="`intro-${index}`" v-bind="textAttributes(introLines[index], lineFont)">
         {{ line }}
       </text>
-      <text v-bind="textAttributes(layout.name, nameFont)" data-part="name">
+      <text v-bind="textAttributes(layout.name, nameFont)">
         {{ name }}
       </text>
       <text v-for="(line, index) in sentence" :key="`sentence-${index}`" v-bind="textAttributes(sentenceLines[index], lineFont)">
         {{ line }}
       </text>
     </g>
-    <g :fill="green" text-anchor="middle" data-part="spaced">
+    <g :fill="green" text-anchor="middle">
       <text v-for="(item, index) in spacedLetters" :key="index" v-bind="textAttributes({ ...layout.spaced, x: item.x }, spacedFont)">
         {{ item.letter }}
       </text>

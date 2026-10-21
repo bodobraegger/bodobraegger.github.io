@@ -13,7 +13,7 @@ export const ALMOND_CARAMEL_PIECE = { front: { width: 184, height: 122 }, back: 
 export type AlmondCaramelSide = 'front' | 'back'
 
 /** A web font of the print, with the cap height (or the em box for Japanese) that sizes it. */
-export interface PrintFont {
+interface PrintFont {
   family: string
   weight: number
   /** The CSS font-stretch, for a font with a width axis. */
@@ -74,7 +74,7 @@ export function textAttributes(place: TextPlace, font: PrintFont) {
 }
 
 /** Lines of text below each other: the place of the first line and the distance of the baselines. */
-export interface TextBlock extends TextPlace {
+interface TextBlock extends TextPlace {
   leading: number
 }
 
@@ -92,7 +92,7 @@ export interface Box {
 }
 
 /** A part drawn in its own coordinates, put at x, y, turned by rotate degrees and scaled. */
-export interface Placement {
+interface Placement {
   x: number
   y: number
   rotate: number
@@ -186,7 +186,7 @@ export interface BarcodeLayout extends Box {
   size: number
 }
 
-export interface AlmondCaramelBagLayout {
+interface AlmondCaramelBagLayout {
   topBand: BandLayout
   bottomBand: BandLayout
   hole: { x: number, y: number, radius: number }
@@ -214,7 +214,7 @@ export interface AlmondCaramelBagLayout {
   homepage?: TextBlock
 }
 
-export interface AlmondCaramelColors {
+interface AlmondCaramelColors {
   /** The yellow of the print, and the yellow of the seals. */
   ground: string
   seal: string
@@ -323,7 +323,7 @@ export const ALMOND_CARAMEL_TEXTS: AlmondCaramelTexts = {
   homepage: ['筑豊製菓ホームページ', 'http://www.chikuho-seika.co.jp'],
 }
 
-export interface AlmondCaramelBagDesign {
+interface AlmondCaramelBagDesign {
   layout: AlmondCaramelBagLayout
   colors: AlmondCaramelColors
 }
@@ -332,14 +332,14 @@ export interface AlmondCaramelBagDesign {
 export const ALMOND_CARAMEL_BAG_DESIGNS = fitted.bag as Record<AlmondCaramelSide, AlmondCaramelBagDesign>
 
 /** The grid of the inner paper of a wrapped caramel: its offset, the size of a cell and the width of its lines. */
-export interface GridLayout {
+interface GridLayout {
   x: number
   y: number
   cell: number
   line: number
 }
 
-export interface AlmondCaramelPieceLayout {
+interface AlmondCaramelPieceLayout {
   front: {
     /** The clear oval of the wrapper, which shows the inner paper. */
     window: { x: number, y: number, rx: number, ry: number, outline: number }
@@ -358,7 +358,7 @@ export interface AlmondCaramelPieceLayout {
   }
 }
 
-export interface AlmondCaramelPieceColors {
+interface AlmondCaramelPieceColors {
   /** The printed film, the inner paper seen through the clear parts, its grid, and the ink. */
   film: string
   window: string

@@ -5,34 +5,21 @@
 // redrawn as one polygon after the logo of the maker. In its own coordinates
 // the oval has its centre at the origin and a horizontal radius of 100. Place
 // it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
-import type { LogoLayout, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
 import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-withDefaults(defineProps<{
+defineProps<{
   /** A name in place of the drawn letters, for another maker. */
   name?: string
-  tagline?: string
-  red?: string
-  /** The letters and the ring. */
-  white?: string
-  taglineColor?: string
-  /** The white edge round the tagline. */
-  taglineHalo?: string
-  font?: SaltLemonFont
-  nameFont?: SaltLemonFont
-  layout?: LogoLayout
-}>(), {
-  tagline: '一粒の小さな友達',
-  red: FRONT_COLORS.logoRed,
-  white: '#ffffff',
-  taglineColor: FRONT_COLORS.logoRed,
-  taglineHalo: '#ffffff',
-  font: () => SALT_LEMON_FONTS.rounded,
-  nameFont: () => SALT_LEMON_FONTS.roundedBold,
-  layout: () => FRONT_PARTS.logo,
-})
+  tagline: string
+}>()
 
 useSaltLemonFonts()
+
+const { rounded: font, roundedBold: nameFont } = SALT_LEMON_FONTS
+const layout = FRONT_PARTS.logo
+const red = FRONT_COLORS.logoRed
+// The letters, the ring and the edge round the tagline
+const WHITE = '#ffffff'
 
 const OVAL = { rx: 100, ry: 59 }
 // カトウ: カ with its long stroke, ト joined to the bar ー, and ウ
@@ -43,8 +30,8 @@ const NAME = { width: 184, size: 52, slant: -12 }
 
 <template>
   <g>
-    <ellipse :rx="OVAL.rx" :ry="OVAL.ry" :fill="red" :stroke="white" :stroke-width="layout.ring" data-ink="logo" />
-    <path v-if="name === undefined" :d="LETTERS" :fill="white" data-ink="logo-letters" />
+    <ellipse :rx="OVAL.rx" :ry="OVAL.ry" :fill="red" :stroke="WHITE" :stroke-width="layout.ring" />
+    <path v-if="name === undefined" :d="LETTERS" :fill="WHITE" />
     <text
       v-else
       :transform="`skewX(${NAME.slant})`"
@@ -56,8 +43,7 @@ const NAME = { width: 184, size: 52, slant: -12 }
       :font-size="NAME.size"
       :textLength="NAME.width"
       lengthAdjust="spacingAndGlyphs"
-      :fill="white"
-      data-ink="logo-letters"
+      :fill="WHITE"
     >
       {{ name }}
     </text>
@@ -70,12 +56,11 @@ const NAME = { width: 184, size: 52, slant: -12 }
       :font-size="layout.tagline.size"
       :textLength="layout.tagline.width"
       lengthAdjust="spacing"
-      :fill="taglineColor"
-      :stroke="taglineHalo"
+      :fill="red"
+      :stroke="WHITE"
       :stroke-width="layout.tagline.halo"
       stroke-linejoin="round"
       paint-order="stroke"
-      data-ink="logo-tagline"
     >
       {{ tagline }}
     </text>

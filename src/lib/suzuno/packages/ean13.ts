@@ -17,13 +17,13 @@ const CENTRE_GUARD = '01010'
 export class Ean13Error extends Error {}
 
 /** The check digit of the first 12 digits. */
-export function ean13CheckDigit(digits: string) {
+function ean13CheckDigit(digits: string) {
   const sum = [...digits.slice(0, 12)].reduce((total, digit, index) => total + Number(digit) * (index % 2 ? 3 : 1), 0)
   return (10 - sum % 10) % 10
 }
 
 /** A bar: its first module, its width in modules, and whether it is a guard bar, which reaches lower. */
-export interface Ean13Bar {
+interface Ean13Bar {
   start: number
   width: number
   guard: boolean

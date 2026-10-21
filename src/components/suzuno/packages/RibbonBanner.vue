@@ -5,28 +5,22 @@
 // coordinates: the middle of the top edge of the band at the origin. Place it
 // with placementTransform (src/lib/suzuno/packages/almond-caramel.ts).
 import { useId } from 'vue'
-import type { PrintFont, RibbonLayout } from '~/lib/suzuno/packages/almond-caramel'
+import type { RibbonLayout } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS } from '~/lib/suzuno/packages/almond-caramel'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   layout: RibbonLayout
   text: string
-  color?: string
+  color: string
   /** The colour of the folds under the band ends. */
-  fold?: string
-  outline?: string
-  textColor?: string
-  font?: PrintFont
-}>(), {
-  color: '#2a9a10',
-  fold: '#1d6e0a',
-  outline: '#210f00',
-  textColor: '#f0d551',
-  font: () => ALMOND_CARAMEL_FONTS.rounded,
-})
+  fold: string
+  outline: string
+  textColor: string
+}>()
 
-useWebFonts(() => [props.font])
+const font = ALMOND_CARAMEL_FONTS.rounded
+useWebFonts(font)
 
 const id = useId()
 const textPathId = `${id}-text`
@@ -71,7 +65,7 @@ const textTransform = computed(() => {
       <path :d="item.tail" :fill="color" />
       <path :d="item.fold" :fill="fold" />
     </g>
-    <path :d="band" :fill="color" data-part="band" />
+    <path :d="band" :fill="color" />
     <text
       :transform="textTransform"
       :font-family="font.family"

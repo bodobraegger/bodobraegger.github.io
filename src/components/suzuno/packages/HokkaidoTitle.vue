@@ -7,18 +7,14 @@
 // origin, a height of 100.
 import { useId } from 'vue'
 import { TITLE_PATH } from '~/lib/suzuno/packages/hokkaido-milk-paths'
-import { HOKKAIDO_MILK_FONTS, HOKKAIDO_MILK_TEXTS, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
+import { HOKKAIDO_MILK_FONTS, HOKKAIDO_TITLE, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
 
-withDefaults(defineProps<{
-  text?: string
+defineProps<{
+  text: string
   /** The ink at the top and the bottom of the letters, and the shine between them. */
-  color?: string
-  shine?: string
-}>(), {
-  text: HOKKAIDO_MILK_TEXTS.title,
-  color: '#141414',
-  shine: '#5b5d60',
-})
+  color: string
+  shine: string
+}>()
 
 useHokkaidoMilkFonts()
 
@@ -35,7 +31,7 @@ const gradientId = `${useId()}-ink`
       <stop offset="0.45" :stop-color="shine" />
       <stop offset="1" :stop-color="color" />
     </linearGradient>
-    <path v-if="text === HOKKAIDO_MILK_TEXTS.title" :d="TITLE_PATH" :fill="`url(#${gradientId})`" fill-rule="evenodd" />
+    <path v-if="text === HOKKAIDO_TITLE" :d="TITLE_PATH" :fill="`url(#${gradientId})`" fill-rule="evenodd" />
     <text
       v-else
       :y="-0.1 * FONT_SIZE"

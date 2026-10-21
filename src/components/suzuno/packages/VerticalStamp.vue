@@ -3,21 +3,19 @@
 // a frame with rounded corners and columns of characters, read from top to
 // bottom and from the right column to the left one. It fills the box x, y,
 // width, height of its parent.
-import type { PrintFont, StampLayout } from '~/lib/suzuno/packages/almond-caramel'
+import type { StampLayout } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS } from '~/lib/suzuno/packages/almond-caramel'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   layout: StampLayout
   /** The columns from right to left. */
   columns: string[]
   color: string
-  font?: PrintFont
-}>(), {
-  font: () => ALMOND_CARAMEL_FONTS.marker,
-})
+}>()
 
-useWebFonts(() => [props.font])
+const font = ALMOND_CARAMEL_FONTS.marker
+useWebFonts(font)
 
 // The characters fill the frame in equal cells; each sits in the middle of its cell
 const characters = computed(() => {

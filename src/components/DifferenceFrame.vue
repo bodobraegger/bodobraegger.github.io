@@ -18,15 +18,18 @@ has an id, the text, the box in image pixels, an angle in degrees, the font
 
 Props:
   name        the folder of the frame.
+  image       an image of your own in place of a folder, as FrameImage of
+              src/lib/difference.ts. The Suzuno faces use it.
   alt         the alternative text of the image. Without it, the image
               counts as decoration.
   layer       `self`, `text` or `trace`, or several of them separated by
               spaces, lowest first ("trace text"). The default is `self`, or
               no layer when the default slot has content.
-  difference  true (default) blends in `difference`. false lays the layers on
-              the image at `opacity`, to compare the positions.
-  opacity     the opacity of the layers in percent when difference is false.
-              The default is 50.
+  difference  true (default) blends in `difference`. false, "off" or "0"
+              lays the layers on the image at `opacity`, to compare the
+              positions.
+  opacity     the opacity of the layers in percent, such as 30 or "30%". The
+              default is 50 when difference is false, else 100.
   scale, translate, rotate, hue-rotate, transform
               change the image of the layer `self`. translate is "x y" in
               percent of the width and the height of the frame, so the effect
@@ -37,8 +40,11 @@ Props:
               position (null keeps a box); an object replaces boxes by id.
   drift       true moves the layers slowly by less than a pixel. Off when the
               reader asks for reduced motion.
+  copy        false leaves out the copy of the image under the layers, so that
+              the image shows where they paint nothing.
 The default slot is a layer of your own, in HTML or SVG, laid over the image
-copy. Place its content in percent of the frame.
+copy. Place its content in percent of the frame. The slot gets the width of
+the frame in CSS pixels as `width`.
 
 The size comes from the class or the style of the tag: the frame is a block
 of the full width, and `class="inline-block w-20"` makes a small one inside a
@@ -46,14 +52,15 @@ paragraph. Static strings work for every prop: difference="false", opacity="30".
 Where no layer paints, a copy of the image lies under the layers, so the frame
 stays black there. The layers mount when the frame comes near the window.
 */
-import type { TextBox, TextFont, TextLayer, TextReplacements } from '~/lib/difference'
-import { replaceTexts } from '~/lib/difference'
+import type { FrameImage, TextBox, TextFont, TextLayer, TextReplacements } from '~/lib/difference'
+import { isOn, opacityOption, replaceTexts } from '~/lib/difference'
 
 const props = withDefaults(defineProps<{
-  name: string
+  name?: string
+  image?: FrameImage
   alt?: string
   layer?: string
-  difference?: boolean | 'true' | 'false'
+  difference?: boolean | string
   opacity?: number | string
   scale?: number | string
   translate?: string
@@ -61,16 +68,17 @@ const props = withDefaults(defineProps<{
   hueRotate?: number | string
   transform?: string
   texts?: TextReplacements
-  drift?: boolean | 'true' | 'false'
+  drift?: boolean | string
+  copy?: boolean | string
 }>(), {
   alt: '',
   difference: true,
-  opacity: 50,
   scale: 1.006,
   translate: '0.2 0.15',
   rotate: 0.15,
   hueRotate: 0,
   drift: false,
+  copy: true,
 })
 
 const slots = useSlots()
@@ -106,7 +114,6 @@ const textLayers = import.meta.glob<TextLayer>('/src/assets/difference/*/text.js
 const SIZES_BEFORE_LAYOUT = 'auto, (min-width: 720px) 660px, 100vw'
 /** The layers mount when the frame is half a window away. */
 const NEAR_MARGIN = '50% 0px'
-const PERCENT = 100
 
 const FONTS: Record<TextFont, { family: string, weight: number, generic: string }> = {
   serif: { family: 'Noto Serif JP', weight: 900, generic: 'serif' },
@@ -115,10 +122,6 @@ const FONTS: Record<TextFont, { family: string, weight: number, generic: string 
 const FONT_STYLESHEET = 'https://fonts.googleapis.com/css2'
 /** The texts are measured and drawn at this size and then scaled to their box. */
 const MEASURE_SIZE = 100
-
-function isOn(value: boolean | string) {
-  return value !== false && value !== 'false'
-}
 
 function frameFile<T>(files: Record<string, T>, file: string) {
   const path = Object.keys(files).find(path => path.startsWith(`${FRAMES_DIRECTORY}${props.name}/${file}`))
@@ -131,12 +134,22 @@ function uniqueWidths(srcset: string) {
   return [...candidates.values()].join(', ')
 }
 
-const picture = frameFile(pictures, 'image.')
-if (!picture)
-  throw new Error(`DifferenceFrame: no image in ${FRAMES_DIRECTORY}${props.name}/`)
-const { w: width, h: height } = picture.img
-const avifSrcset = uniqueWidths(picture.sources.avif)
-const webpSrcset = uniqueWidths(picture.sources.webp)
+/** The image of the frame, with an AVIF srcset when it comes from a folder. */
+function frameImage(): FrameImage & { avifSrcset?: string } {
+  if (props.image)
+    return props.image
+  const picture = frameFile(pictures, 'image.')
+  if (!picture)
+    throw new Error(`DifferenceFrame: no image in ${FRAMES_DIRECTORY}${props.name}/`)
+  return {
+    src: picture.img.src,
+    srcset: uniqueWidths(picture.sources.webp),
+    avifSrcset: uniqueWidths(picture.sources.avif),
+    width: picture.img.w,
+    height: picture.img.h,
+  }
+}
+const picture = frameImage()
 
 const layers = (props.layer ?? (slots.default ? '' : 'self')).split(/\s+/).filter(Boolean) as Layer[]
 for (const layer of layers) {
@@ -153,14 +166,16 @@ function prepared<T>(files: Record<string, T>, file: string) {
 const trace = layers.includes('trace') ? prepared(traces, 'trace.svg') : undefined
 // Runs in setup, so a wrong id in `texts` stops the build of the page.
 const textLayer = layers.includes('text') ? prepared(textLayers, 'text.json') : undefined
-const textBoxes = textLayer ? replaceTexts(props.name, textLayer.boxes, props.texts) : []
+const textBoxes = textLayer ? replaceTexts(textLayer.boxes, props.texts) : []
 
 const [translateX = 0, translateY = translateX] = props.translate.trim().split(/\s+/).map(Number)
 if (Number.isNaN(translateX) || Number.isNaN(translateY))
   throw new Error(`DifferenceFrame "${props.name}": translate takes "x y" in percent of the frame, without units, not "${props.translate}"`)
 
 const isDifference = computed(() => isOn(props.difference))
-const isDrifting = computed(() => isOn(props.drift))
+const opacity = computed(() => opacityOption(props.opacity, isDifference.value))
+// Read in setup, so that the build prints a wrong opacity
+void opacity.value
 
 const selfStyle = computed(() => ({
   scale: String(props.scale),
@@ -170,11 +185,11 @@ const selfStyle = computed(() => ({
   filter: Number(props.hueRotate) ? `hue-rotate(${props.hueRotate}deg)` : undefined,
 }))
 
-const topStyle = computed(() => isDifference.value ? undefined : { opacity: Number(props.opacity) / PERCENT })
-
 const frame = ref<HTMLElement>()
 const baseImage = ref<HTMLImageElement>()
-const sizes = ref(SIZES_BEFORE_LAYOUT)
+const { width } = useElementSize(frame)
+// A browser that cannot size the image by its layout (sizes="auto") takes the measured width
+const sizes = computed(() => width.value ? `auto, ${Math.ceil(width.value)}px` : SIZES_BEFORE_LAYOUT)
 /**
  * The file the browser chose for the image. The layers show the same file, so
  * that their copy of the image matches it to the pixel.
@@ -254,32 +269,26 @@ const { stop: stopObserving } = useIntersectionObserver(frame, ([entry]) => {
     fitBoxes(textBoxes).then(boxes => fittedBoxes.value = boxes)
 }, { rootMargin: NEAR_MARGIN })
 
-onMounted(() => {
-  // A browser that cannot size the image by its layout (sizes="auto") takes
-  // the measured width
-  const frameWidth = Math.ceil(frame.value!.getBoundingClientRect().width)
-  if (frameWidth)
-    sizes.value = `auto, ${frameWidth}px`
-  takeBaseSource()
-})
+onMounted(takeBaseSource)
 </script>
 
 <template>
   <span
     ref="frame"
-    class="difference-frame relative isolate overflow-hidden bg-black"
-    :style="{ aspectRatio: `${width} / ${height}` }"
+    class="difference-frame relative isolate overflow-hidden"
+    :class="{ 'bg-black': isDifference }"
+    :style="{ aspectRatio: `${picture.width} / ${picture.height}` }"
   >
     <picture>
-      <source type="image/avif" :srcset="avifSrcset" :sizes="sizes">
+      <source v-if="picture.avifSrcset" type="image/avif" :srcset="picture.avifSrcset" :sizes="sizes">
       <img
         ref="baseImage"
         class="difference-layer no-preview"
-        :src="picture.img.src"
-        :srcset="webpSrcset"
+        :src="picture.src"
+        :srcset="picture.srcset"
         :sizes="sizes"
-        :width="width"
-        :height="height"
+        :width="picture.width"
+        :height="picture.height"
         :alt="alt"
         loading="lazy"
         decoding="async"
@@ -290,11 +299,11 @@ onMounted(() => {
       v-if="isNear && baseSource"
       class="difference-layer"
       :class="{ 'mix-blend-difference': isDifference }"
-      :style="topStyle"
+      :style="{ opacity }"
       aria-hidden="true"
     >
-      <img class="difference-layer no-preview" :src="baseSource" alt="">
-      <span class="difference-layer" :class="{ 'difference-drift': isDrifting }">
+      <img v-if="isOn(copy)" class="difference-layer no-preview" :src="baseSource" alt="">
+      <span class="difference-layer" :class="{ 'difference-drift': isOn(drift) }">
         <template v-for="layer in layers" :key="layer">
           <img v-if="layer === 'self'" class="difference-layer no-preview" :src="baseSource" :style="selfStyle" alt="">
           <img v-else-if="layer === 'trace'" class="difference-layer no-preview" :src="trace" alt="">
@@ -321,7 +330,7 @@ onMounted(() => {
             </g>
           </svg>
         </template>
-        <slot />
+        <slot :width="width" />
       </span>
     </span>
   </span>

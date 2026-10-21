@@ -4,26 +4,18 @@
 // 使用 (used). In its own coordinates the disc has its centre at the origin and
 // a radius of 50. Place it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
 import { useId } from 'vue'
-import type { SaltBadgeLayout, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
 import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-withDefaults(defineProps<{
-  lines?: string[]
-  disc?: string
-  waves?: string
-  ink?: string
-  font?: SaltLemonFont
-  layout?: SaltBadgeLayout
-}>(), {
-  lines: () => ['鳴門の塩', '使用'],
-  disc: FRONT_COLORS.saltDisc,
-  waves: FRONT_COLORS.saltWaves,
-  ink: '#f5e7ae',
-  font: () => SALT_LEMON_FONTS.roundedBold,
-  layout: () => FRONT_PARTS.saltBadge,
-})
+defineProps<{
+  lines: string[]
+}>()
 
 useSaltLemonFonts()
+
+const { saltDisc: disc, saltWaves: waves } = FRONT_COLORS
+const INK = '#f5e7ae'
+const font = SALT_LEMON_FONTS.roundedBold
+const layout = FRONT_PARTS.saltBadge
 
 const RADIUS = 50
 // Two crests that curl to the right, as crescents on a band, with spray and two stars
@@ -51,8 +43,8 @@ function crescent(crest: typeof CRESTS[number]) {
         <circle :r="RADIUS" />
       </clipPath>
     </defs>
-    <circle :r="RADIUS" :fill="disc" data-ink="salt-badge" />
-    <g :clip-path="`url(#${clipId})`" :fill="waves" data-ink="salt-badge-waves">
+    <circle :r="RADIUS" :fill="disc" />
+    <g :clip-path="`url(#${clipId})`" :fill="waves">
       <rect :x="-RADIUS" :y="BAND.top" :width="2 * RADIUS" :height="BAND.bottom - BAND.top" />
       <path v-for="(crest, index) in CRESTS" :key="index" :d="crescent(crest)" fill-rule="evenodd" />
       <circle v-for="(dot, index) in [...SPRAY, ...STARS]" :key="`dot-${index}`" :cx="dot.x" :cy="dot.y" :r="dot.radius" />
@@ -68,8 +60,7 @@ function crescent(crest: typeof CRESTS[number]) {
       :font-size="layout[index].size"
       :textLength="layout[index].width"
       lengthAdjust="spacing"
-      :fill="ink"
-      data-ink="salt-badge-lettering"
+      :fill="INK"
     >
       {{ line }}
     </text>

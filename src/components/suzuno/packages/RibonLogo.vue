@@ -5,16 +5,10 @@
 import { useId } from 'vue'
 import { HOKKAIDO_MILK_FONTS, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
 
-const props = withDefaults(defineProps<{
-  name?: string
-  color?: string
-  /** The letter that the disc replaces. */
-  disc?: string
-}>(), {
-  name: 'RIBON',
-  color: '#c8161d',
-  disc: 'O',
-})
+const props = defineProps<{
+  name: string
+  color: string
+}>()
 
 useHokkaidoMilkFonts()
 
@@ -24,9 +18,11 @@ const FONT_SIZE = CAP_HEIGHT / 0.7
 const RADIUS = 0.56 * CAP_HEIGHT
 const GAP = 0.06 * CAP_HEIGHT
 const STRIPES = 5
+// The letter that the disc replaces
+const DISC_LETTER = 'O'
 
 const parts = computed(() => {
-  const index = props.name.indexOf(props.disc)
+  const index = props.name.indexOf(DISC_LETTER)
   return index < 0 ? null : { before: props.name.slice(0, index), after: props.name.slice(index + 1) }
 })
 const stripes = Array.from({ length: STRIPES }, (_, index) => {

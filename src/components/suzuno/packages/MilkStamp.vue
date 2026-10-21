@@ -5,28 +5,18 @@
 // the right. In its own coordinates: the centre at the origin, an outer
 // radius of 100.
 import { useId } from 'vue'
-import { HOKKAIDO_MILK_FONTS, HOKKAIDO_MILK_TEXTS, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
+import { HOKKAIDO_MILK_FONTS, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
 
-withDefaults(defineProps<{
-  top?: string
-  bottom?: string
-  middle?: string
+defineProps<{
+  top: string
+  bottom: string
+  middle: string
   /** Smaller text after the main text, like 味. */
-  middleSuffix?: string
-  color?: string
+  middleSuffix: string
+  color: string
   /** The ground of the band. */
-  paper?: string
-  /** The number of wavy lines; 0 for none. */
-  waves?: number
-}>(), {
-  top: HOKKAIDO_MILK_TEXTS.stamp.top,
-  bottom: HOKKAIDO_MILK_TEXTS.stamp.bottom,
-  middle: HOKKAIDO_MILK_TEXTS.stamp.middle,
-  middleSuffix: HOKKAIDO_MILK_TEXTS.stamp.middleSuffix,
-  color: '#a8862f',
-  paper: '#f7f7f6',
-  waves: 4,
-})
+  paper: string
+}>()
 
 useHokkaidoMilkFonts()
 
@@ -40,7 +30,7 @@ const RING_TEXT_SIZE = 30
 // The band across the middle, turned against the seal
 const BAND = { height: 52, width: 230, angle: -12 }
 const MIDDLE_SIZE = 38
-const WAVE = { start: 70, length: 130, spacing: 18, amplitude: 6, period: 32 }
+const WAVE = { count: 4, start: 70, length: 130, spacing: 18, amplitude: 6, period: 32 }
 
 const id = useId()
 const topArc = `${id}-top`
@@ -59,7 +49,7 @@ function wave(index: number) {
   <g :fill="color" :stroke="color">
     <path :id="topArc" :d="`M${-TEXT_RADIUS} 0 A${TEXT_RADIUS} ${TEXT_RADIUS} 0 0 1 ${TEXT_RADIUS} 0`" fill="none" stroke="none" />
     <path :id="bottomArc" :d="`M${-TEXT_RADIUS - 10} 0 A${TEXT_RADIUS + 10} ${TEXT_RADIUS + 10} 0 0 0 ${TEXT_RADIUS + 10} 0`" fill="none" stroke="none" />
-    <path v-for="index in waves" :key="index" :d="wave(index)" fill="none" stroke-width="4" stroke-linecap="round" />
+    <path v-for="index in WAVE.count" :key="index" :d="wave(index)" fill="none" stroke-width="4" stroke-linecap="round" />
     <circle :r="RADIUS - RING / 2" fill="none" :stroke-width="RING" />
     <circle :r="INNER_RADIUS" fill="none" :stroke-width="INNER_RING" />
     <g stroke="none" :font-family="HOKKAIDO_MILK_FONTS.times" font-weight="700" :font-size="RING_TEXT_SIZE" letter-spacing="2">

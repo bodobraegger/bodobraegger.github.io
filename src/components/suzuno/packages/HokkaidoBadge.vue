@@ -6,23 +6,18 @@
 import type { BadgeLine } from '~/lib/suzuno/packages/hokkaido-milk'
 import { HOKKAIDO_MILK_FONTS, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   lines: BadgeLine[]
-  color?: string
-  edge?: string
-  shadow?: string
-  /** The distance between baselines, in cap heights of the lower line. */
-  lineHeight?: number
-}>(), {
-  color: '#1d3f8f',
-  edge: '#ffffff',
-  shadow: '#9aa0a6',
-  lineHeight: 1.12,
-})
+  color: string
+  edge: string
+  shadow: string
+}>()
 
 useHokkaidoMilkFonts()
 
 const CAP_HEIGHT = 100
+// The distance between baselines, in cap heights of the lower line
+const LINE_HEIGHT = 1.12
 // The kana and kanji of Noto Serif JP fill about 0.88 em above the baseline; Tinos capitals 0.66 em
 const EM = { mincho: CAP_HEIGHT / 0.88, times: CAP_HEIGHT / 0.66 }
 const EDGE = 0.2 * CAP_HEIGHT
@@ -33,7 +28,7 @@ const placed = computed(() => {
   return props.lines.map((line, index) => {
     const size = line.size ?? 1
     if (index > 0)
-      y += size * props.lineHeight * CAP_HEIGHT
+      y += size * LINE_HEIGHT * CAP_HEIGHT
     const font = line.font ?? 'mincho'
     return { ...line, y, fontSize: EM[font] * size, family: HOKKAIDO_MILK_FONTS[font], weight: font === 'times' ? 700 : 900, size }
   })

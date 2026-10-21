@@ -2,25 +2,21 @@
 // The small white label at the bottom of the orange MARUKAWA export box: a
 // heading with a dark badge after it, and centred lines below, in Helvetica
 // (Arimo stands in). It fills the box x, y, width, height of its parent.
-import { fontSizeForCapHeight, textWidth, useWebFonts } from '~/lib/suzuno/packages/lettering'
+import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 import type { MarukawaLabelText } from '~/lib/suzuno/packages/marukawa'
-import { MARUKAWA_FONTS } from '~/lib/suzuno/packages/marukawa'
+import { MARUKAWA_FONTS, fontSizeForCapHeight, textWidth } from '~/lib/suzuno/packages/marukawa'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   text: MarukawaLabelText
   x: number
   y: number
   width: number
   height: number
-  color?: string
-  paper?: string
-}>(), {
-  color: '#2e2a28',
-  paper: '#ffffff',
-})
+  color: string
+}>()
 
 const { helvetica, helveticaBold } = MARUKAWA_FONTS
-useWebFonts(() => [helvetica, helveticaBold])
+useWebFonts(helvetica, helveticaBold)
 
 // The label in its own units, scaled to its box
 const BOX = { width: 100, height: 60 }
@@ -28,6 +24,7 @@ const MARGIN = 6
 const HEADING = { baseline: 17, capHeight: 10 }
 const LINES = { first: 37, spacing: 15, capHeight: 8 }
 const BADGE_GAP = 4
+const PAPER = '#ffffff'
 
 const headingSize = fontSizeForCapHeight(HEADING.capHeight, helveticaBold.metrics)
 const lineSize = fontSizeForCapHeight(LINES.capHeight, helvetica.metrics)
@@ -45,18 +42,18 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
 
 <template>
   <g :transform="`translate(${x} ${y}) scale(${width / BOX.width} ${height / BOX.height})`" :font-family="helvetica.family">
-    <rect :width="BOX.width" :height="BOX.height" :fill="paper" data-ink="label-paper" />
-    <text :x="MARGIN" :y="HEADING.baseline" font-weight="700" :font-size="headingSize" :fill="color" data-ink="label">
+    <rect :width="BOX.width" :height="BOX.height" :fill="PAPER" />
+    <text :x="MARGIN" :y="HEADING.baseline" font-weight="700" :font-size="headingSize" :fill="color">
       {{ text.heading }}
     </text>
-    <rect v-bind="badge" :rx="badge.height / 2" :fill="color" data-ink="label" />
+    <rect v-bind="badge" :rx="badge.height / 2" :fill="color" />
     <text
       :x="badge.x + badge.width / 2"
       :y="HEADING.baseline"
       text-anchor="middle"
       font-weight="700"
       :font-size="headingSize"
-      :fill="paper"
+      :fill="PAPER"
       :textLength="badge.width - 2 * BADGE_GAP"
       lengthAdjust="spacingAndGlyphs"
     >
@@ -72,7 +69,6 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
       :fill="color"
       :textLength="lineLength(line)"
       lengthAdjust="spacingAndGlyphs"
-      data-ink="label"
     >
       {{ line }}
     </text>

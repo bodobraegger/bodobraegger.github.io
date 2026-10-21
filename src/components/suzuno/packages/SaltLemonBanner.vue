@@ -3,36 +3,23 @@
 // way to take in salt"): white lettering with a blue edge between two dashes.
 // In its own coordinates the middle of the line is at the origin and the font
 // size is 100. Place it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
-import type { BannerLayout, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
 import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-const props = withDefaults(defineProps<{
-  text?: string
-  ink?: string
-  edge?: string
-  font?: SaltLemonFont
-  layout?: BannerLayout
-  /** Leaves out the dashes. */
-  plain?: boolean
-}>(), {
-  text: '気軽に塩分補給',
-  ink: FRONT_COLORS.ink,
-  edge: FRONT_COLORS.edge,
-  font: () => SALT_LEMON_FONTS.rounded,
-  layout: () => FRONT_PARTS.banner,
-  plain: false,
-})
+const props = defineProps<{
+  text: string
+}>()
 
 useSaltLemonFonts()
 
 const FONT_SIZE = 100
+const { ink, edge } = FRONT_COLORS
+const font = SALT_LEMON_FONTS.rounded
+const layout = FRONT_PARTS.banner
 
 // The characters are full-width, so the line is one font size long for each, plus the spacing between them
-const halfWidth = computed(() => ([...props.text].length * (1 + props.layout.tracking) - props.layout.tracking) * FONT_SIZE / 2)
+const halfWidth = computed(() => ([...props.text].length * (1 + layout.tracking) - layout.tracking) * FONT_SIZE / 2)
 const dashBoxes = computed(() => {
-  if (props.plain)
-    return []
-  const { length, gap, thickness } = props.layout.dashes
+  const { length, gap, thickness } = layout.dashes
   const start = halfWidth.value + gap * FONT_SIZE
   const box = { y: -thickness * FONT_SIZE / 2, width: length * FONT_SIZE, height: thickness * FONT_SIZE }
   return [{ ...box, x: -start - box.width }, { ...box, x: start }]
@@ -40,7 +27,7 @@ const dashBoxes = computed(() => {
 </script>
 
 <template>
-  <g :fill="ink" :stroke="edge" :stroke-width="layout.edgeWidth * FONT_SIZE" stroke-linejoin="round" paint-order="stroke" data-ink="banner">
+  <g :fill="ink" :stroke="edge" :stroke-width="layout.edgeWidth * FONT_SIZE" stroke-linejoin="round" paint-order="stroke">
     <rect v-for="(dash, index) in dashBoxes" :key="index" v-bind="dash" />
     <!-- The spacing after the last character would move the line off the middle -->
     <text

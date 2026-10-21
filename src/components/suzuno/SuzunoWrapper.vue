@@ -14,7 +14,8 @@ const props = withDefaults(defineProps<{
   face: 'front',
 })
 
-const definition = computed(() => packageFace('SuzunoWrapper', WRAPPER_FACES, props.item, props.face))
+// In setup, so that the build prints an unknown item and still writes the page
+const definition = packageFace('SuzunoWrapper', WRAPPER_FACES, props.item, props.face)
 </script>
 
 <template>
