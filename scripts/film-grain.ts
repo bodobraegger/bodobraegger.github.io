@@ -258,12 +258,13 @@ function grainTiles(next: Random, model: CloudModel): GrainTiles {
       .map(value => value * gain)
   })
   const luma = standardize(channels[0].map((_, index) => LUMA_WEIGHTS.reduce((sum, weight, channel) => sum + weight * channels[channel][index], 0)))
+  const grey = (value: number) => quantize(128 + GREY_SCALE * value)
   const color = new Uint8Array(luma.length * 3)
   channels.forEach((values, channel) => values.forEach((value, index) => {
-    color[index * 3 + channel] = quantize(128 + GREY_SCALE * value)
+    color[index * 3 + channel] = grey(value)
   }))
   return {
-    mono: Uint8Array.from(luma, value => quantize(128 + GREY_SCALE * value)),
+    mono: Uint8Array.from(luma, grey),
     color,
     prime: alphaTile(cloudField(next, model, PRIME_TILE_SIZE)),
   }
@@ -409,7 +410,7 @@ async function suzunoTiles(): Promise<[URL, Buffer][]> {
   })
   const [red, green, blue] = fractalNoiseTile(INK_TEXTURE)
   const ink = Uint8Array.from(red, (value, index) =>
-    quantize(255 * Math.max(0, Math.min(1, INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index])))))
+    quantize(255 * (INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index]))))
   return [
     [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size, 4)],
     [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size, 1)],
