@@ -21,7 +21,7 @@ export const MARUKAWA_FACE = { width: 144, height: 136 }
 // behind a word or a word after another word.
 
 /** A web font of the lettering, with the stylesheet that loads it and its advance widths. */
-export interface LetteringFont {
+interface LetteringFont {
   family: string
   weight: number
   stylesheet: string
@@ -32,7 +32,7 @@ export interface LetteringFont {
 export const CAP_HEIGHT = 100
 
 /** A line of lettering in the coordinates of its parent. */
-export interface LetteringPlace {
+interface LetteringPlace {
   /** The start of the baseline, or its middle for centred lettering. */
   x: number
   y: number
@@ -104,7 +104,7 @@ export interface MarukawaTexts {
   label?: MarukawaLabelText
 }
 
-export interface MarukawaLayout {
+interface MarukawaLayout {
   /** gap: the space between the mark and the name, in cap heights; markScale: the size of the mark. */
   logo: LetteringPlace & { gap: number, markScale: number }
   /** The flavour is narrowed further when it is wider than maxWidth. */
@@ -117,7 +117,7 @@ export interface MarukawaLayout {
 }
 
 /** The colours of a box; null removes a part. */
-export interface MarukawaColours {
+interface MarukawaColours {
   flavourColor: string
   /** The dark edge around the flavour letters. */
   flavourOutline: string | null

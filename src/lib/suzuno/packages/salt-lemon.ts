@@ -8,7 +8,7 @@ import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
 export const SALT_LEMON_FRONT = { width: 677, height: 891 }
 
-export interface SaltLemonFont {
+interface SaltLemonFont {
   family: string
   weight: number
 }
@@ -67,14 +67,14 @@ export interface Box {
 }
 
 /** A vertical line of lettering: the middle of the column, its top, the font size and the letter spacing. */
-export interface ColumnPlace {
+interface ColumnPlace {
   x: number
   y: number
   size: number
   spacing: number
 }
 
-export interface TitleLayout {
+interface TitleLayout {
   /** The distance of the frame from the edge of the panel, and the width of its line. */
   frameInset: number
   frameWidth: number
@@ -88,8 +88,8 @@ export interface TitleLayout {
   ruby: ColumnPlace & { outline: number }
 }
 
-/** The colours of the front. The parts take further colours as their own props. */
-export interface FrontColors {
+/** The fitted colours of the front. */
+interface FrontColors {
   /** The clear film of the seams round the print. */
   film: string
   panel: [string, string]
@@ -105,7 +105,7 @@ export interface FrontColors {
 }
 
 /** The places of the parts of the front, in face pixels. */
-export interface FrontLayout {
+interface FrontLayout {
   /** The printed area inside the seams, where the photo lies. */
   print: Box
   hangHole: { x: number, y: number, radius: number }
@@ -123,16 +123,16 @@ export interface FrontLayout {
 }
 
 /** The ring round the oval of KatoLogo, and the middle, font size, width and white edge of its tagline. */
-export interface LogoLayout {
+interface LogoLayout {
   ring: number
   tagline: { y: number, size: number, width: number, halo: number }
 }
 
 /** For each line of SaltBadge: its middle, its font size and its width. */
-export type SaltBadgeLayout = { y: number, size: number, width: number }[]
+type SaltBadgeLayout = { y: number, size: number, width: number }[]
 
 /** The places in CitricAcidBadge, in units of its horizontal radius of 100. */
-export interface AcidBadgeLayout {
+interface AcidBadgeLayout {
   radiusY: number
   rimWidth: number
   label: { y: number, size: number, width: number }
@@ -144,7 +144,7 @@ export interface AcidBadgeLayout {
 }
 
 /** The lettering of SaltLemonBanner, in font sizes: the width of the edge, the letter spacing and the dashes. */
-export interface BannerLayout {
+interface BannerLayout {
   edgeWidth: number
   tracking: number
   dashes: { length: number, gap: number, thickness: number }
@@ -176,7 +176,7 @@ export const SALT_LEMON_TEXTS = {
 export type SaltLemonTexts = typeof SALT_LEMON_TEXTS
 
 /** The layouts inside the parts of the front. */
-export interface FrontParts {
+interface FrontParts {
   title: TitleLayout
   logo: LogoLayout
   saltBadge: SaltBadgeLayout
