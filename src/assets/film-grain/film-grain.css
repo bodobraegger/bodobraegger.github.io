@@ -23,7 +23,6 @@
 
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
 
   @media (resolution >= 1.125dppx) {
@@ -76,7 +75,6 @@
   content: '';
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background-size:
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 241),
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 256);
