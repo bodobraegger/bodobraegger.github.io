@@ -4,6 +4,8 @@
 // the small title with its map and claims, the calcium note, the nutrition
 // table, the notice and the address on the left; the best-before date, the
 // product label, the barcode, the homepage and the recycling mark on the right.
+import milkCan from '~/assets/suzuno/packages/hokkaido-milk-can.webp'
+import mascot from '~/assets/suzuno/packages/hokkaido-milk-mascot.webp'
 import Ean13Barcode from '~/components/suzuno/packages/Ean13Barcode.vue'
 import HokkaidoBadge from '~/components/suzuno/packages/HokkaidoBadge.vue'
 import HokkaidoMap from '~/components/suzuno/packages/HokkaidoMap.vue'
@@ -11,11 +13,11 @@ import HokkaidoTitle from '~/components/suzuno/packages/HokkaidoTitle.vue'
 import LabelTable from '~/components/suzuno/packages/LabelTable.vue'
 import RecyclingMark from '~/components/suzuno/packages/RecyclingMark.vue'
 import type { TableLayout } from '~/lib/suzuno/packages/almond-caramel'
-import type { FaceLayout, HokkaidoMilkBagContent } from '~/lib/suzuno/packages/hokkaido-milk'
+import type { FaceLayout, HokkaidoMilkBagTexts } from '~/lib/suzuno/packages/hokkaido-milk'
 import { HOKKAIDO_MILK_FONTS, placePart } from '~/lib/suzuno/packages/hokkaido-milk'
 
 const props = defineProps<{
-  content: HokkaidoMilkBagContent
+  texts: HokkaidoMilkBagTexts
   layout: FaceLayout
 }>()
 
@@ -36,13 +38,13 @@ const RECYCLING_MARK = { x: 0, y: 0, width: 26, height: 22 }
 const parts = computed(() => props.layout.parts)
 const inks = computed(() => props.layout.inks)
 const spacings = computed(() => props.layout.spacings ?? {})
-const back = computed(() => props.content.back)
+const back = computed(() => props.texts.back)
 
 // Two spanning rows, the heading and the serving, come before the rows
 const nutritionBottom = computed(() => (back.value.nutrition.rows.length + 2) * NUTRITION.rowHeight)
 const labelRows = computed(() => {
   const { rows, weightRow, rowsAfterWeight } = back.value.label
-  return [...rows, { heading: weightRow[0], lines: [`${props.content.weight}${weightRow[1]}`] }, ...rowsAfterWeight]
+  return [...rows, { heading: weightRow[0], lines: [`${props.texts.weight}${weightRow[1]}`] }, ...rowsAfterWeight]
 })
 </script>
 
@@ -65,9 +67,9 @@ const labelRows = computed(() => {
       :fill="inks.tagline"
       data-part="tagline"
     >
-      {{ content.tagline }}
+      {{ texts.tagline }}
     </text>
-    <HokkaidoTitle :transform="placePart(parts.title)" :text="content.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
+    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
     <text
       :transform="placePart(parts.subtitle)"
       text-anchor="middle"
@@ -78,13 +80,13 @@ const labelRows = computed(() => {
       :fill="inks.subtitle"
       data-part="subtitle"
     >
-      {{ content.subtitle }}
+      {{ texts.subtitle }}
     </text>
 
     <g :transform="placePart(parts.badges)" data-part="badges">
       <g v-for="(badge, index) in SMALL_BADGES" :key="badge.x">
-        <image :href="content.can" :x="badge.x - SMALL_CAN.width / 2" :y="SMALL_CAN.y" :width="SMALL_CAN.width" :height="SMALL_CAN.height" />
-        <HokkaidoBadge :transform="`translate(${badge.x} 16) scale(${badge.scale})`" :lines="content.badges[index] ?? []" :color="inks[`${BADGES[index]}:badge`]" :edge="inks['badge-edge']" :shadow="inks['badge-shadow']" />
+        <image :href="milkCan" :x="badge.x - SMALL_CAN.width / 2" :y="SMALL_CAN.y" :width="SMALL_CAN.width" :height="SMALL_CAN.height" />
+        <HokkaidoBadge :transform="`translate(${badge.x} 16) scale(${badge.scale})`" :lines="texts.badges[index] ?? []" :color="inks[`${BADGES[index]}:badge`]" :edge="inks['badge-edge']" :shadow="inks['badge-shadow']" />
       </g>
     </g>
 
@@ -168,7 +170,7 @@ const labelRows = computed(() => {
 
     <g :transform="placePart(parts.homepage)" data-part="homepage">
       <rect x="22" y="3" width="140" height="23" rx="7" :fill="inks.blue" fill-opacity="0.35" />
-      <image :href="content.mascot" width="37" height="32" />
+      <image :href="mascot" width="37" height="32" />
       <text x="38" y="13" :font-size="7.8">
         {{ back.homepage[0] }}
       </text>

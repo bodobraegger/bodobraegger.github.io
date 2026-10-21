@@ -5,46 +5,40 @@
 // coordinates the oval has its centre at the origin and a horizontal radius of
 // 100. Place it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
 import { useId } from 'vue'
-import type { AcidBadgeLayout, BadgeSphere, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
-import { ACID_BADGE_SPHERES, ACID_BADGE_TEXTS, FRONT_COLORS, FRONT_PARTS, FRONT_PART_TEXTS, SALT_LEMON_FONTS, formulaParts, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
+import type { SaltLemonTexts } from '~/lib/suzuno/packages/salt-lemon'
+import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, SALT_LEMON_TEXTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-const props = withDefaults(defineProps<{
-  label?: string
-  /** The citric acid in one bag, in mg. */
-  citricAcidMg?: number
-  /** The line of the amount; {mg} stands for citricAcidMg. */
-  amountTemplate?: string
-  spheres?: [BadgeSphere, BadgeSphere]
-  /** The oval: the colours of its middle and its edge, and its rim. */
-  disc?: [string, string]
-  rim?: string
-  ink?: string
-  /** The blue glow round the white lettering. */
-  glow?: string
-  font?: SaltLemonFont
-  captionFont?: SaltLemonFont
-  layout?: AcidBadgeLayout
-}>(), {
-  label: ACID_BADGE_TEXTS.label,
-  citricAcidMg: FRONT_PART_TEXTS.citricAcidMg,
-  amountTemplate: ACID_BADGE_TEXTS.amountTemplate,
-  spheres: () => ACID_BADGE_SPHERES,
-  disc: () => FRONT_COLORS.acidDisc,
-  rim: '#eef6f8',
-  ink: '#ffffff',
-  glow: FRONT_COLORS.edge,
-  font: () => SALT_LEMON_FONTS.mincho,
-  captionFont: () => SALT_LEMON_FONTS.rounded,
-  layout: () => FRONT_PARTS.acidBadge,
-})
+const props = defineProps<{
+  texts: SaltLemonTexts['acidBadge']
+}>()
 
 useSaltLemonFonts()
+
+// The colours of each sphere (the light middle and the dark edge), and the
+// width that narrows a long formula. A sphere that the texts leave out keeps
+// the texts of the print.
+const SPHERES = [
+  { colors: ['#3aa6dc', '#0d5c97'] },
+  { colors: ['#e868a6', '#a91d63'], width: 34 },
+]
+const RIM = '#eef6f8'
+const INK = '#ffffff'
+// The oval: the colours of its middle and its edge, and the blue glow round the white lettering
+const { acidDisc: disc, edge: glow } = FRONT_COLORS
+const { mincho: font, rounded: captionFont } = SALT_LEMON_FONTS
+const layout = FRONT_PARTS.acidBadge
 
 const id = useId()
 const discId = `${id}-disc`
 const sphereIds = [`${id}-sphere-0`, `${id}-sphere-1`]
-const amount = computed(() => props.amountTemplate.replace('{mg}', String(props.citricAcidMg)))
-const sphereXs = computed(() => [-props.layout.spheres.spacing, props.layout.spheres.spacing])
+const amount = computed(() => props.texts.amount.replace('{mg}', String(props.texts.mg)))
+const spheres = computed(() => SPHERES.map((sphere, index) => ({ ...sphere, ...SALT_LEMON_TEXTS.acidBadge.spheres[index], ...props.texts.spheres[index] })))
+const sphereXs = [-layout.spheres.spacing, layout.spheres.spacing]
+
+/** A chemical formula with its digits as subscripts, for example C6H8O7. */
+function formulaParts(formula: string) {
+  return [...formula.matchAll(/(\D+)|(\d+)/g)].map(([text, letters]) => ({ text, subscript: !letters }))
+}
 </script>
 
 <template>
@@ -59,17 +53,17 @@ const sphereXs = computed(() => [-props.layout.spheres.spacing, props.layout.sph
         <stop offset="1" :stop-color="sphere.colors[1]" />
       </radialGradient>
     </defs>
-    <ellipse rx="100" :ry="layout.radiusY" :fill="`url(#${discId})`" :stroke="rim" :stroke-width="layout.rimWidth" data-ink="acid-badge" />
-    <g :fill="ink" :stroke="glow" :stroke-width="layout.glow" stroke-linejoin="round" paint-order="stroke" text-anchor="middle" dominant-baseline="central" data-ink="acid-badge-lettering">
+    <ellipse rx="100" :ry="layout.radiusY" :fill="`url(#${discId})`" :stroke="RIM" :stroke-width="layout.rimWidth" data-ink="acid-badge" />
+    <g :fill="INK" :stroke="glow" :stroke-width="layout.glow" stroke-linejoin="round" paint-order="stroke" text-anchor="middle" dominant-baseline="central" data-ink="acid-badge-lettering">
       <text :y="layout.label.y" :font-size="layout.label.size" :textLength="layout.label.width" lengthAdjust="spacingAndGlyphs">
-        {{ label }}
+        {{ texts.label }}
       </text>
       <text :y="layout.amount.y" :font-size="layout.amount.size" :textLength="layout.amount.width" lengthAdjust="spacingAndGlyphs">
         {{ amount }}
       </text>
     </g>
     <g v-for="(sphere, index) in spheres" :key="index" :transform="`translate(${sphereXs[index]} ${layout.spheres.y})`" data-ink="acid-badge-sphere">
-      <circle :r="layout.spheres.radius" :fill="`url(#${sphereIds[index]})`" :stroke="rim" :stroke-width="layout.rimWidth / 2" />
+      <circle :r="layout.spheres.radius" :fill="`url(#${sphereIds[index]})`" :stroke="RIM" :stroke-width="layout.rimWidth / 2" />
       <text
         :y="layout.spheres.captionY"
         :font-size="layout.spheres.captionSize"
@@ -77,7 +71,7 @@ const sphereXs = computed(() => [-props.layout.spheres.spacing, props.layout.sph
         :font-weight="captionFont.weight"
         text-anchor="middle"
         dominant-baseline="central"
-        :fill="ink"
+        :fill="INK"
       >
         {{ sphere.caption }}
       </text>
@@ -86,7 +80,7 @@ const sphereXs = computed(() => [-props.layout.spheres.spacing, props.layout.sph
         :font-size="layout.spheres.size"
         text-anchor="middle"
         dominant-baseline="central"
-        :fill="ink"
+        :fill="INK"
         :textLength="sphere.width"
         lengthAdjust="spacingAndGlyphs"
       >
@@ -100,7 +94,7 @@ const sphereXs = computed(() => [-props.layout.spheres.spacing, props.layout.sph
         </tspan>
       </text>
     </g>
-    <text :y="layout.spheres.y" text-anchor="middle" dominant-baseline="central" :font-size="layout.spheres.size * 0.8" :fill="ink" data-ink="acid-badge-lettering">
+    <text :y="layout.spheres.y" text-anchor="middle" dominant-baseline="central" :font-size="layout.spheres.size * 0.8" :fill="INK" data-ink="acid-badge-lettering">
       +
     </text>
   </g>

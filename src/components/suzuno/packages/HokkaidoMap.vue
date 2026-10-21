@@ -7,24 +7,20 @@ import { useId } from 'vue'
 import BrushStrokes from '~/components/suzuno/packages/BrushStrokes.vue'
 import { MAP_PATH } from '~/lib/suzuno/packages/hokkaido-milk-paths'
 
-withDefaults(defineProps<{
-  color?: string
-  strokes?: string
-  /** The softness of the edge of the paint, in units of the part. */
-  softness?: number
-}>(), {
-  color: '#9fd4f2',
-  strokes: '#3aa6e0',
-  softness: 0.6,
-})
+defineProps<{
+  color: string
+  strokes: string
+}>()
 
+// The softness of the edge of the paint, in units of the part
+const SOFTNESS = 0.6
 const filterId = `${useId()}-soft`
 </script>
 
 <template>
-  <g :filter="softness ? `url(#${filterId})` : undefined">
+  <g :filter="`url(#${filterId})`">
     <filter :id="filterId" x="-5%" y="-5%" width="110%" height="110%">
-      <feGaussianBlur :stdDeviation="softness" />
+      <feGaussianBlur :stdDeviation="SOFTNESS" />
     </filter>
     <path :d="MAP_PATH" :fill="color" />
     <BrushStrokes :color="strokes" />

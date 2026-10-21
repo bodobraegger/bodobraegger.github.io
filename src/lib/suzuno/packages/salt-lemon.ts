@@ -1,13 +1,12 @@
-// The salt lemon candy bag (塩レモンキャンディ, 加藤製菓, 58 g): the sizes of its
-// faces, the fonts of its lettering and the texts that the parts share. The
-// front is in the pixels of the flat print artwork of the maker (677 x 891),
-// upright and rectangular. tools/fits/packages/salt-lemon.mjs fits the places
-// and colours of salt-lemon-fit.json to flattened references.
+// The salt lemon candy bag (塩レモンキャンディ, 加藤製菓, 58 g): the size of its
+// front, the fonts of its lettering and its texts. The front is in the pixels
+// of the flat print artwork of the maker (677 x 891), upright and
+// rectangular. tools/fits/packages/salt-lemon.mjs fits the places and colours
+// of salt-lemon-fit.json to flattened references.
 import fitted from '~/lib/suzuno/packages/salt-lemon-fit.json'
 import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
 export const SALT_LEMON_FRONT = { width: 677, height: 891 }
-export const SALT_LEMON_BACK = { width: 588, height: 726 }
 
 export interface SaltLemonFont {
   family: string
@@ -67,25 +66,6 @@ export interface Box {
   height: number
 }
 
-/** The texts of the title panel, which the front and the picture on the back share. */
-export interface SaltLemonTitleTexts {
-  /** The large character in the top field. */
-  kanji: string
-  /** The reading of the kanji, beside the panel. */
-  ruby: string
-  /** The large vertical line below. */
-  name: string
-  /** The small vertical line at the foot. */
-  kind: string
-}
-
-export const SALT_LEMON_TITLE: SaltLemonTitleTexts = {
-  kanji: '塩',
-  ruby: 'しお',
-  name: 'レモン',
-  kind: 'キャンディ',
-}
-
 /** A vertical line of lettering: the middle of the column, its top, the font size and the letter spacing. */
 export interface ColumnPlace {
   x: number
@@ -106,22 +86,6 @@ export interface TitleLayout {
   kind: ColumnPlace
   /** The reading, outside the right edge of the panel. */
   ruby: ColumnPlace & { outline: number }
-}
-
-/** The size of the title panel of the front, in face pixels: the own coordinates of SaltLemonTitle. */
-export const TITLE_PANEL = { width: 101, height: 432 }
-
-/** A sphere of the citric acid badge: its symbol or formula, its caption, its colours (the light middle and the dark edge), and the width that narrows a long formula. */
-export interface BadgeSphere {
-  symbol: string
-  caption: string
-  colors: [string, string]
-  width?: number
-}
-
-/** A chemical formula with its digits as subscripts, for example C6H8O7. */
-export function formulaParts(formula: string) {
-  return [...formula.matchAll(/(\D+)|(\d+)/g)].map(([text, letters]) => ({ text, subscript: !letters }))
 }
 
 /** The colours of the front. The parts take further colours as their own props. */
@@ -186,45 +150,32 @@ export interface BannerLayout {
   dashes: { length: number, gap: number, thickness: number }
 }
 
-/** The texts of the front other than the title. */
-export interface FrontTexts {
-  banner: string
-  tagline: string
-  /** The small print at the foot, left and right. */
-  notes: [string, string]
-}
-
-export const FRONT_TEXTS: FrontTexts = {
+/** The texts of the front. */
+export const SALT_LEMON_TEXTS = {
+  /** The title panel: the large character in the top field, its reading beside the panel, and the large and the small vertical line below. */
+  kanji: '塩',
+  ruby: 'しお',
+  name: 'レモン',
+  kind: 'キャンディ',
   banner: '気軽に塩分補給',
   tagline: 'ほんのりすっぱいレモン味',
+  /** The small print at the foot, left and right. */
   notes: ['写真はイメージです。', '無果汁'],
+  /** Without a name, the logo shows the drawn letters カトウ. */
+  logo: { name: undefined as string | undefined, tagline: '一粒の小さな友達' },
+  saltBadge: ['鳴門の塩', '使用'],
+  /** The citric acid in one bag, in mg, for {mg} in the amount, and the symbol or formula and the caption of each sphere. */
+  acidBadge: {
+    label: 'クエン酸',
+    amount: '(1袋あたり{mg}mg)',
+    mg: 830,
+    spheres: [{ symbol: 'Na', caption: 'ナトリウム' }, { symbol: 'C6H8O7', caption: 'クエン酸' }],
+  },
 }
 
-/** The texts of the parts of the front: the tagline of the logo, the lines of the salt badge and the citric acid in one bag, in mg. */
-export const FRONT_PART_TEXTS = {
-  logoTagline: '一粒の小さな友達',
-  saltLines: ['鳴門の塩', '使用'],
-  citricAcidMg: 830,
-}
+export type SaltLemonTexts = typeof SALT_LEMON_TEXTS
 
-/** The texts of CitricAcidBadge. */
-export interface AcidBadgeTexts {
-  label: string
-  /** The line of the amount; {mg} stands for the citric acid in one bag. */
-  amountTemplate: string
-}
-
-export const ACID_BADGE_TEXTS: AcidBadgeTexts = {
-  label: 'クエン酸',
-  amountTemplate: '(1袋あたり{mg}mg)',
-}
-
-export const ACID_BADGE_SPHERES: [BadgeSphere, BadgeSphere] = [
-  { symbol: 'Na', caption: 'ナトリウム', colors: ['#3aa6dc', '#0d5c97'] },
-  { symbol: 'C6H8O7', caption: 'クエン酸', colors: ['#e868a6', '#a91d63'], width: 34 },
-]
-
-/** The layouts of the parts of the front, which the parts also take as their own defaults. */
+/** The layouts inside the parts of the front. */
 export interface FrontParts {
   title: TitleLayout
   logo: LogoLayout

@@ -4,11 +4,11 @@
 // C-A-R-A-M-E-L with dots, a rule and the English sentence. In its own
 // coordinates: the middle of the oval at the origin, in face pixels at a
 // scale of 1. Place it with placementTransform (src/lib/suzuno/packages/almond-caramel.ts).
-import type { LabelLayout, PrintFont } from '~/lib/suzuno/packages/almond-caramel'
+import type { LabelLayout } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS, blockLines, textAttributes } from '~/lib/suzuno/packages/almond-caramel'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   layout: LabelLayout
   intro: string[]
   name: string
@@ -19,16 +19,10 @@ const props = withDefaults(defineProps<{
   ink: string
   /** The colour of the spaced word. */
   green: string
-  nameFont?: PrintFont
-  spacedFont?: PrintFont
-  lineFont?: PrintFont
-}>(), {
-  nameFont: () => ALMOND_CARAMEL_FONTS.condensed,
-  spacedFont: () => ALMOND_CARAMEL_FONTS.extended,
-  lineFont: () => ALMOND_CARAMEL_FONTS.serif,
-})
+}>()
 
-useWebFonts(() => [props.nameFont, props.spacedFont, props.lineFont])
+const { condensed: nameFont, extended: spacedFont, serif: lineFont } = ALMOND_CARAMEL_FONTS
+useWebFonts(() => [nameFont, spacedFont, lineFont])
 
 const innerOval = computed(() => {
   const { rx, ry, outline, gap, inner } = props.layout

@@ -2,21 +2,19 @@
 // An EAN-13 barcode with its digits. The bars fill the box x, y, width,
 // height of the parent; the guard bars reach down between the digits, and the
 // first digit stands left of the box, in the quiet zone.
-import type { BarcodeLayout, PrintFont } from '~/lib/suzuno/packages/almond-caramel'
+import type { BarcodeLayout } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS } from '~/lib/suzuno/packages/almond-caramel'
 import { EAN13_MODULES, ean13Bars } from '~/lib/suzuno/packages/ean13'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   layout: BarcodeLayout
   digits: string
   color: string
-  font?: PrintFont
-}>(), {
-  font: () => ALMOND_CARAMEL_FONTS.gothic,
-})
+}>()
 
-useWebFonts(() => [props.font])
+const font = ALMOND_CARAMEL_FONTS.gothic
+useWebFonts(() => [font])
 
 // The digit groups, in modules: the first digit left of the start guard, and the two halves
 const GROUPS = [

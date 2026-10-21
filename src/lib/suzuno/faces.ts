@@ -12,31 +12,27 @@ import MarukawaBox from '~/components/suzuno/packages/MarukawaBox.vue'
 import SaltLemonFront from '~/components/suzuno/packages/SaltLemonFront.vue'
 import { COVER_TEXTS } from '~/lib/suzuno/cover-typography'
 import { ALMOND_CARAMEL_PIECE_TEXTS, ALMOND_CARAMEL_TEXTS } from '~/lib/suzuno/packages/almond-caramel'
-import { HOKKAIDO_MILK_CANDY_TEXTS, HOKKAIDO_MILK_CONTENT, HOKKAIDO_MILK_TEXTS } from '~/lib/suzuno/packages/hokkaido-milk'
+import { HOKKAIDO_MILK_BAG_TEXTS, HOKKAIDO_MILK_CANDY_TEXTS } from '~/lib/suzuno/packages/hokkaido-milk'
 import type { MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
-import { MARUKAWA_PRESETS } from '~/lib/suzuno/packages/marukawa'
-import type { BadgeSphere } from '~/lib/suzuno/packages/salt-lemon'
-import { ACID_BADGE_SPHERES, ACID_BADGE_TEXTS, FRONT_PART_TEXTS, FRONT_TEXTS, SALT_LEMON_TITLE } from '~/lib/suzuno/packages/salt-lemon'
+import { MARUKAWA_TEXTS } from '~/lib/suzuno/packages/marukawa'
+import { SALT_LEMON_TEXTS } from '~/lib/suzuno/packages/salt-lemon'
 
-// The table holds faces with texts of many types, so its entries take any texts
-export interface DifferenceFace<Texts extends object = any> {
+export interface DifferenceFace {
   /** What the face shows, the alternative text of its reference image. */
   title: string
   /** The reference image, a path in src/assets/suzuno/reference/. */
   reference: string
-  /** The recreation. It fills the width of its box. */
+  /** The recreation. It fills the width of its box and shows the texts of its prop `texts`. */
   component: Component
   /** The props that choose the face, such as its side. */
   props?: Record<string, unknown>
   /** The texts of the print. */
-  texts: Texts
-  /** The props of the recreation that show the texts. */
-  textProps: (texts: Texts) => Record<string, unknown>
+  texts: object
   /**
    * The texts for blank texts: they turn lettering that the recreation draws
    * as shapes, such as the traced 北海道, into text, which blank texts hide.
    */
-  blank?: Partial<Texts>
+  blank?: object
   /** Props with smaller images, for a face narrower than SMALL_FACE_WIDTH. */
   small?: Record<string, unknown>
 }
@@ -56,161 +52,106 @@ function smallImage(name: string) {
   return SMALL_IMAGES[`/src/assets/suzuno/${name}.webp`]
 }
 
-/** A face whose textProps takes the type of its texts. */
-function defineFace<Texts extends object>(face: DifferenceFace<Texts>): DifferenceFace {
-  return face
-}
-
-/** Texts for a recreation with a texts prop. */
-function passTexts(texts: object) {
-  return { texts }
-}
-
-/** Texts for a recreation with a prop for each text. */
-function spreadTexts(texts: object) {
-  return { ...texts }
-}
-
-const HOKKAIDO_MILK_BAG_TEXTS = { ...HOKKAIDO_MILK_TEXTS, weight: HOKKAIDO_MILK_CONTENT.weight, back: HOKKAIDO_MILK_CONTENT.back }
-
-const SALT_LEMON_TEXTS = {
-  ...SALT_LEMON_TITLE,
-  ...FRONT_TEXTS,
-  /** No name: the drawn letters カトウ. */
-  logo: { name: undefined as string | undefined, tagline: FRONT_PART_TEXTS.logoTagline },
-  saltBadge: FRONT_PART_TEXTS.saltLines,
-  acidBadge: {
-    label: ACID_BADGE_TEXTS.label,
-    amount: ACID_BADGE_TEXTS.amountTemplate,
-    mg: FRONT_PART_TEXTS.citricAcidMg,
-    spheres: ACID_BADGE_SPHERES.map(({ symbol, caption }) => ({ symbol, caption })),
-  },
-}
-
 export type Side = 'front' | 'back'
 
 /** The big bags, for SuzunoBag. */
 export const BAG_FACES = {
   'almond-caramel': {
-    front: defineFace({
+    front: {
       title: 'The front of the Almond Caramel bag',
       reference: 'packages/almond-caramel-front.png',
       component: AlmondCaramelBag,
       props: { side: 'front' },
       texts: ALMOND_CARAMEL_TEXTS,
-      textProps: passTexts,
       small: { windowImage: smallImage('almond-caramel-window-front') },
-    }),
-    back: defineFace({
+    },
+    back: {
       title: 'The back of the Almond Caramel bag',
       reference: 'packages/almond-caramel-back.png',
       component: AlmondCaramelBag,
       props: { side: 'back' },
       texts: ALMOND_CARAMEL_TEXTS,
-      textProps: passTexts,
       small: { windowImage: smallImage('almond-caramel-window-back') },
-    }),
+    },
   },
   'hokkaido-milk': {
-    front: defineFace({
+    front: {
       title: 'The front of the Hokkaido milk candy bag',
       reference: 'packages/hokkaido-milk-front.png',
       component: HokkaidoMilkBag,
       props: { face: 'front' },
       texts: HOKKAIDO_MILK_BAG_TEXTS,
-      textProps: spreadTexts,
       blank: { title: '' },
       small: { illustration: smallImage('packages/hokkaido-milk-cow'), landscape: smallImage('packages/hokkaido-milk-farm') },
-    }),
-    back: defineFace({
+    },
+    back: {
       title: 'The back of the Hokkaido milk candy bag',
       reference: 'packages/hokkaido-milk-back.png',
       component: HokkaidoMilkBag,
       props: { face: 'back' },
       texts: HOKKAIDO_MILK_BAG_TEXTS,
-      textProps: spreadTexts,
       blank: { title: '' },
-    }),
+    },
   },
   'salt-lemon': {
-    front: defineFace({
+    front: {
       title: 'The front of the salt lemon candy bag',
       reference: 'packages/salt-lemon-front.png',
       component: SaltLemonFront,
       texts: SALT_LEMON_TEXTS,
-      textProps: ({ kanji, ruby, name, kind, banner, tagline, notes, logo, saltBadge, acidBadge }) => ({
-        title: { kanji, ruby, name, kind },
-        texts: { banner, tagline, notes },
-        logoName: logo.name,
-        logoTagline: logo.tagline,
-        saltLines: saltBadge,
-        citricAcidMg: acidBadge.mg,
-        acidBadge: {
-          label: acidBadge.label,
-          amountTemplate: acidBadge.amount,
-          // The colours of the spheres stay
-          spheres: ACID_BADGE_SPHERES.map((sphere, index) => ({ ...sphere, ...acidBadge.spheres[index] })) as [BadgeSphere, BadgeSphere],
-        },
-      }),
-      blank: { logo: { name: '', tagline: FRONT_PART_TEXTS.logoTagline } },
+      blank: { logo: { name: '' } },
       small: { photo: smallImage('salt-lemon-photo') },
-    }),
+    },
   },
 } satisfies Record<string, Partial<Record<Side, DifferenceFace>>>
 
 /** The wrapped candies, for SuzunoWrapper. */
 export const WRAPPER_FACES = {
   'almond-caramel': {
-    front: defineFace({
+    front: {
       title: 'The front of a wrapped almond caramel',
       reference: 'packages/almond-caramel-piece-front.png',
       component: AlmondCaramelPiece,
       props: { side: 'front' },
       texts: ALMOND_CARAMEL_PIECE_TEXTS,
-      textProps: passTexts,
-    }),
-    back: defineFace({
+    },
+    back: {
       title: 'The back of a wrapped almond caramel',
       reference: 'packages/almond-caramel-piece-back.png',
       component: AlmondCaramelPiece,
       props: { side: 'back' },
       texts: ALMOND_CARAMEL_PIECE_TEXTS,
-      textProps: passTexts,
-    }),
+    },
   },
   'hokkaido-milk': {
-    front: defineFace({
+    front: {
       title: 'The front of a wrapped Hokkaido milk candy',
       reference: 'packages/hokkaido-milk-piece-front-full.png',
       component: HokkaidoMilkCandy,
       // The cow is small on the wrapper at every size
       props: { face: 'front', illustration: smallImage('packages/hokkaido-milk-cow') },
       texts: HOKKAIDO_MILK_CANDY_TEXTS,
-      textProps: spreadTexts,
-    }),
-    back: defineFace({
+    },
+    back: {
       title: 'The back of a wrapped Hokkaido milk candy',
       reference: 'packages/hokkaido-milk-piece-back-full.png',
       component: HokkaidoMilkCandy,
       props: { face: 'back' },
       texts: HOKKAIDO_MILK_CANDY_TEXTS,
-      textProps: spreadTexts,
-    }),
+    },
   },
 } satisfies Record<string, Record<Side, DifferenceFace>>
 
 /** A MARUKAWA box, for SuzunoMarukawa. The front and the back carry the same print, so one face stands for both. */
-function marukawaFace(preset: MarukawaPreset) {
-  const design = MARUKAWA_PRESETS[preset]
-  return defineFace({
+function marukawaFace(preset: MarukawaPreset): DifferenceFace {
+  return {
     title: `The MARUKAWA ${preset} bubble gum box`,
     reference: `packages/marukawa-${preset}-front.png`,
     component: MarukawaBox,
     props: { preset },
-    texts: design.label ? { ...design.texts, label: design.label } : design.texts,
-    textProps: spreadTexts,
+    texts: MARUKAWA_TEXTS[preset],
     small: { illustration: smallImage(`packages/marukawa-export-${preset}`) },
-  })
+  }
 }
 
 export const MARUKAWA_FACES = {
@@ -220,13 +161,12 @@ export const MARUKAWA_FACES = {
 } satisfies Record<MarukawaPreset, Record<'front', DifferenceFace>>
 
 /** The cover of the Suzuno brochure, for SuzunoFinancial. */
-export const FINANCIAL_FACE = defineFace({
+export const FINANCIAL_FACE: DifferenceFace = {
   title: 'The cover of the Suzuno brochure',
   reference: 'cover-lit.png',
   component: SuzunoCover,
   texts: COVER_TEXTS,
-  textProps: passTexts,
-})
+}
 
 export type BagItem = keyof typeof BAG_FACES
 export type WrapperItem = keyof typeof WRAPPER_FACES

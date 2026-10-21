@@ -6,18 +6,14 @@ import { fontSizeForCapHeight, textWidth, useWebFonts } from '~/lib/suzuno/packa
 import type { MarukawaLabelText } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_FONTS } from '~/lib/suzuno/packages/marukawa'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   text: MarukawaLabelText
   x: number
   y: number
   width: number
   height: number
-  color?: string
-  paper?: string
-}>(), {
-  color: '#2e2a28',
-  paper: '#ffffff',
-})
+  color: string
+}>()
 
 const { helvetica, helveticaBold } = MARUKAWA_FONTS
 useWebFonts(() => [helvetica, helveticaBold])
@@ -28,6 +24,7 @@ const MARGIN = 6
 const HEADING = { baseline: 17, capHeight: 10 }
 const LINES = { first: 37, spacing: 15, capHeight: 8 }
 const BADGE_GAP = 4
+const PAPER = '#ffffff'
 
 const headingSize = fontSizeForCapHeight(HEADING.capHeight, helveticaBold.metrics)
 const lineSize = fontSizeForCapHeight(LINES.capHeight, helvetica.metrics)
@@ -45,7 +42,7 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
 
 <template>
   <g :transform="`translate(${x} ${y}) scale(${width / BOX.width} ${height / BOX.height})`" :font-family="helvetica.family">
-    <rect :width="BOX.width" :height="BOX.height" :fill="paper" data-ink="label-paper" />
+    <rect :width="BOX.width" :height="BOX.height" :fill="PAPER" data-ink="label-paper" />
     <text :x="MARGIN" :y="HEADING.baseline" font-weight="700" :font-size="headingSize" :fill="color" data-ink="label">
       {{ text.heading }}
     </text>
@@ -56,7 +53,7 @@ const lineLength = (line: string) => textWidth(line, helvetica.metrics) * lineSi
       text-anchor="middle"
       font-weight="700"
       :font-size="headingSize"
-      :fill="paper"
+      :fill="PAPER"
       :textLength="badge.width - 2 * BADGE_GAP"
       lengthAdjust="spacingAndGlyphs"
     >

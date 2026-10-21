@@ -44,7 +44,7 @@ const shownTexts = computed(() => mergeTexts(props.face.texts, texts.value.blank
 const recreationProps = computed(() => ({
   ...props.face.props,
   ...(width.value < SMALL_FACE_WIDTH ? props.face.small : undefined),
-  ...props.face.textProps(shownTexts.value),
+  texts: shownTexts.value,
 }))
 // The fonts load only the glyphs of the texts; blank texts show none
 provide(FACE_GLYPHS, computed(() => textGlyphs(texts.value.blank ? '' : shownTexts.value)))

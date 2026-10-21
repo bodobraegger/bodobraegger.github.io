@@ -4,10 +4,6 @@
 // reference/packages/hokkaido-milk-<face>.png. tools/fits/packages/hokkaido-milk.mjs
 // fits the layout against them and writes hokkaido-milk-layout.json.
 import layout from './hokkaido-milk-layout.json'
-import can from '~/assets/suzuno/packages/hokkaido-milk-can.webp'
-import cow from '~/assets/suzuno/packages/hokkaido-milk-cow.webp'
-import farm from '~/assets/suzuno/packages/hokkaido-milk-farm.webp'
-import mascot from '~/assets/suzuno/packages/hokkaido-milk-mascot.webp'
 import type { BandLayout, TableRow } from '~/lib/suzuno/packages/almond-caramel'
 import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
@@ -17,8 +13,6 @@ export const HOKKAIDO_MILK_FACES = {
   candyFront: { width: 236, height: 168 },
   candyBack: { width: 256, height: 156 },
 }
-
-export type HokkaidoMilkFace = keyof typeof HOKKAIDO_MILK_FACES
 
 /**
  * Free stand-ins for the faces of the print. The kana line, the badges and the
@@ -84,7 +78,7 @@ export interface FaceLayout {
   inks: Record<string, string>
 }
 
-export const HOKKAIDO_MILK_LAYOUT = layout as Record<HokkaidoMilkFace, FaceLayout>
+export const HOKKAIDO_MILK_LAYOUT = layout as Record<keyof typeof HOKKAIDO_MILK_FACES, FaceLayout>
 
 /** A line of a badge: its text and its cap height relative to the badge. */
 export interface BadgeLine {
@@ -93,25 +87,15 @@ export interface BadgeLine {
   font?: 'mincho' | 'times'
 }
 
-export const HOKKAIDO_MILK_TEXTS = {
-  brand: 'RIBON',
-  title: '北海道',
-  subtitle: 'ミルクソフトキャンデー',
-  tagline: 'Hokkaido Soft',
-  stamp: { top: 'Rich Milk', middle: '濃厚ミルク', middleSuffix: '味', bottom: 'flavor' },
-  badges: [
-    [{ text: 'オリゴ糖配合!' }],
-    [{ text: '北海道産' }, { text: '練 乳・バター' }, { text: '生クリーム使用' }],
-    [{ text: 'カルシウム強化!' }, { text: '1袋あたり', size: 0.6 }, { text: '120mg', size: 1.15, font: 'times' }],
-  ] as BadgeLine[][],
-}
+/** The title of the print, which the bag draws as traced lettering. */
+export const HOKKAIDO_TITLE = '北海道'
 
 /**
- * The texts of the back. The import sticker of the photo covers the middle;
- * the hidden texts follow the Daiso artwork of the 54 g bag and the back of
- * the 110 g bag, with the weight of the photo.
+ * The texts of the bag. The import sticker of the photo covers the middle of
+ * the back; the hidden texts follow the Daiso artwork of the 54 g bag and the
+ * back of the 110 g bag, with the weight of the photo.
  */
-export const HOKKAIDO_MILK_BACK_TEXTS = {
+const BACK_TEXTS = {
   opening: ['▼開けにくい場合はタテ方向にお開け', 'ください。'],
   bestBefore: { label: '賞味期限', date: '2027年04月/SB3' },
   calciumHeading: 'カルシウム強化',
@@ -154,44 +138,24 @@ export const HOKKAIDO_MILK_BACK_TEXTS = {
   recycling: { mark: 'プラ', parts: ['外 袋', '個包装'], text: ['ごみに出すときは市区町村の区分に', 'したがってください。'] },
 }
 
-export type HokkaidoMilkBackTexts = typeof HOKKAIDO_MILK_BACK_TEXTS
-
-/** Everything a user can replace on the bag, front and back. */
-export interface HokkaidoMilkBagContent {
-  brand: string
-  title: string
-  subtitle: string
-  tagline: string
-  stamp: typeof HOKKAIDO_MILK_TEXTS.stamp
+export const HOKKAIDO_MILK_BAG_TEXTS = {
+  brand: 'RIBON',
+  title: HOKKAIDO_TITLE,
+  subtitle: 'ミルクソフトキャンデー',
+  tagline: 'Hokkaido Soft',
+  stamp: { top: 'Rich Milk', middle: '濃厚ミルク', middleSuffix: '味', bottom: 'flavor' },
   /** The three claims across the middle of the front, each a list of lines. */
-  badges: BadgeLine[][]
+  badges: [
+    [{ text: 'オリゴ糖配合!' }],
+    [{ text: '北海道産' }, { text: '練 乳・バター' }, { text: '生クリーム使用' }],
+    [{ text: 'カルシウム強化!' }, { text: '1袋あたり', size: 0.6 }, { text: '120mg', size: 1.15, font: 'times' }],
+  ] as BadgeLine[][],
   /** The net weight, on the label of the back. */
-  weight: string
-  /** Image URLs: the cow, the farm behind it, the can behind each claim, the mascot of the back. */
-  illustration: string
-  landscape: string
-  can: string
-  mascot: string
-  back: HokkaidoMilkBackTexts
-}
-
-export const HOKKAIDO_MILK_CONTENT: HokkaidoMilkBagContent = {
-  ...HOKKAIDO_MILK_TEXTS,
   weight: '49g',
-  illustration: cow,
-  landscape: farm,
-  can,
-  mascot,
-  back: HOKKAIDO_MILK_BACK_TEXTS,
+  back: BACK_TEXTS,
 }
 
-/** The works of other authors in the faces, from assets/SOURCES.md. */
-export const HOKKAIDO_MILK_CREDITS = [
-  { work: 'Holstein-Fresian cow, plate IV (Gray Lith. Co., N.Y.)', licence: 'public domain', url: 'https://commons.wikimedia.org/wiki/File:HOLSTEIN-FRESIAN_COW_(22899914244).jpg' },
-  { work: 'Farm', author: 'Hiroshi Miyazaki', licence: 'CC BY 2.0', url: 'https://www.flickr.com/photos/7163280@N06/3616435204' },
-  { work: 'Cow and milk churn, Newtownmanor', author: 'Oliver Dixon', licence: 'CC BY-SA 2.0', url: 'https://commons.wikimedia.org/wiki/File:Cow_and_milk_churn,_Newtownmanor_-_geograph.org.uk_-_799328.jpg' },
-  { work: 'Hokkaido coastline', author: 'Natural Earth', licence: 'public domain', url: 'https://www.naturalearthdata.com/' },
-]
+export type HokkaidoMilkBagTexts = typeof HOKKAIDO_MILK_BAG_TEXTS
 
 /** The texts of the wrapped candy. */
 export const HOKKAIDO_MILK_CANDY_TEXTS = {
@@ -199,3 +163,5 @@ export const HOKKAIDO_MILK_CANDY_TEXTS = {
   title: '北海道',
   recycling: 'プラ',
 }
+
+export type HokkaidoMilkCandyTexts = typeof HOKKAIDO_MILK_CANDY_TEXTS

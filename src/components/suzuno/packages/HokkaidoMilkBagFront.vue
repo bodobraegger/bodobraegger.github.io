@@ -2,19 +2,28 @@
 // The print of the front of the RIBON milk candy bag (HokkaidoMilkBag.vue),
 // in face pixels: the logo, the stamp, the map with the title lettering,
 // the three claims before their milk cans, and the cow before the farm.
+import milkCan from '~/assets/suzuno/packages/hokkaido-milk-can.webp'
+import cow from '~/assets/suzuno/packages/hokkaido-milk-cow.webp'
+import farm from '~/assets/suzuno/packages/hokkaido-milk-farm.webp'
 import HokkaidoBadge from '~/components/suzuno/packages/HokkaidoBadge.vue'
 import HokkaidoMap from '~/components/suzuno/packages/HokkaidoMap.vue'
 import HokkaidoTitle from '~/components/suzuno/packages/HokkaidoTitle.vue'
 import MilkStamp from '~/components/suzuno/packages/MilkStamp.vue'
 import RibonLogo from '~/components/suzuno/packages/RibonLogo.vue'
 import SkyGlow from '~/components/suzuno/packages/SkyGlow.vue'
-import type { FaceLayout, HokkaidoMilkBagContent } from '~/lib/suzuno/packages/hokkaido-milk'
+import type { FaceLayout, HokkaidoMilkBagTexts } from '~/lib/suzuno/packages/hokkaido-milk'
 import { HOKKAIDO_MILK_FONTS, placePart } from '~/lib/suzuno/packages/hokkaido-milk'
 
-const props = defineProps<{
-  content: HokkaidoMilkBagContent
+const props = withDefaults(defineProps<{
+  texts: HokkaidoMilkBagTexts
   layout: FaceLayout
-}>()
+  /** The cow, and the farm behind it. */
+  illustration?: string
+  landscape?: string
+}>(), {
+  illustration: cow,
+  landscape: farm,
+})
 
 // The images in their own units: 100 wide, with the aspect ratio of the default image
 const IMAGE_WIDTH = 100
@@ -37,13 +46,13 @@ const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
 <template>
   <g>
     <HokkaidoMap :transform="placePart(parts.map)" :color="inks.map" :strokes="inks['map-strokes']" data-part="map" />
-    <RibonLogo :transform="placePart(parts.logo)" :name="content.brand" :color="inks.logo" data-part="logo" />
+    <RibonLogo :transform="placePart(parts.logo)" :name="texts.brand" :color="inks.logo" data-part="logo" />
     <MilkStamp
       :transform="placePart(parts.stamp)"
-      :top="content.stamp.top"
-      :middle="content.stamp.middle"
-      :middle-suffix="content.stamp.middleSuffix"
-      :bottom="content.stamp.bottom"
+      :top="texts.stamp.top"
+      :middle="texts.stamp.middle"
+      :middle-suffix="texts.stamp.middleSuffix"
+      :bottom="texts.stamp.bottom"
       :color="inks.stamp"
       :paper="inks.film"
       data-part="stamp"
@@ -58,9 +67,9 @@ const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
       :fill="inks.tagline"
       data-part="tagline"
     >
-      {{ content.tagline }}
+      {{ texts.tagline }}
     </text>
-    <HokkaidoTitle :transform="placePart(parts.title)" :text="content.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
+    <HokkaidoTitle :transform="placePart(parts.title)" :text="texts.title" :color="inks.title" :shine="inks['title-shine']" data-part="title" />
     <text
       :transform="placePart(parts.subtitle)"
       text-anchor="middle"
@@ -71,13 +80,13 @@ const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
       :fill="inks.subtitle"
       data-part="subtitle"
     >
-      {{ content.subtitle }}
+      {{ texts.subtitle }}
     </text>
     <image
       v-for="can in CANS"
       :key="can"
       :transform="placePart(parts[can])"
-      :href="content.can"
+      :href="milkCan"
       :x="-IMAGE_WIDTH / 2"
       :width="IMAGE_WIDTH"
       :height="CAN_HEIGHT"
@@ -88,14 +97,14 @@ const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
       v-for="(badge, index) in BADGES"
       :key="badge"
       :transform="placePart(parts[badge])"
-      :lines="content.badges[index] ?? []"
+      :lines="texts.badges[index] ?? []"
       :color="inks[`${badge}:badge`]"
       :edge="inks['badge-edge']"
       :shadow="inks['badge-shadow']"
       :data-part="badge"
     />
     <SkyGlow :transform="placePart(parts.sky)" :width="IMAGE_WIDTH" :height="SKY_HEIGHT" :color="inks.sky" data-part="sky" />
-    <image :transform="placePart(parts.farm)" :href="content.landscape" :width="IMAGE_WIDTH" :height="FARM_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="farm" />
-    <image :transform="placePart(parts.cow)" :href="content.illustration" :width="IMAGE_WIDTH" :height="COW_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="cow" />
+    <image :transform="placePart(parts.farm)" :href="landscape" :width="IMAGE_WIDTH" :height="FARM_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="farm" />
+    <image :transform="placePart(parts.cow)" :href="illustration" :width="IMAGE_WIDTH" :height="COW_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="cow" />
   </g>
 </template>

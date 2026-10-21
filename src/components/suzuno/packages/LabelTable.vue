@@ -4,7 +4,7 @@
 // the lines of each value. A row of one line is rowHeight high; each further
 // line adds the leading. Optional spanning rows across the full width, such
 // as 商品名 or 1粒あたり, come first inside the rule.
-import type { PrintFont, TableLayout, TableRow } from '~/lib/suzuno/packages/almond-caramel'
+import type { TableLayout, TableRow } from '~/lib/suzuno/packages/almond-caramel'
 import { ALMOND_CARAMEL_FONTS } from '~/lib/suzuno/packages/almond-caramel'
 import { useWebFonts } from '~/lib/suzuno/packages/lettering'
 
@@ -13,17 +13,16 @@ const props = withDefaults(defineProps<{
   title: string
   rows: TableRow[]
   color: string
-  font?: PrintFont
   /** Rows across the full width above the other rows; centred unless spanAlign is start. */
   spans?: string[]
   spanAlign?: 'start' | 'middle'
 }>(), {
-  font: () => ALMOND_CARAMEL_FONTS.gothic,
   spans: () => [],
   spanAlign: 'middle',
 })
 
-useWebFonts(() => [props.font])
+const font = ALMOND_CARAMEL_FONTS.gothic
+useWebFonts(() => [font])
 
 // The headings fill this part of their column; the values start this far after the rule
 const HEADING_FILL = 0.72

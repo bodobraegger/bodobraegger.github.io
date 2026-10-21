@@ -4,26 +4,18 @@
 // 使用 (used). In its own coordinates the disc has its centre at the origin and
 // a radius of 50. Place it with placePart (src/lib/suzuno/packages/salt-lemon.ts).
 import { useId } from 'vue'
-import type { SaltBadgeLayout, SaltLemonFont } from '~/lib/suzuno/packages/salt-lemon'
 import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-withDefaults(defineProps<{
-  lines?: string[]
-  disc?: string
-  waves?: string
-  ink?: string
-  font?: SaltLemonFont
-  layout?: SaltBadgeLayout
-}>(), {
-  lines: () => ['鳴門の塩', '使用'],
-  disc: FRONT_COLORS.saltDisc,
-  waves: FRONT_COLORS.saltWaves,
-  ink: '#f5e7ae',
-  font: () => SALT_LEMON_FONTS.roundedBold,
-  layout: () => FRONT_PARTS.saltBadge,
-})
+defineProps<{
+  lines: string[]
+}>()
 
 useSaltLemonFonts()
+
+const { saltDisc: disc, saltWaves: waves } = FRONT_COLORS
+const INK = '#f5e7ae'
+const font = SALT_LEMON_FONTS.roundedBold
+const layout = FRONT_PARTS.saltBadge
 
 const RADIUS = 50
 // Two crests that curl to the right, as crescents on a band, with spray and two stars
@@ -68,7 +60,7 @@ function crescent(crest: typeof CRESTS[number]) {
       :font-size="layout[index].size"
       :textLength="layout[index].width"
       lengthAdjust="spacing"
-      :fill="ink"
+      :fill="INK"
       data-ink="salt-badge-lettering"
     >
       {{ line }}

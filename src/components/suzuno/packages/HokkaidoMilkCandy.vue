@@ -9,22 +9,15 @@ import { useId } from 'vue'
 import RecyclingMark from '~/components/suzuno/packages/RecyclingMark.vue'
 import SealBand from '~/components/suzuno/packages/SealBand.vue'
 import SerratedEdge from '~/components/suzuno/packages/SerratedEdge.vue'
-import { HOKKAIDO_MILK_CANDY_TEXTS, HOKKAIDO_MILK_CONTENT, HOKKAIDO_MILK_FACES, HOKKAIDO_MILK_FONTS, HOKKAIDO_MILK_LAYOUT, placePart, sealRidges, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
+import type { HokkaidoMilkCandyTexts } from '~/lib/suzuno/packages/hokkaido-milk'
+import { HOKKAIDO_MILK_FACES, HOKKAIDO_MILK_FONTS, HOKKAIDO_MILK_LAYOUT, placePart, sealRidges, useHokkaidoMilkFonts } from '~/lib/suzuno/packages/hokkaido-milk'
 
-const props = withDefaults(defineProps<{
-  face?: 'front' | 'back'
-  subtitle?: string
-  title?: string
-  /** The small picture of the front; null for none. */
-  illustration?: string | null
-  recycling?: string
-}>(), {
-  face: 'front',
-  subtitle: HOKKAIDO_MILK_CANDY_TEXTS.subtitle,
-  title: HOKKAIDO_MILK_CANDY_TEXTS.title,
-  illustration: HOKKAIDO_MILK_CONTENT.illustration,
-  recycling: HOKKAIDO_MILK_CANDY_TEXTS.recycling,
-})
+const props = defineProps<{
+  face: 'front' | 'back'
+  texts: HokkaidoMilkCandyTexts
+  /** The small picture of the front. */
+  illustration?: string
+}>()
 
 useHokkaidoMilkFonts()
 
@@ -64,7 +57,7 @@ const titleId = `${id}-title`
 
 <template>
   <svg class="block h-auto w-full" :viewBox="`0 0 ${size.width} ${size.height}`" role="img" :aria-labelledby="titleId">
-    <title :id="titleId">{{ subtitle }} {{ title }}, wrapper {{ face }}</title>
+    <title :id="titleId">{{ texts.subtitle }} {{ texts.title }}, wrapper {{ face }}</title>
     <linearGradient :id="shadeId" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" :stop-color="inks.shade" />
       <stop offset="0.3" :stop-color="inks.film" />
@@ -93,8 +86,8 @@ const titleId = `${id}-title`
       data-part="rightEnd"
     />
     <g :font-family="HOKKAIDO_MILK_FONTS.mincho" font-weight="900" text-anchor="middle" :font-size="MINCHO_SIZE" :fill="inks.text">
-      <text :transform="placePart(parts.subtitle)" data-part="subtitle">{{ subtitle }}</text>
-      <text :transform="placePart(parts.title)" data-part="title">{{ title }}</text>
+      <text :transform="placePart(parts.subtitle)" data-part="subtitle">{{ texts.subtitle }}</text>
+      <text :transform="placePart(parts.title)" data-part="title">{{ texts.title }}</text>
     </g>
     <image
       v-if="face === 'front' && illustration"
@@ -106,7 +99,7 @@ const titleId = `${id}-title`
       data-part="cow"
     />
     <g v-if="face === 'back'" :transform="placePart(parts.recycling)" data-part="recycling">
-      <RecyclingMark :box="RECYCLING_MARK" :material="recycling" :color="inks.text" />
+      <RecyclingMark :box="RECYCLING_MARK" :material="texts.recycling" :color="inks.text" />
     </g>
     <SealBand v-if="face === 'back'" :transform="placePart(parts.fin)" :layout="FIN.ridges" :width="FIN.length" :fill="inks.film" :colors="inks" data-part="fin" />
   </svg>

@@ -5,44 +5,32 @@
 // width, height of its parent. Its own coordinates are the face pixels of the
 // panel of the front, TITLE_PANEL wide and high, with the origin at its top left.
 import { useId } from 'vue'
-import type { SaltLemonFont, SaltLemonTitleTexts, TitleLayout } from '~/lib/suzuno/packages/salt-lemon'
-import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, SALT_LEMON_TITLE, TITLE_PANEL, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
+import type { SaltLemonTexts } from '~/lib/suzuno/packages/salt-lemon'
+import { FRONT_COLORS, FRONT_PARTS, SALT_LEMON_FONTS, useSaltLemonFonts } from '~/lib/suzuno/packages/salt-lemon'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   x: number
   y: number
-  width?: number
-  height?: number
-  texts?: SaltLemonTitleTexts
-  /** The colours of the panel at its top and at its foot. */
-  panel?: [string, string]
-  ink?: string
-  /** The edge round the reading. */
-  rubyOutline?: string
-  font?: SaltLemonFont
-  layout?: TitleLayout
-}>(), {
-  width: TITLE_PANEL.width,
-  height: TITLE_PANEL.height,
-  texts: () => SALT_LEMON_TITLE,
-  panel: () => FRONT_COLORS.panel,
-  ink: FRONT_COLORS.ink,
-  rubyOutline: FRONT_COLORS.edge,
-  font: () => SALT_LEMON_FONTS.title,
-  layout: () => FRONT_PARTS.title,
-})
+  width: number
+  height: number
+  texts: Pick<SaltLemonTexts, 'kanji' | 'ruby' | 'name' | 'kind'>
+}>()
 
 useSaltLemonFonts()
 
+/** The size of the panel of the front in face pixels, the own coordinates of the panel. */
+const TITLE_PANEL = { width: 101, height: 432 }
+const { panel, ink, edge: rubyOutline } = FRONT_COLORS
+const font = SALT_LEMON_FONTS.title
+const layout = FRONT_PARTS.title
+
 const gradientId = `${useId()}-panel`
 const transform = computed(() => `translate(${props.x} ${props.y}) scale(${props.width / TITLE_PANEL.width} ${props.height / TITLE_PANEL.height})`)
-const frame = computed(() => {
-  const inset = props.layout.frameInset
-  return { x: inset, y: inset, width: TITLE_PANEL.width - 2 * inset, height: TITLE_PANEL.height - 2 * inset }
-})
+const inset = layout.frameInset
+const frame = { x: inset, y: inset, width: TITLE_PANEL.width - 2 * inset, height: TITLE_PANEL.height - 2 * inset }
 const columns = computed(() => [
-  { key: 'name', text: props.texts.name, place: props.layout.name },
-  { key: 'kind', text: props.texts.kind, place: props.layout.kind },
+  { key: 'name', text: props.texts.name, place: layout.name },
+  { key: 'kind', text: props.texts.kind, place: layout.kind },
 ])
 </script>
 
