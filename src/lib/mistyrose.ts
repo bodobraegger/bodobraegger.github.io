@@ -60,6 +60,10 @@ const FRAME_INTERVAL = 1000 / 30
 const FRAME_SLACK = 4
 const LONGEST_FRAME = 100
 const EDGE_MARGIN = 2
+// Hundreds of leaves and roses grow at the same time, and those of a cluster
+// lie on each other. A frame takes back the committed drawing in tiles of
+// TILE CSS pixels, each tile once, instead of in the area of each item.
+const TILE = 64
 
 type Range = [number, number]
 type SpriteName = 'stem' | 'leaf' | 'flower'
@@ -281,9 +285,18 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, sc
     storeCanvas.height = view.canvas.height
     const store = storeCanvas.getContext('2d')!
     const reaches = Object.fromEntries((Object.keys(SPRITES) as SpriteName[]).map(name => [name, reach(name, sprites)]))
-    const area = ({ sprite, x, y }: Item): Area => {
-      const extent = reaches[sprite] * scale + EDGE_MARGIN
-      return [x * scale - extent, y * scale - extent, 2 * extent, 2 * extent]
+    const tiles = (items: Item[]) => {
+      const areas = new Map<string, Area>()
+      for (const { sprite, x, y } of items) {
+        const extent = reaches[sprite] * scale + EDGE_MARGIN
+        const [left, top] = [Math.floor((x * scale - extent) / TILE), Math.floor((y * scale - extent) / TILE)]
+        const [right, bottom] = [Math.floor((x * scale + extent) / TILE), Math.floor((y * scale + extent) / TILE)]
+        for (let column = left; column <= right; column++) {
+          for (let row = top; row <= bottom; row++)
+            areas.set(`${column} ${row}`, [column * TILE, row * TILE, TILE, TILE])
+        }
+      }
+      return [...areas.values()]
     }
 
     let last = performance.now()
@@ -299,7 +312,7 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, sc
       const done = growth.harvest()
       done.forEach(item => draw(store, item))
       const growing = growth.growing()
-      takeBackAreas(view, storeCanvas, ratio, [...done, ...growing].map(area))
+      takeBackAreas(view, storeCanvas, ratio, tiles([...done, ...growing]))
       growing.forEach(item => draw(view, item))
       if (!growing.length)
         cancelAnimationFrame(frame)
