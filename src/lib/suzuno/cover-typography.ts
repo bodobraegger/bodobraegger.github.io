@@ -10,6 +10,9 @@ export interface CoverTexts {
 
 export const COVER_TEXTS: CoverTexts = { title: 'Suzuno Financial Holdings', banner: 'すずのフィナンシャルHD' }
 
+/** The sheet of the cover, the size of its reference screenshot. */
+export const COVER_SHEET = { width: 1414, height: 1093 }
+
 // 'Suzuno Latin' and 'Suzuno Kana' are the slots of the composite font of the
 // print (Adobe Caslon Pro Bold and Ro本明朝Std E, see SuzunoCover.vue). Until
 // their files are in place, the free faces after them stand in, and the

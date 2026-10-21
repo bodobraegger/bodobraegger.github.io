@@ -12,13 +12,12 @@ import vineLines from '~/assets/suzuno/ornament-cover.svg?raw'
 import paperGrain from '~/assets/suzuno/paper-grain.webp'
 import veil from '~/assets/suzuno/veil.png'
 import type { CoverTexts } from '~/lib/suzuno/cover-typography'
-import { BANNER_TYPE, COVER_TEXTS, TITLE_TYPE } from '~/lib/suzuno/cover-typography'
+import { BANNER_TYPE, COVER_TEXTS, COVER_SHEET as SHEET, TITLE_TYPE } from '~/lib/suzuno/cover-typography'
 
 const props = defineProps<{
   texts: CoverTexts
 }>()
 
-const SHEET = { width: 1414, height: 1093 }
 // The title ink, and the lighter ink below the rule
 const TITLE_INKS = [{ fill: '#62d9f8', belowRule: false }, { fill: '#5bd4ee', belowRule: true }]
 // The text frame of the title ends here
