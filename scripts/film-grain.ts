@@ -129,9 +129,13 @@ function poisson(next: Random, mean: number) {
   return count
 }
 
-function standardize(values: Float64Array) {
+function meanAndDeviation(values: Float64Array) {
   const mean = values.reduce((sum, value) => sum + value, 0) / values.length
-  const deviation = Math.sqrt(values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length)
+  return { mean, deviation: Math.sqrt(values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length) }
+}
+
+function standardize(values: Float64Array) {
+  const { mean, deviation } = meanAndDeviation(values)
   return values.map(value => (value - mean) / deviation)
 }
 
@@ -237,8 +241,7 @@ function midtoneDeviation(main: Uint8Array, mainChannels: 1 | 3, prime: Uint8Arr
       }, 0))
     }
   }
-  const mean = lumas.reduce((sum, value) => sum + value, 0) / lumas.length
-  return 255 * Math.sqrt(lumas.reduce((sum, value) => sum + (value - mean) ** 2, 0) / lumas.length)
+  return 255 * meanAndDeviation(Float64Array.from(lumas)).deviation
 }
 
 interface GrainTiles {
