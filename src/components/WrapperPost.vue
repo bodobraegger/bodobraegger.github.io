@@ -281,8 +281,13 @@ if (frontmatter.hydra) {
   <ClientOnly v-if="frontmatter.orchid">
     <Orchid />
   </ClientOnly>
-  <ClientOnly v-if="frontmatter.mistyrose || frontmatter.mistyrosetitle">
-    <MistyRose :edges="!!frontmatter.mistyrose" />
+  <ClientOnly v-if="frontmatter.mistyrose">
+    <MistyRose />
+  </ClientOnly>
+  <!-- Vines grow from the titles that MistyRoseTitle marks, the page title
+       with mistyrosetitle among them. Without such a title it stays empty. -->
+  <ClientOnly>
+    <MistyRoseTitles />
   </ClientOnly>
   <!-- The home page opens with its own hero, which already carries the name,
        so the title block is left to every other page. -->

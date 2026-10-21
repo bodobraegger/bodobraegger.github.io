@@ -9,7 +9,7 @@ import flowerUrl from '~/assets/mistyrose/flower.webp'
 import leafUrl from '~/assets/mistyrose/leaf.webp'
 import stemUrl from '~/assets/mistyrose/stem.webp'
 
-/** A point in game units, where a full stem segment is STEM_LENGTH long. */
+/** A point in CSS pixels, which are the units of the game: a full stem segment is STEM_LENGTH long. */
 export interface Seed {
   x: number
   y: number
@@ -20,7 +20,7 @@ export interface Garden {
   seeds: Seed[]
   /** The most tips that grow at the same time; a tip forks only below this count. */
   maxTips: number
-  /** A tip stops when its next segment would start outside this area, in game units. */
+  /** A tip stops when its next segment would start outside this area. */
   bounds: Area
 }
 
@@ -92,7 +92,8 @@ interface Item {
 }
 
 /** The growth of the roses of a garden, one game step at a time. */
-function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden, random: () => number) {
+function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden) {
+  const { random } = Math
   const between = ([low, high]: Range) => low + random() * (high - low)
   const items: Item[] = []
   // The items that grow, in the order of their creation
@@ -201,12 +202,6 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden, 
   return { items, step, harvest, finish, growing: () => growing }
 }
 
-/**
- * The titles that MistyRoseTitle marks. The background plants a group of
- * seeds at the middle of each, as the game does behind a chapter title.
- */
-export const roseTitles = new Set<HTMLElement>()
-
 type Sprites = Record<SpriteName, HTMLImageElement>
 
 let loading: Promise<Sprites> | undefined
@@ -249,12 +244,11 @@ function reach(name: SpriteName, sprites: Sprites) {
 
 /**
  * Grows the roses of `garden` on `view`, whose transform maps CSS pixels to
- * device pixels, at `scale` CSS pixels per game unit. Without `animated`,
- * the full growth appears at once. Returns a function that stops the growth.
+ * device pixels. Without `animated`, the full growth appears at once.
+ * Returns a function that stops the growth.
  */
-export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, scale: number, animated: boolean, random = Math.random) {
+export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, animated: boolean) {
   const ratio = view.getTransform().a
-  const unit = ratio * scale
   let frame = 0
   let stopped = false
 
@@ -265,12 +259,12 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, sc
       if (item.growth <= 0)
         return
       const [hotspotX, hotspotY] = SPRITES[item.sprite].hotspot
-      const cos = Math.cos(item.angle) * item.growth * unit
-      const sin = Math.sin(item.angle) * item.growth * unit
-      context.setTransform(cos, sin, -sin, cos, item.x * unit, item.y * unit)
+      const cos = Math.cos(item.angle) * item.growth * ratio
+      const sin = Math.sin(item.angle) * item.growth * ratio
+      context.setTransform(cos, sin, -sin, cos, item.x * ratio, item.y * ratio)
       context.drawImage(shadedSprite(sprites, item.sprite, item.ambient), -hotspotX, -hotspotY)
     }
-    const growth = grower(garden, random)
+    const growth = grower(garden)
 
     if (!animated) {
       growth.finish()
@@ -288,9 +282,9 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, sc
     const tiles = (items: Item[]) => {
       const areas = new Map<string, Area>()
       for (const { sprite, x, y } of items) {
-        const extent = reaches[sprite] * scale + EDGE_MARGIN
-        const [left, top] = [Math.floor((x * scale - extent) / TILE), Math.floor((y * scale - extent) / TILE)]
-        const [right, bottom] = [Math.floor((x * scale + extent) / TILE), Math.floor((y * scale + extent) / TILE)]
+        const extent = reaches[sprite] + EDGE_MARGIN
+        const [left, top] = [Math.floor((x - extent) / TILE), Math.floor((y - extent) / TILE)]
+        const [right, bottom] = [Math.floor((x + extent) / TILE), Math.floor((y + extent) / TILE)]
         for (let column = left; column <= right; column++) {
           for (let row = top; row <= bottom; row++)
             areas.set(`${column} ${row}`, [column * TILE, row * TILE, TILE, TILE])

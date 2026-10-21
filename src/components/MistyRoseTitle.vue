@@ -10,11 +10,10 @@ grow from behind a chapter title of the game.
   </MistyRoseTitle>
 
 The wrapper is as wide as the title and takes no other space. The vines grow
-in the background of MistyRose, so the page needs `mistyrose: true` or
-`mistyrosetitle: true` in its frontmatter. The background plants its seeds
-when the page is idle, so only a title in the window at that time gets vines.
+on the canvas of MistyRoseTitles, which every page has. `mistyrosetitle: true`
+in the frontmatter wraps the page title.
 */
-import { roseTitles } from '~/lib/mistyrose'
+import { roseTitles } from '~/composables/useMistyRose'
 
 const title = ref<HTMLDivElement>()
 // The template ref is empty again when the component unmounts
