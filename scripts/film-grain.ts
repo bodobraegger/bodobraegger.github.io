@@ -320,41 +320,27 @@ function turbulenceLattice(seed: number): Lattice {
   return { selector, gradients }
 }
 
-/** The lattice period of a tile that the noise repeats over, and the lattice cell where the wrap starts */
-interface Stitch {
-  width: number
-  height: number
-  wrapX: number
-  wrapY: number
-}
-
 const sCurve = (value: number) => value * value * (3 - 2 * value)
 const mix = (amount: number, from: number, to: number) => from + amount * (to - from)
 
-function perlinNoise({ selector, gradients }: Lattice, channel: number, x: number, y: number, stitch: Stitch) {
+/** The noise of a channel at a point, stitched to repeat after `period` lattice cells in both directions */
+function perlinNoise({ selector, gradients }: Lattice, channel: number, x: number, y: number, period: number) {
   const shiftedX = x + PERLIN_OFFSET
   const shiftedY = y + PERLIN_OFFSET
-  let left = Math.trunc(shiftedX)
-  let right = left + 1
-  let top = Math.trunc(shiftedY)
-  let bottom = top + 1
-  const fractionX = shiftedX - left
-  const fractionY = shiftedY - top
-  if (left >= stitch.wrapX)
-    left -= stitch.width
-  if (right >= stitch.wrapX)
-    right -= stitch.width
-  if (top >= stitch.wrapY)
-    top -= stitch.height
-  if (bottom >= stitch.wrapY)
-    bottom -= stitch.height
-  const column0 = selector[left & LATTICE_MASK]
-  const column1 = selector[right & LATTICE_MASK]
+  const cellX = Math.trunc(shiftedX)
+  const cellY = Math.trunc(shiftedY)
+  const fractionX = shiftedX - cellX
+  const fractionY = shiftedY - cellY
+  const stitch = (cell: number) => (cell >= PERLIN_OFFSET + period ? cell - period : cell) & LATTICE_MASK
+  const column0 = selector[stitch(cellX)]
+  const column1 = selector[stitch(cellX + 1)]
+  const top = stitch(cellY)
+  const bottom = stitch(cellY + 1)
   const gradient = gradients[channel]
   const dot = (corner: number, offsetX: number, offsetY: number) => offsetX * gradient[2 * corner] + offsetY * gradient[2 * corner + 1]
   const sx = sCurve(fractionX)
-  const upper = mix(sx, dot(selector[column0 + (top & LATTICE_MASK)], fractionX, fractionY), dot(selector[column1 + (top & LATTICE_MASK)], fractionX - 1, fractionY))
-  const lower = mix(sx, dot(selector[column0 + (bottom & LATTICE_MASK)], fractionX, fractionY - 1), dot(selector[column1 + (bottom & LATTICE_MASK)], fractionX - 1, fractionY - 1))
+  const upper = mix(sx, dot(selector[column0 + top], fractionX, fractionY), dot(selector[column1 + top], fractionX - 1, fractionY))
+  const lower = mix(sx, dot(selector[column0 + bottom], fractionX, fractionY - 1), dot(selector[column1 + bottom], fractionX - 1, fractionY - 1))
   return mix(sCurve(fractionY), upper, lower)
 }
 
@@ -385,19 +371,11 @@ function fractalNoiseTile({ seed, baseFrequency, octaves, size }: NoiseTile) {
     const values = new Float64Array(size * size)
     for (let row = 0; row < size; row++) {
       for (let column = 0; column < size; column++) {
-        const stitch = { width: period, height: period, wrapX: PERLIN_OFFSET + period, wrapY: PERLIN_OFFSET + period }
-        let x = (column + BROWSER_SAMPLE_OFFSET) * frequency
-        let y = (row + BROWSER_SAMPLE_OFFSET) * frequency
+        const x = (column + BROWSER_SAMPLE_OFFSET) * frequency
+        const y = (row + BROWSER_SAMPLE_OFFSET) * frequency
         let sum = 0
-        for (let octave = 0, ratio = 1; octave < octaves; octave++, ratio *= 2) {
-          sum += perlinNoise(lattice, channel, x, y, stitch) / ratio
-          x *= 2
-          y *= 2
-          stitch.width *= 2
-          stitch.height *= 2
-          stitch.wrapX = 2 * stitch.wrapX - PERLIN_OFFSET
-          stitch.wrapY = 2 * stitch.wrapY - PERLIN_OFFSET
-        }
+        for (let octave = 0, ratio = 1; octave < octaves; octave++, ratio *= 2)
+          sum += perlinNoise(lattice, channel, x * ratio, y * ratio, period * ratio) / ratio
         values[row * size + column] = Math.max(0, Math.min(1, (sum + 1) / 2))
       }
     }
