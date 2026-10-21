@@ -210,7 +210,9 @@ function alphaTile(grain: Float64Array) {
   return pixels
 }
 
-function encode(pixels: Uint8Array, size: number, channels: 1 | 3 | 4) {
+/** A square tile with 1, 3 or 4 channels */
+function encode(pixels: Uint8Array, size: number) {
+  const channels = pixels.length / size ** 2 as 1 | 3 | 4
   return sharp(pixels, { raw: { width: size, height: size, channels } }).webp(WEBP_OPTIONS).toBuffer()
 }
 
@@ -227,7 +229,8 @@ function softLight(backdrop: number, source: number) {
  * the layer at full opacity: the prime tile over the main tile, in the
  * soft-light blend mode.
  */
-function midtoneDeviation(main: Uint8Array, mainChannels: 1 | 3, prime: Uint8Array) {
+function midtoneDeviation(main: Uint8Array, prime: Uint8Array) {
+  const mainChannels = main.length / MAIN_TILE_SIZE ** 2
   const lumas: number[] = []
   for (let y = 0; y < 2 * MAIN_TILE_SIZE; y++) {
     for (let x = 0; x < 2 * MAIN_TILE_SIZE; x++) {
@@ -412,8 +415,8 @@ async function suzunoTiles(): Promise<[URL, Buffer][]> {
   const ink = Uint8Array.from(red, (value, index) =>
     quantize(255 * (INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index]))))
   return [
-    [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size, 4)],
-    [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size, 1)],
+    [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size)],
+    [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size)],
   ]
 }
 
@@ -421,7 +424,7 @@ async function suzunoTiles(): Promise<[URL, Buffer][]> {
 function stockRules(tiles: Record<Grain, GrainTiles>) {
   const rules = Object.entries(STOCKS).map(([name, stock]) => {
     const own = tiles[stock.grain]
-    const deviation = midtoneDeviation(stock.color ? own.color : own.mono, stock.color ? 3 : 1, own.prime)
+    const deviation = midtoneDeviation(stock.color ? own.color : own.mono, own.prime)
     const strength = Number((stock.deviation / deviation).toFixed(2))
     const main = `grain-${stock.grain}-${stock.color ? 'color' : 'mono'}.webp`
     return [
@@ -442,11 +445,11 @@ async function main() {
   const files: [URL, Buffer | string][] = [[output('stocks.css'), stockRules(tiles)]]
   for (const [grain, { mono, color, prime }] of Object.entries(tiles)) {
     const stocks = Object.values(STOCKS).filter(stock => stock.grain === grain)
-    files.push([output(`grain-${grain}-prime.webp`), await encode(prime, PRIME_TILE_SIZE, 4)])
+    files.push([output(`grain-${grain}-prime.webp`), await encode(prime, PRIME_TILE_SIZE)])
     if (stocks.some(stock => !stock.color))
-      files.push([output(`grain-${grain}-mono.webp`), await encode(mono, MAIN_TILE_SIZE, 1)])
+      files.push([output(`grain-${grain}-mono.webp`), await encode(mono, MAIN_TILE_SIZE)])
     if (stocks.some(stock => stock.color))
-      files.push([output(`grain-${grain}-color.webp`), await encode(color, MAIN_TILE_SIZE, 3)])
+      files.push([output(`grain-${grain}-color.webp`), await encode(color, MAIN_TILE_SIZE)])
   }
   files.push(...await suzunoTiles())
   for (const [file, content] of files) {
