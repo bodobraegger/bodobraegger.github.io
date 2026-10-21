@@ -2,6 +2,7 @@
 // The print of the front of the RIBON milk candy bag (HokkaidoMilkBag.vue),
 // in face pixels: the logo, the stamp, the map with the title lettering,
 // the three claims before their milk cans, and the cow before the farm.
+import { useId } from 'vue'
 import milkCan from '~/assets/suzuno/packages/hokkaido-milk-can.webp'
 import cow from '~/assets/suzuno/packages/hokkaido-milk-cow.webp'
 import farm from '~/assets/suzuno/packages/hokkaido-milk-farm.webp'
@@ -10,7 +11,6 @@ import HokkaidoMap from '~/components/suzuno/packages/HokkaidoMap.vue'
 import HokkaidoTitle from '~/components/suzuno/packages/HokkaidoTitle.vue'
 import MilkStamp from '~/components/suzuno/packages/MilkStamp.vue'
 import RibonLogo from '~/components/suzuno/packages/RibonLogo.vue'
-import SkyGlow from '~/components/suzuno/packages/SkyGlow.vue'
 import type { FaceLayout, HokkaidoMilkBagTexts } from '~/lib/suzuno/packages/hokkaido-milk'
 import { HOKKAIDO_MILK_FONTS, placePart } from '~/lib/suzuno/packages/hokkaido-milk'
 
@@ -30,7 +30,8 @@ const IMAGE_WIDTH = 100
 const COW_HEIGHT = 67.5
 const FARM_HEIGHT = 26.1
 const CAN_HEIGHT = 195
-// The pale sky over the farm, above the horizon at the origin of its part
+// The pale sky over the farm: a glow that fades out from the middle of the
+// horizon at the origin of its part
 const SKY_HEIGHT = 20
 // Tinos capitals are 0.66 em high, the kana of Noto Serif JP about 0.88 em
 const TIMES_SIZE = 100 / 0.66
@@ -41,6 +42,7 @@ const inks = computed(() => props.layout.inks)
 const spacings = computed(() => props.layout.spacings ?? {})
 const BADGES = ['badgeLeft', 'badgeMiddle', 'badgeRight'] as const
 const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
+const skyId = `${useId()}-sky`
 </script>
 
 <template>
@@ -103,7 +105,13 @@ const CANS = ['canLeft', 'canMiddle', 'canRight'] as const
       :shadow="inks['badge-shadow']"
       :data-part="badge"
     />
-    <SkyGlow :transform="placePart(parts.sky)" :width="IMAGE_WIDTH" :height="SKY_HEIGHT" :color="inks.sky" data-part="sky" />
+    <g :transform="placePart(parts.sky)" data-part="sky">
+      <radialGradient :id="skyId">
+        <stop offset="0" :stop-color="inks.sky" />
+        <stop offset="1" :stop-color="inks.sky" stop-opacity="0" />
+      </radialGradient>
+      <ellipse :cx="IMAGE_WIDTH / 2" cy="0" :rx="IMAGE_WIDTH / 2" :ry="SKY_HEIGHT" :fill="`url(#${skyId})`" />
+    </g>
     <image :transform="placePart(parts.farm)" :href="landscape" :width="IMAGE_WIDTH" :height="FARM_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="farm" />
     <image :transform="placePart(parts.cow)" :href="illustration" :width="IMAGE_WIDTH" :height="COW_HEIGHT" preserveAspectRatio="xMidYMax meet" data-part="cow" />
   </g>

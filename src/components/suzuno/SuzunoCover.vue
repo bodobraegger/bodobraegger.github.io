@@ -6,12 +6,15 @@
 import { useHead } from '@unhead/vue'
 import { useId } from 'vue'
 import bannerPhoto from '~/assets/suzuno/banner-photo.webp'
+import inkTexture from '~/assets/suzuno/ink-texture.webp'
 import lighting from '~/assets/suzuno/lighting.png'
+import coverPlant from '~/assets/suzuno/ornament-cover.json'
+import paperGrain from '~/assets/suzuno/paper-grain.webp'
 import veil from '~/assets/suzuno/veil.png'
 import type { CoverTexts } from '~/lib/suzuno/cover-typography'
 import { BANNER_TYPE, COVER_TEXTS, TITLE_TYPE } from '~/lib/suzuno/cover-typography'
-import PatternFill from '~/components/suzuno/PatternFill.vue'
-import { COVER_VINE_BOX } from '~/lib/suzuno/patterns/plum-vine'
+import type { Plant } from '~/lib/suzuno/ornament'
+import { toSvg } from '~/lib/suzuno/ornament'
 
 const props = defineProps<{
   texts: CoverTexts
@@ -26,11 +29,19 @@ const TITLE_FRAME_BOTTOM = 1072
 const STRIP = { left: 736, right: 1174, length: 1073 }
 // The title ink below this line, the descender of the g under the rule, is lighter
 const BELOW_RULE = 1048
-const SHEET_BOX = { x: 0, y: 0, ...SHEET }
-const VINE = { name: 'plum-vine', box: COVER_VINE_BOX }
-const GRAIN = { name: 'paper-grain' }
+// The plum vine at the right edge of the sheet, and its ink, which fades from
+// grey to blue between the two heights. The top stop is darker than its fit,
+// so that the top flower has the ink depth of the print.
+const VINE = { x: 1150, y: 250, width: 264, height: 620 }
+const VINE_INK = { top: 300, bottom: 840, stops: ['#f5e9dd', '#d4dee7', '#b7d5ec'] }
+const VINE_SOFTNESS = 0.675
+const vineLines = toSvg(coverPlant as unknown as Plant)
+// The texture tile of the ink has one texel for each unit of the sheet; the
+// paper grain tile has 240 texels, and its black is faint
+const INK_TEXTURE_SIZE = 160
+const GRAIN = { size: 240, opacity: 0.07 }
 
-const DEFINITIONS = ['label', 'title', 'titleFrame', 'stripNormalInk', 'stripInk', 'belowRule', 'printSoft'] as const
+const DEFINITIONS = ['label', 'title', 'titleFrame', 'stripNormalInk', 'stripInk', 'belowRule', 'printSoft', 'vineInk', 'vineSoft', 'vineLines', 'vineTexture', 'vinePaper', 'grain'] as const
 type Definition = typeof DEFINITIONS[number]
 
 const id = useId()
@@ -91,11 +102,39 @@ useHead({
       <filter :id="ids.printSoft" x="-10%" y="-10%" width="120%" height="120%">
         <feGaussianBlur stdDeviation="0.9" />
       </filter>
+      <linearGradient :id="ids.vineInk" gradientUnits="userSpaceOnUse" x1="0" :y1="VINE_INK.top" x2="0" :y2="VINE_INK.bottom">
+        <stop offset="0" :stop-color="VINE_INK.stops[0]" />
+        <stop offset="0.55" :stop-color="VINE_INK.stops[1]" />
+        <stop offset="1" :stop-color="VINE_INK.stops[2]" />
+      </linearGradient>
+      <filter :id="ids.vineSoft" filterUnits="userSpaceOnUse" v-bind="VINE" color-interpolation-filters="sRGB">
+        <feGaussianBlur :stdDeviation="VINE_SOFTNESS" />
+      </filter>
+      <!-- The softness is in the mask, because a filter on the masked rect runs before the mask -->
+      <mask :id="ids.vineLines" maskUnits="userSpaceOnUse" v-bind="VINE">
+        <!-- eslint-disable-next-line vue/no-v-html -- the line art of the vine, a file of this repository -->
+        <g :filter="url('vineSoft')" v-html="vineLines" />
+      </mask>
+      <!-- The paper breaks the ink up. Without smoothing, each pixel shows one
+           texel, as the noise filter of the print showed the noise at one
+           point of each pixel. -->
+      <pattern :id="ids.vineTexture" patternUnits="userSpaceOnUse" :x="VINE.x" :y="VINE.y" :width="INK_TEXTURE_SIZE" :height="INK_TEXTURE_SIZE">
+        <rect :width="INK_TEXTURE_SIZE" :height="INK_TEXTURE_SIZE" fill="#fff" />
+        <image :href="inkTexture" :width="INK_TEXTURE_SIZE" :height="INK_TEXTURE_SIZE" image-rendering="pixelated" />
+      </pattern>
+      <mask :id="ids.vinePaper" maskUnits="userSpaceOnUse" v-bind="VINE">
+        <rect v-bind="VINE" :fill="url('vineTexture')" />
+      </mask>
+      <pattern :id="ids.grain" patternUnits="userSpaceOnUse" x="0" y="0" :width="GRAIN.size" :height="GRAIN.size">
+        <image :href="paperGrain" :width="GRAIN.size" :height="GRAIN.size" :opacity="GRAIN.opacity" image-rendering="pixelated" />
+      </pattern>
     </defs>
 
     <rect :width="SHEET.width" :height="SHEET.height" fill="#f6f5f2" />
 
-    <PatternFill inline :pattern="VINE" :box="SHEET_BOX" />
+    <g :mask="url('vinePaper')">
+      <rect v-bind="VINE" :fill="url('vineInk')" :mask="url('vineLines')" />
+    </g>
 
     <!-- Squeezed horizontally like the 長体 of the print -->
     <g :clip-path="url('titleFrame')">
@@ -134,6 +173,6 @@ useHead({
     <image :href="lighting" :width="SHEET.width" :height="SHEET.height" preserveAspectRatio="none" style="mix-blend-mode: multiply" />
     <image :href="veil" :width="SHEET.width" :height="SHEET.height" preserveAspectRatio="none" />
 
-    <PatternFill inline :pattern="GRAIN" :box="SHEET_BOX" />
+    <rect :width="SHEET.width" :height="SHEET.height" :fill="url('grain')" />
   </svg>
 </template>
