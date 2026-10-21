@@ -52,14 +52,13 @@ export function placePart({ x, y, scale, squeeze = 1, rotate = 0 }: PartPlace) {
   return `translate(${x} ${y}) rotate(${rotate}) scale(${scale * squeeze} ${scale})`
 }
 
-/**
- * The crimp ridges of a heat seal as the lines of a SealBand: each ridge is a
- * light line above a dark one. weight is the width of a line relative to the
- * spacing of the ridges.
- */
-export function sealRidges(depth: number, ridges: number, weight = 0.22): BandLayout<string> {
+/** The width of a line of a seal ridge, relative to the spacing of the ridges. */
+const RIDGE_LINE_WIDTH = 0.22
+
+/** The crimp ridges of a heat seal as the lines of a SealBand: each ridge is a light line above a dark one. */
+export function sealRidges(depth: number, ridges: number): BandLayout<string> {
   const spacing = depth / ridges
-  const width = spacing * weight
+  const width = spacing * RIDGE_LINE_WIDTH
   return {
     top: 0,
     bottom: depth,
