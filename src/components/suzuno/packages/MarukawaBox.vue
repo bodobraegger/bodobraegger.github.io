@@ -1,8 +1,7 @@
 <script setup lang="ts">
 // The face of a MARUKAWA bubble gum box as one SVG in the pixel space of the
-// faces of the photos (144 x 136). A version (domestic or export) and a preset
-// (melon, strawberry, orange) give a box; each other prop replaces one part
-// of it. The front and the back of a box carry the same print. The green band
+// faces of the photos (144 x 136). A preset (melon, strawberry, orange) gives
+// a box; each other prop replaces one part of it. The front and the back of a box carry the same print. The green band
 // across the boxes of the photos is an elastic, not print, so the face leaves it out.
 import { useId } from 'vue'
 import MarukawaBubbleGum from '~/components/suzuno/packages/MarukawaBubbleGum.vue'
@@ -10,12 +9,10 @@ import MarukawaFlavour from '~/components/suzuno/packages/MarukawaFlavour.vue'
 import MarukawaLabel from '~/components/suzuno/packages/MarukawaLabel.vue'
 import MarukawaLogo from '~/components/suzuno/packages/MarukawaLogo.vue'
 import { CAP_HEIGHT, fontSizeForCapHeight, placeLettering, useWebFonts } from '~/lib/suzuno/packages/lettering'
-import type { MarukawaLabelText, MarukawaPreset, MarukawaVersion } from '~/lib/suzuno/packages/marukawa'
+import type { MarukawaLabelText, MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_FACE, MARUKAWA_PRESETS } from '~/lib/suzuno/packages/marukawa'
 
 const props = withDefaults(defineProps<{
-  /** The Japanese box (domestic) or the box with English text of the photos (export). */
-  version?: MarukawaVersion
   preset?: MarukawaPreset
   flavour?: string
   flavourColor?: string
@@ -29,14 +26,14 @@ const props = withDefaults(defineProps<{
   illustrationBox?: [number, number, number, number]
   brand?: string
   tagline?: string
-  /** The first word of "BUBBLE GUM" (フーセン on the domestic boxes). */
+  /** The first word of "BUBBLE GUM". */
   bubble?: string
-  /** The second word of "BUBBLE GUM" (ガム on the domestic boxes). */
+  /** The second word of "BUBBLE GUM". */
   gum?: string
   bubbleColor?: string
   gumColor?: string
   gumOutline?: string | null
-  /** The ink of the logo line, the tagline and the ® mark. */
+  /** The ink of the logo line and the tagline. */
   ink?: string
   paper?: string
   /** The small label; null for none. */
@@ -44,7 +41,6 @@ const props = withDefaults(defineProps<{
   /** A detail of the face, for example '0 0 72 68'. */
   viewBox?: string
 }>(), {
-  version: 'domestic',
   preset: 'melon',
   // undefined keeps the value of the preset; null removes the part
   flavourOutline: undefined,
@@ -59,7 +55,7 @@ function choose<T>(value: T | undefined, fallback: T) {
 }
 
 const design = computed(() => {
-  const preset = MARUKAWA_PRESETS[props.version][props.preset]
+  const preset = MARUKAWA_PRESETS[props.preset]
   return {
     ...preset,
     texts: {
@@ -141,11 +137,5 @@ const titleId = `${id}-title`
       data-part="bubble-gum"
     />
     <MarukawaLabel v-if="design.label && layout.label" :text="design.label" v-bind="layout.label" :color="design.ink" data-part="label" />
-    <g v-if="layout.registered" :transform="`translate(${layout.registered.x} ${layout.registered.y})`" :fill="design.ink" data-part="registered" data-ink="registered">
-      <circle :r="layout.registered.radius * 0.9" fill="none" :stroke="design.ink" data-ink="registered" :stroke-width="layout.registered.radius * 0.14" />
-      <text :y="layout.registered.radius * 0.45" text-anchor="middle" :font-family="fonts.tagline.family" :font-size="layout.registered.radius * 1.3">
-        R
-      </text>
-    </g>
   </svg>
 </template>

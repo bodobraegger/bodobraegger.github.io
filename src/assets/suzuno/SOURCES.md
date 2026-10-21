@@ -38,7 +38,7 @@ The lemon photograph of the front of the salt lemon candy bag, from the photo of
 
 ## MARUKAWA bubble gum (`packages/marukawa-*.webp`)
 
-The fruit of the MARUKAWA bubble gum boxes, one image of the whole face (576 x 544, 4 times the face) with transparent paper for each version and flavour. `tools/fits/packages/marukawa_fruit.py` makes them from five photos. It cuts out a strawberry, a whole melon and a melon slice, a melon stem, a halved and a whole orange and a leaf, lays them out like the print (the melon pieces and the slices mirrored, the slices repeated), fits their places to the reference faces and matches their colours in Lab. It downloads the photos itself. The places are in `tools/fits/packages/marukawa-fruit.json`. The images that use CC BY-SA photos have the licence CC BY-SA 4.0.
+The fruit of the MARUKAWA bubble gum boxes, one image of the whole face (576 x 544, 4 times the face) with transparent paper for each flavour. `tools/fits/packages/marukawa_fruit.py` makes them from five photos. It cuts out a strawberry, a whole melon and a melon slice, a melon stem, a halved and a whole orange and a leaf, lays them out like the print (the melon pieces and the slices mirrored, the slices repeated), fits their places to the reference faces and matches their colours in Lab. It downloads the photos itself. The places are in `tools/fits/packages/marukawa-fruit.json`. The images that use CC BY-SA photos have the licence CC BY-SA 4.0.
 
 - "Cantaloupe" by Renee Comet (National Cancer Institute), public domain. The script uses the whole melon, completed at the bottom from its mirrored upper half, and the slice.
   https://commons.wikimedia.org/wiki/File:Cantaloupe.jpg

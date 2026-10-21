@@ -1,9 +1,8 @@
 <script setup lang="ts">
 // The logo line of the MARUKAWA boxes: the mark, 川 (kawa, river) in a circle
-// (maru), then the name: MARUKAWA in Helvetica Bold on the export boxes, マルカワ
-// in a pop gothic on the domestic boxes. In its own coordinates: the baseline
-// at y 0, the mark from x 0, a cap height of CAP_HEIGHT. Place it with
-// placeLettering (src/lib/suzuno/packages/lettering.ts).
+// (maru), then the name MARUKAWA in Helvetica Bold. In its own coordinates:
+// the baseline at y 0, the mark from x 0, a cap height of CAP_HEIGHT. Place
+// it with placeLettering (src/lib/suzuno/packages/lettering.ts).
 import type { LetteringFont } from '~/lib/suzuno/packages/lettering'
 import { CAP_HEIGHT, fontSizeForCapHeight, useWebFonts } from '~/lib/suzuno/packages/lettering'
 import { MARK_RADIUS, MARUKAWA_FONTS, logoNameX } from '~/lib/suzuno/packages/marukawa'

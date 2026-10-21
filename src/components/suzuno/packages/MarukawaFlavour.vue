@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // The flavour lettering of the MARUKAWA boxes ("melon", "Strawberry",
-// "orange" in a fat Clarendon on the export boxes, いちご or オレンジ in brush
-// lettering on the domestic boxes), with an optional dark edge and an optional
+// "orange" in a fat Clarendon), with an optional dark edge and an optional
 // box behind it, like the yellow box of "melon". In its own coordinates: the
 // middle of the baseline at the origin, a cap height of CAP_HEIGHT. Place it
 // with placeLettering (src/lib/suzuno/packages/lettering.ts).

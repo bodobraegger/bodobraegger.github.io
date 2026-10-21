@@ -5,7 +5,7 @@ import { useHead } from '@unhead/vue'
 import type { InjectionKey, Ref } from 'vue'
 import { computed, inject } from 'vue'
 import type { FontMetrics } from '~/lib/suzuno/packages/font-metrics'
-import { FIRST_CHARACTER, FIRST_KANA, FIRST_WIDE_CHARACTER } from '~/lib/suzuno/packages/font-metrics'
+import { FIRST_CHARACTER, FIRST_WIDE_CHARACTER } from '~/lib/suzuno/packages/font-metrics'
 
 /** A web font of a lettering part, with the stylesheet that loads it and its advance widths. */
 export interface LetteringFont {
@@ -61,10 +61,7 @@ export function textWidth(text: string, font: FontMetrics) {
   let width = 0
   for (const character of text) {
     const code = character.codePointAt(0)!
-    if (code < FIRST_WIDE_CHARACTER)
-      width += font.advances[code - FIRST_CHARACTER] ?? font.mean
-    else
-      width += font.kana[code - FIRST_KANA] ?? font.wide
+    width += code < FIRST_WIDE_CHARACTER ? font.advances[code - FIRST_CHARACTER] ?? font.mean : font.wide
   }
   return width
 }

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-// The "BUBBLE GUM" lettering of the MARUKAWA boxes: on the export boxes
-// "BUBBLE" in a condensed Helvetica Bold and "GUM" larger in the fat Clarendon
-// of the flavour, with an optional dark edge; on the domestic boxes フーセン in
-// green and ガム in the colour of the flavour, both in brush lettering. In its
-// own coordinates: the start of the baseline at the origin, a cap height of
-// CAP_HEIGHT for the first word. Place it with placeLettering (src/lib/suzuno/packages/lettering.ts).
+// The "BUBBLE GUM" lettering of the MARUKAWA boxes: "BUBBLE" in a condensed
+// Helvetica Bold and "GUM" larger in the fat Clarendon of the flavour, with an
+// optional dark edge. In its own coordinates: the start of the baseline at
+// the origin, a cap height of CAP_HEIGHT for the first word. Place it with
+// placeLettering (src/lib/suzuno/packages/lettering.ts).
 import type { LetteringFont } from '~/lib/suzuno/packages/lettering'
 import { CAP_HEIGHT, fontSizeForCapHeight, useWebFonts } from '~/lib/suzuno/packages/lettering'
 import { MARUKAWA_FONTS, letteringWidth } from '~/lib/suzuno/packages/marukawa'

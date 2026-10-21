@@ -201,12 +201,12 @@ export const WRAPPER_FACES = {
 
 /** A MARUKAWA box, for SuzunoMarukawa. The front and the back carry the same print, so one face stands for both. */
 function marukawaFace(preset: MarukawaPreset) {
-  const design = MARUKAWA_PRESETS.export[preset]
+  const design = MARUKAWA_PRESETS[preset]
   return defineFace({
     title: `The MARUKAWA ${preset} bubble gum box`,
     reference: `packages/marukawa-${preset}-front.png`,
     component: MarukawaBox,
-    props: { preset, version: 'export' },
+    props: { preset },
     texts: design.label ? { ...design.texts, label: design.label } : design.texts,
     textProps: spreadTexts,
     small: { illustration: smallImage(`packages/marukawa-export-${preset}`) },
@@ -298,9 +298,9 @@ export function textsOption(value: Record<string, unknown> | string | undefined)
 }
 
 // The characters that the recreations draw besides their texts: the space,
-// the digits of the amounts, the plus of the citric acid badge, the R of the
-// registered mark and the プラ of a recycling mark without a material
-const DRAWN_GLYPHS = ' 0123456789+Rプラ'
+// the digits of the amounts, the plus of the citric acid badge and the プラ
+// of a recycling mark without a material
+const DRAWN_GLYPHS = ' 0123456789+プラ'
 
 /** The characters of the texts of a face, for the font subsets of its recreation. */
 export function textGlyphs(texts: unknown) {
