@@ -8,13 +8,11 @@ import { useId } from 'vue'
 import bannerPhoto from '~/assets/suzuno/banner-photo.webp'
 import inkTexture from '~/assets/suzuno/ink-texture.webp'
 import lighting from '~/assets/suzuno/lighting.png'
-import coverPlant from '~/assets/suzuno/ornament-cover.json'
+import vineLines from '~/assets/suzuno/ornament-cover.svg?raw'
 import paperGrain from '~/assets/suzuno/paper-grain.webp'
 import veil from '~/assets/suzuno/veil.png'
 import type { CoverTexts } from '~/lib/suzuno/cover-typography'
 import { BANNER_TYPE, COVER_TEXTS, TITLE_TYPE } from '~/lib/suzuno/cover-typography'
-import type { Plant } from '~/lib/suzuno/ornament'
-import { toSvg } from '~/lib/suzuno/ornament'
 
 const props = defineProps<{
   texts: CoverTexts
@@ -35,7 +33,6 @@ const BELOW_RULE = 1048
 const VINE = { x: 1150, y: 250, width: 264, height: 620 }
 const VINE_INK = { top: 300, bottom: 840, stops: ['#f5e9dd', '#d4dee7', '#b7d5ec'] }
 const VINE_SOFTNESS = 0.675
-const vineLines = toSvg(coverPlant as unknown as Plant)
 // The texture tile of the ink has one texel for each unit of the sheet; the
 // paper grain tile has 240 texels, and its black is faint
 const INK_TEXTURE_SIZE = 160
@@ -112,7 +109,6 @@ useHead({
       </filter>
       <!-- The softness is in the mask, because a filter on the masked rect runs before the mask -->
       <mask :id="ids.vineLines" maskUnits="userSpaceOnUse" v-bind="VINE">
-        <!-- eslint-disable-next-line vue/no-v-html -- the line art of the vine, a file of this repository -->
         <g :filter="url('vineSoft')" v-html="vineLines" />
       </mask>
       <!-- The paper breaks the ink up. Without smoothing, each pixel shows one
