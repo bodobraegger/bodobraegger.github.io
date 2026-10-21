@@ -16,74 +16,50 @@
 @import './stocks.css';
 
 /* One texel of a tile is one device pixel, so the grain stays as sharp as
-   the grain of a scan that the browser scales down. */
+   the grain of a scan that the browser scales down. CSS has no length of one
+   device pixel, so the media queries set it for the usual pixel ratios. */
 .film-grain {
   --film-grain-pixel: 1px;
 
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
-}
 
-@media (resolution >= 1.125dppx) {
-  .film-grain {
+  @media (resolution >= 1.125dppx) {
     --film-grain-pixel: calc(1px / 1.25);
   }
-}
 
-@media (resolution >= 1.375dppx) {
-  .film-grain {
+  @media (resolution >= 1.375dppx) {
     --film-grain-pixel: calc(1px / 1.5);
   }
-}
 
-@media (resolution >= 1.75dppx) {
-  .film-grain {
+  @media (resolution >= 1.75dppx) {
     --film-grain-pixel: calc(1px / 2);
   }
-}
 
-@media (resolution >= 2.25dppx) {
-  .film-grain {
+  @media (resolution >= 2.25dppx) {
     --film-grain-pixel: calc(1px / 2.5);
   }
-}
 
-@media (resolution >= 2.56dppx) {
-  .film-grain {
+  @media (resolution >= 2.56dppx) {
     --film-grain-pixel: calc(1px / 2.625);
   }
-}
 
-@media (resolution >= 2.69dppx) {
-  .film-grain {
+  @media (resolution >= 2.69dppx) {
     --film-grain-pixel: calc(1px / 2.75);
   }
-}
 
-@media (resolution >= 2.875dppx) {
-  .film-grain {
+  @media (resolution >= 2.875dppx) {
     --film-grain-pixel: calc(1px / 3);
   }
-}
 
-@media (resolution >= 3.25dppx) {
-  .film-grain {
+  @media (resolution >= 3.25dppx) {
     --film-grain-pixel: calc(1px / 3.5);
   }
-}
 
-@media (resolution >= 3.75dppx) {
-  .film-grain {
+  @media (resolution >= 3.75dppx) {
     --film-grain-pixel: calc(1px / 4);
   }
-}
-
-/* Without a box of its own, the element makes no stacking context, so the
-   blend of the layer reaches the page behind it. */
-.film-grain--fixed {
-  display: contents;
 }
 
 /* The prime tile (241 texels) over the main tile (256 texels) repeats only
@@ -93,7 +69,6 @@
   content: '';
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background-size:
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 241),
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 256);

@@ -22,7 +22,7 @@
 //
 // The script also makes the two noise tiles of the Suzuno recreations in
 // src/assets/suzuno/ (see suzunoTiles).
-import { mkdir, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import sharp from 'sharp'
 import { random } from '../src/lib/orchid'
 
@@ -62,7 +62,8 @@ type Grain = keyof typeof GRAINS
 
 interface Stock {
   grain: Grain
-  color: boolean
+  /** The main tile: colour or monochrome grain */
+  main: 'color' | 'mono'
   /**
    * The standard deviation of the grain in the luma of a midtone (8-bit
    * levels), in the flattest midtone areas of the scans. Kodak rates the
@@ -73,12 +74,12 @@ interface Stock {
 }
 
 const STOCKS: Record<string, Stock> = {
-  'ektar-100': { grain: 'fine', color: true, deviation: 4 },
-  'portra-400': { grain: 'fine', color: true, deviation: 6.3 },
-  'gold-200': { grain: 'fine', color: true, deviation: 8 },
-  'superia-400': { grain: 'fine', color: true, deviation: 11 },
-  'tri-x-400': { grain: 'fine', color: false, deviation: 14 },
-  'hp5': { grain: 'clumped', color: false, deviation: 11 },
+  'ektar-100': { grain: 'fine', main: 'color', deviation: 4 },
+  'portra-400': { grain: 'fine', main: 'color', deviation: 6.3 },
+  'gold-200': { grain: 'fine', main: 'color', deviation: 8 },
+  'superia-400': { grain: 'fine', main: 'color', deviation: 11 },
+  'tri-x-400': { grain: 'fine', main: 'mono', deviation: 14 },
+  'hp5': { grain: 'clumped', main: 'mono', deviation: 11 },
 }
 
 /**
@@ -129,9 +130,13 @@ function poisson(next: Random, mean: number) {
   return count
 }
 
-function standardize(values: Float64Array) {
+function meanAndDeviation(values: Float64Array) {
   const mean = values.reduce((sum, value) => sum + value, 0) / values.length
-  const deviation = Math.sqrt(values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length)
+  return { mean, deviation: Math.sqrt(values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length) }
+}
+
+function standardize(values: Float64Array) {
+  const { mean, deviation } = meanAndDeviation(values)
   return values.map(value => (value - mean) / deviation)
 }
 
@@ -206,7 +211,9 @@ function alphaTile(grain: Float64Array) {
   return pixels
 }
 
-function encode(pixels: Uint8Array, size: number, channels: 1 | 3 | 4) {
+/** A square tile with 1, 3 or 4 channels */
+function encode(pixels: Uint8Array, size: number) {
+  const channels = pixels.length / size ** 2 as 1 | 3 | 4
   return sharp(pixels, { raw: { width: size, height: size, channels } }).webp(WEBP_OPTIONS).toBuffer()
 }
 
@@ -223,7 +230,8 @@ function softLight(backdrop: number, source: number) {
  * the layer at full opacity: the prime tile over the main tile, in the
  * soft-light blend mode.
  */
-function midtoneDeviation(main: Uint8Array, mainChannels: 1 | 3, prime: Uint8Array) {
+function midtoneDeviation(main: Uint8Array, prime: Uint8Array) {
+  const mainChannels = main.length / MAIN_TILE_SIZE ** 2
   const lumas: number[] = []
   for (let y = 0; y < 2 * MAIN_TILE_SIZE; y++) {
     for (let x = 0; x < 2 * MAIN_TILE_SIZE; x++) {
@@ -237,17 +245,10 @@ function midtoneDeviation(main: Uint8Array, mainChannels: 1 | 3, prime: Uint8Arr
       }, 0))
     }
   }
-  const mean = lumas.reduce((sum, value) => sum + value, 0) / lumas.length
-  return 255 * Math.sqrt(lumas.reduce((sum, value) => sum + (value - mean) ** 2, 0) / lumas.length)
+  return 255 * meanAndDeviation(Float64Array.from(lumas)).deviation
 }
 
-interface GrainTiles {
-  mono: Uint8Array
-  color: Uint8Array
-  prime: Uint8Array
-}
-
-function grainTiles(next: Random, model: CloudModel): GrainTiles {
+function grainTiles(next: Random, model: CloudModel) {
   const shared = cloudField(next, model, MAIN_TILE_SIZE)
   const channels = CHANNEL_GAINS.map((gain) => {
     const own = cloudField(next, model, MAIN_TILE_SIZE)
@@ -255,12 +256,13 @@ function grainTiles(next: Random, model: CloudModel): GrainTiles {
       .map(value => value * gain)
   })
   const luma = standardize(channels[0].map((_, index) => LUMA_WEIGHTS.reduce((sum, weight, channel) => sum + weight * channels[channel][index], 0)))
+  const grey = (value: number) => quantize(128 + GREY_SCALE * value)
   const color = new Uint8Array(luma.length * 3)
   channels.forEach((values, channel) => values.forEach((value, index) => {
-    color[index * 3 + channel] = quantize(128 + GREY_SCALE * value)
+    color[index * 3 + channel] = grey(value)
   }))
   return {
-    mono: Uint8Array.from(luma, value => quantize(128 + GREY_SCALE * value)),
+    mono: Uint8Array.from(luma, grey),
     color,
     prime: alphaTile(cloudField(next, model, PRIME_TILE_SIZE)),
   }
@@ -320,41 +322,27 @@ function turbulenceLattice(seed: number): Lattice {
   return { selector, gradients }
 }
 
-/** The lattice period of a tile that the noise repeats over, and the lattice cell where the wrap starts */
-interface Stitch {
-  width: number
-  height: number
-  wrapX: number
-  wrapY: number
-}
-
 const sCurve = (value: number) => value * value * (3 - 2 * value)
 const mix = (amount: number, from: number, to: number) => from + amount * (to - from)
 
-function perlinNoise({ selector, gradients }: Lattice, channel: number, x: number, y: number, stitch: Stitch) {
+/** The noise of a channel at a point, stitched to repeat after `period` lattice cells in both directions */
+function perlinNoise({ selector, gradients }: Lattice, channel: number, x: number, y: number, period: number) {
   const shiftedX = x + PERLIN_OFFSET
   const shiftedY = y + PERLIN_OFFSET
-  let left = Math.trunc(shiftedX)
-  let right = left + 1
-  let top = Math.trunc(shiftedY)
-  let bottom = top + 1
-  const fractionX = shiftedX - left
-  const fractionY = shiftedY - top
-  if (left >= stitch.wrapX)
-    left -= stitch.width
-  if (right >= stitch.wrapX)
-    right -= stitch.width
-  if (top >= stitch.wrapY)
-    top -= stitch.height
-  if (bottom >= stitch.wrapY)
-    bottom -= stitch.height
-  const column0 = selector[left & LATTICE_MASK]
-  const column1 = selector[right & LATTICE_MASK]
+  const cellX = Math.trunc(shiftedX)
+  const cellY = Math.trunc(shiftedY)
+  const fractionX = shiftedX - cellX
+  const fractionY = shiftedY - cellY
+  const stitch = (cell: number) => (cell >= PERLIN_OFFSET + period ? cell - period : cell) & LATTICE_MASK
+  const column0 = selector[stitch(cellX)]
+  const column1 = selector[stitch(cellX + 1)]
+  const top = stitch(cellY)
+  const bottom = stitch(cellY + 1)
   const gradient = gradients[channel]
   const dot = (corner: number, offsetX: number, offsetY: number) => offsetX * gradient[2 * corner] + offsetY * gradient[2 * corner + 1]
   const sx = sCurve(fractionX)
-  const upper = mix(sx, dot(selector[column0 + (top & LATTICE_MASK)], fractionX, fractionY), dot(selector[column1 + (top & LATTICE_MASK)], fractionX - 1, fractionY))
-  const lower = mix(sx, dot(selector[column0 + (bottom & LATTICE_MASK)], fractionX, fractionY - 1), dot(selector[column1 + (bottom & LATTICE_MASK)], fractionX - 1, fractionY - 1))
+  const upper = mix(sx, dot(selector[column0 + top], fractionX, fractionY), dot(selector[column1 + top], fractionX - 1, fractionY))
+  const lower = mix(sx, dot(selector[column0 + bottom], fractionX, fractionY - 1), dot(selector[column1 + bottom], fractionX - 1, fractionY - 1))
   return mix(sCurve(fractionY), upper, lower)
 }
 
@@ -385,19 +373,11 @@ function fractalNoiseTile({ seed, baseFrequency, octaves, size }: NoiseTile) {
     const values = new Float64Array(size * size)
     for (let row = 0; row < size; row++) {
       for (let column = 0; column < size; column++) {
-        const stitch = { width: period, height: period, wrapX: PERLIN_OFFSET + period, wrapY: PERLIN_OFFSET + period }
-        let x = (column + BROWSER_SAMPLE_OFFSET) * frequency
-        let y = (row + BROWSER_SAMPLE_OFFSET) * frequency
+        const x = (column + BROWSER_SAMPLE_OFFSET) * frequency
+        const y = (row + BROWSER_SAMPLE_OFFSET) * frequency
         let sum = 0
-        for (let octave = 0, ratio = 1; octave < octaves; octave++, ratio *= 2) {
-          sum += perlinNoise(lattice, channel, x, y, stitch) / ratio
-          x *= 2
-          y *= 2
-          stitch.width *= 2
-          stitch.height *= 2
-          stitch.wrapX = 2 * stitch.wrapX - PERLIN_OFFSET
-          stitch.wrapY = 2 * stitch.wrapY - PERLIN_OFFSET
-        }
+        for (let octave = 0, ratio = 1; octave < octaves; octave++, ratio *= 2)
+          sum += perlinNoise(lattice, channel, x * ratio, y * ratio, period * ratio) / ratio
         values[row * size + column] = Math.max(0, Math.min(1, (sum + 1) / 2))
       }
     }
@@ -428,44 +408,36 @@ async function suzunoTiles(): Promise<[URL, Buffer][]> {
   })
   const [red, green, blue] = fractalNoiseTile(INK_TEXTURE)
   const ink = Uint8Array.from(red, (value, index) =>
-    quantize(255 * Math.max(0, Math.min(1, INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index])))))
+    quantize(255 * (INK_TEXTURE.level - INK_TEXTURE.absorption * (value + green[index] + blue[index]))))
   return [
-    [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size, 4)],
-    [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size, 1)],
+    [new URL('paper-grain.webp', SUZUNO_DIRECTORY), await encode(paper, PAPER_GRAIN.size)],
+    [new URL('ink-texture.webp', SUZUNO_DIRECTORY), await encode(ink, INK_TEXTURE.size)],
   ]
-}
-
-/** One rule for each stock: its tiles and its strength. */
-function stockRules(tiles: Record<Grain, GrainTiles>) {
-  const rules = Object.entries(STOCKS).map(([name, stock]) => {
-    const own = tiles[stock.grain]
-    const deviation = midtoneDeviation(stock.color ? own.color : own.mono, stock.color ? 3 : 1, own.prime)
-    const strength = Number((stock.deviation / deviation).toFixed(2))
-    const main = `grain-${stock.grain}-${stock.color ? 'color' : 'mono'}.webp`
-    return [
-      `.film-grain--${name}::after {`,
-      `  background-image: url('./grain-${stock.grain}-prime.webp'), url('./${main}');`,
-      `  opacity: var(--film-grain-strength, ${strength});`,
-      '}',
-    ].join('\n')
-  })
-  return ['/* Generated by scripts/film-grain.ts. Do not edit. */', ...rules, ''].join('\n')
 }
 
 async function main() {
   const next = random(SEED)
-  const tiles = Object.fromEntries(Object.entries(GRAINS).map(([grain, model]) => [grain, grainTiles(next, model)])) as Record<Grain, GrainTiles>
-  await mkdir(OUTPUT_DIRECTORY, { recursive: true })
-  const output = (name: string) => new URL(name, OUTPUT_DIRECTORY)
-  const files: [URL, Buffer | string][] = [[output('stocks.css'), stockRules(tiles)]]
-  for (const [grain, { mono, color, prime }] of Object.entries(tiles)) {
-    const stocks = Object.values(STOCKS).filter(stock => stock.grain === grain)
-    files.push([output(`grain-${grain}-prime.webp`), await encode(prime, PRIME_TILE_SIZE, 4)])
-    if (stocks.some(stock => !stock.color))
-      files.push([output(`grain-${grain}-mono.webp`), await encode(mono, MAIN_TILE_SIZE, 1)])
-    if (stocks.some(stock => stock.color))
-      files.push([output(`grain-${grain}-color.webp`), await encode(color, MAIN_TILE_SIZE, 3)])
-  }
+  const tiles = Object.fromEntries(Object.entries(GRAINS).map(([grain, model]) => [grain, grainTiles(next, model)])) as Record<Grain, ReturnType<typeof grainTiles>>
+  // Only the tiles of a stock go into a file, so the colour tile of the clumped grain stays out.
+  const images = new Map<string, [Uint8Array, number]>()
+  const rules = Object.entries(STOCKS).map(([name, { grain, main, deviation }]) => {
+    const { prime: primeTile, [main]: mainTile } = tiles[grain]
+    const primeFile = `grain-${grain}-prime.webp`
+    const mainFile = `grain-${grain}-${main}.webp`
+    images.set(primeFile, [primeTile, PRIME_TILE_SIZE]).set(mainFile, [mainTile, MAIN_TILE_SIZE])
+    const strength = Number((deviation / midtoneDeviation(mainTile, primeTile)).toFixed(2))
+    return [
+      `.film-grain--${name}::after {`,
+      `  background-image: url('./${primeFile}'), url('./${mainFile}');`,
+      `  opacity: var(--film-grain-strength, ${strength});`,
+      '}',
+    ].join('\n')
+  })
+  const files: [URL, Buffer | string][] = [
+    [new URL('stocks.css', OUTPUT_DIRECTORY), ['/* Generated by scripts/film-grain.ts. Do not edit. */', ...rules, ''].join('\n')],
+  ]
+  for (const [name, [pixels, size]] of images)
+    files.push([new URL(name, OUTPUT_DIRECTORY), await encode(pixels, size)])
   files.push(...await suzunoTiles())
   for (const [file, content] of files) {
     await writeFile(file, content)
