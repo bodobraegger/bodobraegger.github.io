@@ -8,6 +8,7 @@ duration:
 plum:
 orchid:
 mistyrose:
+mistyrosetitle:
 hydraBackground:
 grain:
 ---

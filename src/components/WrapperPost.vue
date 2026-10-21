@@ -5,6 +5,7 @@ import { formatDate } from '~/logics'
 import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage } from '~/logics/languages'
 import { usePageViews } from '~/composables/usePageViews'
 import { shareOneScreen } from '~/logics/screen-share'
+import MistyRoseTitle from '~/components/MistyRoseTitle.vue'
 
 const { frontmatter } = defineProps<{
   frontmatter: Record<string, any>
@@ -289,15 +290,17 @@ if (frontmatter.hydra) {
     v-if="(frontmatter.display ?? frontmatter.title) && route.path !== '/'"
     class="prose m-auto mb-8"
   >
-    <h1 class="font-serif font-normal mb-0">
-      {{ frontmatter.display ?? frontmatter.title }}
-      <span
-        v-if="frontmatter.phonetic"
-        class="opacity-30 font-phonetics"
-        :style="{ visibility: fontsLoaded ? 'visible' : 'hidden' }"
-      >({{ frontmatter.phonetic }})
-      </span>
-    </h1>
+    <component :is="frontmatter.mistyrosetitle ? MistyRoseTitle : 'div'">
+      <h1 class="font-serif font-normal mb-0">
+        {{ frontmatter.display ?? frontmatter.title }}
+        <span
+          v-if="frontmatter.phonetic"
+          class="opacity-30 font-phonetics"
+          :style="{ visibility: fontsLoaded ? 'visible' : 'hidden' }"
+        >({{ frontmatter.phonetic }})
+        </span>
+      </h1>
+    </component>
     <p
       v-if="frontmatter.date || frontmatter.place || translations.length || epubHref"
       class="!-mt-6 font-serif-extra font-italic flex flex-wrap gap-x-2 items-baseline"
