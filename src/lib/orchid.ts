@@ -352,7 +352,7 @@ interface Ink {
   depth: number
 }
 
-type Area = [number, number, number, number]
+export type Area = [number, number, number, number]
 
 const overlaps = ([ax, ay, aw, ah]: Area, [bx, by, bw, bh]: Area) => ax < bx + bw && bx < ax + aw && ay < by + bh && by < ay + ah
 
@@ -452,6 +452,27 @@ function inkPieces(stem: GrowingStem, from: number, to: number, first: number) {
     from = end
   }
   return { pieces, last: cursor }
+}
+
+/**
+ * Takes back the committed drawing on `store` into `view` in areas of CSS
+ * pixels, in whole device pixels at `ratio`, so that the copy is exact.
+ */
+export function takeBackAreas(view: CanvasRenderingContext2D, store: HTMLCanvasElement, ratio: number, areas: Area[]) {
+  view.save()
+  view.setTransform(1, 0, 0, 1, 0, 0)
+  view.globalAlpha = 1
+  for (const [x, y, width, height] of areas) {
+    const left = Math.max(0, Math.floor(x * ratio))
+    const top = Math.max(0, Math.floor(y * ratio))
+    const right = Math.min(store.width, Math.ceil((x + width) * ratio))
+    const bottom = Math.min(store.height, Math.ceil((y + height) * ratio))
+    if (right <= left || bottom <= top)
+      continue
+    view.clearRect(left, top, right - left, bottom - top)
+    view.drawImage(store, left, top, right - left, bottom - top, left, top, right - left, bottom - top)
+  }
+  view.restore()
 }
 
 /** The area of a line, with a margin. */
@@ -583,23 +604,7 @@ export function animate(view: CanvasRenderingContext2D, paint: string, animated:
     }
   }
   style()
-  // Takes back the committed drawing in areas, in whole device pixels, so that the copy is exact
-  const takeBack = (areas: Area[]) => {
-    view.save()
-    view.setTransform(1, 0, 0, 1, 0, 0)
-    view.globalAlpha = 1
-    for (const [x, y, width, height] of areas) {
-      const left = Math.max(0, Math.floor(x * ratio))
-      const top = Math.max(0, Math.floor(y * ratio))
-      const right = Math.min(storeCanvas.width, Math.ceil((x + width) * ratio))
-      const bottom = Math.min(storeCanvas.height, Math.ceil((y + height) * ratio))
-      if (right <= left || bottom <= top)
-        continue
-      view.clearRect(left, top, right - left, bottom - top)
-      view.drawImage(storeCanvas, left, top, right - left, bottom - top, left, top, right - left, bottom - top)
-    }
-    view.restore()
-  }
+  const takeBack = (areas: Area[]) => takeBackAreas(view, storeCanvas, ratio, areas)
   // Whether the carrier of a stem or a tip has reached its place
   const arrived = ({ start, carrier }: { start: number, carrier?: GrowingStem }) => !carrier || (carrier.started && reached - carrier.lag >= start)
   const endArea = (stem: GrowingStem, to: number) => area(piece(stem, stem.committed, to, stem.committedCursor).line, stem.inks[0].width / 2 + EDGE_MARGIN)
