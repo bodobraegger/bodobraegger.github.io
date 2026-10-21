@@ -8,11 +8,6 @@ import { useStylesheets } from '~/lib/suzuno/packages/lettering'
 
 export const SALT_LEMON_FRONT = { width: 677, height: 891 }
 
-interface SaltLemonFont {
-  family: string
-  weight: number
-}
-
 /**
  * Free stand-ins for the faces of the print. The title is a thin rounded
  * gothic, probably Morisawa じゅん 101, and Kosugi Maru (Apache 2.0) has the
@@ -29,7 +24,7 @@ export const SALT_LEMON_FONTS = {
   mincho: { family: '\'Kaisei Tokumin\', serif', weight: 800 },
   gothic: { family: '\'Noto Sans JP\', sans-serif', weight: 400 },
   gothicBold: { family: '\'Noto Sans JP\', sans-serif', weight: 700 },
-} satisfies Record<string, SaltLemonFont>
+}
 
 // Google Fonts splits each Japanese family into ranges of characters, and the
 // browser loads only the ranges that a page uses
@@ -40,114 +35,9 @@ export function useSaltLemonFonts() {
   useStylesheets(STYLESHEET)
 }
 
-/** The place of a part in its parent: the origin of the part and its scale. */
-export interface PartPlace {
-  x: number
-  y: number
-  scale: number
-}
-
-export function placePart(place: PartPlace) {
+/** The transform that puts a part at its place: the origin of the part and its scale. */
+export function placePart(place: { x: number, y: number, scale: number }) {
   return `translate(${place.x} ${place.y}) scale(${place.scale})`
-}
-
-/** A line of text: its x, the middle of its height, and its font size. */
-export interface TextPlace {
-  x: number
-  y: number
-  size: number
-}
-
-/** A box in the coordinates of its parent. */
-export interface Box {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-/** A vertical line of lettering: the middle of the column, its top, the font size and the letter spacing. */
-interface ColumnPlace {
-  x: number
-  y: number
-  size: number
-  spacing: number
-}
-
-interface TitleLayout {
-  /** The distance of the frame from the edge of the panel, and the width of its line. */
-  frameInset: number
-  frameWidth: number
-  /** The line below the field of the kanji. */
-  divider: number
-  /** The middle of the kanji. */
-  kanji: { x: number, y: number, size: number }
-  name: ColumnPlace
-  kind: ColumnPlace
-  /** The reading, outside the right edge of the panel. */
-  ruby: ColumnPlace & { outline: number }
-}
-
-/** The fitted colours of the front. */
-interface FrontColors {
-  /** The clear film of the seams round the print. */
-  film: string
-  panel: [string, string]
-  ink: string
-  logoRed: string
-  saltDisc: string
-  saltWaves: string
-  acidDisc: [string, string]
-  /** The blue edge of the banner, the tagline and the lettering of the badge. */
-  edge: string
-  /** The small print at the foot. */
-  notes: string
-}
-
-/** The places of the parts of the front, in face pixels. */
-interface FrontLayout {
-  /** The printed area inside the seams, where the photo lies. */
-  print: Box
-  hangHole: { x: number, y: number, radius: number }
-  /** The tear notches in both side edges: their middle, depth and height. */
-  notches: { y: number, depth: number, height: number }
-  title: Box
-  logo: PartPlace
-  saltBadge: PartPlace
-  acidBadge: PartPlace
-  banner: PartPlace
-  /** The middle of the tagline, its font size and the width of its blue edge. */
-  tagline: { x: number, y: number, size: number, edge: number }
-  /** The small print at the foot: the start of the left note and the end of the right note. */
-  notes: { left: TextPlace, right: TextPlace }
-}
-
-/** The ring round the oval of KatoLogo, and the middle, font size, width and white edge of its tagline. */
-interface LogoLayout {
-  ring: number
-  tagline: { y: number, size: number, width: number, halo: number }
-}
-
-/** For each line of SaltBadge: its middle, its font size and its width. */
-type SaltBadgeLayout = { y: number, size: number, width: number }[]
-
-/** The places in CitricAcidBadge, in units of its horizontal radius of 100. */
-interface AcidBadgeLayout {
-  radiusY: number
-  rimWidth: number
-  label: { y: number, size: number, width: number }
-  amount: { y: number, size: number, width: number }
-  /** The two spheres: the middle of their row, the distance of each from the middle, their radius, and the sizes and place of the lettering. */
-  spheres: { y: number, spacing: number, radius: number, size: number, captionSize: number, captionY: number }
-  /** The width of the blue glow round the lettering. */
-  glow: number
-}
-
-/** The lettering of SaltLemonBanner, in font sizes: the width of the edge, the letter spacing and the dashes. */
-interface BannerLayout {
-  edgeWidth: number
-  tracking: number
-  dashes: { length: number, gap: number, thickness: number }
 }
 
 /** The texts of the front. */
@@ -175,16 +65,7 @@ export const SALT_LEMON_TEXTS = {
 
 export type SaltLemonTexts = typeof SALT_LEMON_TEXTS
 
-/** The layouts inside the parts of the front. */
-interface FrontParts {
-  title: TitleLayout
-  logo: LogoLayout
-  saltBadge: SaltBadgeLayout
-  acidBadge: AcidBadgeLayout
-  banner: BannerLayout
-}
-
-// The fitted design, written by tools/fits/packages/fit.mjs with the job salt-lemon.mjs
-export const FRONT_LAYOUT = fitted.front.layout as FrontLayout
-export const FRONT_PARTS = fitted.front.parts as FrontParts
-export const FRONT_COLORS = fitted.front.colors as FrontColors
+// The fitted design of tools/fits/packages/fit.mjs with the job
+// salt-lemon.mjs: the places of the parts in face pixels, the layouts inside
+// the parts in their own units, and the colours
+export const { layout: FRONT_LAYOUT, parts: FRONT_PARTS, colors: FRONT_COLORS } = fitted.front
