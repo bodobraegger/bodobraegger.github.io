@@ -66,8 +66,8 @@ interface Tip {
 
 interface BranchBody {
   steps: Step[]
-  tip?: Tip | null
-  branches?: SideBranch[]
+  tip?: Tip
+  branches: SideBranch[]
 }
 
 interface SideBranch extends BranchBody {
@@ -91,10 +91,6 @@ const TAU = Math.PI * 2
 const radians = (degrees: number) => degrees * Math.PI / 180
 /** The turn in degrees, between -180 and 180, from a heading to a target heading. */
 const turnTowards = (target: number, heading: number) => Math.atan2(Math.sin(radians(target - heading)), Math.cos(radians(target - heading))) * 180 / Math.PI
-
-function round(value: number) {
-  return Math.round(value * 100) / 100
-}
 
 // Math.hypot is several times slower than the square root in V8, and the rule
 // of `grow` measures many distances
@@ -133,14 +129,15 @@ function stemPoints(nodes: Point[]): Point[] {
   return line
 }
 
+/** SVG path data of a closed polygon, to a hundredth of a pixel. */
+const polygonPath = (points: Point[]) => `M${points.map(point => point.map(value => Math.round(value * 100) / 100).join(' ')).join('L')}Z`
+
 /**
  * A line of varying weight: the points as a closed ribbon, `extra` wider than
  * the stroke in its middle and as wide as the stroke at its ends. A tip is
  * filled and stroked, so the stroke width still sets the thinnest line.
  */
 function ribbonPath(points: Point[], extra: number) {
-  if (!extra)
-    return `M${points.map(([px, py]) => `${round(px)} ${round(py)}`).join('L')}`
   const last = points.length - 1
   const left: Point[] = []
   const right: Point[] = []
@@ -153,7 +150,7 @@ function ribbonPath(points: Point[], extra: number) {
     left.push([px + normal[0], py + normal[1]])
     right.unshift([px - normal[0], py - normal[1]])
   })
-  return `M${[...left, ...right].map(([px, py]) => `${round(px)} ${round(py)}`).join('L')}Z`
+  return polygonPath([...left, ...right])
 }
 
 interface PetalEllipse {
@@ -232,7 +229,7 @@ function flowerPath(flower: Flower, strokeWidth: number) {
     const points = Array.from({ length: steps + 1 }, (_, index) => transform(pointOn(ellipse, from + (to - from) * index / steps)))
     return ribbonPath(points, weight * strokeWidth)
   })
-  return `${petalPaths.join('')}${ribbonPath(ellipsePoints(x, y, centre, centre, 0, TAU), 0)}Z`
+  return petalPaths.join('') + polygonPath(ellipsePoints(x, y, centre, centre, 0, TAU))
 }
 
 const ELLIPSE_STEPS = 24
@@ -827,7 +824,7 @@ function unfold(plant: Plant) {
       branchStems.set(branch, stem)
       own = stems.length - 1
     }
-    for (const child of branch.branches ?? [])
+    for (const child of branch.branches)
       walk(child, nodes[child.at], headings[child.at] + child.angle, distances[child.at], own)
     const { flower, bud } = branch.tip ?? {}
     const shape = flower ?? bud
@@ -1117,7 +1114,7 @@ function separate(plant: Plant, blossoming: BranchBody[], scale: number, next: (
     const node = branch as SideBranch
     const { steps, tip } = branch
     const { at, angle } = node
-    const lowest = Math.max(1, ...branch.branches!.map(child => child.at + 1))
+    const lowest = Math.max(1, ...branch.branches.map(child => child.at + 1))
     const move = (attempt: number) => {
       if (!attempt) {
         Object.assign(branch, steps.length ? { steps } : { at, angle })
@@ -1150,9 +1147,9 @@ function separate(plant: Plant, blossoming: BranchBody[], scale: number, next: (
       continue
     }
     move(0)
-    branch.tip = null
+    delete branch.tip
     if (!steps.length)
-      root.branches!.splice(root.branches!.indexOf(node), 1)
+      root.branches.splice(root.branches.indexOf(node), 1)
   }
 }
 
@@ -1262,19 +1259,19 @@ function grow(seed: number, { box, direction, area, depth }: Vine, neighbours: P
       side = next() < 0.7 ? -side : side
       const node = state.nodes[at]
       const angle = side * pick(ANGLE)
-      const branch: SideBranch = { at, angle, steps: [], tip: null, branches: [] }
+      const branch: SideBranch = { at, angle, steps: [], branches: [] }
       const child: GrowingState = { x: node.x, y: node.y, heading: node.heading + angle, nodes: [{ ...node, heading: node.heading + angle }] }
       const count = Math.max(1, Math.round(pick(REACH) * height * DECAY ** (level - 1) / SEGMENT))
       const arch = side * between(0, SPREAD)
       for (let index = 0; index < count; index++)
         extend(branch, child, arch)
-      parent.branches!.push(branch)
+      parent.branches.push(branch)
       ends.push({ branch, side })
       branchOut(branch, child, level + 1)
     }
   }
 
-  const root: RootBranch = { origin: [left + width * between(0.4, 0.6), top + height * FOOT_SHARE], heading: between(-180, 180), steps: [], tip: null, branches: [] }
+  const root: RootBranch = { origin: [left + width * between(0.4, 0.6), top + height * FOOT_SHARE], heading: between(-180, 180), steps: [], branches: [] }
   const state: GrowingState = { x: root.origin[0], y: root.origin[1], heading: root.heading, nodes: [{ x: root.origin[0], y: root.origin[1], heading: root.heading }] }
   if (next() < CURL) {
     for (const step of curlSteps(next() < 0.5 ? -1 : 1, true)) {
@@ -1330,7 +1327,7 @@ function grow(seed: number, { box, direction, area, depth }: Vine, neighbours: P
   // Blossoms without a branch end sit on the main stem, without a stalk
   for (const tip of tips) {
     const branch = { at: Math.floor(between(1, root.steps.length)), angle: nodeAngle(between), steps: [], tip, branches: [] }
-    root.branches!.push(branch)
+    root.branches.push(branch)
     blossoming.push(branch)
   }
   if (turn) {
