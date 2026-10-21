@@ -31,7 +31,7 @@ const canvas = useMistyRose((width, height) => {
       angle: angle + (random() - 0.5) * SEED_SPREAD,
     }))
   })
-  return { seeds, maxTips: Math.ceil(seeds.length * TIPS_PER_SEED), bounds: [0, 0, width, height] }
+  return [{ seeds, maxTips: Math.ceil(seeds.length * TIPS_PER_SEED), bounds: [0, 0, width, height] }]
 }, PIXEL_RATIO_LIMIT)
 </script>
 

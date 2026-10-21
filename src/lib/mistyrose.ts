@@ -4,7 +4,7 @@
 // them on the black screens between the levels of the story. The sprites
 // are from Media/Sprites/menue.png of the game.
 import type { Area } from '~/lib/orchid'
-import { takeBackAreas } from '~/lib/orchid'
+import { random as seededRandom, takeBackAreas } from '~/lib/orchid'
 import flowerUrl from '~/assets/mistyrose/flower.webp'
 import leafUrl from '~/assets/mistyrose/leaf.webp'
 import stemUrl from '~/assets/mistyrose/stem.webp'
@@ -22,6 +22,24 @@ export interface Garden {
   maxTips: number
   /** A tip stops when its next segment would start outside this area. */
   bounds: Area
+  /** The range of the first radius of the curl of a tip. */
+  curl?: Range
+  /** The chance that a curl changes its direction at a new segment. */
+  flipChance?: number
+  /** The canvas point of the point 0, 0 of the garden, the size of a unit there, and a mirror from left to right. */
+  place?: Place
+  /**
+   * Seeds of a seeded random generator, of which the garden takes the one
+   * whose full growth has the most items. Without them it grows at random.
+   */
+  candidates?: number[]
+}
+
+interface Place {
+  x: number
+  y: number
+  scale: number
+  mirror: boolean
 }
 
 // The fixed step of the game, and the growth per second of a stem segment
@@ -33,9 +51,8 @@ const STEM_LENGTH = 29
 const MIN_TIP_LENGTH = 0.1
 const TIP_LIMIT = 30
 // Each new segment of a tip shrinks the radius of its curl and its length.
-// The curl changes its direction with the chance CURL_FLIP_CHANCE.
+// The curl changes its direction with the chance GAME_FLIP_CHANCE.
 const CURL_SHRINK = 0.96
-const CURL_FLIP_CHANCE = 0.05
 const LENGTH_SHRINK: Range = [0.95, 0.98]
 const FORK_CHANCE = 0.25
 const FORK_CURL: Range = [0.92, 0.98]
@@ -52,7 +69,9 @@ const CLUSTER_LEAF_ANGLE: Range = [-1.75, 1.75]
 const ROSE_ANGLE: Range = [-0.75, 0.75]
 const ROSE_JITTER: Range = [-10, 10]
 const DECORATION_SIZE: Range = [0.2, 1]
-const FIRST_CURL: Range = [50, 200]
+const GAME_CURL: Range = [50, 200]
+const GAME_FLIP_CHANCE = 0.05
+const NO_PLACE: Place = { x: 0, y: 0, scale: 1, mirror: false }
 
 // Frames as Orchid draws them: 30 per second less a slack for the jitter of
 // the animation frames, and at most LONGEST_FRAME of growth after a hidden tab
@@ -65,7 +84,7 @@ const EDGE_MARGIN = 2
 // TILE CSS pixels, each tile once, instead of in the area of each item.
 const TILE = 64
 
-type Range = [number, number]
+export type Range = [number, number]
 type SpriteName = 'stem' | 'leaf' | 'flower'
 
 // The hotspot of a sprite is the point that sits on the position of the item
@@ -92,8 +111,8 @@ interface Item {
 }
 
 /** The growth of the roses of a garden, one game step at a time. */
-function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden) {
-  const { random } = Math
+function grower(garden: Garden, random: () => number) {
+  const { seeds, maxTips, bounds: [left, top, width, height], curl = GAME_CURL, flipChance = GAME_FLIP_CHANCE } = garden
   const between = ([low, high]: Range) => low + random() * (high - low)
   const items: Item[] = []
   // The items that grow, in the order of their creation
@@ -123,7 +142,7 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden) 
   const tipLimit = Math.min(maxTips, TIP_LIMIT)
   for (const [index, { x, y, angle }] of seeds.slice(0, TIP_LIMIT).entries()) {
     tips.push(add('stem', x, y, angle, 1))
-    radii[index] = between(FIRST_CURL)
+    radii[index] = between(curl)
     lengths[index] = 1
   }
 
@@ -147,7 +166,7 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden) 
     const angle = segment.angle + 2 * Math.asin(length / 2 / radius)
     segment.done = true
     tips[index] = add('stem', x, y, angle, 1)
-    radii[index] = radius * CURL_SHRINK * (random() < CURL_FLIP_CHANCE ? -1 : 1)
+    radii[index] = radius * CURL_SHRINK * (random() < flipChance ? -1 : 1)
     lengths[index] = tipLength * between(LENGTH_SHRINK)
 
     if (tips.length < tipLimit && random() < FORK_CHANCE) {
@@ -202,6 +221,18 @@ function grower({ seeds, maxTips, bounds: [left, top, width, height] }: Garden) 
   return { items, step, harvest, finish, growing: () => growing }
 }
 
+/** The random generator of a garden: the best of its candidates, or Math.random. */
+function randomOf(garden: Garden) {
+  if (!garden.candidates)
+    return Math.random
+  const yields = garden.candidates.map((seed) => {
+    const growth = grower(garden, seededRandom(seed))
+    growth.finish()
+    return growth.items.length
+  })
+  return seededRandom(garden.candidates[yields.indexOf(Math.max(...yields))])
+}
+
 type Sprites = Record<SpriteName, HTMLImageElement>
 
 let loading: Promise<Sprites> | undefined
@@ -243,11 +274,11 @@ function reach(name: SpriteName, sprites: Sprites) {
 }
 
 /**
- * Grows the roses of `garden` on `view`, whose transform maps CSS pixels to
+ * Grows the roses of `gardens` on `view`, whose transform maps CSS pixels to
  * device pixels. Without `animated`, the full growth appears at once.
  * Returns a function that stops the growth.
  */
-export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, animated: boolean) {
+export function growMistyRose(view: CanvasRenderingContext2D, gardens: Garden[], animated: boolean) {
   const ratio = view.getTransform().a
   let frame = 0
   let stopped = false
@@ -255,20 +286,23 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, an
   loadSprites().then((sprites) => {
     if (stopped)
       return
-    const draw = (context: CanvasRenderingContext2D, item: Item) => {
+    const beds = gardens.map(garden => ({ growth: grower(garden, randomOf(garden)), place: garden.place ?? NO_PLACE }))
+    const draw = (context: CanvasRenderingContext2D, item: Item, { x, y, scale, mirror }: Place) => {
       if (item.growth <= 0)
         return
       const [hotspotX, hotspotY] = SPRITES[item.sprite].hotspot
-      const cos = Math.cos(item.angle) * item.growth * ratio
-      const sin = Math.sin(item.angle) * item.growth * ratio
-      context.setTransform(cos, sin, -sin, cos, item.x * ratio, item.y * ratio)
+      const flip = mirror ? -1 : 1
+      const cos = Math.cos(item.angle) * item.growth * scale * ratio
+      const sin = Math.sin(item.angle) * item.growth * scale * ratio
+      context.setTransform(flip * cos, sin, -flip * sin, cos, (x + flip * scale * item.x) * ratio, (y + scale * item.y) * ratio)
       context.drawImage(shadedSprite(sprites, item.sprite, item.ambient), -hotspotX, -hotspotY)
     }
-    const growth = grower(garden)
 
     if (!animated) {
-      growth.finish()
-      growth.items.forEach(item => draw(view, item))
+      for (const { growth, place } of beds) {
+        growth.finish()
+        growth.items.forEach(item => draw(view, item, place))
+      }
       return
     }
 
@@ -279,18 +313,17 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, an
     storeCanvas.height = view.canvas.height
     const store = storeCanvas.getContext('2d')!
     const reaches = Object.fromEntries((Object.keys(SPRITES) as SpriteName[]).map(name => [name, reach(name, sprites)]))
-    const tiles = (items: Item[]) => {
-      const areas = new Map<string, Area>()
+    const addTiles = (areas: Map<string, Area>, items: Item[], { x: placeX, y: placeY, scale, mirror }: Place) => {
       for (const { sprite, x, y } of items) {
-        const extent = reaches[sprite] + EDGE_MARGIN
-        const [left, top] = [Math.floor((x - extent) / TILE), Math.floor((y - extent) / TILE)]
-        const [right, bottom] = [Math.floor((x + extent) / TILE), Math.floor((y + extent) / TILE)]
+        const [middleX, middleY] = [placeX + (mirror ? -1 : 1) * scale * x, placeY + scale * y]
+        const extent = reaches[sprite] * scale + EDGE_MARGIN
+        const [left, top] = [Math.floor((middleX - extent) / TILE), Math.floor((middleY - extent) / TILE)]
+        const [right, bottom] = [Math.floor((middleX + extent) / TILE), Math.floor((middleY + extent) / TILE)]
         for (let column = left; column <= right; column++) {
           for (let row = top; row <= bottom; row++)
             areas.set(`${column} ${row}`, [column * TILE, row * TILE, TILE, TILE])
         }
       }
-      return [...areas.values()]
     }
 
     let last = performance.now()
@@ -302,13 +335,19 @@ export function growMistyRose(view: CanvasRenderingContext2D, garden: Garden, an
       pending += Math.min(now - last, LONGEST_FRAME) / 1000
       last = now
       for (; pending >= STEP_SECONDS; pending -= STEP_SECONDS)
-        growth.step()
-      const done = growth.harvest()
-      done.forEach(item => draw(store, item))
-      const growing = growth.growing()
-      takeBackAreas(view, storeCanvas, ratio, tiles([...done, ...growing]))
-      growing.forEach(item => draw(view, item))
-      if (!growing.length)
+        beds.forEach(({ growth }) => growth.step())
+      const areas = new Map<string, Area>()
+      let growingCount = 0
+      for (const { growth, place } of beds) {
+        const done = growth.harvest()
+        done.forEach(item => draw(store, item, place))
+        addTiles(areas, [...done, ...growth.growing()], place)
+        growingCount += growth.growing().length
+      }
+      takeBackAreas(view, storeCanvas, ratio, [...areas.values()])
+      for (const { growth, place } of beds)
+        growth.growing().forEach(item => draw(view, item, place))
+      if (!growingCount)
         cancelAnimationFrame(frame)
     }
     frame = requestAnimationFrame(step)
