@@ -1,6 +1,6 @@
 # Image sources
 
-The images in `assets/` that do not come from the photos of the user. Each entry gives the file, the source pages, the authors, the licences and the changes. The display page of each package credits its images.
+The images in this folder that do not come from the photos of the user. Each entry gives the file, the source pages, the authors, the licences and the changes. The `tools/` and `reference/` folders are those of the Suzuno project.
 
 ## almond-caramel-almonds.webp
 
@@ -30,7 +30,7 @@ The windows of the Almond Caramel bag, with the wrapped caramels behind the film
   Changes: the milk churn is cut out, made grey and matched to the cans of the photographed bag. The changed image has the same licence, CC BY-SA 2.0.
 - `packages/hokkaido-milk-mascot.webp`: cut from the photo of the back of the bag (`reference/packages/hokkaido-milk-back.png`).
 
-The outline of Hokkaido in `src/lib/packages/hokkaido-milk-paths.ts` comes from Natural Earth (public domain), https://www.naturalearthdata.com/.
+The outline of Hokkaido in `src/lib/suzuno/packages/hokkaido-milk-paths.ts` comes from Natural Earth (public domain), https://www.naturalearthdata.com/.
 
 ## salt-lemon-photo.webp
 
