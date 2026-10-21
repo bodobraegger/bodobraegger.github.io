@@ -386,7 +386,7 @@ function fractalNoiseTile({ seed, baseFrequency, octaves, size }: NoiseTile) {
 }
 
 /**
- * The grain of the paper of the Suzuno cover (paper-grain.ts): black, with
+ * The grain of the paper of the Suzuno cover (SuzunoCover.vue): black, with
  * the alpha channel of the noise as its alpha. The cover draws it at an
  * opacity of 0.07, one texel for each unit of the sheet.
  */
@@ -394,7 +394,7 @@ const PAPER_GRAIN: NoiseTile = { seed: 0, baseFrequency: 0.25, octaves: 2, size:
 
 /**
  * The texture of the paper that breaks up the ink of the plum vine of the
- * cover (plum-vine.ts): the share of the ink that the paper keeps, as grey,
+ * cover (SuzunoCover.vue): the share of the ink that the paper keeps, as grey,
  * from a fit to the print: level - absorption × (the sum of the red, green
  * and blue channels).
  */
