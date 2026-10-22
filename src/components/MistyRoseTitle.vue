@@ -9,8 +9,9 @@ grow from behind a chapter title of the game.
 
   </MistyRoseTitle>
 
-The wrapper is as wide as the title and takes no other space. The vines grow
-on the canvas of MistyRoseTitles, which every page has. `mistyrosetitle: true`
+The wrapper takes no space of its own, and the vines start at the sides of
+the text of the title. They grow on the canvas of MistyRoseTitles, which
+every page has. `mistyrosetitle: true`
 in the frontmatter wraps the page title.
 */
 import { roseTitles } from '~/composables/useMistyRose'
@@ -26,7 +27,7 @@ onUnmounted(() => roseTitles.delete(element))
 </script>
 
 <template>
-  <div ref="title" class="w-fit">
+  <div ref="title">
     <slot />
   </div>
 </template>

@@ -38,11 +38,31 @@ const PIXEL_RATIO_LIMIT = 1
 
 const band = ref({ top: 0, height: 0 })
 
+/**
+ * The box of the text of a title. A heading is a block of the full width,
+ * but its text can be short, and the vines start at the sides of the text.
+ */
+function textBox(title: HTMLElement) {
+  const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT)
+  const range = document.createRange()
+  let [left, top, right, bottom] = [Infinity, Infinity, -Infinity, -Infinity]
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    range.selectNodeContents(node)
+    for (const rect of range.getClientRects()) {
+      left = Math.min(left, rect.left)
+      top = Math.min(top, rect.top)
+      right = Math.max(right, rect.right)
+      bottom = Math.max(bottom, rect.bottom)
+    }
+  }
+  return left < right ? { left, top, right, bottom } : title.getBoundingClientRect()
+}
+
 /** The free space at the sides of a title, in CSS pixels of the page. */
 function space(title: HTMLElement) {
-  const { left, right, top, height } = title.getBoundingClientRect()
+  const { left, right, top, bottom } = textBox(title)
   const free = Math.min(left, document.documentElement.clientWidth - right) - GAP
-  return { left: left - GAP, right: right + GAP, middle: top + window.scrollY + height / 2, width: Math.min(free, MAX_WIDTH) }
+  return { left: left - GAP, right: right + GAP, middle: (top + bottom) / 2 + window.scrollY, width: Math.min(free, MAX_WIDTH) }
 }
 
 // Runs before the canvas takes its size, which waits for an idle main thread
