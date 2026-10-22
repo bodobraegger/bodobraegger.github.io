@@ -34,6 +34,47 @@ function skyWord(code: number) {
 // the same two places, so the answers are held here rather than fetched twice.
 const pending = new Map<string, Promise<Weather | null>>()
 
+interface Located {
+  name: string
+  latitude: number
+  longitude: number
+}
+
+// A town does not move, so the browser keeps what the geocoder found for it,
+// and a later visit asks only for the forecast. Storage can be blocked, and
+// then each visit asks the geocoder again.
+const LOCATED_KEY = 'weather-located'
+
+function locatedTowns(): Record<string, Located> {
+  try {
+    return JSON.parse(localStorage.getItem(LOCATED_KEY) ?? '{}')
+  }
+  catch {
+    return {}
+  }
+}
+
+function keepLocated(town: string, located: Located) {
+  try {
+    localStorage.setItem(LOCATED_KEY, JSON.stringify({ ...locatedTowns(), [town]: located }))
+  }
+  catch {}
+}
+
+async function locate(town: string): Promise<Located | undefined> {
+  const kept = locatedTowns()[town]
+  if (kept)
+    return kept
+  const geocoded = await fetch(`${GEOCODE_URL}?name=${encodeURIComponent(town)}&count=1&language=en&format=json`)
+    .then(response => response.json())
+  const found = geocoded?.results?.[0]
+  if (!found)
+    return undefined
+  const located = { name: found.name, latitude: found.latitude, longitude: found.longitude }
+  keepLocated(town, located)
+  return located
+}
+
 /**
  * The town the reader is most likely in, taken from the timezone of their
  * browser. It costs no permission prompt and no address lookup, and it is right
@@ -51,9 +92,7 @@ async function lookUp(place: string): Promise<Weather | null> {
   if (!town)
     return null
 
-  const geocoded = await fetch(`${GEOCODE_URL}?name=${encodeURIComponent(town)}&count=1&language=en&format=json`)
-    .then(response => response.json())
-  const found = geocoded?.results?.[0]
+  const found = await locate(town)
   if (!found)
     return null
 
