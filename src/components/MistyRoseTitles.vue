@@ -29,7 +29,7 @@ const SEED_RANGE = 2 ** 32
 const MAX_WIDTH = 192
 const HEIGHT = 112
 const GAP = 8
-const MIN_WIDTH = 24
+const MIN_WIDTH = 64
 const ROOM = HEIGHT / 2 + 32
 const MAX_WINDOWS = 3
 // The sprites are pixel art at one CSS pixel per pixel, so a denser canvas
@@ -61,8 +61,13 @@ function textBox(title: HTMLElement) {
 /** The free space at the sides of a title, in CSS pixels of the page. */
 function space(title: HTMLElement) {
   const { left, right, top, bottom } = textBox(title)
-  const free = Math.min(left, document.documentElement.clientWidth - right) - GAP
-  return { left: left - GAP, right: right + GAP, middle: (top + bottom) / 2 + window.scrollY, width: Math.min(free, MAX_WIDTH) }
+  return {
+    left: left - GAP,
+    right: right + GAP,
+    middle: (top + bottom) / 2 + window.scrollY,
+    leftWidth: Math.min(left - GAP, MAX_WIDTH),
+    rightWidth: Math.min(document.documentElement.clientWidth - right - GAP, MAX_WIDTH),
+  }
 }
 
 // Runs before the canvas takes its size, which waits for an idle main thread
@@ -77,11 +82,11 @@ onMounted(() => {
 
 const canvas = useMistyRose((_, height) => [...roseTitles].map(space)
   .map(({ middle, ...sides }) => ({ ...sides, middle: middle - band.value.top }))
-  .filter(({ middle, width }) => width >= MIN_WIDTH && middle >= 0 && middle <= height)
-  .flatMap(({ left, right, middle, width }) => {
+  .filter(({ middle }) => middle >= 0 && middle <= height)
+  .flatMap(({ left, right, middle, leftWidth, rightWidth }) => {
     const candidates = Array.from({ length: CANDIDATES }, () => Math.floor(Math.random() * SEED_RANGE))
     const angle = (Math.random() - 0.5) * SEED_SPREAD
-    const side = (x: number, mirror: boolean): Garden => ({
+    const side = (x: number, width: number, mirror: boolean): Garden => ({
       seeds: [{ x: 0, y: 0, angle }],
       maxTips: MAX_TIPS,
       bounds: [0, -HEIGHT / 2 / SCALE, width / SCALE, HEIGHT / SCALE],
@@ -90,7 +95,11 @@ const canvas = useMistyRose((_, height) => [...roseTitles].map(space)
       place: { x, y: middle, scale: SCALE, mirror },
       candidates,
     })
-    return [side(right, false), side(left, true)]
+    // Both vines take the narrower side, so that they stay mirror images. A
+    // title on a phone has no room at its left, and gets only the right vine.
+    if (Math.min(leftWidth, rightWidth) >= MIN_WIDTH)
+      return [side(right, Math.min(leftWidth, rightWidth), false), side(left, Math.min(leftWidth, rightWidth), true)]
+    return rightWidth >= MIN_WIDTH ? [side(right, rightWidth, false)] : []
   }), PIXEL_RATIO_LIMIT)
 </script>
 
