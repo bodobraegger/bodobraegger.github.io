@@ -4,7 +4,7 @@ import { useMediaQuery } from '@vueuse/core'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { getUserId } from '../lib/page-views'
 import { getSupabase } from '../lib/supabase'
-import type { Stroke } from '../types/strokes'
+import type { DrawableStroke, Stroke } from '../types/strokes'
 import { drawStroke } from '../utils/canvas'
 import { splitLanguageSuffix } from '../logics/languages'
 import type { PenEntry } from '../logics/pens'
@@ -84,17 +84,25 @@ const tipOffsetY = computed(() => glyphTip.value ? glyphTip.value.y : props.tipO
 
 /** One frame at 60 Hz, the grace the tip loop keeps past the declared ease. */
 const ONE_FRAME_MS = 16
+/** Strokes are smooth lines, so a denser band would cost memory and show nothing more. */
+const MAX_PIXEL_RATIO = 2
+/** How long the window must stay at one size before the band is built again. */
+const RESIZE_DELAY_MS = 150
+/** Points are kept to a tenth of a pixel, which keeps the saved strokes small. */
+const POINT_PRECISION = 10
+/** A move shorter than this, in CSS pixels, adds no point to the stroke. */
+const MIN_POINT_DISTANCE = 1
 
 let tipFrame: number | null = null
-let lastX = 0
-let lastY = 0
-let currentPath: { x: number, y: number }[] = []
+let resizeTimeout: number | null = null
+let currentPath: Point[] = []
 // Where the cursor holds the pen: a fraction of the pen while it is picked up,
 // pixels while it is dragged
 let gripRatio = { x: 0.5, y: 0.5 }
 let dragGrip = { x: 20, y: 20 }
 let pickUpListeners: AbortController | null = null
 let stopSupabaseSync: (() => void) | null = null
+let isUnmounted = false
 
 const currentUserId = getUserId()
 
@@ -142,9 +150,14 @@ const canvasData = (globalCanvases[effectiveCanvasId] ||= {
   scrollHandlerRegistered: false,
   supabaseLoaded: false, // Track if we've already loaded from Supabase for this canvas
   channel: null as RealtimeChannel | null, // One realtime channel per canvas, opened by the first pen
+  // The stroke a pen of this canvas is drawing, not saved yet. Any pen can
+  // repaint the band, so the stroke lives here and not in the pen that draws it.
+  liveStroke: null as DrawableStroke | null,
+  strokeBounds: new WeakMap<DrawableStroke, { minY: number, maxY: number }>(),
 })
 const allStrokes = canvasData.strokes
-// Whether this instance registered the shared window handlers for its canvas
+// Whether this instance owns the canvas and the shared window handlers
+let ownsCanvas = false
 let ownsUndoHandler = false
 let ownsScrollHandler = false
 
@@ -176,7 +189,7 @@ function bandTopFor(scrollY: number) {
  * cannot fall behind the text. Only a scroll that leaves the band moves it.
  */
 function sizeCanvas(canvas: HTMLCanvasElement) {
-  const ratio = Math.min(window.devicePixelRatio || 1, 3)
+  const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
   const width = window.innerWidth
 
   canvasData.docHeight = measureDocumentHeight()
@@ -188,6 +201,7 @@ function sizeCanvas(canvas: HTMLCanvasElement) {
   canvas.style.height = `${height}px`
   canvasData.height = height
   canvasData.top = bandTopFor(window.scrollY)
+  placeBand(canvas)
 
   const canvasCtx = canvas.getContext('2d')
   if (canvasCtx) {
@@ -200,45 +214,69 @@ function sizeCanvas(canvas: HTMLCanvasElement) {
   return canvasCtx
 }
 
+/** Moves the canvas to the place in the page that canvasData.top gives. */
+function placeBand(canvas: HTMLCanvasElement) {
+  const transform = `translateY(${canvasData.top}px)`
+  if (canvas.style.transform !== transform)
+    canvas.style.transform = transform
+}
+
+/** Whether the stroke reaches into the band. Its vertical extent is measured once per stroke. */
+function reachesBand(stroke: DrawableStroke) {
+  let bounds = canvasData.strokeBounds.get(stroke)
+  if (!bounds) {
+    let minY = Infinity
+    let maxY = -Infinity
+    for (const point of stroke.points) {
+      if (point.y < minY)
+        minY = point.y
+      if (point.y > maxY)
+        maxY = point.y
+    }
+    bounds = { minY, maxY }
+    canvasData.strokeBounds.set(stroke, bounds)
+  }
+  return bounds.maxY >= canvasData.top && bounds.minY <= canvasData.top + canvasData.height
+}
+
 function redrawAll() {
   const { ctx: sharedCtx, canvas: sharedCanvas } = canvasData
   if (!sharedCtx || !sharedCanvas)
     return
 
-  const top = canvasData.top
-  const height = canvasData.height
+  sharedCtx.clearRect(0, 0, window.innerWidth, canvasData.height)
+  placeBand(sharedCanvas)
 
-  sharedCtx.clearRect(0, 0, window.innerWidth, height)
-
-  // Place the band in the page
-  const transform = `translateY(${top}px)`
-  if (sharedCanvas.style.transform !== transform)
-    sharedCanvas.style.transform = transform
-
-  // Only render strokes that reach into the band
   for (const stroke of allStrokes) {
-    // Quick bounds check
-    let minY = Infinity
-    let maxY = -Infinity
-    for (const p of stroke.points) {
-      if (p.y < minY)
-        minY = p.y
-      if (p.y > maxY)
-        maxY = p.y
-    }
-
-    if (maxY < top || minY > top + height)
-      continue
-
-    // Use shared drawing utility
-    drawStroke(sharedCtx, stroke, { scrollX: 0, scrollY: top })
+    if (reachesBand(stroke))
+      drawStroke(sharedCtx, stroke, { scrollY: canvasData.top })
   }
+  if (canvasData.liveStroke)
+    drawStroke(sharedCtx, canvasData.liveStroke, { scrollY: canvasData.top })
 
   sharedCtx.globalCompositeOperation = 'source-over'
 }
 
-function notifyUpdate() {
-  window.dispatchEvent(new CustomEvent('drawingUpdated', { detail: { canvasId: effectiveCanvasId } }))
+/**
+ * Draws a stroke that was added after all the others. Strokes are drawn in
+ * order, so this gives the same pixels as a full redraw.
+ */
+function drawOnTop(stroke: DrawableStroke) {
+  const sharedCtx = canvasData.ctx
+  if (sharedCtx && reachesBand(stroke))
+    drawStroke(sharedCtx, stroke, { scrollY: canvasData.top })
+}
+
+/**
+ * The canvas writes an opaque color back as #rrggbb and a translucent one as
+ * rgba(), so it tells the two apart for every way of writing a color.
+ */
+function isTranslucent(color: string) {
+  const sharedCtx = canvasData.ctx
+  if (!sharedCtx)
+    return true
+  sharedCtx.fillStyle = color
+  return !String(sharedCtx.fillStyle).startsWith('#')
 }
 
 function notifyReset() {
@@ -251,19 +289,15 @@ function handleToolsReset(e: Event) {
     returnPen()
     moveOnly.value = false
     isDragging.value = false
-    isDrawing.value = false
+    if (isDrawing.value)
+      endPath()
   }
 }
 
 onMounted(() => {
-  // Check if stored canvas still exists in DOM, if not reset it
-  if (canvasData.canvas && !document.body.contains(canvasData.canvas)) {
-    canvasData.canvas = null
-    canvasData.ctx = null
-  }
-
   if (!canvasData.canvas && canvasRef.value) {
     canvasData.canvas = canvasRef.value
+    ownsCanvas = true
     // Canvas is viewport-sized, not document-sized
     canvasData.ctx = sizeCanvas(canvasData.canvas)
 
@@ -271,7 +305,6 @@ onMounted(() => {
       redrawAll()
 
     window.addEventListener('resize', handleResize)
-    window.addEventListener('drawingUpdated', handleDrawingUpdate)
     window.addEventListener('keydown', handleClearCommand)
 
     if (!canvasData.undoHandlerRegistered) {
@@ -307,22 +340,37 @@ onMounted(() => {
   // registered here: Vue only accepts lifecycle hook registration
   // synchronously within a hook callback, not after an await.
   void setupSupabaseSync().then((cleanup) => {
-    stopSupabaseSync = cleanup ?? null
+    // The visitor can leave the page before the client has loaded.
+    if (isUnmounted)
+      cleanup?.()
+    else
+      stopSupabaseSync = cleanup ?? null
   })
 })
 
 onUnmounted(() => {
+  isUnmounted = true
+
+  // A click on a link can take the page away while the pen is still in hand.
+  if (isDragging.value)
+    endDrag()
+  if (isPickedUp.value)
+    putDownPen()
+  if (isDrawing.value)
+    endPath()
+
   stopSupabaseSync?.()
 
   if (props.mobile)
     unregisterPen(effectiveCanvasId, registryId.value)
   if (hintTimeout)
     clearTimeout(hintTimeout)
+  if (resizeTimeout)
+    clearTimeout(resizeTimeout)
   if (tipFrame !== null)
     cancelAnimationFrame(tipFrame)
 
   window.removeEventListener('resize', handleResize)
-  window.removeEventListener('drawingUpdated', handleDrawingUpdate)
   window.removeEventListener('toolsReset', handleToolsReset)
   window.removeEventListener('keydown', handleClearCommand)
 
@@ -335,6 +383,15 @@ onUnmounted(() => {
   if (ownsScrollHandler) {
     window.removeEventListener('scroll', handleScroll)
     canvasData.scrollHandlerRegistered = false
+  }
+
+  // The canvas data stays on the window for the next visit, so the bitmap is
+  // released here and not left to the garbage collector.
+  if (ownsCanvas && canvasData.canvas) {
+    canvasData.canvas.width = 0
+    canvasData.canvas.height = 0
+    canvasData.canvas = null
+    canvasData.ctx = null
   }
 })
 
@@ -424,12 +481,14 @@ watch(
   () => nextTick(trackGlyphTip),
 )
 
-function handleDrawingUpdate(e: Event) {
-  if ((e as CustomEvent).detail?.canvasId === effectiveCanvasId)
-    redrawAll()
+function handleResize() {
+  if (resizeTimeout)
+    clearTimeout(resizeTimeout)
+  resizeTimeout = window.setTimeout(resizeBand, RESIZE_DELAY_MS)
 }
 
-function handleResize() {
+function resizeBand() {
+  resizeTimeout = null
   const { canvas: sharedCanvas } = canvasData
   if (!sharedCanvas)
     return
@@ -528,62 +587,56 @@ async function undo() {
   if (lastUserStrokeIndex === -1)
     return // No strokes by current user to undo
 
-  // Save to redo stack (only the stroke being removed)
+  // The screen and the other visitors change at once; the backend follows,
+  // and a failed delete puts the stroke back.
   const removedStroke = allStrokes[lastUserStrokeIndex]
-  const removedStrokeCopy = { ...removedStroke, points: [...removedStroke.points] }
-
-  // Try to delete from Supabase FIRST before modifying local state
-  // (deleteStrokeFromSupabase no-ops when the client isn't configured)
-  if (effectiveCloudStorageId) {
-    try {
-      await deleteStrokeFromSupabase(removedStroke.id)
-    }
-    catch (error) {
-      console.error('Failed to delete stroke from backend:', error)
-      return // Don't proceed with local removal
-    }
-  }
-
-  // Only proceed with local changes if backend delete succeeded (or no backend)
-  canvasData.redoStack.push(removedStrokeCopy)
   allStrokes.splice(lastUserStrokeIndex, 1)
-
+  canvasData.redoStack.push(removedStroke)
   redrawAll()
-  notifyUpdate()
+  broadcastStroke('stroke_removed', removedStroke)
 
-  // Broadcast for real-time collaboration (only after successful backend delete)
-  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_removed', payload: { stroke: removedStroke } })
+  try {
+    await deleteStrokeFromSupabase(removedStroke.id)
+  }
+  catch (error) {
+    console.error('Failed to delete stroke from backend:', error)
+    removeFrom(canvasData.redoStack, removedStroke)
+    allStrokes.splice(Math.min(lastUserStrokeIndex, allStrokes.length), 0, removedStroke)
+    redrawAll()
+    broadcastStroke('stroke_added', removedStroke)
+  }
 }
 
 async function redo() {
-  if (canvasData.redoStack.length === 0)
-    return
-
   const strokeToRestore = canvasData.redoStack.pop()
   if (!strokeToRestore)
     return
 
-  // Try to save to Supabase FIRST before modifying local state
-  // (saveStrokeToSupabase no-ops when the client isn't configured)
-  if (effectiveCloudStorageId) {
-    try {
-      await saveStrokeToSupabase(strokeToRestore)
-    }
-    catch (error) {
-      console.error('Failed to save stroke to backend:', error)
-      canvasData.redoStack.push(strokeToRestore) // Put it back
-      return // Don't proceed with local addition
-    }
-  }
-
-  // Only proceed with local changes if backend save succeeded (or no backend)
   allStrokes.push(strokeToRestore)
-
   redrawAll()
-  notifyUpdate()
+  broadcastStroke('stroke_added', strokeToRestore)
 
-  // Broadcast for real-time collaboration (only after successful backend save)
-  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke: strokeToRestore } })
+  try {
+    await saveStrokeToSupabase(strokeToRestore)
+  }
+  catch (error) {
+    console.error('Failed to save stroke to backend:', error)
+    removeFrom(allStrokes, strokeToRestore)
+    canvasData.redoStack.push(strokeToRestore)
+    redrawAll()
+    broadcastStroke('stroke_removed', strokeToRestore)
+  }
+}
+
+function broadcastStroke(event: 'stroke_added' | 'stroke_removed', stroke: Stroke) {
+  canvasData.channel?.send({ type: 'broadcast', event, payload: { stroke } })
+}
+
+/** Removes the stroke itself; a remote change can have moved it in the list. */
+function removeFrom(strokes: Stroke[], stroke: Stroke) {
+  const index = strokes.indexOf(stroke)
+  if (index !== -1)
+    strokes.splice(index, 1)
 }
 
 // The drawing travels in the URL as URL-encoded JSON. Typing "share" copies
@@ -608,7 +661,8 @@ function loadFromHash() {
   }
 }
 
-// Save a single stroke to Supabase (new schema - one row per stroke)
+// Save a single stroke to Supabase (one row per stroke). Throws when the save
+// fails, so that the caller can take the local change back.
 async function saveStrokeToSupabase(stroke: Stroke) {
   if (!effectiveCloudStorageId)
     return
@@ -617,28 +671,21 @@ async function saveStrokeToSupabase(stroke: Stroke) {
   if (!supabase)
     return
 
-  try {
-    // The row id is left to the database
-    const { error } = await supabase.from('strokes').insert({
-      canvas_id: effectiveCloudStorageId,
-      stroke_id: stroke.id,
-      user_id: stroke.userId,
-      points: stroke.points,
-      color: stroke.color,
-      width: stroke.width,
-      eraser: stroke.eraser,
-    })
-
-    if (error) {
-      console.error('Supabase stroke save error:', error)
-    }
-  }
-  catch (e) {
-    console.error('Supabase stroke save failed:', e)
-  }
+  // The row id is left to the database
+  const { error } = await supabase.from('strokes').insert({
+    canvas_id: effectiveCloudStorageId,
+    stroke_id: stroke.id,
+    user_id: stroke.userId,
+    points: stroke.points,
+    color: stroke.color,
+    width: stroke.width,
+    eraser: stroke.eraser,
+  })
+  if (error)
+    throw error
 }
 
-// Delete a stroke from Supabase (for undo)
+// Delete a stroke from Supabase (for undo). Throws when the delete fails.
 async function deleteStrokeFromSupabase(strokeId: string) {
   if (!effectiveCloudStorageId)
     return
@@ -647,18 +694,11 @@ async function deleteStrokeFromSupabase(strokeId: string) {
   if (!supabase)
     return
 
-  try {
-    const { error } = await supabase.from('strokes')
-      .delete()
-      .eq('stroke_id', strokeId)
-
-    if (error) {
-      console.error('Supabase stroke delete error:', error)
-    }
-  }
-  catch (e) {
-    console.error('Supabase stroke delete failed:', e)
-  }
+  const { error } = await supabase.from('strokes')
+    .delete()
+    .eq('stroke_id', strokeId)
+  if (error)
+    throw error
 }
 
 async function loadFromSupabase() {
@@ -681,7 +721,7 @@ async function loadFromSupabase() {
     // New schema: load all strokes for this canvas
     const { data, error } = await supabase
       .from('strokes')
-      .select('*')
+      .select('stroke_id, points, color, width, eraser, user_id, created_at')
       .eq('canvas_id', effectiveCloudStorageId)
       .order('created_at', { ascending: true })
 
@@ -728,7 +768,7 @@ async function setupSupabaseSync() {
     .on('broadcast', { event: 'stroke_added' }, ({ payload }) => {
       if (payload.stroke) {
         allStrokes.push(payload.stroke)
-        redrawAll()
+        drawOnTop(payload.stroke)
       }
     })
     .on('broadcast', { event: 'stroke_removed' }, ({ payload }) => {
@@ -870,31 +910,29 @@ function startDrawing() {
   measureGlyphTip()
 
   // Use the pen's current position plus the tip offset
-  lastX = penPosition.value.x + window.scrollX + tipOffsetX.value
-  lastY = penPosition.value.y + window.scrollY + tipOffsetY.value
-  isDrawing.value = true
-  currentPath = [{ x: lastX, y: lastY }]
-  paintDot({ x: lastX, y: lastY }, penEntry)
+  const point = roundPoint(
+    penPosition.value.x + window.scrollX + tipOffsetX.value,
+    penPosition.value.y + window.scrollY + tipOffsetY.value,
+  )
+  startPath(point, penEntry)
+  paintDot(point, penEntry)
 }
 
 function drawAtPosition(e: MouseEvent, offsetX: number, offsetY: number) {
   if (!isDrawing.value)
     return
-  const currentX = e.clientX + window.scrollX + tipOffsetX.value - offsetX
-  const currentY = e.clientY + window.scrollY + tipOffsetY.value - offsetY
-
-  currentPath.push({ x: currentX, y: currentY })
-  paintSegment({ x: lastX, y: lastY }, { x: currentX, y: currentY }, penEntry)
-
-  lastX = currentX
-  lastY = currentY
+  extendPath(roundPoint(
+    e.clientX + window.scrollX + tipOffsetX.value - offsetX,
+    e.clientY + window.scrollY + tipOffsetY.value - offsetY,
+  ), penEntry)
 }
 
 function endDrawing() {
-  if (isDrawing.value && currentPath.length > 0)
-    saveStroke(makeStroke(currentPath, penEntry))
-  isDrawing.value = false
-  currentPath = []
+  if (!isDrawing.value)
+    return
+  const path = endPath()
+  if (path.length > 0)
+    saveStroke(makeStroke(path, penEntry))
 }
 
 // Legacy mode uses same drag function with different setup
@@ -911,10 +949,6 @@ function startDragLegacy(e: MouseEvent) {
   measureGlyphTip()
   isDragging.value = true
   moveOnly.value = e.shiftKey
-  currentPath = []
-
-  lastX = rect.left + window.scrollX + tipOffsetX.value
-  lastY = rect.top + window.scrollY + tipOffsetY.value
 
   e.preventDefault()
 
@@ -931,33 +965,31 @@ function drag(e: MouseEvent) {
   const { x: offsetX, y: offsetY } = dragGrip
   penPosition.value = { x: e.clientX - offsetX, y: e.clientY - offsetY }
 
-  const currentX = e.clientX + window.scrollX + tipOffsetX.value - offsetX
-  const currentY = e.clientY + window.scrollY + tipOffsetY.value - offsetY
+  const point = roundPoint(
+    e.clientX + window.scrollX + tipOffsetX.value - offsetX,
+    e.clientY + window.scrollY + tipOffsetY.value - offsetY,
+  )
 
   if (moveOnly.value) {
     // The pen is carried without drawing; the next line starts where it lands
   }
   else if (!isDrawing.value) {
-    isDrawing.value = true
-    currentPath = [{ x: currentX, y: currentY }]
+    startPath(point, penEntry)
   }
   else {
-    currentPath.push({ x: currentX, y: currentY })
-    paintSegment({ x: lastX, y: lastY }, { x: currentX, y: currentY }, penEntry)
+    extendPath(point, penEntry)
   }
-
-  lastX = currentX
-  lastY = currentY
 }
 
 function endDrag() {
-  if (isDrawing.value && currentPath.length > 0)
-    saveStroke(makeStroke(currentPath, penEntry))
+  if (isDrawing.value) {
+    const path = endPath()
+    if (path.length > 0)
+      saveStroke(makeStroke(path, penEntry))
+  }
 
   isDragging.value = false
-  isDrawing.value = false
   moveOnly.value = false
-  currentPath = []
 
   window.removeEventListener('mousemove', drag)
   window.removeEventListener('mouseup', endDrag)
@@ -982,31 +1014,31 @@ function makeStroke(points: Point[], pen: PenInk): Stroke {
   }
 }
 
+/**
+ * Keeps the stroke and shows it to the other visitors at once. The backend
+ * follows, and a failed save takes the stroke back off the page.
+ */
 async function saveStroke(stroke: Stroke) {
   canvasData.redoStack.length = 0
-
-  // Save to Supabase FIRST if cloud storage is enabled
-  // (saveStrokeToSupabase no-ops when the client isn't configured)
-  if (effectiveCloudStorageId) {
-    try {
-      await saveStrokeToSupabase(stroke)
-    }
-    catch (error) {
-      console.error('Failed to save stroke to backend:', error)
-      return // Don't proceed with local save
-    }
-  }
-
-  // Only save locally after successful backend save (or if no backend)
   allStrokes.push(stroke)
-  notifyUpdate()
 
-  // If it's an eraser stroke, redraw the entire canvas to properly apply the eraser
-  if (stroke.eraser)
+  // The live paint lays the line down in short steps. A translucent line is
+  // darker where two steps overlap, so it is painted again as one path. The
+  // eraser is applied again the same way.
+  if (stroke.eraser || isTranslucent(stroke.color))
     redrawAll()
 
-  // Broadcast for real-time collaboration (only after successful save)
-  canvasData.channel?.send({ type: 'broadcast', event: 'stroke_added', payload: { stroke } })
+  broadcastStroke('stroke_added', stroke)
+
+  try {
+    await saveStrokeToSupabase(stroke)
+  }
+  catch (error) {
+    console.error('Failed to save stroke to backend:', error)
+    removeFrom(allStrokes, stroke)
+    redrawAll()
+    broadcastStroke('stroke_removed', stroke)
+  }
 }
 
 // --- Painting ------------------------------------------------------------
@@ -1040,13 +1072,42 @@ function paintDot(point: Point, pen: PenInk) {
   paintSegment(point, { x: point.x + 0.1, y: point.y + 0.1 }, pen)
 }
 
+function roundPoint(x: number, y: number): Point {
+  return {
+    x: Math.round(x * POINT_PRECISION) / POINT_PRECISION,
+    y: Math.round(y * POINT_PRECISION) / POINT_PRECISION,
+  }
+}
+
+/** Starts the stroke in progress and shares it with the other pens of the canvas. */
+function startPath(point: Point, pen: PenInk) {
+  currentPath = [point]
+  canvasData.liveStroke = { points: currentPath, color: pen.color, width: pen.width, eraser: pen.eraser }
+  isDrawing.value = true
+}
+
+/** Adds a point and paints the step to it, unless it lies too close to the last point. */
+function extendPath(point: Point, pen: PenInk) {
+  const last = currentPath[currentPath.length - 1]
+  if (Math.hypot(point.x - last.x, point.y - last.y) < MIN_POINT_DISTANCE)
+    return
+  currentPath.push(point)
+  paintSegment(last, point, pen)
+}
+
+/** Ends the stroke in progress and returns its points. */
+function endPath() {
+  const path = currentPath
+  currentPath = []
+  canvasData.liveStroke = null
+  isDrawing.value = false
+  return path
+}
+
 // --- Touch drawing -------------------------------------------------------
 
 function documentPoint(touch: Touch) {
-  return {
-    x: touch.clientX + window.scrollX,
-    y: touch.clientY + window.scrollY,
-  }
+  return roundPoint(touch.clientX + window.scrollX, touch.clientY + window.scrollY)
 }
 
 function startTouchStroke(touch: Touch) {
@@ -1058,8 +1119,7 @@ function startTouchStroke(touch: Touch) {
   // toolbar changes color or width while the finger is down.
   touchPen = { ...pen }
   const point = documentPoint(touch)
-  currentPath = [point]
-  isDrawing.value = true
+  startPath(point, touchPen)
   paintDot(point, touchPen)
 }
 
@@ -1067,16 +1127,15 @@ function extendTouchStroke(touch: Touch) {
   if (!isDrawing.value || !touchPen)
     return
 
-  const point = documentPoint(touch)
-  paintSegment(currentPath[currentPath.length - 1], point, touchPen)
-  currentPath.push(point)
+  extendPath(documentPoint(touch), touchPen)
 }
 
 function finishTouchStroke() {
-  if (isDrawing.value && touchPen && currentPath.length > 0)
-    saveStroke(makeStroke(currentPath, touchPen))
-  isDrawing.value = false
-  currentPath = []
+  if (isDrawing.value) {
+    const path = endPath()
+    if (touchPen && path.length > 0)
+      saveStroke(makeStroke(path, touchPen))
+  }
   touchPen = null
 }
 
@@ -1084,8 +1143,7 @@ function cancelTouchStroke() {
   if (!isDrawing.value)
     return
 
-  isDrawing.value = false
-  currentPath = []
+  endPath()
   touchPen = null
   // Repaints the saved strokes, which drops the line that was abandoned.
   redrawAll()
