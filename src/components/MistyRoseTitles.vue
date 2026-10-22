@@ -4,7 +4,8 @@
 // mirror image of the right one. The canvas lies in the page, so it scrolls
 // with the titles, and it spans the band of all titles at the full width of
 // the page, so no vine is clipped at the side of its space. The band is at
-// most MAX_WINDOWS window heights.
+// most MAX_WINDOWS window heights. The vines belong to the title, so they
+// draw in full colour in front of the text, and clicks go through them.
 import type { Garden, Range } from '~/lib/mistyrose'
 import { roseTitles, useMistyRose } from '~/composables/useMistyRose'
 
@@ -76,7 +77,7 @@ const canvas = useMistyRose((_, height) => [...roseTitles].map(space)
 <template>
   <Teleport to="body">
     <canvas
-      ref="canvas" class="absolute left-0 w-full -z-1 op-60 pointer-events-none print:hidden"
+      ref="canvas" class="absolute left-0 w-full z-10 pointer-events-none print:hidden"
       :style="{ top: `${band.top}px`, height: `${band.height}px` }" aria-hidden="true"
     />
   </Teleport>
