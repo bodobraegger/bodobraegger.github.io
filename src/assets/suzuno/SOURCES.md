@@ -50,3 +50,22 @@ The fruit of the MARUKAWA bubble gum boxes, one image of the whole face (576 x 5
   https://commons.wikimedia.org/wiki/File:Oranges_-_whole-halved-segment.jpg
 - "Clementine012" by asdfVic (Vicasdf9), CC BY-SA 3.0. The script uses the leaf.
   https://commons.wikimedia.org/wiki/File:Clementine012.png
+
+## あべっ子ラムネ (`packages/ramune-*.webp`, `reference/packages/ramune-*.png`)
+
+The strip of あべっ子ラムネ (10連あべっ子ラムネ, 4 g × 10, JAN 4901262810108) of 安部製菓株式会社, Nagoya. The characters, the fruit and the drawings of the allergens are the print of the maker, © 安部製菓株式会社, without a free licence. The CC BY-NC-SA licence of the content of the site does not apply to these images.
+
+- The render of the strip on the online shop of the maker, "10連あべっ子ラムネ　4g×10連", seen on 2026-10-23. It shows the front of the header card and of the first five packets.
+  https://abeseika-shop.stores.jp/items/6709123b9ddf7215e14108c9
+  The image: https://imagedelivery.net/QondspN4HIUvB_R16-ddAQ/production/66d671ff5db91402b1678fdf/218286a9-3308-44a5-aad0-442029e7c354/w=2000 (1559 × 1870)
+- The two photos of the user, IMG_9919.JPG (the front of the strip) and IMG_9921.JPG (the back).
+
+The files:
+
+- `reference/packages/ramune-header-front.png` and `ramune-<flavour>-front.png`: the render, warped onto the faces of the front photo. SIFT matches give a homography and a thin-plate correction, so that the render takes the flat shape of the photo.
+- `reference/packages/ramune-<flavour>-front-2.png`, `ramune-<flavour>-back.png` and `ramune-header-back.png`: faces of the photos, flattened from seal to seal, with their colours mapped onto the render by an affine colour map. The fronts in pose 2 come from the last five packets, the backs from the first five.
+- `reference/packages/ramune-strip-front.png` and `ramune-strip-back.png`: the eleven faces of each photo in a row, turned so that the strip lies across.
+- `packages/ramune-<flavour>-1.webp`: the character and the fruit of each packet in pose 1, cut out of the warped render with GrabCut.
+- `packages/ramune-<flavour>-2.webp`: the same for pose 2, cut out of the faces of the front photo.
+- `packages/ramune-header-characters.webp`: the five characters of the header card, cut out of the warped render.
+- `packages/ramune-allergens.webp`: the drawings of the eight allergens of the header card, a crop of the warped render.

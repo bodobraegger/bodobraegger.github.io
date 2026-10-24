@@ -1,6 +1,6 @@
 # Suzuno faces
 
-The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. Four components show a face of a recreation on its reference image. A markdown page uses them without an import:
+The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. They also hold the recreation of a fifth package, the strip of あべっ子ラムネ. Six components show a face of a recreation on its reference image, and a seventh grows a snake of candy. A markdown page uses them without an import:
 
 ```html
 <SuzunoBag item="almond-caramel" :texts="{ name: 'WALNUT' }" />
@@ -10,8 +10,11 @@ The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/`
 - `SuzunoWrapper`: the wrapped candies.
 - `SuzunoMarukawa`: the MARUKAWA bubble gum boxes.
 - `SuzunoFinancial`: the cover of the Suzuno Financial Holdings brochure.
+- `SuzunoRamune`: the header card and the packets of the strip of あべっ子ラムネ.
+- `SuzunoRamuneStrip`: the whole strip of あべっ子ラムネ.
+- `SuzunoCandySnake`: a strip of あべっ子ラムネ that grows along a winding path.
 
-`SuzunoFace.vue` is the common part of the four components. It puts the recreation into the slot of a `DifferenceFrame` (`src/components/DifferenceFrame.vue`) on the reference image. `faces.ts` lists the faces: their reference images, their recreations and the texts of the print.
+`SuzunoFace.vue` is the common part of the six components. It puts the recreation into the slot of a `DifferenceFrame` (`src/components/DifferenceFrame.vue`) on the reference image. `faces.ts` lists the faces: their reference images, their recreations and the texts of the print.
 
 ## Options
 
@@ -152,9 +155,61 @@ The cover of the brochure, `SuzunoCover.vue`, with the texts `COVER_TEXTS` of `c
 - `title` ("Suzuno Financial Holdings"). The fitted offsets of the glyphs apply only to the default title.
 - `banner` ("すずのフィナンシャルHD").
 
+## SuzunoRamune
+
+The strip of あべっ子ラムネ (安部製菓, 10連あべっ子ラムネ, 4 g × 10, JAN 4901262810108) has a yellow header card and ten heat-sealed packets of ramune tablets. The flavours strawberry, muscat, peach, grape and orange repeat in this order. The first five packets show their character in one pose, the last five in another. Each piece is a face of 300 × 370 pixels, from the middle of a seal to the middle of the next.
+
+`item`: `header`, `strawberry`, `muscat`, `peach`, `grape` or `orange`. `face`: `front` (the default) or `back`. `pose`: `1` (the default) or `2`, the pose of the character on the front of a packet. A pose 2 on the header or on a back causes an `UnknownFaceError`.
+
+The fronts of the header card and of the packets in pose 1 lie on the render of the strip on the web shop of the maker, warped onto the photo of the user. The backs and the fronts in pose 2 lie on the photos of the user, with their colours matched to the render. `ramune.ts` in `src/lib/suzuno/packages/` holds the texts, the art and the fonts, and `ramune-fit.json` the fitted places and colours. The flavour sets the colours of the band, the label and the tablets; the flavour and the pose set the art.
+
+### header
+
+`RamuneHeader.vue`, with the texts `RAMUNE_HEADER_TEXTS`:
+
+- `logo` (["あべっ子", "ラムネ"]), the two lines of the brand lettering, one colour for each letter.
+- `slogan` (["主原料は", "ぶどう糖", "だヨ!!"]), the speech bubble, with a larger middle.
+- `allergens`, the 8 names under the drawings, from "たまご".
+- `warning` (["アレルゲン", "28品目不使用"]).
+
+The back has `back`: `caution` (3 lines from "http://www.abeseika.co.jp"), `recycling` (["PP", ...]), `details` (8 lines, the columns of the label from right to left), `barcode` ("4901262810108"), `notice` (4 lines) and `date` ("2027.08.10"). The barcode must have 13 digits and a correct check digit, as on the Almond Caramel bag.
+
+### strawberry, muscat, peach, grape, orange
+
+`RamunePacket.vue`, with the texts `RAMUNE_PACKET_TEXTS`:
+
+- `logo` ("あべっ子ラムネ"), one colour for each letter.
+- `flavour` ("イチゴ", "マスカット", "ピーチ", "グレープ" or "オレンジ") and `suffix` ("味"), the label. The label grows with its text.
+- `juice` ("無果汁").
+- `note` (["写真は", "イメージです"]).
+
+The back shows the logo in two lines, the label and `back`: `logo` (["あべっ子", "ラムネ"]), `kind` ("ラムネ菓子"), `nutritionTitle`, `nutrition` (5 rows `{ heading, value }` from `{ heading: 'エネルギー', value: '15kcal' }`), `details` (8 columns from right to left) and `notice` (4 lines). The photo of the back is too blurred to read every line. These texts follow an older strip of the maker and the ingredients of the shop data; the nutrition values are plausible values.
+
+## SuzunoRamuneStrip
+
+The whole strip, lying across: the header card at the left, then the packets, with the top of each piece towards the header, as on the photo of the user.
+
+- `face`: `front` (the default) or `back`.
+- `order`: the flavours of the packets, which repeat, such as `:order="['grape', 'peach']"`. Each round of the order changes the pose. The default is the order of the strip.
+- `count`: the number of packets, such as `count="6"`. The default is 10.
+- `texts`: `header` with the texts of the header card, and `packets` with the texts of each flavour: `:texts="{ packets: { grape: { flavour: 'ぶどう' } } }"`.
+
+The default strip lies on the photos of the user. A strip of another order or another count has no reference, so it shows its recreation alone, and `difference` and `opacity` do nothing.
+
+## SuzunoCandySnake
+
+A strip of あべっ子ラムネ grows along a winding path in the box of the component, as the vines of Orchid grow: first the header card, then one packet after another, each at the head of the snake. The path runs in rows, with a half circle at the end of each row and a gentle wave along it. With reduced motion, the whole snake shows at once.
+
+- `order`: the flavours of the packets, as for `SuzunoRamuneStrip`.
+- `class` and `style`: the size. Without them, the snake is as wide as the prose column, at a ratio of 3 to 2. A piece is a sixth of the shorter side, from 24 to 56 CSS pixels wide.
+
+The snake starts when the page is idle. It mounts each piece of the strip once as an SVG, draws it into an image with its pictures and its fonts, and removes the SVG. The canvas then draws these images along the path, so a long snake costs no more than one strip.
+
 ## Source
 
 The recreations come from the Suzuno project at the commit `9a3602c33d0d4b2d80b066c81155443c1e163c94` (2026-10-19), and the build of bbo.do does not need that project. The comments name its tools in `tools/`, which fitted the layouts, the colours and the images.
+
+The strip of あべっ子ラムネ is not part of the Suzuno project. Its fit scripts are not part of bbo.do.
 
 The copy has only what the four components show. It has no pattern generators and no ornament generator, no fit tools and no Japanese MARUKAWA boxes, and each recreation takes only the props that `faces.ts` sets. A change in the Suzuno project therefore goes into bbo.do by hand. These files differ most from their origin:
 
@@ -173,4 +228,4 @@ The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of th
 
 ## Licences
 
-`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits its images. The reference images are the photos of the packages of the Suzuno project, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover.
+`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits its images. The reference images are the photos of the packages of the Suzuno project, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover. The art of あべっ子ラムネ and its reference images come from the print and the web shop of 安部製菓, © 安部製菓株式会社, without a free licence.
