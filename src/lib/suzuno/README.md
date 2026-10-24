@@ -1,6 +1,6 @@
 # Suzuno faces
 
-The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. Four components show a face of a recreation on its reference image. A markdown page uses them without an import:
+The folders `src/components/suzuno/`, `src/lib/suzuno/` and `src/assets/suzuno/` hold the recreations of the Suzuno project: the cover of the Suzuno brochure from the series "Tokyo Vice" and four Japanese candy packages. They also hold a bag of preserved kumquats that bbo.do adds. Four components show a face of a recreation on its reference image. A markdown page uses them without an import:
 
 ```html
 <SuzunoBag item="almond-caramel" :texts="{ name: 'WALNUT' }" />
@@ -55,7 +55,7 @@ The fonts come from Google Fonts. The stylesheets of a face ask only for the gly
 
 ## SuzunoBag
 
-`item`: `almond-caramel`, `hokkaido-milk` or `salt-lemon`. `face`: `front` (the default) or `back`; the salt lemon bag has only `front`.
+`item`: `almond-caramel`, `hokkaido-milk`, `salt-lemon` or `kumquat`. `face`: `front` (the default) or `back`; the salt lemon bag and the kumquat bag have only `front`.
 
 The values in parentheses are the texts of the print. A list gives its lines. The constants in `src/lib/suzuno/packages/` hold the full texts.
 
@@ -114,6 +114,16 @@ The back also shows:
 - `saltBadge` (["鳴門の塩", "使用"]).
 - `acidBadge`: `label` ("クエン酸"), `amount` ("(1袋あたり{mg}mg)", where {mg} stands for `mg`), `mg` (830) and `spheres` ([{ symbol: "Na", caption: "ナトリウム" }, { symbol: "C6H8O7", caption: "クエン酸" }]).
 
+### kumquat
+
+`KumquatBag.vue`, with the texts `KUMQUAT_TEXTS` of `packages/kumquat.ts`. The bag is clear, so a photo of the kumquats behind the film fills the face, and the print lies on it. The zip is at the right edge.
+
+- `title` ("旬の味"). The default is the traced brush lettering of the print; another text is set in Potta One.
+- `lines` (["真心込めてつくりました", "おやだい味おわす"]), the two orange lines below the title. The second line is pseudo-Japanese, as on the print.
+- `badge`, the round badge: `name` ("甘草金桔"), `english` (["PRESERVED KUMQUAT", "KUMQUAT CONSERVÉ"]), `weightLabel` ("Net Weight / Poids Net") and `weight` ("170g (6 oz)").
+- `opening` ("請在此處開口(Please Open Here)"), along the left edge beside the arrow.
+- `sticker`, the price sticker of the shop: `shop` ("MEI-JO") and `price` ("R$ 12,90"). The price is hand-written and hard to read on the photo.
+
 ## SuzunoWrapper
 
 `item`: `almond-caramel` or `hokkaido-milk`. `face`: `front` (the default) or `back`. The reference photos show the whole wrapper on a transparent ground.
@@ -156,6 +166,8 @@ The cover of the brochure, `SuzunoCover.vue`, with the texts `COVER_TEXTS` of `c
 
 The recreations come from the Suzuno project at the commit `9a3602c33d0d4b2d80b066c81155443c1e163c94` (2026-10-19), and the build of bbo.do does not need that project. The comments name its tools in `tools/`, which fitted the layouts, the colours and the images.
 
+The kumquat bag does not come from the Suzuno project. Its face `reference/packages/kumquat-front.png` is flattened from a photo of the user. Its outlines in `packages/kumquat-paths.ts` are traced from that photo, and its places and colours in `packages/kumquat-fit.json` are fitted to the face by difference. The tools of this fit are not in bbo.do.
+
 The copy has only what the four components show. It has no pattern generators and no ornament generator, no fit tools and no Japanese MARUKAWA boxes, and each recreation takes only the props that `faces.ts` sets. A change in the Suzuno project therefore goes into bbo.do by hand. These files differ most from their origin:
 
 - The plum vine of the cover is the line art `src/assets/suzuno/ornament-cover.svg`, which the ornament generator draws from the fitted plant `assets/ornament-cover.json` of the Suzuno project. To draw it again, run this command in that project:
@@ -173,4 +185,4 @@ The site config `unocss.config.ts` keeps the SVG attribute `font-size` out of th
 
 ## Licences
 
-`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits its images. The reference images are the photos of the packages of the Suzuno project, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover.
+`src/assets/suzuno/SOURCES.md` gives the sources, the authors and the licences of the images that do not come from the photos of the Suzuno project. Some have the licence CC BY-SA, so the CC BY-NC-SA licence of the content of the site does not apply to them. A page that shows such a face credits its images. The reference images are the photos of the packages of the Suzuno project, a photo of the user for the kumquat bag, and a screenshot of the series "Tokyo Vice" (season 1, episode 5) for the cover.
