@@ -1,0 +1,1 @@
+:where(.suzuno-candy-snake){display:block;width:100%;aspect-ratio:3 / 2;margin:2em auto}:where(.suzuno-face){display:block;width:min(100%,(100svh - 2rem) * var(--aspect-ratio));margin:2em auto}:where(p,li,td) :where(.suzuno-face){display:inline-block;margin:0;vertical-align:middle}:where(.suzuno-face[data-blank]) text{display:none}
