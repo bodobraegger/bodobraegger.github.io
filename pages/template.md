@@ -7,6 +7,7 @@ type: note+blog
 duration:
 plum:
 orchid:
+honeydew:
 mistyrose:
 mistyrosetitle:
 hydraBackground:

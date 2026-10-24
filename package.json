@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "compress": "esno scripts/img-compress-staged.ts",
     "check:orchid": "esno scripts/check-orchid.ts",
+    "check:honeydew": "esno scripts/check-honeydew.ts",
     "generate:grain": "esno scripts/film-grain.ts",
     "check:difference": "esno scripts/check-difference.ts",
     "difference:prepare": "esno scripts/difference-prepare.ts",

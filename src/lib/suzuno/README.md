@@ -213,7 +213,9 @@ A strip of あべっ子ラムネ grows along a winding path in the box of the co
 - `order`: the flavours of the packets, as for `SuzunoRamuneStrip`.
 - `class` and `style`: the size. Without them, the snake is as wide as the prose column, at a ratio of 3 to 2. A piece is a sixth of the shorter side, from 24 to 56 CSS pixels wide.
 
-The snake starts when the page is idle. It mounts each piece of the strip once as an SVG, draws it into an image with its pictures and its fonts, and removes the SVG. The canvas then draws these images along the path, so a long snake costs no more than one strip.
+The snake starts when the page is idle. `RamunePieces.vue` mounts each kind of piece of the strip once as an SVG, draws it into an image with its pictures and its fonts, and removes the SVG. The canvas then draws these images along the path, so a long snake costs no more than one strip. Each piece opens at an uneven pace, and the snake rests for a moment after each piece, as the vines of Orchid grow.
+
+The page background `Honeydew` (`src/components/Honeydew.vue`, frontmatter `honeydew: true`) grows many such snakes from the edges of the window. It shares the images of the pieces and the growth (`growSnakes` in `packages/candy-snake.ts`) with `SuzunoCandySnake`; `src/lib/honeydew.ts` lays out its snakes, and `pnpm check:honeydew` checks that no packet covers another.
 
 ## Source
 

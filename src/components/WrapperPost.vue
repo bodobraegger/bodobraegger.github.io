@@ -269,9 +269,9 @@ if (frontmatter.hydra) {
 
 <template>
   <!-- The backgrounds sit at the same depth as the page background, so the
-       order here decides which draws on top. Plum, Orchid and MistyRose are a few
-       faint lines and sprites on a clear layer, so they go last and read over
-       the hydra wash. -->
+       order here decides which draws on top. Plum, Orchid, Honeydew and
+       MistyRose are a few faint lines and sprites on a clear layer, so they go
+       last and read over the hydra wash. -->
   <ClientOnly v-if="frontmatter.hydraBackground">
     <HydraBackground />
   </ClientOnly>
@@ -280,6 +280,9 @@ if (frontmatter.hydra) {
   </ClientOnly>
   <ClientOnly v-if="frontmatter.orchid">
     <Orchid />
+  </ClientOnly>
+  <ClientOnly v-if="frontmatter.honeydew">
+    <Honeydew />
   </ClientOnly>
   <ClientOnly v-if="frontmatter.mistyrose">
     <MistyRose />
