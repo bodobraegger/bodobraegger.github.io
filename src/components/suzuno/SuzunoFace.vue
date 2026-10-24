@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// The common part of SuzunoBag, SuzunoWrapper, SuzunoMarukawa and
-// SuzunoFinancial: a recreation of the Suzuno project in a DifferenceFrame on
-// its reference image. Those components pass texts, difference and opacity
+// The common part of SuzunoBag, SuzunoWrapper, SuzunoMarukawa,
+// SuzunoFinancial, SuzunoRamune and SuzunoRamuneStrip: a recreation in a
+// DifferenceFrame on its reference image, or alone for a face without one. Those components pass texts, difference and opacity
 // on to this one, and so do a class and a style, which set the size and the
 // place. src/lib/suzuno/README.md describes the options.
 import { mergeTexts, textsOption } from '~/lib/difference'
@@ -30,9 +30,10 @@ provide(FACE_GLYPHS, computed(() => textGlyphs(texts.value.blank ? '' : shownTex
 <template>
   <!-- A span, so that a face can stand in a paragraph -->
   <span class="suzuno-face" :style="{ '--aspect-ratio': face.reference.width / face.reference.height }" :data-blank="texts.blank || undefined">
-    <DifferenceFrame v-slot="{ width }" :image="face.reference" :alt="face.title" :difference="difference" :opacity="opacity" :copy="false">
+    <DifferenceFrame v-if="'src' in face.reference" v-slot="{ width }" :image="face.reference" :alt="face.title" :difference="difference" :opacity="opacity" :copy="false">
       <component :is="face.component" v-bind="{ ...face.props, ...(width < SMALL_FACE_WIDTH ? face.small : undefined) }" :texts="shownTexts" />
     </DifferenceFrame>
+    <component :is="face.component" v-else v-bind="face.props" :texts="shownTexts" />
   </span>
 </template>
 

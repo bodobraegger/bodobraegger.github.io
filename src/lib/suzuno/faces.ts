@@ -1,6 +1,6 @@
-// The faces that SuzunoBag, SuzunoWrapper, SuzunoMarukawa, SuzunoFinancial
-// and SuzunoRamune lay over their reference images, with the texts of each
-// face.
+// The faces that SuzunoBag, SuzunoWrapper, SuzunoMarukawa, SuzunoFinancial,
+// SuzunoRamune and SuzunoRamuneStrip lay over their reference images, with
+// the texts of each face.
 // src/lib/suzuno/README.md lists the items, the faces and their texts.
 import type { Component } from 'vue'
 import type { FrameImage } from '~/lib/difference'
@@ -12,6 +12,7 @@ import HokkaidoMilkCandy from '~/components/suzuno/packages/HokkaidoMilkCandy.vu
 import MarukawaBox from '~/components/suzuno/packages/MarukawaBox.vue'
 import RamuneHeader from '~/components/suzuno/packages/RamuneHeader.vue'
 import RamunePacket from '~/components/suzuno/packages/RamunePacket.vue'
+import RamuneStrip from '~/components/suzuno/packages/RamuneStrip.vue'
 import SaltLemonFront from '~/components/suzuno/packages/SaltLemonFront.vue'
 import { COVER_SHEET, COVER_TEXTS } from '~/lib/suzuno/cover-typography'
 import { ALMOND_CARAMEL_PIECE_TEXTS, ALMOND_CARAMEL_TEXTS } from '~/lib/suzuno/packages/almond-caramel'
@@ -19,14 +20,17 @@ import { HOKKAIDO_MILK_BAG_TEXTS, HOKKAIDO_MILK_CANDY_TEXTS } from '~/lib/suzuno
 import type { MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_TEXTS } from '~/lib/suzuno/packages/marukawa'
 import type { RamuneFlavour, RamuneItem, RamunePose } from '~/lib/suzuno/packages/ramune'
-import { RAMUNE_FLAVOURS, RAMUNE_HEADER_TEXTS, RAMUNE_PACKET_TEXTS } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_FACE, RAMUNE_FLAVOURS, RAMUNE_HEADER_TEXTS, RAMUNE_PACKET_TEXTS, RAMUNE_STRIP, RAMUNE_STRIP_TEXTS } from '~/lib/suzuno/packages/ramune'
 import { SALT_LEMON_FRONT, SALT_LEMON_TEXTS } from '~/lib/suzuno/packages/salt-lemon'
 
 export interface DifferenceFace {
   /** What the face shows, the alternative text of its reference image. */
   title: string
-  /** The reference image, in the size of the recreation. */
-  reference: FrameImage
+  /**
+   * The reference image, in the size of the recreation. Without an image,
+   * the size alone: the face then shows its recreation without a reference.
+   */
+  reference: FrameImage | { width: number, height: number }
   /** The recreation. It fills the width of its box and shows the texts of its prop `texts`. */
   component: Component
   /** The props that choose the face, such as its side. */
@@ -225,6 +229,22 @@ export const RAMUNE_FACES = Object.fromEntries((['header', ...RAMUNE_FLAVOURS] a
 
 /** The front of a packet in the second pose, for SuzunoRamune. */
 export const RAMUNE_SECOND_POSE = Object.fromEntries(RAMUNE_FLAVOURS.map(flavour => [flavour, ramuneFace(flavour, 'front', 2)])) as Record<RamuneFlavour, DifferenceFace>
+
+/**
+ * The whole strip lying across, for SuzunoRamuneStrip: the strip of the
+ * photos, or a strip of other flavours or another length, which has no
+ * reference and so shows its recreation alone.
+ */
+export function ramuneStripFace(side: Side, order: RamuneFlavour[], count: number): DifferenceFace {
+  const original = count === RAMUNE_STRIP.length && order.join() === RAMUNE_FLAVOURS.join()
+  return {
+    title: `The ${side} of the strip of あべっ子ラムネ`,
+    reference: original ? reference(`packages/ramune-strip-${side}.png`) : { width: (count + 1) * RAMUNE_FACE.height, height: RAMUNE_FACE.width },
+    component: RamuneStrip,
+    props: { side, order, count },
+    texts: RAMUNE_STRIP_TEXTS,
+  }
+}
 
 export type BagItem = keyof typeof BAG_FACES
 export type WrapperItem = keyof typeof WRAPPER_FACES
