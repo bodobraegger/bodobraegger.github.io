@@ -35,6 +35,8 @@ grain: ektar-100
 
 ![The MARUKAWA orange bubble gum box](../../src/assets/images/notes/2610-suzuno-differences/marukawa-orange-01-front-and-back.png)
 
+![The front of the preserved kumquat bag](../../src/assets/images/notes/2610-suzuno-differences/kumquat-01-front.png)
+
 
 
 
@@ -53,3 +55,13 @@ grain: ektar-100
 
 
 <SuzunoBag item="hokkaido-milk" opacity="50" difference="false" texts="" />
+
+## Preserved kumquat conserve
+
+![The photo of the preserved kumquat bag, flattened](../../src/assets/suzuno/reference/packages/kumquat-front.png)
+
+<SuzunoBag item="kumquat" :difference="false" :opacity="100" />
+
+<SuzunoBag item="kumquat" difference="false" />
+
+<SuzunoBag item="kumquat" />
