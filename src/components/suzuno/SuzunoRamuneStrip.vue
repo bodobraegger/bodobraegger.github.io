@@ -8,7 +8,7 @@ import SuzunoFace from '~/components/suzuno/SuzunoFace.vue'
 import type { Side } from '~/lib/suzuno/faces'
 import { ramuneStripFace } from '~/lib/suzuno/faces'
 import type { RamuneFlavour } from '~/lib/suzuno/packages/ramune'
-import { RAMUNE_FLAVOURS, RAMUNE_STRIP } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_FLAVOURS, RAMUNE_PACKET_COUNT } from '~/lib/suzuno/packages/ramune'
 
 const props = withDefaults(defineProps<{
   face?: Side
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   face: 'front',
   order: () => [...RAMUNE_FLAVOURS],
-  count: RAMUNE_STRIP.length,
+  count: RAMUNE_PACKET_COUNT,
 })
 
 const definition = ramuneStripFace(props.face, props.order, Number(props.count))

@@ -20,7 +20,7 @@ import { HOKKAIDO_MILK_BAG_TEXTS, HOKKAIDO_MILK_CANDY_TEXTS } from '~/lib/suzuno
 import type { MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_TEXTS } from '~/lib/suzuno/packages/marukawa'
 import type { RamuneFlavour, RamuneItem, RamunePose } from '~/lib/suzuno/packages/ramune'
-import { RAMUNE_FACE, RAMUNE_FLAVOURS, RAMUNE_HEADER_TEXTS, RAMUNE_PACKET_TEXTS, RAMUNE_STRIP, RAMUNE_STRIP_TEXTS } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_FACE, RAMUNE_FLAVOURS, RAMUNE_HEADER_TEXTS, RAMUNE_PACKET_COUNT, RAMUNE_PACKET_TEXTS, RAMUNE_STRIP_TEXTS } from '~/lib/suzuno/packages/ramune'
 import { SALT_LEMON_FRONT, SALT_LEMON_TEXTS } from '~/lib/suzuno/packages/salt-lemon'
 
 export interface DifferenceFace {
@@ -236,7 +236,7 @@ export const RAMUNE_SECOND_POSE = Object.fromEntries(RAMUNE_FLAVOURS.map(flavour
  * reference and so shows its recreation alone.
  */
 export function ramuneStripFace(side: Side, order: RamuneFlavour[], count: number): DifferenceFace {
-  const original = count === RAMUNE_STRIP.length && order.join() === RAMUNE_FLAVOURS.join()
+  const original = count === RAMUNE_PACKET_COUNT && order.join() === RAMUNE_FLAVOURS.join()
   return {
     title: `The ${side} of the strip of あべっ子ラムネ`,
     reference: original ? reference(`packages/ramune-strip-${side}.png`) : { width: (count + 1) * RAMUNE_FACE.height, height: RAMUNE_FACE.width },

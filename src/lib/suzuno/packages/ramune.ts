@@ -34,8 +34,8 @@ export type RamuneItem = 'header' | RamuneFlavour
 export type RamunePose = 1 | 2
 export const RAMUNE_POSES: RamunePose[] = [1, 2]
 
-/** The flavours and poses of the ten packets of the strip, after the header card. */
-export const RAMUNE_STRIP = [1, 2].flatMap(pose => RAMUNE_FLAVOURS.map(flavour => ({ flavour, pose: pose as RamunePose })))
+/** The number of packets of the strip, after the header card. */
+export const RAMUNE_PACKET_COUNT = 10
 
 export const { seals: RAMUNE_SEALS, front: FRONT_LAYOUT, back: BACK_LAYOUT, header: HEADER_LAYOUT, headerBack: HEADER_BACK_LAYOUT, colours: RAMUNE_COLOURS } = FITTED
 
