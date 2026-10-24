@@ -295,7 +295,7 @@ export function parts(plant: Plant): Parts {
 const OPENING_RADII = 4
 // The overshoot of the opening, as in the common "ease out back" curve
 const OVERSHOOT = 1.6
-const easeOutBack = (progress: number) => 1 + (OVERSHOOT + 1) * (progress - 1) ** 3 + OVERSHOOT * (progress - 1) ** 2
+export const easeOutBack = (progress: number) => 1 + (OVERSHOOT + 1) * (progress - 1) ** 3 + OVERSHOOT * (progress - 1) ** 2
 // The largest scale of an opening tip, at the top of the overshoot, and the
 // margin of antialiased pixels around the ink of a line or a tip
 const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))

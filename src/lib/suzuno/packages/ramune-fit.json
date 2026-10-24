@@ -1,0 +1,126 @@
+{
+  "seals": {
+    "top": 13,
+    "bottom": 357,
+    "mark": { "x": 120, "width": 46, "height": 9 }
+  },
+  "front": {
+    "window": "M-4.5 70.58C-4.5 114.06 -4.5 287.78 -4.5 331.26C-1.64 331.86 6.01 334.15 12.84 334.75C19.67 335.34 29.36 335.34 36.3 334.75C43.24 334.15 48.74 332.56 54.66 331.26C60.58 329.97 67.92 327.09 72 326.79C76.08 326.49 75.77 327.58 79.14 329.27C82.51 330.97 84.55 334.05 92.4 336.74C100.25 339.42 116.57 343.9 126.06 345.69C135.55 347.48 141.05 347.38 149.52 347.68C157.99 347.98 169.41 348.08 177.06 347.68C184.71 347.28 187.46 346.99 195.42 345.19C203.38 343.4 216.53 340.52 225 337.24C233.47 333.95 239.99 329.57 246.42 325.29C252.85 321.02 255.4 319.42 263.76 311.37C272.12 303.31 290.08 283.01 296.4 277.04C302.72 271.07 300.68 275.74 301.5 275.55C301.5 237.74 301.5 86.5 301.5 48.69C298.13 48.59 288.24 47.89 281.1 48.19C273.96 48.49 268.66 48.59 258.66 50.68C248.66 52.76 231.63 60.92 220.92 60.62C210.21 60.33 202.76 51.87 194.4 48.69C186.04 45.5 183.69 42.91 170.94 41.22C158.19 39.53 134.93 38.54 117.9 38.24C100.87 37.94 81.69 37.54 68.94 39.23C56.19 40.92 49.56 45 41.4 48.19C33.24 51.37 24.77 56.74 19.98 58.14C15.19 59.53 14.68 57.64 12.84 56.65C11 55.65 9.78 51.37 8.76 52.17C7.74 52.96 7.94 58.83 6.72 61.62C5.5 64.41 3.46 67.59 1.62 69.08C-0.22 70.58 -3.48 70.38 -4.5 70.58Z",
+    "rim": 6,
+    "band": { "top": 27.79, "bottom": 359.12 },
+    "logo": { "x": 27.0, "y": 92.0, "size": 38.12, "width": 247.86, "halo": 6, "edge": 1.6, "stretch": 0.936 },
+    "label": {
+      "right": 275.0,
+      "y": 107.26,
+      "height": 33.64,
+      "size": 24.36,
+      "suffix": 0.75,
+      "padding": 6.96,
+      "radius": 6,
+      "border": 2.5,
+      "edge": 2,
+      "stretch": 0.858
+    },
+    "juice": { "x": 258.0, "y": 154.0, "size": 13.26, "stretch": 1.02, "width": 40.58 },
+    "note": { "x": 24, "y": 296.0, "size": 9.18, "leading": 11.22 },
+    "tablets": [
+      [109.3, 115.3, 24.5, 13.2],
+      [213.3, 98.4, 30.6, 14.9],
+      [244.7, 88.4, 24.5, 14.3],
+      [220.3, 196.0, 31.0, 22.3],
+      [62.8, 168.1, 30.6, 25.1],
+      [226.5, 261.6, 21.4, 23.3],
+      [74.7, 251.6, 22.8, 19.1]
+    ]
+  },
+  "back": {
+    "logo": { "x": 15, "y": 106, "size": 27, "width": 106, "halo": 4, "edge": 1.2 },
+    "logoSecond": { "x": 38, "y": 133, "size": 22, "width": 67 },
+    "label": { "left": 13, "y": 151, "height": 27, "size": 17, "suffix": 0.75, "padding": 6, "radius": 5, "border": 2, "edge": 1.6, "stretch": 1 },
+    "kind": { "x": 15, "y": 194, "size": 12, "width": 60 },
+    "nutrition": { "x": 13, "y": 210, "width": 135, "size": 7.5, "leading": 10 },
+    "recycling": { "x": 20, "y": 289, "width": 30, "height": 24 },
+    "details": { "x": 158, "y": 70, "width": 120, "height": 162, "size": 7.5 },
+    "notice": { "x": 100, "y": 250, "width": 180, "size": 7, "leading": 11 }
+  },
+  "header": {
+    "card": { "top": 11, "bottom": 359 },
+    "logo": { "x": 53.0, "y": 87.0, "size": 44.55, "width": 176.31, "halo": 7, "edge": 2, "stretch": 0.995 },
+    "logoSecond": { "x": 91.5, "y": 126, "size": 33, "width": 103.88, "halo": 5, "edge": 1.5, "stretch": 1.06 },
+    "characters": { "x": 8, "y": 121, "width": 274, "height": 107 },
+    "bubble": { "x": 60.57, "y": 217.7, "width": 174.87, "height": 30.6, "tail": 94.74, "border": 2 },
+    "slogan": { "x": 148.0, "y": 239.12, "size": 14.28, "width": 150.75, "stretch": 0.985 },
+    "allergens": { "x": 8, "y": 246.19, "width": 280, "height": 75.62, "border": 2.5, "radius": 7 },
+    "icons": { "x": 20, "y": 254.15, "width": 266, "height": 38.8 },
+    "names": { "y": 308.88, "size": 9.5, "centres": [35, 69, 101, 133, 166, 200, 234, 268] },
+    "warning": { "x": 23.0, "y": 336, "size": 24, "width": 108.48, "halo": 4, "edge": 1.5, "stretch": 0.96 },
+    "warningSecond": { "x": 133.5, "y": 347, "size": 24, "width": 140.65, "stretch": 0.97 }
+  },
+  "headerBack": {
+    "caution": { "x": 15, "y": 48, "size": 8.5, "leading": 13, "width": 125 },
+    "recycling": { "x": 18, "y": 104, "width": 34, "height": 30 },
+    "recyclingNote": { "x": 60, "y": 118, "size": 8, "leading": 11 },
+    "details": { "x": 15, "y": 150, "width": 125, "height": 185, "size": 8.5 },
+    "barcode": { "x": 180, "y": 52, "width": 80, "height": 145, "size": 9 },
+    "notice": { "x": 158, "y": 228, "size": 8.5, "leading": 12, "width": 120 },
+    "date": { "x": 162, "y": 304, "size": 15, "width": 118 }
+  },
+  "offsets": {
+    "strawberry-1": { "window": [0.5, 0], "print": [0, 0.5] },
+    "muscat-1": { "window": [-2.5, -7.5], "print": [-1, 1] },
+    "peach-1": { "window": [-2.5, -4], "print": [-1, 1.5] },
+    "grape-1": { "window": [-2.5, 6.5], "print": [-2, 15] },
+    "orange-1": { "window": [-2.5, 0], "print": [-1, 12.5] },
+    "strawberry-2": { "window": [1.5, -6.5], "print": [-1, 9] },
+    "muscat-2": { "window": [5, -4], "print": [-1, 9] },
+    "peach-2": { "window": [1, -6.5], "print": [1, 16] },
+    "grape-2": { "window": [-3.5, 3], "print": [-2, 23] },
+    "orange-2": { "window": [-2.5, 3], "print": [-1, 27] },
+    "strawberry-back": { "window": [1.5, -5.25], "print": [9, -17] },
+    "muscat-back": { "window": [1.5, -3], "print": [1, -9] },
+    "peach-back": { "window": [1.5, -1.5], "print": [6, -6] },
+    "grape-back": { "window": [-6.75, 2.25], "print": [6, 1] },
+    "orange-back": { "window": [-6, -1.5], "print": [3, 2] }
+  },
+  "art": {
+    "strawberry-1": { "x": 34, "y": 91, "width": 214, "height": 256 },
+    "muscat-1": { "x": 29, "y": 100, "width": 231, "height": 208 },
+    "peach-1": { "x": 18, "y": 121, "width": 252, "height": 201 },
+    "grape-1": { "x": 30, "y": 137, "width": 246, "height": 162 },
+    "orange-1": { "x": 30, "y": 128, "width": 233, "height": 186 },
+    "strawberry-2": { "x": 18, "y": 129, "width": 230, "height": 182 },
+    "muscat-2": { "x": 21, "y": 137, "width": 243, "height": 166 },
+    "peach-2": { "x": 19, "y": 137, "width": 234, "height": 189 },
+    "grape-2": { "x": 22, "y": 139, "width": 250, "height": 179 },
+    "orange-2": { "x": 36, "y": 135, "width": 210, "height": 199 }
+  },
+  "colours": {
+    "film": "#c4c3be",
+    "window": "#d9dad6",
+    "rim": "#ffffff",
+    "mark": "#1c1c1c",
+    "ink": "#333333",
+    "halo": "#ffffff",
+    "juice": "#3aa6dd",
+    "yellow": "#fdf100",
+    "allergenBorder": "#e8382f",
+    "warning": "#e60012",
+    "warningSecond": "#1e9a3c",
+    "logo": [
+      "#e60012",
+      "#52b030",
+      "#0080c8",
+      "#f39800",
+      "#00a0e9",
+      "#00a0e9",
+      "#00a0e9"
+    ],
+    "flavours": {
+      "strawberry": { "band": "#e50280", "label": "#e0037d", "tablet": "#f4c9d8" },
+      "muscat": { "band": "#84c130", "label": "#81bd2a", "tablet": "#e2edd2" },
+      "peach": { "band": "#ee94ba", "label": "#eba3bb", "tablet": "#f6dde2" },
+      "grape": { "band": "#7c4799", "label": "#7b4796", "tablet": "#ead3e3" },
+      "orange": { "band": "#ed6e00", "label": "#e86f0c", "tablet": "#f6e1c8" }
+    }
+  }
+}
