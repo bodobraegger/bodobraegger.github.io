@@ -36,6 +36,10 @@ The outline of Hokkaido in `src/lib/suzuno/packages/hokkaido-milk-paths.ts` come
 
 The lemon photograph of the front of the salt lemon candy bag, from the photo of the user (`reference/packages/photo-fronts.jpg`, through the face `reference/packages/salt-lemon-front.png`). `tools/packages/salt-lemon-flat.py` flattens the face onto the flat artwork of the maker, so that the photograph is upright and not bulged. `tools/packages/salt-lemon-photo.py` maps its colours onto those of a sharp shop photo of the same bag, takes out the print (the title panel, the logo, the badges and the lettering) and fills the holes from the rest of the photograph. The artwork and the shop photo are local references only; no part of them is in the image.
 
+## packages/kumquat-contents.webp
+
+What shows through the clear film of the preserved kumquat bag: the kumquats and the table under the bag. It comes from the photo of the user, through the face `reference/packages/kumquat-front.png`. The places of the print (the label, the badge, the green strokes, the price sticker, the opening line and the zip) are filled from the photo around them, a little farther out than the print, so that the fill takes no colour from the soft edges of the print.
+
 ## MARUKAWA bubble gum (`packages/marukawa-*.webp`)
 
 The fruit of the MARUKAWA bubble gum boxes, one image of the whole face (576 x 544, 4 times the face) with transparent paper for each flavour. `tools/fits/packages/marukawa_fruit.py` makes them from five photos. It cuts out a strawberry, a whole melon and a melon slice, a melon stem, a halved and a whole orange and a leaf, lays them out like the print (the melon pieces and the slices mirrored, the slices repeated), fits their places to the reference faces and matches their colours in Lab. It downloads the photos itself. The places are in `tools/fits/packages/marukawa-fruit.json`. The images that use CC BY-SA photos have the licence CC BY-SA 4.0.

@@ -8,11 +8,13 @@ import AlmondCaramelBag from '~/components/suzuno/packages/AlmondCaramelBag.vue'
 import AlmondCaramelPiece from '~/components/suzuno/packages/AlmondCaramelPiece.vue'
 import HokkaidoMilkBag from '~/components/suzuno/packages/HokkaidoMilkBag.vue'
 import HokkaidoMilkCandy from '~/components/suzuno/packages/HokkaidoMilkCandy.vue'
+import KumquatBag from '~/components/suzuno/packages/KumquatBag.vue'
 import MarukawaBox from '~/components/suzuno/packages/MarukawaBox.vue'
 import SaltLemonFront from '~/components/suzuno/packages/SaltLemonFront.vue'
 import { COVER_SHEET, COVER_TEXTS } from '~/lib/suzuno/cover-typography'
 import { ALMOND_CARAMEL_PIECE_TEXTS, ALMOND_CARAMEL_TEXTS } from '~/lib/suzuno/packages/almond-caramel'
 import { HOKKAIDO_MILK_BAG_TEXTS, HOKKAIDO_MILK_CANDY_TEXTS } from '~/lib/suzuno/packages/hokkaido-milk'
+import { KUMQUAT_TEXTS } from '~/lib/suzuno/packages/kumquat'
 import type { MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_TEXTS } from '~/lib/suzuno/packages/marukawa'
 import { SALT_LEMON_FRONT, SALT_LEMON_TEXTS } from '~/lib/suzuno/packages/salt-lemon'
@@ -40,10 +42,11 @@ export interface DifferenceFace {
 /** The width in CSS pixels below which a face takes the small images of its recreation. */
 export const SMALL_FACE_WIDTH = 160
 
-// The reference images, the photos of the Suzuno project. The faces show WebP
-// copies: small copies for a candy in a line of text, and the widths of the
-// markdown images (scripts/markdown-images.ts). An image keeps its width when
-// it is narrower. A lower quality shows as noise in the difference.
+// The reference images, the photos of the Suzuno project and of the kumquat
+// bag. The faces show WebP copies: small copies for a candy in a line of
+// text, and the widths of the markdown images (scripts/markdown-images.ts).
+// An image keeps its width when it is narrower. A lower quality shows as
+// noise in the difference.
 const REFERENCES = import.meta.glob<{ src: string, srcset?: string, w: number, h: number }>(
   '/src/assets/suzuno/reference/**/*.png',
   { eager: true, query: { w: '160;320;660;990;1320', format: 'webp', quality: '90', as: 'img' }, import: 'default' },
@@ -60,7 +63,7 @@ function reference(name: string): FrameImage {
 // Copies of the images of the recreations for small faces, such as a candy in
 // a line of text: the originals are made for a face of the full column
 const SMALL_IMAGES = import.meta.glob<string>(
-  ['/src/assets/suzuno/packages/{marukawa-export-*,hokkaido-milk-cow,hokkaido-milk-farm}.webp', '/src/assets/suzuno/{salt-lemon-photo,almond-caramel-window-*}.webp'],
+  ['/src/assets/suzuno/packages/{marukawa-export-*,hokkaido-milk-cow,hokkaido-milk-farm,kumquat-contents}.webp', '/src/assets/suzuno/{salt-lemon-photo,almond-caramel-window-*}.webp'],
   { eager: true, query: { w: '320', format: 'webp' }, import: 'default' },
 )
 
@@ -119,6 +122,16 @@ export const BAG_FACES = {
       texts: SALT_LEMON_TEXTS,
       blank: { logo: { name: '' } },
       small: { photo: smallImage('salt-lemon-photo') },
+    },
+  },
+  'kumquat': {
+    front: {
+      title: 'The front of the preserved kumquat bag',
+      reference: reference('packages/kumquat-front.png'),
+      component: KumquatBag,
+      texts: KUMQUAT_TEXTS,
+      blank: { title: '' },
+      small: { contents: smallImage('packages/kumquat-contents') },
     },
   },
 } satisfies Record<string, Partial<Record<Side, DifferenceFace>>>
