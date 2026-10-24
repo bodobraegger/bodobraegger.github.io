@@ -6,13 +6,23 @@
 // the flavour label; the back shows the small print. The flavour sets the
 // colours and the art, the pose the art, from src/lib/suzuno/packages/ramune.ts.
 import { useId } from 'vue'
+import grape1 from '~/assets/suzuno/packages/ramune-grape-1.webp'
+import grape2 from '~/assets/suzuno/packages/ramune-grape-2.webp'
+import muscat1 from '~/assets/suzuno/packages/ramune-muscat-1.webp'
+import muscat2 from '~/assets/suzuno/packages/ramune-muscat-2.webp'
+import orange1 from '~/assets/suzuno/packages/ramune-orange-1.webp'
+import orange2 from '~/assets/suzuno/packages/ramune-orange-2.webp'
+import peach1 from '~/assets/suzuno/packages/ramune-peach-1.webp'
+import peach2 from '~/assets/suzuno/packages/ramune-peach-2.webp'
+import strawberry1 from '~/assets/suzuno/packages/ramune-strawberry-1.webp'
+import strawberry2 from '~/assets/suzuno/packages/ramune-strawberry-2.webp'
 import RamuneLabel from '~/components/suzuno/packages/RamuneLabel.vue'
 import RamuneLettering from '~/components/suzuno/packages/RamuneLettering.vue'
 import RamuneSeals from '~/components/suzuno/packages/RamuneSeals.vue'
 import RecyclingMark from '~/components/suzuno/packages/RecyclingMark.vue'
 import type { Side } from '~/lib/suzuno/faces'
 import type { PacketTexts, RamuneFlavour, RamunePose } from '~/lib/suzuno/packages/ramune'
-import { BACK_LAYOUT, FRONT_LAYOUT, RAMUNE_COLOURS, RAMUNE_FACE, RAMUNE_FONTS, printOffsets, ramuneArt, textWidth, useRamuneFonts } from '~/lib/suzuno/packages/ramune'
+import { BACK_LAYOUT, FRONT_LAYOUT, RAMUNE_COLOURS, RAMUNE_FACE, RAMUNE_FONTS, artBox, printOffsets, textWidth, useRamuneFonts } from '~/lib/suzuno/packages/ramune'
 
 const props = withDefaults(defineProps<{
   flavour: RamuneFlavour
@@ -33,7 +43,14 @@ const ids = { title: `${id}-title`, window: `${id}-window` }
 const colours = computed(() => RAMUNE_COLOURS.flavours[props.flavour])
 const isBack = computed(() => props.side === 'back')
 const offsets = computed(() => printOffsets(props.flavour, props.side, props.pose))
-const artBox = computed(() => ({ ...ramuneArt(props.flavour, props.pose), ...(props.art ? { href: props.art } : {}) }))
+const ART: Record<RamuneFlavour, Record<RamunePose, string>> = {
+  strawberry: { 1: strawberry1, 2: strawberry2 },
+  muscat: { 1: muscat1, 2: muscat2 },
+  peach: { 1: peach1, 2: peach2 },
+  grape: { 1: grape1, 2: grape2 },
+  orange: { 1: orange1, 2: orange2 },
+}
+const art = computed(() => ({ href: props.art ?? ART[props.flavour][props.pose], ...artBox(props.flavour, props.pose) }))
 const { band, logo, label, juice, note, rim, tablets } = FRONT_LAYOUT
 const back = BACK_LAYOUT
 // The back of the film shows the window of the back print, which is the window of the front mirrored
@@ -64,7 +81,7 @@ const detailColumns = computed(() => {
         </g>
       </g>
     </g>
-    <image v-if="!isBack" :href="artBox.href" :x="artBox.x" :y="artBox.y" :width="artBox.width" :height="artBox.height" preserveAspectRatio="none" />
+    <image v-if="!isBack" :href="art.href" :x="art.x" :y="art.y" :width="art.width" :height="art.height" preserveAspectRatio="none" />
     <g v-if="!isBack" :transform="`translate(${offsets.print[0]} ${offsets.print[1]})`">
       <RamuneLettering :text="texts.logo" v-bind="logo" :colours="RAMUNE_COLOURS.logo" />
       <RamuneLabel :flavour="texts.flavour" :suffix="texts.suffix" :colour="colours.label" :layout="label" />

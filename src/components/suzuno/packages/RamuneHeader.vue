@@ -5,13 +5,15 @@
 // the box of the allergens that the tablets do not contain; the back shows
 // the small print, the barcode and the best-before date.
 import { useId } from 'vue'
+import allergenDrawings from '~/assets/suzuno/packages/ramune-allergens.webp'
+import characterRow from '~/assets/suzuno/packages/ramune-header-characters.webp'
 import Ean13Barcode from '~/components/suzuno/packages/Ean13Barcode.vue'
 import RamuneLettering from '~/components/suzuno/packages/RamuneLettering.vue'
 import RamuneSeals from '~/components/suzuno/packages/RamuneSeals.vue'
 import RecyclingMark from '~/components/suzuno/packages/RecyclingMark.vue'
 import type { Side } from '~/lib/suzuno/faces'
 import type { RamuneHeaderTexts } from '~/lib/suzuno/packages/ramune'
-import { HEADER_BACK_LAYOUT, HEADER_LAYOUT, RAMUNE_ALLERGENS, RAMUNE_CHARACTERS, RAMUNE_COLOURS, RAMUNE_FACE, RAMUNE_FONTS, textWidth, useRamuneFonts } from '~/lib/suzuno/packages/ramune'
+import { HEADER_BACK_LAYOUT, HEADER_LAYOUT, RAMUNE_COLOURS, RAMUNE_FACE, RAMUNE_FONTS, textWidth, useRamuneFonts } from '~/lib/suzuno/packages/ramune'
 
 const props = withDefaults(defineProps<{
   side?: Side
@@ -51,7 +53,7 @@ const barcodeLayout = computed(() => ({ x: 8, y: 0, width: back.barcode.height -
     <template v-if="!isBack">
       <RamuneLettering :text="texts.logo[0]" v-bind="logo" :colours="RAMUNE_COLOURS.logo" />
       <RamuneLettering :text="texts.logo[1]" v-bind="logoSecond" :colours="RAMUNE_COLOURS.logo.slice(LOGO_SPLIT)" />
-      <image :href="RAMUNE_CHARACTERS" v-bind="characters" preserveAspectRatio="none" />
+      <image :href="characterRow" v-bind="characters" preserveAspectRatio="none" />
       <path :d="bubblePath" :fill="RAMUNE_COLOURS.halo" :stroke="RAMUNE_COLOURS.ink" :stroke-width="bubble.border" stroke-linejoin="round" />
       <text
         :x="slogan.x"
@@ -66,7 +68,7 @@ const barcodeLayout = computed(() => ({ x: 8, y: 0, width: back.barcode.height -
         <tspan v-for="(part, index) in texts.slogan" :key="index" :font-size="slogan.size * SLOGAN_SIZES[index]">{{ part }}</tspan>
       </text>
       <rect v-bind="{ x: allergens.x, y: allergens.y, width: allergens.width, height: allergens.height }" :rx="allergens.radius" :fill="RAMUNE_COLOURS.halo" :stroke="RAMUNE_COLOURS.allergenBorder" :stroke-width="allergens.border" />
-      <image :href="RAMUNE_ALLERGENS" v-bind="icons" preserveAspectRatio="none" />
+      <image :href="allergenDrawings" v-bind="icons" preserveAspectRatio="none" />
       <g :font-family="RAMUNE_FONTS.gothicBold.family" :font-weight="RAMUNE_FONTS.gothicBold.weight" :font-size="names.size" :fill="RAMUNE_COLOURS.ink" text-anchor="middle">
         <text v-for="(name, index) in texts.allergens" :key="index" :x="names.centres[index]" :y="names.y">{{ name }}</text>
       </g>

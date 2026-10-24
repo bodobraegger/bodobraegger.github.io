@@ -6,23 +6,10 @@
 // the print of a packet before its offsets. ramune-fit.json holds the places
 // and colours that a fit by pixel difference found; the fit scripts are not
 // part of bbo.do.
-import grape1 from '~/assets/suzuno/packages/ramune-grape-1.webp'
-import grape2 from '~/assets/suzuno/packages/ramune-grape-2.webp'
-import muscat1 from '~/assets/suzuno/packages/ramune-muscat-1.webp'
-import muscat2 from '~/assets/suzuno/packages/ramune-muscat-2.webp'
-import orange1 from '~/assets/suzuno/packages/ramune-orange-1.webp'
-import orange2 from '~/assets/suzuno/packages/ramune-orange-2.webp'
-import peach1 from '~/assets/suzuno/packages/ramune-peach-1.webp'
-import peach2 from '~/assets/suzuno/packages/ramune-peach-2.webp'
-import strawberry1 from '~/assets/suzuno/packages/ramune-strawberry-1.webp'
-import strawberry2 from '~/assets/suzuno/packages/ramune-strawberry-2.webp'
 import type { Side } from '~/lib/suzuno/faces'
 import type { Box } from '~/lib/suzuno/packages/almond-caramel'
 import FITTED from '~/lib/suzuno/packages/ramune-fit.json'
 import { useStylesheets } from '~/lib/suzuno/packages/lettering'
-
-export { default as RAMUNE_ALLERGENS } from '~/assets/suzuno/packages/ramune-allergens.webp'
-export { default as RAMUNE_CHARACTERS } from '~/assets/suzuno/packages/ramune-header-characters.webp'
 
 /** One piece of the strip, from the middle of a seal to the middle of the next. */
 export const RAMUNE_FACE = { width: 300, height: 370 }
@@ -39,17 +26,9 @@ export const RAMUNE_PACKET_COUNT = 10
 
 export const { seals: RAMUNE_SEALS, front: FRONT_LAYOUT, back: BACK_LAYOUT, header: HEADER_LAYOUT, headerBack: HEADER_BACK_LAYOUT, colours: RAMUNE_COLOURS } = FITTED
 
-const ART: Record<RamuneFlavour, Record<RamunePose, string>> = {
-  strawberry: { 1: strawberry1, 2: strawberry2 },
-  muscat: { 1: muscat1, 2: muscat2 },
-  peach: { 1: peach1, 2: peach2 },
-  grape: { 1: grape1, 2: grape2 },
-  orange: { 1: orange1, 2: orange2 },
-}
-
-/** The character and the fruit of a packet, an image cut from the print, with its box. */
-export function ramuneArt(flavour: RamuneFlavour, pose: RamunePose) {
-  return { href: ART[flavour][pose], ...(FITTED.art[`${flavour}-${pose}`] as Box) }
+/** The box of the character and the fruit of a packet, an image cut from the print (RamunePacket.vue). */
+export function artBox(flavour: RamuneFlavour, pose: RamunePose) {
+  return FITTED.art[`${flavour}-${pose}`] as Box
 }
 
 /**
