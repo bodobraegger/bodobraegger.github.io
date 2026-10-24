@@ -1,5 +1,6 @@
-// The faces that SuzunoBag, SuzunoWrapper, SuzunoMarukawa and SuzunoFinancial
-// lay over their reference images, with the texts of each face.
+// The faces that SuzunoBag, SuzunoWrapper, SuzunoMarukawa, SuzunoFinancial
+// and SuzunoRamune lay over their reference images, with the texts of each
+// face.
 // src/lib/suzuno/README.md lists the items, the faces and their texts.
 import type { Component } from 'vue'
 import type { FrameImage } from '~/lib/difference'
@@ -9,12 +10,16 @@ import AlmondCaramelPiece from '~/components/suzuno/packages/AlmondCaramelPiece.
 import HokkaidoMilkBag from '~/components/suzuno/packages/HokkaidoMilkBag.vue'
 import HokkaidoMilkCandy from '~/components/suzuno/packages/HokkaidoMilkCandy.vue'
 import MarukawaBox from '~/components/suzuno/packages/MarukawaBox.vue'
+import RamuneHeader from '~/components/suzuno/packages/RamuneHeader.vue'
+import RamunePacket from '~/components/suzuno/packages/RamunePacket.vue'
 import SaltLemonFront from '~/components/suzuno/packages/SaltLemonFront.vue'
 import { COVER_SHEET, COVER_TEXTS } from '~/lib/suzuno/cover-typography'
 import { ALMOND_CARAMEL_PIECE_TEXTS, ALMOND_CARAMEL_TEXTS } from '~/lib/suzuno/packages/almond-caramel'
 import { HOKKAIDO_MILK_BAG_TEXTS, HOKKAIDO_MILK_CANDY_TEXTS } from '~/lib/suzuno/packages/hokkaido-milk'
 import type { MarukawaPreset } from '~/lib/suzuno/packages/marukawa'
 import { MARUKAWA_TEXTS } from '~/lib/suzuno/packages/marukawa'
+import type { RamuneFlavour, RamuneItem, RamunePose } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_FLAVOURS, RAMUNE_HEADER_TEXTS, RAMUNE_PACKET_TEXTS } from '~/lib/suzuno/packages/ramune'
 import { SALT_LEMON_FRONT, SALT_LEMON_TEXTS } from '~/lib/suzuno/packages/salt-lemon'
 
 export interface DifferenceFace {
@@ -186,6 +191,40 @@ export const FINANCIAL_FACE: DifferenceFace = {
   component: SuzunoCover,
   texts: COVER_TEXTS,
 }
+
+/**
+ * A face of a piece of the あべっ子ラムネ strip, for SuzunoRamune. The fronts
+ * of the first pose and of the header card are fitted to the render of the
+ * maker, the other faces to the photos.
+ */
+function ramuneFace(item: RamuneItem, side: Side, pose: RamunePose = 1): DifferenceFace {
+  if (item === 'header') {
+    return {
+      title: `The ${side} of the header card of the あべっ子ラムネ strip`,
+      reference: reference(`packages/ramune-header-${side}.png`),
+      component: RamuneHeader,
+      props: { side },
+      texts: RAMUNE_HEADER_TEXTS,
+    }
+  }
+  const name = side === 'back' ? 'back' : pose === 2 ? 'front-2' : 'front'
+  return {
+    title: `The ${side} of a ${item} packet of あべっ子ラムネ${side === 'front' ? `, pose ${pose}` : ''}`,
+    reference: reference(`packages/ramune-${item}-${name}.png`),
+    component: RamunePacket,
+    props: { flavour: item, side, pose },
+    texts: RAMUNE_PACKET_TEXTS[item],
+  }
+}
+
+/** The pieces of the あべっ子ラムネ strip, for SuzunoRamune: the faces of the first pose. */
+export const RAMUNE_FACES = Object.fromEntries((['header', ...RAMUNE_FLAVOURS] as RamuneItem[]).map(item => [item, {
+  front: ramuneFace(item, 'front'),
+  back: ramuneFace(item, 'back'),
+}])) as Record<RamuneItem, Record<Side, DifferenceFace>>
+
+/** The front of a packet in the second pose, for SuzunoRamune. */
+export const RAMUNE_SECOND_POSE = Object.fromEntries(RAMUNE_FLAVOURS.map(flavour => [flavour, ramuneFace(flavour, 'front', 2)])) as Record<RamuneFlavour, DifferenceFace>
 
 export type BagItem = keyof typeof BAG_FACES
 export type WrapperItem = keyof typeof WRAPPER_FACES
