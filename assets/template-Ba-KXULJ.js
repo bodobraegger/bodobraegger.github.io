@@ -1,0 +1,1 @@
+import{y as t}from"./app-L3kS_LJM.js";import{J as e,h as a,e as o}from"./vue-vendor-C0RlcX7Y.js";const s={class:"prose m-auto"},p={__name:"template",setup:p=>(t({title:"...",meta:[{property:"og:title",content:"..."},{name:"twitter:title",content:"..."}]}),(t,p)=>(e(),a("div",s,[...p[0]||(p[0]=[o("p",null,"…",-1)])])))};export{p as default};
