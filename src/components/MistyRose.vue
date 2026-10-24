@@ -45,7 +45,7 @@ const canvas = useMistyRose((windowWidth, windowHeight) => {
 </script>
 
 <template>
-  <div class="background-layer op-60">
+  <div class="background-layer op-45 dark:op-60">
     <canvas ref="canvas" class="w-screen h-full" />
   </div>
 </template>
