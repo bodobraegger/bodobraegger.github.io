@@ -1,9 +1,13 @@
-// The candy snake: a strip of あべっ子ラムネ that grows along a winding path,
-// one piece after another, like the vines of Orchid. Each piece is an image
-// of its recreation, drawn once, and the canvas draws these images along the
-// path, so that a long snake costs no more than a few SVGs.
+// Candy snakes: strips of あべっ子ラムネ that grow along winding paths, one
+// piece after another, like the vines of Orchid. Each piece is an image of
+// its recreation, drawn once, and the canvas draws these images along the
+// paths, so that many long snakes cost no more than a few SVGs. The candy
+// snake of SuzunoCandySnake and the background Honeydew share this code.
+import { ref } from 'vue'
 import type { Area } from '~/lib/orchid'
-import { easeOutBack, takeBackAreas } from '~/lib/orchid'
+import { EDGE_MARGIN, FRAME_INTERVAL, FRAME_SLACK, LARGEST_SCALE, LONGEST_FRAME, PACE_HIGH, PACE_LOW, RESUME_CHANCE, easeOutBack, takeBackAreas } from '~/lib/orchid'
+import type { RamuneFlavour } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_POSES } from '~/lib/suzuno/packages/ramune'
 
 type Point = [number, number]
 
@@ -130,35 +134,82 @@ export async function rasterize(svg: SVGSVGElement, width: number, height: numbe
   }
 }
 
-// A new piece grows in GROWTH_MS from nothing to its size, with the overshoot
-// of the opening blossoms of Orchid, and the next piece starts when it is
-// done. Frames as Orchid draws them: 30 per second, less a slack.
-const GROWTH_MS = 220
-const FRAME_INTERVAL = 1000 / 30
-const FRAME_SLACK = 4
-// The largest scale of a growing piece, for the area that a frame takes back
-const LARGEST_SCALE = 1.2
-const EDGE_MARGIN = 2
+/** A snake: its pieces from the tail to the head, the size and the alpha of a piece, and when it starts. */
+export interface Snake {
+  pieces: SnakePiece[]
+  /** The width and the length of a piece in CSS pixels. */
+  across: number
+  length: number
+  alpha: number
+  /** The time in milliseconds from the start of the growth to the first piece. */
+  delay: number
+}
+
+/** The key of the image of a piece of a strip: the header card first, then the packets in `order`, with a pose for each round of the order. */
+export function pieceKey(index: number, order: readonly RamuneFlavour[]) {
+  if (!index)
+    return 'header'
+  const packet = index - 1
+  return `${order[packet % order.length]}-${RAMUNE_POSES[Math.floor(packet / order.length) % RAMUNE_POSES.length]}`
+}
 
 /**
- * Grows the pieces on `view`, whose transform maps CSS pixels to device
- * pixels, one after another from the first. `length` and `across` are the
- * size of a piece in CSS pixels. Without `animated`, all pieces appear at
- * once. Returns a function that stops the growth.
+ * Asks RamunePieces for the images of the pieces: `request` sets the size of
+ * the images in device pixels, for a `v-if` and a `v-bind` on RamunePieces,
+ * and resolves with the images when RamunePieces calls `ready`.
  */
-export function growSnake(view: CanvasRenderingContext2D, pieces: SnakePiece[], length: number, across: number, animated: boolean) {
+export function usePieceImages() {
+  const size = ref<{ width: number, height: number }>()
+  let resolve: (images: Map<string, HTMLCanvasElement>) => void = () => {}
+  return {
+    size,
+    request: (width: number, height: number) => new Promise<Map<string, HTMLCanvasElement>>((done) => {
+      resolve = done
+      size.value = { width, height }
+    }),
+    ready: (images: Map<string, HTMLCanvasElement>) => {
+      size.value = undefined
+      resolve(images)
+    },
+  }
+}
+
+/** The growth of a snake: the piece at its head, the share of its opening, and whether the snake rests before it. */
+interface GrowingSnake extends Snake {
+  head: number
+  progress: number
+  pace: number
+  resting: boolean
+}
+
+/**
+ * Grows the snakes on `view`, whose transform maps CSS pixels to device
+ * pixels, each one piece after another from its tail, as Orchid grows its
+ * vines. A piece opens in `pieceMs` at the middle pace from its centre to its
+ * size, with the overshoot of the opening blossoms of Orchid. Each piece
+ * takes a pace between PACE_LOW and PACE_HIGH, and after each piece the
+ * snake rests until it goes on, with RESUME_CHANCE in each frame, so the
+ * snakes grow in fits and starts. A frame takes back the committed drawing
+ * in the areas of the growing heads and draws the heads again, so that a
+ * frame costs only the heads. The snakes draw in their order, the far ones
+ * first. Without `animated`, all pieces appear at once. Returns a function
+ * that stops the growth.
+ */
+export function growSnakes(view: CanvasRenderingContext2D, snakes: Snake[], pieceMs: number, animated: boolean) {
   const ratio = view.getTransform().a
-  const draw = (context: CanvasRenderingContext2D, piece: SnakePiece, scale: number) => {
+  const draw = (context: CanvasRenderingContext2D, snake: Snake, piece: SnakePiece, scale: number) => {
     context.save()
+    context.globalAlpha = snake.alpha
     context.translate(piece.x, piece.y)
     // The top of a piece points back along the path, towards the header card
     context.rotate(piece.angle - Math.PI / 2)
     context.scale(scale, scale)
-    context.drawImage(piece.image, -across / 2, -length / 2, across, length)
+    context.drawImage(piece.image, -snake.across / 2, -snake.length / 2, snake.across, snake.length)
     context.restore()
   }
   if (!animated) {
-    pieces.forEach(piece => draw(view, piece, 1))
+    for (const snake of snakes)
+      snake.pieces.forEach(piece => draw(view, snake, piece, 1))
     return () => {}
   }
   // The pieces that are done, on a canvas outside the page, as in Orchid
@@ -167,26 +218,45 @@ export function growSnake(view: CanvasRenderingContext2D, pieces: SnakePiece[], 
   storeCanvas.height = view.canvas.height
   const store = storeCanvas.getContext('2d')!
   store.setTransform(view.getTransform())
-  const reach = Math.hypot(length, across) / 2 * LARGEST_SCALE + EDGE_MARGIN
-  const areaOf = (piece: SnakePiece): Area => [piece.x - reach, piece.y - reach, 2 * reach, 2 * reach]
-  let grown = 0
-  let start = performance.now()
-  let last = 0
+  const areaOf = (snake: Snake, piece: SnakePiece): Area => {
+    const reach = Math.hypot(snake.length, snake.across) / 2 * LARGEST_SCALE + EDGE_MARGIN
+    return [piece.x - reach, piece.y - reach, 2 * reach, 2 * reach]
+  }
+  const pace = () => PACE_LOW + Math.random() * (PACE_HIGH - PACE_LOW)
+  let growing: GrowingSnake[] = snakes.filter(snake => snake.pieces.length).map(snake => ({ ...snake, head: 0, progress: 0, pace: pace(), resting: false }))
+  const start = performance.now()
+  let last = start
   let frame = requestAnimationFrame(function step(now) {
     frame = requestAnimationFrame(step)
     if (now - last < FRAME_INTERVAL - FRAME_SLACK)
       return
+    const elapsed = Math.min(now - last, LONGEST_FRAME)
     last = now
-    const piece = pieces[grown]
-    const progress = Math.min(1, (now - start) / GROWTH_MS)
-    takeBackAreas(view, storeCanvas, ratio, [areaOf(piece)])
-    draw(view, piece, easeOutBack(progress))
-    if (progress < 1)
-      return
-    draw(store, piece, 1)
-    grown++
-    start = now
-    if (grown === pieces.length)
+    const heads: GrowingSnake[] = []
+    for (const snake of growing) {
+      if (now - start < snake.delay)
+        continue
+      if (snake.resting) {
+        snake.resting = Math.random() >= RESUME_CHANCE
+        continue
+      }
+      snake.progress = Math.min(1, snake.progress + elapsed / pieceMs * snake.pace)
+      heads.push(snake)
+    }
+    takeBackAreas(view, storeCanvas, ratio, heads.map(snake => areaOf(snake, snake.pieces[snake.head])))
+    for (const snake of heads) {
+      const piece = snake.pieces[snake.head]
+      draw(view, snake, piece, easeOutBack(snake.progress))
+      if (snake.progress < 1)
+        continue
+      draw(store, snake, piece, 1)
+      snake.head++
+      snake.progress = 0
+      snake.pace = pace()
+      snake.resting = true
+    }
+    growing = growing.filter(snake => snake.head < snake.pieces.length)
+    if (!growing.length)
       cancelAnimationFrame(frame)
   })
   return () => cancelAnimationFrame(frame)

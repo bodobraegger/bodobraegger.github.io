@@ -5,15 +5,11 @@
 // packets, which repeat. A class or a style sets the size; without them, the
 // snake is as wide as the prose column. With reduced motion, the whole
 // snake shows at once.
-import { nextTick } from 'vue'
-import RamuneHeader from '~/components/suzuno/packages/RamuneHeader.vue'
-import RamunePacket from '~/components/suzuno/packages/RamunePacket.vue'
+import RamunePieces from '~/components/suzuno/packages/RamunePieces.vue'
 import { useBackgroundCanvas } from '~/composables/useBackgroundCanvas'
-import { textGlyphs } from '~/lib/suzuno/faces'
-import { embeddedFonts, growSnake, placesAlong, rasterize, windingPath } from '~/lib/suzuno/packages/candy-snake'
-import { FACE_GLYPHS } from '~/lib/suzuno/packages/lettering'
-import type { RamuneFlavour, RamunePose } from '~/lib/suzuno/packages/ramune'
-import { RAMUNE_FACE, RAMUNE_FLAVOURS, RAMUNE_POSES, RAMUNE_STRIP_TEXTS, RAMUNE_STYLESHEET } from '~/lib/suzuno/packages/ramune'
+import { growSnakes, pieceKey, placesAlong, usePieceImages, windingPath } from '~/lib/suzuno/packages/candy-snake'
+import type { RamuneFlavour } from '~/lib/suzuno/packages/ramune'
+import { RAMUNE_FACE, RAMUNE_FLAVOURS } from '~/lib/suzuno/packages/ramune'
 
 const props = withDefaults(defineProps<{
   order?: RamuneFlavour[]
@@ -21,22 +17,16 @@ const props = withDefaults(defineProps<{
   order: () => [...RAMUNE_FLAVOURS],
 })
 
-// A piece is a sixth of the shorter side of the box, within these limits in CSS pixels
+// A piece is a sixth of the shorter side of the box, within these limits in
+// CSS pixels, and opens in PIECE_MS at the middle pace
 const PIECES_ACROSS = 6
 const SMALLEST_PIECE = 24
 const LARGEST_PIECE = 56
+const PIECE_MS = 220
 // The images of the pieces are drawn at most at this many device pixels per CSS pixel
 const PIXEL_RATIO_LIMIT = 2
 
-const texts = RAMUNE_STRIP_TEXTS
-const glyphs = textGlyphs(texts)
-provide(FACE_GLYPHS, computed(() => glyphs))
-
-// The recreations mount only when the snake starts to grow, and only to be drawn into images
-const sources = ref<HTMLElement>()
-const showSources = ref(false)
-const kinds = props.order.flatMap(flavour => RAMUNE_POSES.map(pose => ({ flavour, pose })))
-const key = (flavour: RamuneFlavour, pose: RamunePose) => `${flavour}-${pose}`
+const { size: pieceSize, request: requestImages, ready: imagesReady } = usePieceImages()
 
 const canvas = useBackgroundCanvas((context, width, height, animated) => {
   let stopped = false
@@ -44,28 +34,12 @@ const canvas = useBackgroundCanvas((context, width, height, animated) => {
   const across = Math.min(LARGEST_PIECE, Math.max(SMALLEST_PIECE, Math.min(width, height) / PIECES_ACROSS))
   const length = across * RAMUNE_FACE.height / RAMUNE_FACE.width
   const ratio = context.getTransform().a
-  showSources.value = true
-  nextTick(async () => {
-    const fonts = await embeddedFonts(`${RAMUNE_STYLESHEET}&text=${encodeURIComponent(glyphs)}`).catch((error: Error) => {
-      // The pieces then show their lettering in the fallback fonts
-      console.warn(`SuzunoCandySnake: cannot load the fonts: ${error.message}`)
-      return ''
-    })
-    const draw = (svg: SVGSVGElement) => rasterize(svg, Math.round(across * ratio), Math.round(length * ratio), fonts)
-    const images = new Map<string, HTMLCanvasElement>()
-    for (const svg of sources.value!.querySelectorAll<SVGSVGElement>(':scope > svg'))
-      images.set(svg.dataset.piece!, await draw(svg))
-    showSources.value = false
+  requestImages(Math.round(across * ratio), Math.round(length * ratio)).then((images) => {
     if (stopped)
       return
     const places = placesAlong(windingPath(width, height, across, Math.random() * 2 * Math.PI), length)
-    const pieces = places.map((place, index) => {
-      const packet = index - 1
-      const flavour = props.order[packet % props.order.length]
-      const pose = RAMUNE_POSES[Math.floor(packet / props.order.length) % RAMUNE_POSES.length]
-      return { ...place, image: images.get(index ? key(flavour, pose) : 'header')! }
-    })
-    stop = growSnake(context, pieces, length, across, animated)
+    const pieces = places.map((place, index) => ({ ...place, image: images.get(pieceKey(index, props.order))! }))
+    stop = growSnakes(context, [{ pieces, across, length, alpha: 1, delay: 0 }], PIECE_MS, animated)
   })
   return () => {
     stopped = true
@@ -77,10 +51,7 @@ const canvas = useBackgroundCanvas((context, width, height, animated) => {
 <template>
   <span class="suzuno-candy-snake">
     <canvas ref="canvas" class="block h-full w-full" />
-    <span v-if="showSources" ref="sources" hidden>
-      <RamuneHeader data-piece="header" :texts="texts.header" />
-      <RamunePacket v-for="{ flavour, pose } in kinds" :key="key(flavour, pose)" :data-piece="key(flavour, pose)" :flavour="flavour" :pose="pose" :texts="texts.packets[flavour]" />
-    </span>
+    <RamunePieces v-if="pieceSize" v-bind="pieceSize" :order="order" @ready="imagesReady" />
   </span>
 </template>
 

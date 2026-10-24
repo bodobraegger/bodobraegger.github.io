@@ -298,8 +298,8 @@ const OVERSHOOT = 1.6
 export const easeOutBack = (progress: number) => 1 + (OVERSHOOT + 1) * (progress - 1) ** 3 + OVERSHOOT * (progress - 1) ** 2
 // The largest scale of an opening tip, at the top of the overshoot, and the
 // margin of antialiased pixels around the ink of a line or a tip
-const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))
-const EDGE_MARGIN = 2
+export const LARGEST_SCALE = easeOutBack(1 - 2 * OVERSHOOT / (3 * (OVERSHOOT + 1)))
+export const EDGE_MARGIN = 2
 const clamp = (value: number) => Math.min(1, Math.max(0, value))
 
 /** The growth of the stems at their middle pace, in canvas units per second. */
@@ -309,17 +309,17 @@ const GROWTH_SPEED = 20
 // of Plum do. While it grows, a stem takes a pace between PACE_LOW and
 // PACE_HIGH times the middle pace in each frame.
 const PAUSE_CHANCE = 0.04
-const RESUME_CHANCE = 0.12
-const PACE_LOW = 0.5
-const PACE_HIGH = 1.5
+export const RESUME_CHANCE = 0.12
+export const PACE_LOW = 0.5
+export const PACE_HIGH = 1.5
 // The time between two drawn frames, 30 frames per second as Plum draws on a
 // 60 Hz screen, less a slack for the jitter of the animation frames. At this
 // rate a stem grows at most a pixel per frame. A hidden tab gets no animation
 // frames, so the growth waits there, and one frame grows at most
 // LONGEST_FRAME, so it goes on from the same place when the tab comes back.
-const FRAME_INTERVAL = 1000 / 30
-const FRAME_SLACK = 4
-const LONGEST_FRAME = 100
+export const FRAME_INTERVAL = 1000 / 30
+export const FRAME_SLACK = 4
+export const LONGEST_FRAME = 100
 // A frame adds the new ends of the stems to the canvas. Every TIP_FRAMES
 // frames, the tips that are open join the committed drawing, and the canvas
 // takes it back in the areas of the opening tips and draws these tips again.
@@ -344,7 +344,7 @@ const INK_LEVELS = 8
 const BLOSSOM_ALPHA = 0.75
 // The ink of a vine at depth 1, far, has FAR_ALPHA times the alpha of the
 // ink of a vine at depth 0, near
-const FAR_ALPHA = 0.4
+export const FAR_ALPHA = 0.4
 
 interface Ink {
   width: number
@@ -1185,9 +1185,9 @@ const FOOT_SHARE = 0.9
 // Each vine stands at one of DEPTH_LEVELS depths, from near (0) to far (1).
 // A far vine has FAR_SIZE times the line width and the blossom size, a near
 // vine NEAR_SIZE times, and the far vines grow first.
-const DEPTH_LEVELS = 4
-const NEAR_SIZE = 1.15
-const FAR_SIZE = 0.75
+export const DEPTH_LEVELS = 4
+export const NEAR_SIZE = 1.15
+export const FAR_SIZE = 0.75
 
 interface Vine {
   /** Left, top, width and height. */
