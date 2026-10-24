@@ -84,6 +84,13 @@ html {
     display: none;
   }
 
+  /* An image made for one theme (invertable in its markdown title) shows
+     inverted in the other. The hue turn keeps its colours near the original. */
+  &:not(.dark) .invertable-dark,
+  &.dark .invertable-white {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
   div.page-background {
     background: linear-gradient(var(--c-scrollbar-hover) 0%, var(--c-scrollbar) 12%, var(--c-bg) 100%);
     position: fixed;

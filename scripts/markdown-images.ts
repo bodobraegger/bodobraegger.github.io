@@ -20,6 +20,13 @@ const PREVIEW_QUALITY = 75
 
 const LOCAL_SOURCE_PATTERN = /^\.{1,2}\//
 const RASTER_PATTERN = /\.(?:png|jpe?g|webp|avif)$/i
+/**
+ * `invertable` or `invertable-dark` in the title of an image marks an image
+ * made for the dark theme, and `invertable-white` one made for the light
+ * theme. The other theme shows it inverted (main.css). The keyword is not
+ * part of the title that the reader sees.
+ */
+const INVERTABLE_PATTERN = /(?:^|\s)invertable(?:-(dark|white))?(?=\s|$)/
 
 interface RenderEnv {
   id: string
@@ -42,8 +49,11 @@ export function responsiveImages(md: MarkdownIt) {
     const token = tokens[idx]
     const src = token.attrGet('src') ?? ''
     const alt = escape(self.renderInlineAsText(token.children ?? [], options, env))
-    const title = token.attrGet('title')
+    const fullTitle = token.attrGet('title') ?? ''
+    const invertable = fullTitle.match(INVERTABLE_PATTERN)
+    const title = fullTitle.replace(INVERTABLE_PATTERN, ' ').trim()
     const titleAttribute = title ? ` title="${escape(title)}"` : ''
+    const classAttribute = invertable ? ` class="invertable-${invertable[1] === 'white' ? 'white' : 'dark'}"` : ''
 
     const isFirstImage = !env.hasRenderedImage
     env.hasRenderedImage = true
@@ -53,7 +63,7 @@ export function responsiveImages(md: MarkdownIt) {
 
     if (!LOCAL_SOURCE_PATTERN.test(src) || !RASTER_PATTERN.test(src)) {
       const previewAttribute = isFirstImage ? ` data-preview="${escape(src)}"` : ''
-      return `<img src="${escape(src)}" alt="${alt}"${titleAttribute}${previewAttribute} ${loadingAttributes}>`
+      return `<img src="${escape(src)}" alt="${alt}"${titleAttribute}${classAttribute}${previewAttribute} ${loadingAttributes}>`
     }
 
     const file = resolve(dirname(env.id), src)
@@ -78,7 +88,7 @@ export function responsiveImages(md: MarkdownIt) {
     return `<picture>`
       + `<source type="image/avif" srcset="${avifSrcset}" sizes="${IMAGE_SIZES}">`
       + `<img src="${webpFallback}" srcset="${webpSrcset}" sizes="${IMAGE_SIZES}"`
-      + ` width="${renderedWidth}" height="${renderedHeight}" alt="${alt}"${titleAttribute}`
+      + ` width="${renderedWidth}" height="${renderedHeight}" alt="${alt}"${titleAttribute}${classAttribute}`
       + ` data-full="${avifFull}"${previewAttribute} ${loadingAttributes}>`
       + `</picture>`
   }
