@@ -17,6 +17,11 @@ projects:
       place: ETH Zürich, CH
 
   web:
+    - name: 'growing backgrounds'
+      link: './backgrounds'
+      desc: 'Four page backgrounds for this site that grow while you read: plum branches, orchid vines, the roses of Hammerfight and snakes of candy packets.'
+      date: '2026-10-24'
+      place: Rio de Janeiro, BR
     - name: 'bills'
       link: './bills'
       desc: 'A Swiss invoice and quote generator with QR-bill payment slips. Built with <a href="https://astro.build/">Astro.js</a>.'
