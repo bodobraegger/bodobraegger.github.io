@@ -22,7 +22,7 @@ import Shiki from '@shikijs/markdown-it'
 import TOC from 'markdown-it-table-of-contents'
 import { imagetools } from 'vite-imagetools'
 import { slugify } from './scripts/slugify'
-import { responsiveImages } from './scripts/markdown-images'
+import { addPreviewTags, responsiveImages } from './scripts/markdown-images'
 import { slantHeadings } from './scripts/slant-headings'
 import { buildShikiClasses } from './scripts/shiki-classes'
 import { writeEpub } from './scripts/epub'
@@ -121,7 +121,7 @@ export default defineConfig(({ mode }) => ({
         transformAssetUrls: {
           video: ['src', 'poster'],
           source: ['src'],
-          img: ['src', 'data-full'],
+          img: ['src', 'data-full', 'data-preview'],
           image: ['xlink:href', 'href'],
           use: ['xlink:href', 'href'],
         },
@@ -268,7 +268,8 @@ export default defineConfig(({ mode }) => ({
     // it has no file for.
     includedRoutes: paths => [...paths.filter(path => !path.includes(':')), '/404'],
     // A page with `epub: true` is also written as <route>.epub, a static file
-    // that an e-reader fetches without running any script.
+    // that an e-reader fetches without running any script. Every page with an
+    // image gets that image as its link preview.
     async onPageRendered(route, html, { router }) {
       const { frontmatter } = router.resolve(route).meta
       if (frontmatter?.epub === true) {
@@ -280,7 +281,7 @@ export default defineConfig(({ mode }) => ({
           modified: new Date(LAST_UPDATE),
         }, DIST_DIR)
       }
-      return html
+      return addPreviewTags(html, SITE_URL + route, SITE_URL)
     },
     async onFinished() {
       // GitHub Pages reads the missing page from 404.html in the site root, and
