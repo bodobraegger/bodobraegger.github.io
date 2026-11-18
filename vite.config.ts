@@ -24,6 +24,7 @@ import { imagetools } from 'vite-imagetools'
 import { slugify } from './scripts/slugify'
 import { addPreviewTags, responsiveImages } from './scripts/markdown-images'
 import { slantHeadings } from './scripts/slant-headings'
+import { taskLists } from './scripts/task-lists'
 import { buildShikiClasses } from './scripts/shiki-classes'
 import { writeEpub } from './scripts/epub'
 import { resolveLanguage } from './src/logics/languages'
@@ -172,6 +173,8 @@ export default defineConfig(({ mode }) => ({
         md.use(responsiveImages)
 
         md.use(slantHeadings)
+
+        md.use(taskLists)
 
         md.use(anchor, {
           slugify,

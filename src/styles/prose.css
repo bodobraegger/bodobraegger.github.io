@@ -207,6 +207,16 @@
       padding: 0;
     }
 
+    [data-box] {
+      cursor: pointer;
+    }
+
+    /* One dot per space of a mono font, as VS Code draws leading and trailing
+       whitespace (see src/lib/checklist.ts). */
+    [data-whitespace] {
+      background: radial-gradient(circle, var(--c-border) 0.07em, transparent 0.08em) 0 50% / 1ch 1em repeat-x;
+    }
+
     code {
       font-weight: 300;
       color: inherit;

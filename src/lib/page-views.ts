@@ -37,13 +37,13 @@ interface SupabaseConfig {
 // Add your Supabase credentials to .env file:
 // VITE_SUPABASE_URL=your-project-url
 // VITE_SUPABASE_ANON_KEY=your-anon-key
-function getSupabaseConfig(): SupabaseConfig | null {
+export function getSupabaseConfig(): SupabaseConfig | null {
   const url = import.meta.env.VITE_SUPABASE_URL || ''
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
   return url && key ? { key, url } : null
 }
 
-function buildHeaders(config: SupabaseConfig): HeadersInit {
+export function buildHeaders(config: SupabaseConfig): Record<string, string> {
   return {
     'Authorization': `Bearer ${config.key}`,
     'Content-Type': 'application/json',

@@ -2,8 +2,9 @@
 import { useScriptTag } from '@vueuse/core'
 import { useHead } from '@unhead/vue'
 import { formatDate } from '~/logics'
-import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage } from '~/logics/languages'
+import { LANGUAGE_DEFINITIONS, findTranslations, resolveLanguage, splitLanguageSuffix } from '~/logics/languages'
 import { usePageViews } from '~/composables/usePageViews'
+import { connectChecklist } from '~/lib/checklist'
 import { shareOneScreen } from '~/logics/screen-share'
 import MistyRoseTitle from '~/components/MistyRoseTitle.vue'
 
@@ -35,6 +36,8 @@ const epubHref = frontmatter.epub === true ? `${route.path}.epub` : null
 onMounted(() => {
   // Track view on mount
   trackView()
+
+  connectChecklist(splitLanguageSuffix(location.pathname).basePath, content.value!).catch(console.error)
 
   document.fonts.ready.then(() => fontsLoaded.value = true)
 
