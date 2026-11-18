@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { rename, rm } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import type { Plugin } from 'vite'
 import Pages from 'vite-plugin-pages'
@@ -84,6 +84,14 @@ function preconnectSupabase(supabaseUrl: string | undefined): Plugin {
   }
 }
 
+// A note or post without a title is named after its file, as it is:
+// pages/notes/2611-ilha-grande.md is "2611-ilha-grande.md".
+function withTitleFromFile(frontmatter: Record<string, any>, path: string) {
+  if (frontmatter.title || !/[\\/]pages[\\/](?:notes|posts)[\\/]/.test(path))
+    return frontmatter
+  return { ...frontmatter, title: basename(path) }
+}
+
 export default defineConfig(({ mode }) => ({
   define: {
     __LAST_UPDATE__: JSON.stringify(LAST_UPDATE),
@@ -142,7 +150,7 @@ export default defineConfig(({ mode }) => ({
         if (path.endsWith('.md')) {
           const md = readFileSync(path, 'utf-8')
           const { data } = matter(md)
-          route.meta = Object.assign(route.meta || {}, { frontmatter: data })
+          route.meta = Object.assign(route.meta || {}, { frontmatter: withTitleFromFile(data, path) })
         }
 
         return route
@@ -203,8 +211,9 @@ export default defineConfig(({ mode }) => ({
         md.renderer.rules.table_close = (tokens, idx, options, _env, self) => `${self.renderToken(tokens, idx, options)}</div>`
       },
       frontmatterPreprocess(frontmatter, options, id, defaults) {
-        const head = defaults(frontmatter, options)
-        return { head, frontmatter }
+        const titled = withTitleFromFile(frontmatter, id)
+        const head = defaults(titled, options)
+        return { head, frontmatter: titled }
       },
     }),
 
