@@ -34,6 +34,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # vite-imagetools keeps every encoded image in this folder. Without it,
+      # each build encodes all images again. The key changes with the images,
+      # and a new key starts from the newest earlier cache.
+      - name: Cache encoded images
+        uses: actions/cache@v6
+        with:
+          path: node_modules/.cache/imagetools
+          key: imagetools-${{ hashFiles('src/assets/**', 'public/**') }}
+          restore-keys: imagetools-
+
       - name: Build site
         run: pnpm build
 
