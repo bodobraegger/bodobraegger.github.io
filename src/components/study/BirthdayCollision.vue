@@ -3,7 +3,7 @@ import type { Language } from '~/logics/languages'
 import { LANGUAGE_DEFINITIONS } from '~/logics/languages'
 import { usePageLanguage } from '~/composables/usePageLanguage'
 
-type Space = 'iv' | 'birthday'
+type Space = 'iv' | 'birthday' | 'hash'
 
 interface SpaceDefinition {
   size: number
@@ -12,12 +12,15 @@ interface SpaceDefinition {
   initial: number
 }
 
-/** 24 bit IV (section 4.8) and the 365 days of the birthday example. */
+/** The cases to choose from. The first one is shown first and names the figure. */
+const { spaces = ['iv', 'birthday'] } = defineProps<{ spaces?: Space[] }>()
+/** 24 bit IV (P1 section 4.8), the 365 days of the birthday example, and a 32 bit hash (P2 section 2.13). */
 const SPACES: Record<Space, SpaceDefinition> = {
   iv: { size: 2 ** 24, maximum: 15000, initial: 1000 },
   birthday: { size: 365, maximum: 70, initial: 23 },
+  hash: { size: 2 ** 32, maximum: 200000, initial: 2 ** 16 },
 }
-const SPACE_ORDER: Space[] = ['iv', 'birthday']
+
 /** The frame rate of IEEE 802.11b given in section 4.8. */
 const FRAMES_PER_SECOND = 500
 const HALF = 0.5
@@ -31,7 +34,7 @@ const X_TICK_COUNT = 4
 const LABEL_OFFSET = 6
 
 interface Text {
-  title: string
+  title: Record<Space, string>
   spaces: Record<Space, string>
   count: Record<Space, string>
   axis: Record<Space, string>
@@ -45,38 +48,50 @@ interface Text {
 
 const TEXT: Record<Language, Text> = {
   en: {
-    title: 'Birthday paradox: when does the first IV repeat?',
-    spaces: { iv: 'WEP IVs (24 bits)', birthday: 'Birthdays (365 days)' },
-    count: { iv: 'Frames sent with a random IV', birthday: 'People in the room' },
-    axis: { iv: 'frames', birthday: 'people' },
+    title: {
+      iv: 'Birthday paradox: when does the first IV repeat?',
+      birthday: 'Birthday paradox: when do two birthdays coincide?',
+      hash: 'Birthday attack: when do two hashes collide?',
+    },
+    spaces: { iv: 'WEP IVs (24 bits)', birthday: 'Birthdays (365 days)', hash: 'Hash values (m = 32 bits)' },
+    count: { iv: 'Frames sent with a random IV', birthday: 'People in the room', hash: 'Messages hashed' },
+    axis: { iv: 'frames', birthday: 'people', hash: 'messages' },
     probability: (count, percent) => `With ${count}, the probability of at least one repetition is ${percent}%.`,
     pairs: pairs => `Every pair can collide, and there are n(n − 1)/2 = ${pairs} pairs.`,
     half: {
       iv: count => `The probability passes 50% at ${count} frames.`,
       birthday: count => `The probability passes 50% at ${count} people.`,
+      hash: count => `The probability passes 50% at ${count} messages, close to 2^(m/2) = 2^16 = 65,536.`,
     },
     seconds: (count, seconds) => `At ${count} frames per second (IEEE 802.11b), that takes about ${seconds} seconds.`,
     intuition: {
       iv: 'There are 16,777,216 IV values, but a repetition is likely after only a few thousand frames, because the number of pairs grows with the square of n.',
       birthday: 'With 23 people there are 253 pairs, so a shared birthday is more likely than not.',
+      hash: 'A 32 bit hash has 4,294,967,296 values, but two messages with the same hash are likely after about 2^16 tries. For an m bit hash a collision costs about 2^(m/2) tries, a preimage about 2^(m − 1) (slides 294 and 295).',
     },
     chartLabel: 'Probability of at least one repetition versus the count',
   },
   pt: {
-    title: 'Paradoxo do aniversário: quando o primeiro IV se repete?',
-    spaces: { iv: 'IVs do WEP (24 bits)', birthday: 'Aniversários (365 dias)' },
-    count: { iv: 'Quadros enviados com IV aleatório', birthday: 'Pessoas na sala' },
-    axis: { iv: 'quadros', birthday: 'pessoas' },
+    title: {
+      iv: 'Paradoxo do aniversário: quando o primeiro IV se repete?',
+      birthday: 'Paradoxo do aniversário: quando dois aniversários coincidem?',
+      hash: 'Ataque do aniversário: quando dois hashes colidem?',
+    },
+    spaces: { iv: 'IVs do WEP (24 bits)', birthday: 'Aniversários (365 dias)', hash: 'Valores de hash (m = 32 bits)' },
+    count: { iv: 'Quadros enviados com IV aleatório', birthday: 'Pessoas na sala', hash: 'Mensagens com hash calculado' },
+    axis: { iv: 'quadros', birthday: 'pessoas', hash: 'mensagens' },
     probability: (count, percent) => `Com ${count}, a probabilidade de pelo menos uma repetição é ${percent}%.`,
     pairs: pairs => `Cada par pode colidir, e existem n(n − 1)/2 = ${pairs} pares.`,
     half: {
       iv: count => `A probabilidade passa de 50% com ${count} quadros.`,
       birthday: count => `A probabilidade passa de 50% com ${count} pessoas.`,
+      hash: count => `A probabilidade passa de 50% com ${count} mensagens, perto de 2^(m/2) = 2^16 = 65.536.`,
     },
     seconds: (count, seconds) => `A ${count} quadros por segundo (IEEE 802.11b), isso leva cerca de ${seconds} segundos.`,
     intuition: {
       iv: 'Existem 16.777.216 valores de IV, mas uma repetição é provável depois de apenas alguns milhares de quadros, porque o número de pares cresce com o quadrado de n.',
       birthday: 'Com 23 pessoas existem 253 pares, então um aniversário em comum é mais provável do que não.',
+      hash: 'Um hash de 32 bits tem 4.294.967.296 valores, mas duas mensagens com o mesmo hash são prováveis depois de cerca de 2^16 tentativas. Para um hash de m bits, uma colisão custa cerca de 2^(m/2) tentativas, uma pré-imagem cerca de 2^(m − 1) (slides 294 e 295).',
     },
     chartLabel: 'Probabilidade de pelo menos uma repetição em função da contagem',
   },
@@ -89,8 +104,8 @@ const integerFormat = new Intl.NumberFormat(locale)
 const percentFormat = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const secondsFormat = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
 
-const space = ref<Space>('iv')
-const count = ref(SPACES.iv.initial)
+const space = ref<Space>(spaces[0])
+const count = ref(SPACES[spaces[0]].initial)
 const definition = computed(() => SPACES[space.value])
 
 /**
@@ -172,10 +187,10 @@ const countLabel = computed(() => `${integerFormat.format(count.value)} ${text.a
 </script>
 
 <template>
-  <CipherFigure :title="text.title">
+  <CipherFigure :title="text.title[spaces[0]]">
     <div class="study-controls">
       <button
-        v-for="option in SPACE_ORDER"
+        v-for="option in spaces"
         :key="option"
         type="button"
         class="study-button"

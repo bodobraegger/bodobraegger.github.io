@@ -501,6 +501,8 @@ than a preimage attack: about **`2^(m/2)`** attempts. This is the **birthday par
 group of 23 people the chance that two share a birthday is above 50%. The probability of a
 collision grows fast with the number of attempts.
 
+<BirthdayCollision :spaces="['hash', 'birthday']" />
+
 **Summary, slide 298:**
 
 | Resistance      | Effort    |
