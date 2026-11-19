@@ -503,6 +503,13 @@ collision grows fast with the number of attempts.
 
 <BirthdayCollision :spaces="['hash', 'birthday']" />
 
+External material:
+
+- Computerphile, video: [Hash Collisions & The Birthday Paradox](https://www.youtube.com/watch?v=jsraR-el8_o)
+  It connects the birthday paradox to collisions in cryptography.
+- The Pudding, interactive tool: [The Birthday Paradox Experiment](https://pudding.cool/2018/04/birthday-paradox/)
+  An interactive story that uses real visitors to show the paradox.
+
 **Summary, slide 298:**
 
 | Resistance      | Effort    |
@@ -822,9 +829,19 @@ Steps for the decryption by repeated squaring: `11^1 = 11`, `11^2 = 121`, `11^4 
 `11^8 = 33`, `11^16 = 154` (all mod 187). `23 = 16 + 4 + 2 + 1`, so
 `11^23 = 154 * 55 * 121 * 11 mod 187 = 88`.
 
-The figure runs the same steps for any small p, q, e and M, so you can check a run on paper
-line by line. The extended Euclid table is a shortcut for the back substitution of list 5
-section 2: the t beside remainder 1 is d.
+A shortcut for d: the extended Euclid table. It replaces the back substitution of list 5
+section 2. Each row divides as usual, and a second column t starts with 0 for φ(n) and 1 for
+e. Each new t is the t two rows up minus the quotient times the t one row up. The t of the
+row with remainder 1 is d (add φ(n) when it is negative).
+
+```
+160 = 22 * 7 + 6    t = 0 - 22 * 1 = -22
+  7 =  1 * 6 + 1    t = 1 - 1 * (-22) = 23      remainder 1, so d = 23
+  6 =  6 * 1 + 0
+```
+
+On the web page, a figure runs these steps for any small p, q, e and M, so you can check a run
+on paper line by line.
 
 <RsaByHand />
 
