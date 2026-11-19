@@ -50,7 +50,7 @@ interface Text {
   parties: Record<Party, string>
   fields: Record<Field, string>
   sends: (value: string, receiver: string) => string
-  intercepts: (value: string, replacement: string, receiver: string) => string
+  intercepts: (value: string) => string
   stepsHint: string
   errors: {
     notNumber: (field: string) => string
@@ -80,7 +80,7 @@ const TEXT: Record<Language, Text> = {
       darthSecond: 'Darth, private X_D2',
     },
     sends: (value, receiver) => `sends ${value} to ${receiver}`,
-    intercepts: (value, replacement, receiver) => `intercepts ${value} and sends ${replacement} to ${receiver}`,
+    intercepts: value => `intercepts ${value}, so it does not arrive`,
     stepsHint: 'Open a line for its square-and-multiply steps.',
     errors: {
       notNumber: field => `Enter a whole number for ${field}.`,
@@ -108,7 +108,7 @@ const TEXT: Record<Language, Text> = {
       darthSecond: 'Darth, privado X_D2',
     },
     sends: (value, receiver) => `envia ${value} para ${receiver}`,
-    intercepts: (value, replacement, receiver) => `intercepta ${value} e envia ${replacement} para ${receiver}`,
+    intercepts: value => `intercepta ${value}, que não chega`,
     stepsHint: 'Abra uma linha para ver os passos de quadrado e multiplicação.',
     errors: {
       notNumber: field => `Digite um número inteiro para ${field}.`,
@@ -205,20 +205,24 @@ const exchange = computed(() => {
   }
   const darthFirstPublic = modularPower(alpha, darthFirst, prime).result
   const darthSecondPublic = modularPower(alpha, darthSecond, prime).result
-  // The order of slide 368: Darth answers Alice's value with Y_D1 to Bob, and Bob's value with Y_D2 to Alice.
-  lines.push(
+  // The order of the slide 368 figure: Darth answers Alice's value at once, and Bob's value only feeds K1.
+  const attackLines: Line[] = [
+    lines[0],
+    { party: 'alice', message: text.sends(`Y_A = ${alicePublic}`, text.parties.bob) },
+    { party: 'darth', message: text.intercepts(`Y_A = ${alicePublic}`) },
     computation('darth', 'Y_D1', 'α^X_D1 mod q', alpha, darthFirst, prime),
     computation('darth', 'Y_D2', 'α^X_D2 mod q', alpha, darthSecond, prime),
-    { party: 'alice', message: text.sends(`Y_A = ${alicePublic}`, text.parties.bob) },
-    { party: 'darth', message: text.intercepts(`Y_A`, `Y_D1 = ${darthFirstPublic}`, text.parties.bob) },
-    computation('darth', 'K2', 'Y_A^X_D2 mod q', alicePublic, darthSecond, prime),
-    computation('bob', 'K1', 'Y_D1^X_B mod q', darthFirstPublic, bobPrivate, prime),
-    { party: 'bob', message: text.sends(`Y_B = ${bobPublic}`, text.parties.alice) },
-    { party: 'darth', message: text.intercepts(`Y_B`, `Y_D2 = ${darthSecondPublic}`, text.parties.alice) },
-    computation('darth', 'K1', 'Y_B^X_D1 mod q', bobPublic, darthFirst, prime),
+    { party: 'darth', message: text.sends(`Y_D2 = ${darthSecondPublic}`, text.parties.alice) },
+    { party: 'darth', message: text.sends(`Y_D1 = ${darthFirstPublic}`, text.parties.bob) },
     computation('alice', 'K2', 'Y_D2^X_A mod q', darthSecondPublic, alicePrivate, prime),
-  )
-  return { lines, aliceKey: modularPower(darthSecondPublic, alicePrivate, prime).result, bobKey: modularPower(darthFirstPublic, bobPrivate, prime).result }
+    computation('darth', 'K2', 'Y_A^X_D2 mod q', alicePublic, darthSecond, prime),
+    lines[1],
+    { party: 'bob', message: text.sends(`Y_B = ${bobPublic}`, text.parties.alice) },
+    { party: 'darth', message: text.intercepts(`Y_B = ${bobPublic}`) },
+    computation('darth', 'K1', 'Y_B^X_D1 mod q', bobPublic, darthFirst, prime),
+    computation('bob', 'K1', 'Y_D1^X_B mod q', darthFirstPublic, bobPrivate, prime),
+  ]
+  return { lines: attackLines, aliceKey: modularPower(darthSecondPublic, alicePrivate, prime).result, bobKey: modularPower(darthFirstPublic, bobPrivate, prime).result }
 })
 
 const outcome = computed(() => {

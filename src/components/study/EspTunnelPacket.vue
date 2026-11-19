@@ -58,7 +58,7 @@ const TEXT: Record<Language, Text> = {
       newHeader: { name: 'new IP header', fields: ['200.168.1.100 → 193.68.2.23', 'Protocol 50 (ESP)'] },
       espHeader: { name: 'ESP header', fields: ['SPI', 'Sequence Number'] },
       originalHeader: { name: 'original IP header', fields: ['172.16.1.17 → 172.16.2.48', 'Protocol 6 (TCP)'] },
-      originalPayload: { name: 'TCP segment', fields: ['data'] },
+      originalPayload: { name: 'payload of the original datagram', fields: ['TCP segment, data'] },
       trailer: { name: 'ESP trailer', fields: ['Padding', 'Pad Length', 'Next Header'] },
       mac: { name: 'ESP MAC (ICV)', fields: ['HMAC'] },
     },
@@ -87,7 +87,7 @@ const TEXT: Record<Language, Text> = {
       newHeader: { name: 'novo cabeçalho IP', fields: ['200.168.1.100 → 193.68.2.23', 'Protocolo 50 (ESP)'] },
       espHeader: { name: 'cabeçalho ESP', fields: ['SPI', 'Número de Sequência'] },
       originalHeader: { name: 'cabeçalho IP original', fields: ['172.16.1.17 → 172.16.2.48', 'Protocolo 6 (TCP)'] },
-      originalPayload: { name: 'segmento TCP', fields: ['dados'] },
+      originalPayload: { name: 'carga útil do datagrama original', fields: ['segmento TCP, dados'] },
       trailer: { name: 'trailer ESP', fields: ['Enchimento', 'Tamanho do Enchimento', 'Próximo Cabeçalho'] },
       mac: { name: 'MAC do ESP (ICV)', fields: ['HMAC'] },
     },
@@ -157,7 +157,7 @@ const segments = computed(() => SEGMENT_ORDER.filter(segment => step.value.prese
       </p>
     </div>
 
-    <p class="cipher-muted">
+    <p class="study-label">
       {{ text.legend }}
     </p>
   </StudyFigure>

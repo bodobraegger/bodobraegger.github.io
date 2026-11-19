@@ -961,10 +961,10 @@ Darth**. Darth can read or modify every message.
 The order of the slide 368 figure, with Darth's two private keys `X_D1` and `X_D2`:
 
 ```
-Alice sends Y_A.   Darth keeps it, sends Y_D1 to Bob,   computes K2 = Y_A^X_D2 mod q
-Bob receives Y_D1                                   and computes K1 = Y_D1^X_B mod q
-Bob sends Y_B.     Darth keeps it, sends Y_D2 to Alice, computes K1 = Y_B^X_D1 mod q
-Alice receives Y_D2                                 and computes K2 = Y_D2^X_A mod q
+1. Alice sends Y_A. Darth keeps it and answers at once: Y_D2 to Alice, Y_D1 to Bob.
+2. Alice computes K2 = Y_D2^X_A mod q.    Darth computes K2 = Y_A^X_D2 mod q.
+3. Bob sends Y_B. Darth keeps it and sends nothing on.
+4. Darth computes K1 = Y_B^X_D1 mod q.    Bob computes K1 = Y_D1^X_B mod q.
 ```
 
 Alice and Darth share K2, Bob and Darth share K1. Darth decrypts each message with one key
