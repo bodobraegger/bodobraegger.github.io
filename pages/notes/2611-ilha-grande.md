@@ -8,6 +8,8 @@ honeydew: true
 draft: true
 ---
 
+![pousada sobre a rocha](../../src/assets/2611-ilha-grande/sobre-a-rocha.png)
+
 ```checklist
 you:
 - [ ] 2–3 biquínis/maiôs
