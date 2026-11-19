@@ -2317,7 +2317,7 @@ What fixes it?
 
 B1 = 11001100, B2 = 01010101, B3 = 11000111. In any order the XOR is 01011110,
 because XOR is commutative and associative. Fix: make each step depend on the position, for
-example H*i = ROTL_1(H*(i-1)) XOR B_i, or include the length as a final block.
+example `H_i = ROTL_1(H_(i-1)) XOR B_i`, or include the length as a final block.
 
 **H11.** Define preimage and collision. How many preimages per hash value?
 
@@ -2945,7 +2945,7 @@ recovered, and show why.
 ### Question 3 (2.5 pt). Attack on a simple hash
 
 Scenario: a company protects bank transfer orders with the simple XOR hash of the lecture.
-The order is split into 8 bit blocks B*i, H_0 = 00000000, H_i = H*(i-1) XOR B_i, and the
+The order is split into 8 bit blocks `B_i`, `H_0 = 00000000`, `H_i = H_(i-1) XOR B_i`, and the
 last H_i is the hash. The hash is encrypted with a symmetric key shared by the two parties
 (method B) and is sent with the order, which travels in clear. One order has three blocks:
 B1 = 10110010 (amount), B2 = 01101100 (destination account), B3 = 11010001 (date). An
@@ -3027,9 +3027,9 @@ authentication by an integrity tag computed by GHASH (slide 253).
    H = AES_K(0^128) (slides 253 and 255).
 4. **GHASH.** Each 128 bit block is a polynomial of degree at most 127 with coefficients 0
    or 1 in GF(2^128). Addition is XOR. Multiplication is modulo
-   p(x) = x^128 + x^7 + x^2 + x + 1 (slide 255). For each block B*i of AAD or ciphertext:
-   take the accumulator X*(i-1) (zero at the start), XOR it with B*i, multiply by H, reduce
-   modulo p(x): X_i = ((X*(i-1) XOR B_i) \* H) mod p(x) (slide 256). The XOR chains the
+   p(x) = x^128 + x^7 + x^2 + x + 1 (slide 255). For each block `B_i` of AAD or ciphertext:
+   take the accumulator `X_(i-1)` (zero at the start), XOR it with `B_i`, multiply by H, reduce
+   modulo p(x): `X_i = ((X_(i-1) XOR B_i) * H) mod p(x)` (slide 256). The XOR chains the
    blocks, the modulus keeps 128 bits for the next block or the final tag (slide 256).
 5. **Tag.** The tag T is generated from the confidential data and from the AAD (slide 253).
    A change of one bit in the header or in the ciphertext changes X_i and so changes T.
@@ -3111,8 +3111,8 @@ M = 4^23 mod 55 = 9, the original message.
 
 **Why it works: Euler's theorem (slides 345 to 347).** M^φ(n) ≡ 1 (mod n) when
 gcd(M, n) = 1. Since ed ≡ 1 (mod φ(n)), there is k with ed = 1 + kφ(n). Here
-7 _ 23 = 161 = 1 + 4 _ 40, so k = 4. Then
-C^d = (M^e)^d = M^(ed) = M^(1 + kφ(n)) = M _ (M^φ(n))^k ≡ M _ 1^k ≡ M (mod n). With the
+`7 * 23 = 161 = 1 + 4 * 40`, so k = 4. Then
+`C^d = (M^e)^d = M^(ed) = M^(1 + kφ(n)) = M * (M^φ(n))^k ≡ M * 1^k ≡ M (mod n)`. With the
 numbers: 9^161 = 9 \* (9^40)^4 ≡ 9 (mod 55). The requirement M^(ed) mod n = M for all M < n
 of slide 342 is met because e and d are inverses modulo φ(n) (slide 343).
 
@@ -3158,7 +3158,7 @@ the same hash. Integrity needs a cryptographic hash function that is collision r
 (slide 283).
 
 **(c)** Make each step depend on the position of the block. One simple modification: rotate
-the chaining value one bit to the left before the XOR, H*i = ROTL_1(H*(i-1)) XOR B_i, with
+the chaining value one bit to the left before the XOR, `H_i = ROTL_1(H_(i-1)) XOR B_i`, with
 H_0 = 00000000.
 
 ```
@@ -3175,7 +3175,7 @@ H_3 = ROTL(01101010) XOR 11010001 = 11010100 XOR 11010001 = 00000101
 
 11000011 ≠ 00000101. Each block is rotated a different number of times according to its
 position, so the commutativity is gone. Another valid answer: XOR the block index into each
-step, H*i = H*(i-1) XOR (B_i XOR i). Neither variant is cryptographically secure. A secure
+step, `H_i = H_(i-1) XOR (B_i XOR i)`. Neither variant is cryptographically secure. A secure
 hash uses Merkle's iterated structure: a collision resistant compression function f applied
 block by block, with the message length included in the padding (slides 301 to 304).
 
