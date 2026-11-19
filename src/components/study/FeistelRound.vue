@@ -441,14 +441,6 @@ function resetValues() {
   justify-self: end;
 }
 
-.study-bit.is-editable {
-  cursor: pointer;
-  border-style: dashed;
-  border-color: var(--fg-muted);
-  background: transparent;
-  font: inherit;
-}
-
 .feistel-caption {
   min-height: 4.4em;
 }
@@ -467,10 +459,6 @@ function resetValues() {
 
   .feistel-row-value {
     display: none;
-  }
-
-  .study-bit.is-editable {
-    height: 2rem;
   }
 }
 </style>

@@ -419,6 +419,8 @@ C_i: bit i of the hash, m: number of blocks, b_(ij): bit i of block j
 XOR is commutative and associative. An attacker modifies the message without detection.
 Conclusion: integrity needs cryptographic hash functions that are collision resistant.
 
+<XorHashReorder />
+
 ### 2.11 Preimages and collisions (slides 284 to 285)
 
 - For `h = H(x)`, `x` is a **preimage** (_pré-imagem_) of `h`.

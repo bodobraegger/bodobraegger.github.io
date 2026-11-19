@@ -199,6 +199,15 @@ watch(windowWidth, () => reservedHeight.value = 0)
   margin-right: var(--study-byte-gap);
 }
 
+/* A bit that a tap flips. */
+.study-bit.is-editable {
+  cursor: pointer;
+  border-style: dashed;
+  border-color: var(--fg-muted);
+  background: transparent;
+  font: inherit;
+}
+
 .study-bit.is-marked,
 .study-bit.is-alert {
   position: relative;
@@ -221,6 +230,10 @@ watch(windowWidth, () => reservedHeight.value = 0)
   .study-bit {
     width: 0.95rem;
     height: 1.35rem;
+  }
+
+  .study-bit.is-editable {
+    height: 2rem;
   }
 }
 

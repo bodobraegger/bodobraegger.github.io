@@ -11,9 +11,11 @@ export interface BitRow {
   separated?: boolean
 }
 
-const { rows, firstByteIndex = 0 } = defineProps<{
+const { rows, firstByteIndex = 0, binaryOnly = false } = defineProps<{
   rows: BitRow[]
   firstByteIndex?: number
+  /** Shows only the bits, without the byte heading and the hex value, for rows of one byte. */
+  binaryOnly?: boolean
 }>()
 
 const NIBBLE_LENGTH = 4
@@ -29,7 +31,7 @@ function nibbles(byte: number): string[] {
 <template>
   <div class="xor-bit-rows">
     <div v-for="byteIndex in byteCount" :key="byteIndex" class="xor-bit-block">
-      <div class="xor-bit-heading cipher-muted">
+      <div v-if="!binaryOnly" class="xor-bit-heading cipher-muted">
         byte {{ firstByteIndex + byteIndex }}
       </div>
       <template v-for="row in rows" :key="row.label">
@@ -38,7 +40,7 @@ function nibbles(byte: number): string[] {
         </div>
         <div class="xor-bit-value" :class="[`cipher-${row.tone}`, { 'xor-bit-separated': row.separated }]">
           <template v-if="row.bytes[byteIndex - 1] !== undefined">
-            <span class="xor-bit-hex">{{ byteToHex(row.bytes[byteIndex - 1]) }}</span>
+            <span v-if="!binaryOnly" class="xor-bit-hex">{{ byteToHex(row.bytes[byteIndex - 1]) }}</span>
             <span v-for="(nibble, nibbleIndex) in nibbles(row.bytes[byteIndex - 1])" :key="nibbleIndex" class="xor-bit-nibble">
               <span v-for="(bit, bitIndex) in nibble" :key="bitIndex" :class="{ 'xor-bit-one': bit === '1' }">{{ bit }}</span>
             </span>
