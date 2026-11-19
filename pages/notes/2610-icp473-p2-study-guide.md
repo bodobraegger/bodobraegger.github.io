@@ -25,12 +25,15 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 **Scope:** slides 249 to 447 (end of Lecture 9, Lectures 10 to 13), plus exercise lists 4
 (hash sections), 5, 6 and 7.
 
-> **Scope assumption.** The course presentation slide lists only P1 and P2, but this term has
-> three exams. P1 ended at slide 248 (ECB). This page assumes that P2 covers slides 249 to 447:
-> the modes CBC, CTR and GCM (slides 249 to 256), Lecture 10 (hash, from 257), Lecture 11
-> (asymmetric, from 321), Lecture 12 (IPsec, from 370) and Lecture 13 (TLS, 410 to 447).
-> Lectures 14 to 16 (firewalls, IDS/IPS, software vulnerabilities, slides 448 to 620) are on
-> the P3 page. Each lecture is one Part, so a boundary change moves one Part.
+> **Dates and grading.** P2 is on 25/11/2026 and P3 is on 04/12/2026. The final grade is the
+> mean of the two best grades of P1, P2 and P3, and 5.0 passes. You need two grades above zero.
+>
+> **Scope assumption.** The professor has not announced the P2 slide limit yet. P1 ended at
+> slide 248 (ECB). This page assumes that P2 covers slides 249 to 447: the modes CBC, CTR and
+> GCM (slides 249 to 256), Lecture 10 (hash, from 257), Lecture 11 (asymmetric, from 321),
+> Lecture 12 (IPsec, from 370) and Lecture 13 (TLS, 410 to 447). Lectures 14 to 16 (firewalls,
+> IDS/IPS, software vulnerabilities, slides 448 to 619) are on the P3 page. Each lecture is one
+> Part, so a boundary change moves one Part.
 
 ---
 

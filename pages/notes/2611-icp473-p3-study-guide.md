@@ -24,8 +24,11 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 **Scope:** slides 448 to 619 (Lectures 14 to 16), plus exercise lists 8 and 9.
 
-> **Scope assumption.** The course presentation slide lists only P1 and P2, but this term has
-> three exams. P1 covered slides 1 to 248. This page assumes that P2
+> **Dates and grading.** P2 is on 25/11/2026 and P3 is on 04/12/2026. The final grade is the
+> mean of the two best grades of P1, P2 and P3, and 5.0 passes. You need two grades above zero.
+>
+> **Scope assumption.** The professor has not announced the slide limits yet. P1 covered
+> slides 1 to 248. This page assumes that P2
 > covers slides 249 to 447 (modes of operation, hash, asymmetric, IPsec, TLS) and that P3
 > covers slides 448 to 619: Lecture 14 firewalls, Lecture 15 IDS/IPS, Lecture 16 software
 > vulnerabilities, with lists 8 and 9. The deck has 619 pages, so 619 is the last slide.
