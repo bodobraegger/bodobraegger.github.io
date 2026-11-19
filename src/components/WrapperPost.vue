@@ -33,11 +33,16 @@ useHead({
 // Only a page with `epub: true` has one.
 const epubHref = frontmatter.epub === true ? `${route.path}.epub` : null
 
+// The live checklists of the page; resolves to their cleanup.
+let checklist: Promise<() => void> | undefined
+onUnmounted(() => checklist?.then(disconnect => disconnect(), () => {}))
+
 onMounted(() => {
   // Track view on mount
   trackView()
 
-  connectChecklist(splitLanguageSuffix(location.pathname).basePath, content.value!).catch(console.error)
+  checklist = connectChecklist(splitLanguageSuffix(location.pathname).basePath, content.value!)
+  checklist.catch(console.error)
 
   document.fonts.ready.then(() => fontsLoaded.value = true)
 
