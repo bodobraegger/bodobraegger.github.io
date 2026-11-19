@@ -1185,6 +1185,8 @@ The MAC is appended at the end of the packet.
 5. **Extract** the original datagram: remove the padding.
 6. **Forward** the original datagram, now in clear, into the branch network, to 172.16.2.48.
 
+<EspTunnelPacket />
+
 ### 4.10 IKE, Internet Key Exchange (slides 405 to 409)
 
 **The challenge:** how to create the SAs.
