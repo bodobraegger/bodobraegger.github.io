@@ -937,8 +937,22 @@ Darth intercepts both public values and replaces them with his own. Alice and Bo
 they share a secret key. In practice **Alice shares K2 with Darth and Bob shares K1 with
 Darth**. Darth can read or modify every message.
 
+The order of the slide 368 figure, with Darth's two private keys `X_D1` and `X_D2`:
+
+```
+Alice sends Y_A.   Darth keeps it, sends Y_D1 to Bob,   computes K2 = Y_A^X_D2 mod q
+Bob receives Y_D1                                   and computes K1 = Y_D1^X_B mod q
+Bob sends Y_B.     Darth keeps it, sends Y_D2 to Alice, computes K1 = Y_B^X_D1 mod q
+Alice receives Y_D2                                 and computes K2 = Y_D2^X_A mod q
+```
+
+Alice and Darth share K2, Bob and Darth share K1. Darth decrypts each message with one key
+and encrypts it again with the other, so neither side notices.
+
 **Cause of the vulnerability:** the protocol **does not authenticate the participants**.
 **Solution:** digital signatures and certificates.
+
+<DiffieHellmanExchange />
 
 External material:
 
