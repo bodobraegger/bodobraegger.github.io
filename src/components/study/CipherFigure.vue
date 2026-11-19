@@ -59,6 +59,11 @@ defineProps<{ title: string }>()
   flex: 1 1 9rem;
 }
 
+/* Short numbers: two fields per row on a phone. */
+.cipher-fields.is-numeric > .cipher-field {
+  flex-basis: 6rem;
+}
+
 .cipher-figure input[type='text'],
 .cipher-figure textarea {
   width: 100%;
@@ -97,6 +102,12 @@ defineProps<{ title: string }>()
   font-family: var(--fonts-mono);
   white-space: pre;
   overflow-x: auto;
+}
+
+.cipher-formula-separated {
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--c-border-soft);
 }
 
 .cipher-scroll {

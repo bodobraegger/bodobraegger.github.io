@@ -818,6 +818,12 @@ Steps for the decryption by repeated squaring: `11^1 = 11`, `11^2 = 121`, `11^4 
 `11^8 = 33`, `11^16 = 154` (all mod 187). `23 = 16 + 4 + 2 + 1`, so
 `11^23 = 154 * 55 * 121 * 11 mod 187 = 88`.
 
+The figure runs the same steps for any small p, q, e and M, so you can check a run on paper
+line by line. The extended Euclid table is a shortcut for the back substitution of list 5
+section 2: the t beside remainder 1 is d.
+
+<RsaByHand />
+
 **Security (slide 348):** `n = p * q` with p and q large secret primes. If p and q are
 found, the attacker computes `φ(n) = (p - 1)(q - 1)`, then `d ≡ e^-1 (mod φ(n))`, and
 rebuilds the private key. The security of RSA depends on the **difficulty of factoring n**.
