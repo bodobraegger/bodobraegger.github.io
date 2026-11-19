@@ -196,6 +196,15 @@ C_i = P_i XOR E(K, counter + i)
 P_i = C_i XOR E(K, counter + i)
 ```
 
+<CipherModesImage />
+
+External material:
+
+- SecurityRonin, interactive tool: [ECB Penguin: Interactive AES Encryption Demo](https://ecb-penguin.securityronin.com/)
+  Encrypt the Tux image in your browser and see the silhouette stay visible under ECB.
+- Introduction to Cryptography by Christof Paar, full lecture video: [Lecture 9: Modes of Operation for Block Ciphers](https://www.youtube.com/watch?v=4FBgb2uobWI)
+  A detailed lecture with the exam-level details of each mode.
+
 ### 1.3 GCM (Galois/Counter Mode), slides 253 to 256
 
 **It combines two functions:**
@@ -241,6 +250,8 @@ authenticity before the plaintext is released.
 | **CBC** | Yes                                  | **No.** Needs an external MAC             |
 | **CTR** | Yes                                  | **No.** Needs an external MAC             |
 | **GCM** | Yes (through CTR)                    | **Yes** (through GHASH). An **AEAD** mode |
+
+<CipherTamper />
 
 External material:
 
