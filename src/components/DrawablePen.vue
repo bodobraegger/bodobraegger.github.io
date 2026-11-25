@@ -1364,7 +1364,8 @@ html.dark .drawing-canvas {
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 998;
+  /* Directly below the header (40), so its blur covers the ink. */
+  z-index: 39;
   transition: opacity 0.5s;
 }
 
