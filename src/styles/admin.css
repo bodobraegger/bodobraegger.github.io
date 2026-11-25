@@ -1,5 +1,6 @@
-/* Shared by the admin pages (StrokeAdmin, ChatAdmin): the fullscreen frame,
-   the header with its controls, the sign-in form and the confirm dialog. */
+/* Shared by the admin pages (StrokeAdmin, ChatAdmin, LinkAdmin): the fullscreen
+   frame, the header with its controls, the sign-in form, the confirm dialog
+   and the table. */
 
 /* Hide the page footer and page scrollbar behind the fullscreen admin view */
 main > div:last-child {
@@ -131,4 +132,50 @@ html:has(.admin-container) {
   place-items: center;
   height: 100%;
   opacity: 0.6;
+}
+
+.table-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 1.75rem;
+}
+
+.admin-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-container thead th {
+  position: sticky;
+  top: 0;
+  background: var(--c-bg);
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px dashed var(--fg-deep);
+}
+
+.admin-container tbody td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px dashed var(--c-border);
+  vertical-align: top;
+}
+
+.admin-container tbody tr {
+  cursor: pointer;
+}
+
+.admin-container tbody tr:hover {
+  background: var(--c-border);
+}
+
+.admin-container tbody tr.selected {
+  background: var(--fg-deep);
+  color: var(--c-bg);
+}
+
+.body-cell {
+  white-space: pre-wrap;
+  word-break: break-word;
 }

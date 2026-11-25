@@ -221,47 +221,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.table-viewport {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  padding: 0 1.75rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-thead th {
-  position: sticky;
-  top: 0;
-  background: var(--c-bg);
-  text-align: left;
-  padding: 0.5rem;
-  border-bottom: 1px dashed var(--fg-deep);
-}
-
-tbody td {
-  padding: 0.4rem 0.5rem;
-  border-bottom: 1px dashed var(--c-border);
-  vertical-align: top;
-}
-
-tbody tr {
-  cursor: pointer;
-}
-
-tbody tr:hover {
-  background: var(--c-border);
-}
-
-tbody tr.selected {
-  background: var(--fg-deep);
-  color: var(--c-bg);
-}
-
 .image-cell {
   display: block;
   max-height: 80px;
@@ -271,10 +230,5 @@ tbody tr.selected {
 
 html.dark .image-cell {
   filter: invert(1);
-}
-
-.body-cell {
-  white-space: pre-wrap;
-  word-break: break-word;
 }
 </style>

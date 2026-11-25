@@ -3,7 +3,7 @@ import type { useSupabaseAuth } from '~/composables/useSupabaseAuth'
 import '~/styles/admin.css'
 
 /**
- * The frame both admin views sit in: the container, the header with its
+ * The frame the admin views sit in: the container, the header with its
  * sign-in state, the error line, the sign-in form and the confirm dialog. A
  * view fills the controls, the stats and the body, and keeps its own data.
  * It owns `error` and `loading`, which it writes too, and hands the bundle
@@ -61,7 +61,7 @@ const { user, email, password, showAuth, signIn, signOut } = props.auth
     </p>
 
     <div v-if="showAuth && !user" class="auth-form">
-      <h3>sign in to delete {{ noun }}s</h3>
+      <h3>sign in to manage {{ noun }}s</h3>
       <form @submit.prevent="signIn">
         <input
           v-model="email"
