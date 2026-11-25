@@ -183,19 +183,6 @@ html {
   }
 }
 
-/* Transitions */
-.fade {
-  &-enter-active,
-  &-leave-active {
-    transition: opacity 0.1s ease;
-  }
-
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-  }
-}
-
 /* Every heading also wears a photocopy filter on top of its cut: a slow noise
    pushes the outlines about and a fine grain roughens their edges, so the
    letters keep their angles and lose their clean cut. */
