@@ -54,15 +54,15 @@ because there are more inputs than outputs. Security means that nobody can find 
 1. Accepts an input of any size.
 2. Gives an output of fixed size.
 3. Is easy to compute.
-4. **Preimage resistance** (one-way): given h, infeasible to find y with H(y) = h.
-5. **Second preimage resistance** (weak collision): given x, infeasible to find another y with
+4. **Preimage resistance** (_mão única_): given h, infeasible to find y with H(y) = h.
+5. **Second preimage resistance** (_colisão fraca_): given x, infeasible to find another y with
    H(y) = H(x).
-6. **Collision resistance** (strong collision): infeasible to find any pair x ≠ y with
+6. **Collision resistance** (_colisão forte_): infeasible to find any pair x ≠ y with
    H(x) = H(y).
 7. The output looks random.
 
 Requirements 1 to 5 make a weak hash; with 6 it is a strong hash. Collision resistance implies
-second preimage resistance, not the reverse.
+second preimage resistance, not the reverse. Preimage resistance is independent of both.
 
 **Why each resistance matters:**
 
@@ -154,7 +154,10 @@ to sign, then encrypt the data with AES.
 
 Encryption with a private key gives **no** confidentiality: everyone has the public key.
 
-A **one-way function** is easy to compute and infeasible to invert. A **trapdoor** one-way
+**Number of keys for n parties:** symmetric `n(n-1)/2`, asymmetric n pairs. For 10 parties, 45
+keys against 10 pairs.
+
+A **one-way function** is easy to compute and infeasible to invert. A **trapdoor** (_alçapão_) one-way
 function becomes easy to invert with extra knowledge. In RSA the trapdoor is d.
 
 ### RSA: learn this run
@@ -189,7 +192,8 @@ Decrypt C = 11. Exponent 23 = 16 + 4 + 2 + 1:
 `M^(e*d) = M * (M^φ(n))^k = M`.
 
 **Three attack routes:** factor n into p and q, find φ(n) directly, or find d directly. Each one
-gives the private key.
+gives the private key. From φ(n): `d = e^-1 mod φ(n)`, and `p + q = n - φ(n) + 1` with
+`p * q = n` gives the factors.
 
 **Security:** use at least 2048 bits. The usual e is
 65537 = 2^16 + 1, because only two of its bits are 1 and the encryption is fast.
@@ -238,19 +242,19 @@ IPsec protects IP datagrams at the network layer, so applications do not change.
 it to join sites over the public Internet. Four services: confidentiality, integrity, origin
 authentication, protection against replay.
 
-- **AH:** authentication and integrity, **no confidentiality**, deprecated.
-- **ESP:** authentication, integrity **and** confidentiality. Used in practice.
+- **AH:** authentication and integrity, **no confidentiality**, deprecated. Protocol 51.
+- **ESP:** authentication, integrity **and** confidentiality. Used in practice. Protocol 50.
 - **Tunnel mode:** the whole original datagram goes inside a new IP datagram between gateways.
 - **Transport mode:** keeps the original IP header and protects only the payload.
 
 **SA (security association):** a logical connection with keys and algorithms. It is
 **one-way**, so a pair needs **two**. Headquarters, one branch and n salespeople need
-**2 + 2n** SAs.
+**2 + 2n** SAs (3 salespeople: 8).
 
 - **SPD = what to do:** IPsec, let pass or discard, by source IP, destination IP and protocol.
 - **SAD = how to do it:** the state of each SA. It holds the 32 bit **SPI** (identifier),
   encryption algorithm and key, MAC algorithm and key, the 32 bit sequence counter, the
-  overflow flag, the **anti-replay window**, the lifetime, the mode and the path MTU.
+  overflow flag, the **anti-replay window** (_janela antirreplay_), the lifetime, the mode and the path MTU.
 
 **ESP in tunnel mode:**
 
@@ -261,7 +265,7 @@ authentication, protection against replay.
                 |<------------------ authenticated ------------------->|
 ```
 
-1. Add the trailer: padding (fills the cipher block), pad length, next header.
+1. Add the trailer: padding (_enchimento_, fills the cipher block), pad length, next header.
 2. Encrypt the original datagram and the trailer.
 3. Put the ESP header in front, in clear.
 4. Compute the MAC over the ESP header and the encrypted part, and append it.
@@ -325,13 +329,16 @@ encrypted with the server's public key**. Only the owner of the private key can 
 this authenticates the server. `finished` is already encrypted and proves that both sides have
 the same keys. Random is a 32 bit timestamp plus 28 random bytes, against replay.
 A **cipher suite** names a key exchange algorithm and a CipherSpec (cipher and MAC algorithm).
+`ECDHE_RSA_WITH_AES_128_GCM_SHA256` means key exchange ECDHE, authentication RSA, cipher
+AES-128-GCM, hash SHA-256.
 
 **Heartbeat:** keeps an idle connection alive and checks that the peer lives. It also stops
 firewalls from closing idle connections. Both sides negotiate it in phase 1 of the handshake.
 The request has a payload (16 bytes to 64 KB), its length and padding. The response returns an
 exact copy of the payload.
 
-**Heartbleed (2014):** a programming mistake in **OpenSSL**, not a design flaw of TLS.
+**Heartbleed (2014):** a programming mistake in **OpenSSL**, not a design flaw of TLS. Lesson: a
+strong protocol also needs a correct implementation.
 
 ```
 request:   length says 64 KB, real payload 16 bytes
