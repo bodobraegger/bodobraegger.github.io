@@ -10,7 +10,7 @@ plum: false
 
 ---
 
-**30 minutes:** hash 6, RSA and Diffie-Hellman 8, IPsec 6, TLS 6, modes 2, last page 2.
+**35 minutes:** modes 2, hash 10, RSA and Diffie-Hellman 8, IPsec 6, TLS 7, last look 2.
 Read each part once, then cover it and say it aloud. Write one RSA run on paper.
 
 **How to collect points:** the exam has 4 questions of 2.5 pt, and every item wants a reason.
@@ -40,10 +40,11 @@ mechanism that failed, and the pillars that stayed intact:
   key:** the keystream repeats, and `C1 XOR C2 = P1 XOR P2` (the WEP failure).
 - **GCM:** the payload is encrypted with CTR. The header (AAD) stays readable but is
   authenticated. GHASH runs over header and ciphertext:
-  `X_i = (X_(i-1) XOR B_i) * H` in GF(2^128), with the secret `H = AES_K(0)`. The result gives
+  `X_i = ((X_(i-1) XOR B_i) * H) mod p(x)` in GF(2^128), with the secret `H = AES_K(0)` and
+  `p(x) = x^128 + x^7 + x^2 + x + 1`. The last X, XORed with an encrypted counter block, gives
   the tag T. The receiver **verifies the tag first**, and only then releases the plaintext.
 
-## 2. Hash functions (6 min)
+## 2. Hash functions (10 min)
 
 A hash maps a message of any size to a fixed size digest (_resumo_). Collisions always exist,
 because there are more inputs than outputs. Security means that nobody can find one.
@@ -71,10 +72,25 @@ second preimage resistance, not the reverse.
 - No collision resistance: Bob makes m1 and m2 with the same hash, Alice signs m1, and Bob
   claims that she signed m2.
 
+**Which resistance each use needs:**
+
+- Digital signature and MAC: preimage and second preimage, plus collision if the attacker can
+  choose the message.
+- File integrity (intrusion and virus detection): second preimage.
+- Password file: preimage.
+- Hash with symmetric encryption: none of the three.
+
 **Brute force effort for m bits:** preimage and second preimage `2^m`, collision only
 `2^(m/2)`. Reason: the **birthday paradox**. Every pair can collide, and the number of pairs
 grows with the square: 23 people make 253 pairs, so a shared birthday passes 50%. A 64 bit
 hash falls after about 2^32 tries.
+
+**Birthday attack on a signature:**
+
+1. The attacker makes `2^(m/2)` variations of a good message, all with the same meaning.
+2. He makes variations of a fraudulent message.
+3. He finds a good and a fraudulent variation with the **same hash**.
+4. The victim signs the good one, and the signature also fits the fraudulent one.
 
 **A bare hash does not stop an attacker.** Darth changes M, computes H(M) again and sends
 both. The hash must be protected. The four methods:
@@ -100,11 +116,26 @@ change of the block order gives the same hash:
 01101100 XOR 10110010 = 11011110, XOR 11010001 = 00001111   (B2, B1, B3)
 ```
 
-It violates second preimage resistance (and so collision resistance). An encrypted hash does
-not help, because the correct hash did not change. A fix for the order is to rotate first:
+It violates second preimage resistance and collision resistance. An encrypted hash does not help, because the correct hash did not change. A fix for the order is to rotate first:
 `H_i = ROTL(H_(i-1)) XOR B_i`. It is still not secure; use SHA-256 or SHA-512.
 
 <XorHashReorder />
+
+**Iterated hash (Merkle and Damgård):** pad the message with its length and cut it into L blocks.
+A compression function f takes the last value and the next block:
+
+```
+CV_0 = IV        CV_i = f(CV_(i-1), Y_(i-1))        H(M) = CV_L
+```
+
+If f is collision resistant, the whole hash is too.
+
+| Hash        | Digest bits | Block bits | Rounds |
+| ----------- | ----------- | ---------- | ------ |
+| MD5         | 128, broken | 512        | 64     |
+| SHA-1       | 160, weak   | 512        | 80     |
+| SHA-224/256 | 224 / 256   | 512        | 64     |
+| SHA-384/512 | 384 / 512   | 1024       | 80     |
 
 **SHA-512 in one run:** pad (a 1, then 0s, always, to 896 mod 1024), append the length in 128
 bits, start with eight 64 bit registers, run 80 rounds per 1024 bit block, output 512 bits.
@@ -157,7 +188,10 @@ Decrypt C = 11. Exponent 23 = 16 + 4 + 2 + 1:
 **Why it works:** Euler's theorem, `M^φ(n) mod n = 1`. Since `e*d = 1 + k*φ(n)`,
 `M^(e*d) = M * (M^φ(n))^k = M`.
 
-**Security:** who factors n, or learns φ(n), computes d. Use at least 2048 bits. The usual e is
+**Three attack routes:** factor n into p and q, find φ(n) directly, or find d directly. Each one
+gives the private key.
+
+**Security:** use at least 2048 bits. The usual e is
 65537 = 2^16 + 1, because only two of its bits are 1 and the encryption is fast.
 
 <RsaByHand />
@@ -183,12 +217,13 @@ from `Y = α^X mod q`, infeasible for a large q.
 **Man in the middle:** the protocol does not authenticate the participants.
 
 ```
-Alice            Darth (X_D1, X_D2)              Bob
-  | ---- Y_A ---->|                               |
-  |<---- Y_D2 ----|---- Y_D1 -------------------->|
-  |               |<--- Y_B ----------------------|
-K2 = Y_D2^X_A   K2 = Y_A^X_D2
-                K1 = Y_B^X_D1               K1 = Y_D1^X_B
+Alice               Darth (X_D1, X_D2)  Bob
+|------ Y_A ------->|                   |
+|<----- Y_D2 -------|------ Y_D1 ------>|
+|                   |<----- Y_B --------|
+
+K2 = Y_D2^X_A       K2 = Y_A^X_D2
+                    K1 = Y_B^X_D1       K1 = Y_D1^X_B
 ```
 
 Alice shares K2 with Darth, Bob shares K1 with Darth. Darth decrypts, reads or changes, and
@@ -221,9 +256,9 @@ authentication, protection against replay.
 
 ```
 | new IP header | ESP header | original IP header + data | ESP trailer | ESP MAC |
-|  protocol 50  | SPI, Seq   |                           | padding     |         |
-                             |<-------- encrypted ------------------->|
-                |<---------------- authenticated -------------------->|
+|  protocol 50  |  SPI, Seq  |                           |   padding   |         |
+                             |<-------------- encrypted -------------->|
+                |<------------------ authenticated ------------------->|
 ```
 
 1. Add the trailer: padding (fills the cipher block), pad length, next header.
@@ -249,14 +284,14 @@ sides (certificates), negotiates algorithms, and generates keys (Diffie-Hellman)
 - **Phase 2, cheap:** inside the IKE SA, creates the **one-way IPsec SAs**, without public key
   operations. One phase 1 serves many SAs.
 
-## 5. TLS (6 min)
+## 5. TLS (7 min)
 
 TLS runs on top of TCP. It gives confidentiality, integrity, and authentication of the server.
 
 ```
-| Handshake | Change Cipher Spec | Alert | HTTP |     upper layer
-|               Record Protocol               |     encrypts and adds a MAC
-|                     TCP                     |
+| Handshake | Change Cipher Spec | Alert | HTTP |   upper layer
+|                Record Protocol                |   encrypts and adds a MAC
+|                      TCP                      |
 ```
 
 - **Record:** symmetric encryption for confidentiality, and a MAC with another key for
@@ -289,9 +324,12 @@ Brackets mean optional. The client checks the certificate, then sends the **pre-
 encrypted with the server's public key**. Only the owner of the private key can read it, and
 this authenticates the server. `finished` is already encrypted and proves that both sides have
 the same keys. Random is a 32 bit timestamp plus 28 random bytes, against replay.
+A **cipher suite** names a key exchange algorithm and a CipherSpec (cipher and MAC algorithm).
 
-**Heartbeat:** keeps an idle connection alive and checks that the peer lives. The request has a
-payload and its length, and the response returns an exact copy.
+**Heartbeat:** keeps an idle connection alive and checks that the peer lives. It also stops
+firewalls from closing idle connections. Both sides negotiate it in phase 1 of the handshake.
+The request has a payload (16 bytes to 64 KB), its length and padding. The response returns an
+exact copy of the payload.
 
 **Heartbleed (2014):** a programming mistake in **OpenSSL**, not a design flaw of TLS.
 
