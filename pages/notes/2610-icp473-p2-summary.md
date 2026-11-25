@@ -22,7 +22,8 @@ import DrawablePen from '../../src/components/DrawablePen.vue'
 
 <DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
 
-**35 minutes:** modes 2, hash 10, RSA and Diffie-Hellman 8, IPsec 6, TLS 7, last look 2.
+**35 minutes:** modes 2, hash 10, RSA (_Rivest, Shamir, Adleman_) and Diffie-Hellman 8, IPsec
+(_Internet Protocol Security_) 6, TLS (_Transport Layer Security_) 7, last look 2.
 Read each part once, then cover it and say it aloud. Write one RSA run on paper.
 
 **How to collect points:** the exam has 4 questions of 2.5 pt, and every item wants a reason.
@@ -38,21 +39,23 @@ mechanism that failed, and the pillars that stayed intact:
 
 ## 1. Modes of operation (2 min)
 
-| Mode | Formula                         | Secret?       | Detects changes?      |
-| ---- | ------------------------------- | ------------- | --------------------- |
-| ECB  | `C_i = E(K, P_i)`               | leaks pattern | no                    |
-| CBC  | `C_i = E(K, P_i XOR C_(i-1))`   | yes           | no                    |
-| CTR  | `C_i = P_i XOR E(K, counter+i)` | yes           | no                    |
-| GCM  | CTR, plus a GHASH tag           | yes           | **yes**, also headers |
+E (_encrypt_), D (_decrypt_), K (_key_), P (_plaintext_), C (_ciphertext_), XOR (_exclusive or_).
 
-- **CBC:** the first block uses an IV. No parallel encryption. Decryption is
+| Mode                          | Formula                               | Secret?       | Detects changes?      |
+| ----------------------------- | ------------------------------------- | ------------- | --------------------- |
+| ECB (_Electronic Codebook_)   | `C_i = E(K, P_i)`                     | leaks pattern | no                    |
+| CBC (_Cipher Block Chaining_) | `C_i = E(K, P_i XOR C_(i-1))`         | yes           | no                    |
+| CTR (_Counter_)               | `C_i = P_i XOR E(K, counter+i)`       | yes           | no                    |
+| GCM (_Galois/Counter Mode_)   | CTR, plus a GHASH (_Galois hash_) tag | yes           | **yes**, also headers |
+
+- **CBC:** the first block uses an IV (_Initialization Vector_). No parallel encryption. Decryption is
   `P_i = D(K, C_i) XOR C_(i-1)`, so a flipped bit in `C_(i-1)` flips the same bit of `P_i`.
 - **CTR:** the block cipher becomes a stream cipher. No padding, independent blocks, parallel,
   encryption and decryption are the same operation. **Never reuse a counter with the same
-  key:** the keystream repeats, and `C1 XOR C2 = P1 XOR P2` (the WEP failure).
-- **GCM:** the payload is encrypted with CTR. The header (AAD) stays readable but is
+  key:** the keystream repeats, and `C1 XOR C2 = P1 XOR P2` (the WEP (_Wired Equivalent Privacy_) failure).
+- **GCM:** the payload is encrypted with CTR. The header, AAD (_Additional Authenticated Data_), stays readable but is
   authenticated. GHASH runs over header and ciphertext:
-  `X_i = ((X_(i-1) XOR B_i) * H) mod p(x)` in GF(2^128), with the secret `H = AES_K(0)` and
+  `X_i = ((X_(i-1) XOR B_i) * H) mod p(x)` in GF(2^128), GF (_Galois Field_), with the secret `H = AES_K(0)`, AES (_Advanced Encryption Standard_), and
   `p(x) = x^128 + x^7 + x^2 + x + 1`. The last X, XORed with an encrypted counter block, gives
   the tag T. The receiver **verifies the tag first**, and only then releases the plaintext.
 
@@ -86,7 +89,7 @@ second preimage resistance, not the reverse. Preimage resistance is independent 
 
 **Which resistance each use needs:**
 
-- Digital signature and MAC: preimage and second preimage, plus collision if the attacker can
+- Digital signature and MAC (_Message Authentication Code_): preimage and second preimage, plus collision if the attacker can
   choose the message.
 - File integrity (intrusion and virus detection): second preimage.
 - Password file: preimage.
@@ -107,14 +110,14 @@ hash falls after about 2^32 tries.
 **A bare hash does not stop an attacker.** Darth changes M, computes H(M) again and sends
 both. The hash must be protected. The four methods:
 
-| Method | What is sent                                      | Confidential? |
-| ------ | ------------------------------------------------- | ------------- |
-| A      | `E(K, M ‖ H(M))`: encrypt message and hash        | yes           |
-| B      | `M ‖ E(K, H(M))`: encrypt only the hash, cheaper  | no            |
-| C      | `M ‖ H(M ‖ S)`: S is a shared secret, never sent  | no            |
-| D      | `E(K, M ‖ H(M ‖ S))`: C plus encryption, as a VPN | yes           |
+| Method | What is sent                                                                  | Confidential? |
+| ------ | ----------------------------------------------------------------------------- | ------------- |
+| A      | `E(K, M ‖ H(M))`: encrypt message and hash                                    | yes           |
+| B      | `M ‖ E(K, H(M))`: encrypt only the hash, cheaper                              | no            |
+| C      | `M ‖ H(M ‖ S)`: S is a shared secret, never sent                              | no            |
+| D      | `E(K, M ‖ H(M ‖ S))`: C plus encryption, as a VPN (_Virtual Private Network_) | yes           |
 
-- Method C is the idea of **HMAC**. A **MAC** is a hash with a key: it gives integrity and
+- Method C is the idea of **HMAC** (_Hash-based Message Authentication Code_). A **MAC** is a hash with a key: it gives integrity and
   origin authenticity between two parties that share the key.
 - A **digital signature** encrypts the hash with the sender's **private** key. Everyone
   verifies it with the **public** key. Only the owner can create it.
@@ -129,12 +132,13 @@ change of the block order gives the same hash:
 ```
 
 It violates second preimage resistance and collision resistance. An encrypted hash does not help, because the correct hash did not change. A fix for the order is to rotate first:
-`H_i = ROTL(H_(i-1)) XOR B_i`. It is still not secure; use SHA-256 or SHA-512.
+`H_i = ROTL(H_(i-1)) XOR B_i`, ROTL (_rotate left_). It is still not secure; use SHA
+(_Secure Hash Algorithm_): SHA-256 or SHA-512.
 
 <XorHashReorder />
 
 **Iterated hash (Merkle and Damgård):** pad the message with its length and cut it into L blocks.
-A compression function f takes the last value and the next block:
+A compression function f takes the last CV (_Chaining Value_) and the next block:
 
 ```
 CV_0 = IV        CV_i = f(CV_(i-1), Y_(i-1))        H(M) = CV_L
@@ -142,19 +146,19 @@ CV_0 = IV        CV_i = f(CV_(i-1), Y_(i-1))        H(M) = CV_L
 
 If f is collision resistant, the whole hash is too.
 
-| Hash        | Digest bits | Block bits | Rounds |
-| ----------- | ----------- | ---------- | ------ |
-| MD5         | 128, broken | 512        | 64     |
-| SHA-1       | 160, weak   | 512        | 80     |
-| SHA-224/256 | 224 / 256   | 512        | 64     |
-| SHA-384/512 | 384 / 512   | 1024       | 80     |
+| Hash                     | Digest bits | Block bits | Rounds |
+| ------------------------ | ----------- | ---------- | ------ |
+| MD5 (_Message Digest 5_) | 128, broken | 512        | 64     |
+| SHA-1                    | 160, weak   | 512        | 80     |
+| SHA-224/256              | 224 / 256   | 512        | 64     |
+| SHA-384/512              | 384 / 512   | 1024       | 80     |
 
 **SHA-512 in one run:** pad (a 1, then 0s, always, to 896 mod 1024), append the length in 128
 bits, start with eight 64 bit registers, run 80 rounds per 1024 bit block, output 512 bits.
 
 ## 3. Asymmetric cryptography (8 min)
 
-Each user has a public key PU and a private key PR. This solves key distribution and gives
+Each user has a public key PU (_public_) and a private key PR (_private_). This solves key distribution and gives
 signatures. It is slow, so it does not replace symmetric ciphers: use it to exchange a key or
 to sign, then encrypt the data with AES.
 
@@ -175,7 +179,7 @@ function becomes easy to invert with extra knowledge. In RSA the trapdoor is d.
 ### RSA: learn this run
 
 1. Choose primes p and q. `n = p * q` and `φ(n) = (p - 1)(q - 1)`.
-2. Choose e with `gcd(e, φ(n)) = 1`.
+2. Choose e with `gcd(e, φ(n)) = 1`, gcd (_greatest common divisor_).
 3. Find d with `e * d mod φ(n) = 1`.
 4. Public key `{e, n}`, private key `{d, n}`.
 5. Encrypt `C = M^e mod n`, decrypt `M = C^d mod n`, with M < n.
@@ -244,29 +248,29 @@ K2 = Y_D2^X_A       K2 = Y_A^X_D2
 
 Alice shares K2 with Darth, Bob shares K1 with Darth. Darth decrypts, reads or changes, and
 encrypts again. **Fix:** sign the Y values and check the signature with a **certificate**. A
-certificate binds an identity to a public key and is signed by a trusted CA.
+certificate binds an identity to a public key and is signed by a trusted CA (_Certificate Authority_).
 
 <DiffieHellmanExchange />
 
 ## 4. IPsec (6 min)
 
-IPsec protects IP datagrams at the network layer, so applications do not change. A **VPN** uses
+IPsec protects IP (_Internet Protocol_) datagrams at the network layer, so applications do not change. A **VPN** uses
 it to join sites over the public Internet. Four services: confidentiality, integrity, origin
 authentication, protection against replay.
 
-- **AH:** authentication and integrity, **no confidentiality**, deprecated. Protocol 51.
-- **ESP:** authentication, integrity **and** confidentiality. Used in practice. Protocol 50.
+- **AH** (_Authentication Header_): authentication and integrity, **no confidentiality**, deprecated. Protocol 51.
+- **ESP** (_Encapsulating Security Payload_): authentication, integrity **and** confidentiality. Used in practice. Protocol 50.
 - **Tunnel mode:** the whole original datagram goes inside a new IP datagram between gateways.
 - **Transport mode:** keeps the original IP header and protects only the payload.
 
-**SA (security association):** a logical connection with keys and algorithms. It is
+**SA** (_Security Association_): a logical connection with keys and algorithms. It is
 **one-way**, so a pair needs **two**. Headquarters, one branch and n salespeople need
 **2 + 2n** SAs (3 salespeople: 8).
 
-- **SPD = what to do:** IPsec, let pass or discard, by source IP, destination IP and protocol.
-- **SAD = how to do it:** the state of each SA. It holds the 32 bit **SPI** (identifier),
+- **SPD** (_Security Policy Database_) **= what to do:** IPsec, let pass or discard, by source IP, destination IP and protocol.
+- **SAD** (_Security Association Database_) **= how to do it:** the state of each SA. It holds the 32 bit **SPI** (_Security Parameter Index_, the identifier),
   encryption algorithm and key, MAC algorithm and key, the 32 bit sequence counter, the
-  overflow flag, the **anti-replay window** (_janela antirreplay_), the lifetime, the mode and the path MTU.
+  overflow flag, the **anti-replay window** (_janela antirreplay_), the lifetime, the mode and the path MTU (_Maximum Transmission Unit_).
 
 **ESP in tunnel mode:**
 
@@ -279,7 +283,7 @@ authentication, protection against replay.
 
 1. Add the trailer: padding (_enchimento_, fills the cipher block), pad length, next header.
 2. Encrypt the original datagram and the trailer.
-3. Put the ESP header in front, in clear.
+3. Put the ESP header in front, in clear: SPI and Seq (_Sequence Number_).
 4. Compute the MAC over the ESP header and the encrypted part, and append it.
 5. Put a new IP header in front: gateway addresses, protocol 50. The MAC does not cover it.
 
@@ -292,7 +296,7 @@ and the sequence number.
 
 <EspTunnelPacket />
 
-**IKE creates the SAs automatically**, because manual keys do not scale. It authenticates the
+**IKE** (_Internet Key Exchange_) **creates the SAs automatically**, because manual keys do not scale. It authenticates the
 sides (certificates), negotiates algorithms, and generates keys (Diffie-Hellman).
 
 - **Phase 1, expensive:** creates one **bidirectional IKE SA**. First exchange: Diffie-Hellman,
@@ -302,7 +306,8 @@ sides (certificates), negotiates algorithms, and generates keys (Diffie-Hellman)
 
 ## 5. TLS (7 min)
 
-TLS runs on top of TCP. It gives confidentiality, integrity, and authentication of the server.
+TLS runs on top of TCP (_Transmission Control Protocol_) and carries HTTP (_Hypertext Transfer
+Protocol_). It gives confidentiality, integrity, and authentication of the server.
 
 ```
 | Handshake | Change Cipher Spec | Alert | HTTP |   upper layer
@@ -320,7 +325,7 @@ TLS runs on top of TCP. It gives confidentiality, integrity, and authentication 
   **Connection:** transient, belongs to one session. Many connections share one session to
   avoid another expensive handshake.
 
-**Handshake, four phases:**
+**Handshake, four phases**, ID (_identifier_):
 
 ```
 Client                                                Server
@@ -341,12 +346,12 @@ encrypted with the server's public key**. Only the owner of the private key can 
 this authenticates the server. `finished` is already encrypted and proves that both sides have
 the same keys. Random is a 32 bit timestamp plus 28 random bytes, against replay.
 A **cipher suite** names a key exchange algorithm and a CipherSpec (cipher and MAC algorithm).
-`ECDHE_RSA_WITH_AES_128_GCM_SHA256` means key exchange ECDHE, authentication RSA, cipher
+`ECDHE_RSA_WITH_AES_128_GCM_SHA256` means key exchange ECDHE (_Elliptic Curve Diffie-Hellman Ephemeral_), authentication RSA, cipher
 AES-128-GCM, hash SHA-256.
 
 **Heartbeat:** keeps an idle connection alive and checks that the peer lives. It also stops
 firewalls from closing idle connections. Both sides negotiate it in phase 1 of the handshake.
-The request has a payload (16 bytes to 64 KB), its length and padding. The response returns an
+The request has a payload (16 bytes to 64 KB (_kilobytes_)), its length and padding. The response returns an
 exact copy of the payload.
 
 **Heartbleed (2014):** a programming mistake in **OpenSSL**, not a design flaw of TLS. Lesson: a
@@ -364,7 +369,8 @@ authentication and integrity. **Fix:** patch, make a **new key pair**, **revoke*
 certificate, get a new one, end sessions, change passwords. A new certificate with the old key
 does not help.
 
-**Other attacks:** BEAST (2011, chosen plaintext), CRIME (2012, compression leaks cookies),
+**Other attacks:** BEAST (_Browser Exploit Against SSL/TLS_, SSL (_Secure Sockets Layer_), 2011, chosen
+plaintext), CRIME (_Compression Ratio Info-leak Made Easy_, 2012, compression leaks cookies),
 faulty certificate checks in libraries (2012), handshake flood (2011, availability: the server
 does more work than the client).
 
