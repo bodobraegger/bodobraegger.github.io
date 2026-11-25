@@ -14,11 +14,12 @@ interface LinkRow {
 const SHORT_LINK_BASE = 'https://bbo.do/l/'
 const SLUG_PATTERN = '[a-zA-Z0-9\\-]{1,64}'
 const UNIQUE_VIOLATION = '23505'
+const COPIED_NOTICE_MS = 1000
 
 const links = ref<LinkRow[]>([])
 const target = ref('')
 const slug = ref('')
-const copiedSlug = ref('')
+const copiedSlug = refAutoReset('', COPIED_NOTICE_MS)
 const loading = ref(false)
 const error = ref('')
 const showConfirmDelete = ref(false)
@@ -84,7 +85,6 @@ async function createLink() {
   links.value.unshift(data)
   target.value = ''
   slug.value = ''
-  await copyLink(data.slug)
 }
 
 async function confirmDelete() {
