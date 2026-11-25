@@ -8,6 +8,7 @@
     "dev": "vite --port 3333 --open",
     "preview": "vite preview",
     "lint": "eslint .",
+    "deploy:links": "pnpm dlx wrangler deploy --config worker/wrangler.toml",
     "compress": "esno scripts/img-compress-staged.ts",
     "check:orchid": "esno scripts/check-orchid.ts",
     "check:honeydew": "esno scripts/check-honeydew.ts",

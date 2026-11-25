@@ -82,7 +82,8 @@ onMounted(() => {
       && !event.altKey
     ) {
       const url = new URL(link.href)
-      if (url.origin !== window.location.origin)
+      // A Worker answers the short links, the router has no page for them.
+      if (url.origin !== window.location.origin || url.pathname.startsWith('/l/'))
         return
 
       event.preventDefault()

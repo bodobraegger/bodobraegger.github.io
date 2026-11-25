@@ -1,0 +1,7 @@
+# Deploy: pnpm deploy:links, with CLOUDFLARE_API_TOKEN set.
+# The secrets SUPABASE_URL and SUPABASE_ANON_KEY are stored on the Worker.
+name = "bbo-short-links"
+main = "short-links.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+routes = [ { pattern = "bbo.do/l/*", zone_name = "bbo.do" } ]
