@@ -170,7 +170,7 @@ onMounted(() => {
             <td><input type="checkbox" :checked="selectedIds.has(link.slug)" @click.stop="toggle(link.slug)"></td>
             <td>
               <button :title="`Copy ${SHORT_LINK_BASE}${link.slug}`" @click.stop="copyLink(link.slug)">
-                {{ copiedSlug === link.slug ? 'copied' : `l/${link.slug}` }}
+                {{ copiedSlug === link.slug ? 'copied' : `bbo.do/l/${link.slug}` }}
               </button>
             </td>
             <td class="body-cell">
