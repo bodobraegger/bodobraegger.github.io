@@ -73,6 +73,8 @@
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 241),
     calc(var(--film-grain-size, 1) * var(--film-grain-pixel) * 256);
   mix-blend-mode: soft-light;
+  /* A transparent image sets its own shape, else its empty parts turn grey. */
+  mask: var(--film-grain-mask, none) 0 0 / 100% 100%;
 }
 
 .film-grain--fixed::after {
@@ -84,6 +86,12 @@
 .film-grain--fixed::after,
 .film-grain--top::after {
   z-index: 2147483647;
+}
+
+/* The photo of the lightbox (z-index 500, later in the page) has its own
+   grain that zooms with it, so the grain of the page goes below it. */
+html:has(.lightbox) .film-grain--top::after {
+  z-index: 500;
 }
 
 @media print {

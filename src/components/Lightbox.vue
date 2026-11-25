@@ -23,14 +23,22 @@ const offset = reactive({ x: 0, y: 0 })
 let drag: { x: number, y: number, moved: boolean } | undefined
 let dragged = false
 
+/** The largest generated variant when the build produced one, else whatever the page shows. */
+function fullSource(image: HTMLImageElement) {
+  return image.dataset.full || image.currentSrc || image.src
+}
+
+const lightboxSource = computed(() => imageModel.value ? fullSource(imageModel.value) : '')
+
 const fitScale = computed(() => natural.width
   ? Math.min(FIT_SHARE * windowWidth.value / natural.width, FIT_SHARE * windowHeight.value / natural.height)
   : 0)
 const imageStyle = computed(() => fitScale.value
   ? {
-      width: `${natural.width * fitScale.value}px`,
-      height: `${natural.height * fitScale.value}px`,
-      transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom.value})`,
+      'width': `${natural.width * fitScale.value}px`,
+      'height': `${natural.height * fitScale.value}px`,
+      'transform': `translate(${offset.x}px, ${offset.y}px) scale(${zoom.value})`,
+      '--film-grain-mask': `url(${JSON.stringify(lightboxSource.value)})`,
     }
   : {})
 const copiedClasses = computed(() => COPIED_CLASSES.filter(name => imageModel.value?.classList.contains(name)))
@@ -90,13 +98,6 @@ function endDrag() {
 
 /** One image back, or one forward. */
 type Step = -1 | 1
-
-/** The largest generated variant when the build produced one, else whatever the page shows. */
-function fullSource(image: HTMLImageElement) {
-  return image.dataset.full || image.currentSrc || image.src
-}
-
-const lightboxSource = computed(() => imageModel.value ? fullSource(imageModel.value) : '')
 
 function neighbourIndex(step: Step) {
   return (index + step + images.length) % images.length
@@ -186,32 +187,34 @@ onKeyStroke('ArrowRight', (e) => {
 </script>
 
 <template>
-  <Transition name="fade">
+  <template v-if="imageModel">
+    <!-- The grain of the page lies between this backdrop and the photo, see film-grain.css -->
+    <div class="fixed top-0 left-0 right-0 bottom-0 z-499 backdrop-blur-7 bg-white:50 dark:bg-dark:50" />
     <div
-      v-if="imageModel"
-      class="lightbox  fixed top-0 left-0 right-0 bottom-0 z-500 backdrop-blur-7 flex cursor-zoom-out "
+      class="lightbox  fixed top-0 left-0 right-0 bottom-0 z-500 flex cursor-zoom-out "
       @wheel.prevent="zoomWithWheel"
       @pointermove="moveDrag"
       @pointerup="endDrag"
       @pointercancel="endDrag"
     >
-      <div class="absolute top-0 left-0 right-0 bottom-0 bg-white:50 dark:bg-dark:50 z--1" />
       <button v-if="images.length > 1" class="lightbox prev text-right cursor-w-resize h-full absolute top-0 left-0 min-w-6vw lg:flex-grow-1 lg:min-w-8vw lg:pr-2">
         <span class="prev  i-bi:arrow-left w-7 h-7 bg-transparent backdrop-invert font-mono text-xl"><-</span>
       </button>
       <figure class="m-auto max-w-100vw lg:max-w-84vw">
-        <img
-          id="lightbox"
-          ref="lightboxImage"
-          :src="lightboxSource"
-          :alt="imageModel.alt"
-          class="no-preview m-auto max-w-none touch-none select-none"
-          :class="copiedClasses"
-          :style="imageStyle"
-          draggable="false"
-          @load="takeNaturalSize"
-          @pointerdown="startDrag"
-        >
+        <div class="relative m-auto" :style="imageStyle">
+          <img
+            id="lightbox"
+            ref="lightboxImage"
+            :src="lightboxSource"
+            :alt="imageModel.alt"
+            class="no-preview w-full h-full max-w-none touch-none select-none"
+            :class="copiedClasses"
+            draggable="false"
+            @load="takeNaturalSize"
+            @pointerdown="startDrag"
+          >
+          <slot />
+        </div>
         <figcaption v-if="imageModel.dataset.caption" class="m-2 text-center">
           {{ imageModel.alt }}
         </figcaption>
@@ -220,7 +223,7 @@ onKeyStroke('ArrowRight', (e) => {
         <span class="next  w-7 h-7 bg-transparent backdrop-invert font-mono text-xl i-bi:arrow-right">-></span>
       </button>
     </div>
-  </Transition>
+  </template>
 </template>
 
 <style lang="css" scoped>

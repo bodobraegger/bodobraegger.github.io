@@ -10,6 +10,7 @@ const route = useRoute()
 // Every page has film grain. `grain: <stock>` in the frontmatter, such as
 // `grain: tri-x-400`, chooses the film, and `grain: false` removes it.
 const grain = computed(() => route.meta.frontmatter?.grain ?? true)
+const stock = computed(() => grain.value === true ? undefined : grain.value)
 
 // Strip the leading year and month prefix, "2403-", from a slug
 function stripDate(segment: string) {
@@ -52,11 +53,12 @@ useHead({
       </WrapperPost>
     </main>
     <Footer />
-    <!-- The grain lies over everything, the nav, the chat and the lightbox
-         included, and moves with the page like the grain of a print -->
-    <FilmGrain v-if="grain" class="film-grain--top" :stock="grain === true ? undefined : grain" />
+    <!-- The grain lies over everything, the nav and the chat included, and moves with the page like the grain of a print -->
+    <FilmGrain v-if="grain" class="film-grain--top" :stock="stock" />
   </div>
-  <Lightbox />
+  <Lightbox>
+    <FilmGrain v-if="grain" :stock="stock" />
+  </Lightbox>
   <ClientOnly>
     <ChatWidget v-if="chatWanted" />
   </ClientOnly>
