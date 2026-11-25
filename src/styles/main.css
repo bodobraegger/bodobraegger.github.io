@@ -305,15 +305,6 @@ h6 {
   vertical-align: 0.012em;
 }
 
-h2 {
-  + p > em:first-child {
-    opacity: 0.5;
-    display: block;
-    margin-top: -20px;
-    font-size: 0.9em;
-  }
-}
-
 /* The pen toolbar and the chat take the same corner: the chat steps aside while
    the pens are out, and the pens while the chat is open. */
 html.pens-open .chat-widget,
