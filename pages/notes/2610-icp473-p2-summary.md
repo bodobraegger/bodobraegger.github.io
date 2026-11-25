@@ -10,6 +10,18 @@ plum: false
 
 ---
 
+<script setup>
+import DrawablePen from '../../src/components/DrawablePen.vue'
+</script>
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#1d4ed8" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖉" strokeColor="#dc2626" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(250,204,21,0.4)" :strokeWidth="20" />
+
+<DrawablePen :cloudStorage="true" penEmoji="🖌️" strokeColor="rgba(236,72,153,0.35)" :strokeWidth="20" />
+
 **35 minutes:** modes 2, hash 10, RSA and Diffie-Hellman 8, IPsec 6, TLS 7, last look 2.
 Read each part once, then cover it and say it aloud. Write one RSA run on paper.
 
